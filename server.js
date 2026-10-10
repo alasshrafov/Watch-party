@@ -13,8 +13,20 @@ const io = new Server(server, {
   }
 });
 
+const fs = require('fs');
+
 app.use(cors());
+// Həm public qovluğunu, həm də əsas qovluğu dəstəkləyir
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
+
+app.get('/', (req, res) => {
+  const p1 = path.join(__dirname, 'public', 'index.html');
+  const p2 = path.join(__dirname, 'index.html');
+  if (fs.existsSync(p1)) return res.sendFile(p1);
+  if (fs.existsSync(p2)) return res.sendFile(p2);
+  res.send('<h1>Kino Otağı Serveri İşləyir</h1>');
+});
 
 // Otaqların yaddaşda saxlanması
 // rooms[roomId] = {
