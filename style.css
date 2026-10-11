@@ -2176,155 +2176,274 @@ body.theme-breaking-bad .btn-spin { color: #050a07; }
 }
 
 /* Auth Modalı */
+/* Auth Modalı (Chess.com Stili) */
 .modal-auth-card {
-  max-width: 440px;
+  max-width: 460px;
   width: 95%;
+  background: #1e1e24;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
 }
-.auth-tabs {
-  display: flex;
-  background: var(--bg-input);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: 4px;
-  gap: 4px;
-  margin-bottom: 16px;
-}
-.auth-tab-btn {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-family: inherit;
-  font-size: 0.82rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.auth-tab-btn:hover {
-  color: var(--text-main);
-}
-.auth-tab-btn.active {
-  background: var(--primary);
-  color: #ffffff;
-  box-shadow: 0 2px 10px rgba(229, 9, 20, 0.35);
-}
-
-.auth-pane {
-  display: none;
-}
-.auth-pane.active {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.google-auth-box {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: center;
-  text-align: center;
-}
-.google-badge-hero {
+.google-modal-brand {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 0.95rem;
+}
+.google-modal-brand h2 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin: 0;
+}
+.google-auth-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+/* CHESS.COM STİLLİ GOOGLE DÜYMƏSİ (Şəkil 1-ə tam uyğun) */
+.btn-chess-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 20px;
+  background: #2b2926;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  transition: all 0.2s ease;
+}
+.btn-chess-google:hover {
+  background: #383531;
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+}
+.btn-chess-google:active {
+  transform: translateY(0);
+}
+.google-logo-svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+/* GOOGLE ACCOUNT CHOOSER (Şəkil 2-yə tam uyğun) */
+.google-account-chooser {
+  background: #18181b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.chooser-prompt-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.google-accounts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.google-user-tile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.google-user-tile:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+.google-tile-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4285f4, #34a853);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.google-tile-avatar.add-icon {
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 1rem;
+}
+.google-tile-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+.google-tile-name {
+  font-size: 0.92rem;
   font-weight: 700;
   color: var(--text-main);
-  padding: 6px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.google-btn-wrapper {
-  width: 100%;
+.google-tile-email {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.custom-google-box {
   display: flex;
-  justify-content: center;
-  min-height: 42px;
+  gap: 8px;
+  margin-top: 8px;
 }
-.auth-divider {
+.custom-google-box input {
+  flex: 1;
+  padding: 8px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-main);
+  font-size: 0.85rem;
+  outline: none;
+}
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 0.85rem;
+}
+
+/* LOBBY FLOW (Host vs Qonaq Bölgüsü) */
+.lobby-flow-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 20px 0;
+}
+.lobby-action-box {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+  transition: all 0.25s ease;
+}
+.host-box {
+  border-left: 4px solid #f59e0b;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(0, 0, 0, 0.15));
+}
+.guest-box {
+  border-left: 4px solid #3b82f6;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(0, 0, 0, 0.15));
+}
+.action-header h3 {
+  margin: 6px 0 4px 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+.action-header p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+.action-badge-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.action-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+.host-badge {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+.lock-badge {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+.lock-badge.logged-in {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border-color: rgba(34, 197, 94, 0.3);
+}
+.guest-badge {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+.lobby-or-divider {
   display: flex;
   align-items: center;
   text-align: center;
-  width: 100%;
-  margin: 6px 0;
   color: var(--text-muted);
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
 }
-.auth-divider::before,
-.auth-divider::after {
+.lobby-or-divider::before,
+.lobby-or-divider::after {
   content: '';
   flex: 1;
   border-bottom: 1px solid var(--border-color);
 }
-.auth-divider span {
-  padding: 0 10px;
+.lobby-or-divider span {
+  padding: 0 12px;
 }
-
-.auth-form-column {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.btn-create-room-action {
   width: 100%;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 800;
 }
-.auth-form-column input {
-  padding: 10px 14px;
-  background: var(--bg-input);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  color: var(--text-main);
-  font-family: inherit;
-  font-size: 0.88rem;
-  outline: none;
-  transition: border-color 0.2s ease;
-}
-.auth-form-column input:focus {
-  border-color: var(--primary);
-}
-
-.btn-google-submit {
-  background: #4285f4;
-  border-color: #4285f4;
-  color: #ffffff;
-}
-.btn-google-submit:hover {
-  background: #3367d6;
-}
-
-.avatar-picker-label {
-  font-size: 0.82rem;
+.btn-join-room-action {
+  width: 100%;
+  padding: 12px;
+  font-size: 0.95rem;
   font-weight: 700;
-  color: var(--text-muted);
-  margin-top: 4px;
-}
-.avatar-picker-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-}
-.avatar-option {
-  font-size: 1.6rem;
-  background: var(--bg-input);
-  border: 2px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
   border-radius: var(--radius-sm);
-  padding: 8px;
-  text-align: center;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   transition: all 0.2s ease;
-  user-select: none;
 }
-.avatar-option:hover {
+.btn-join-room-action:hover {
+  background: var(--primary);
   border-color: var(--primary);
-  transform: translateY(-2px);
-}
-.avatar-option.selected {
-  border-color: #f59e0b;
-  background: rgba(245, 158, 11, 0.15);
-  box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
-  transform: scale(1.08);
+  color: #ffffff;
 }
 
 .auth-status-msg {

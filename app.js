@@ -187,10 +187,20 @@ window.addEventListener('DOMContentLoaded', () => {
     roomInput.value = `${randPrefix}-${randNum}`;
   });
 
-  // Otağa giriş
-  btnEnterRoom.addEventListener('click', enterRoom);
-  usernameInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') enterRoom(); });
-  roomInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') enterRoom(); });
+  // Otağa giriş & Otaq yaratma düymələri
+  const btnCreateRoom = document.getElementById('btn-create-room');
+  if (btnCreateRoom) {
+    btnCreateRoom.addEventListener('click', handleHostCreateRoom);
+  }
+  if (btnEnterRoom) {
+    btnEnterRoom.addEventListener('click', handleGuestEnterRoom);
+  }
+  if (usernameInput) {
+    usernameInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleGuestEnterRoom(); });
+  }
+  if (roomInput) {
+    roomInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleGuestEnterRoom(); });
+  }
 
   setupTabs();
   setupDirectPlayerEvents();
@@ -259,15 +269,54 @@ function updateWheelThemeColors(themeName) {
   }
 }
 
-function enterRoom() {
-  const username = usernameInput.value.trim() || (currentUser ? currentUser.username : 'İstifadəçi');
-  let roomId = roomInput.value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
-
-  if (!roomId) {
-    roomId = 'kino-' + Math.floor(100 + Math.random() * 900);
+function handleHostCreateRoom() {
+  if (!currentUser || !currentUser.isGoogle) {
+    alert('🔒 Yeni kino otağı yaratmaq üçün Google hesabı ilə daxil olmalısınız!\n\n(Qonaqlar yalnız dostlarının açdığı otağa qoşula bilər).');
+    openAuthModal();
+    return;
   }
 
-  currentUsername = username;
+  const prefixes = ['kino', 'party', 'cinema', 'avengers', 'matrix', 'heisenberg', 'winterfell', 'gotham'];
+  const randNum = Math.floor(100 + Math.random() * 900);
+  const randPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+  const newRoomId = `${randPrefix}-${randNum}`;
+
+  enterRoomWithId(newRoomId, currentUser.username, true);
+}
+
+async function handleGuestEnterRoom() {
+  const enteredRoom = roomInput.value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+  const username = usernameInput.value.trim() || (currentUser ? currentUser.username : 'Qonaq');
+
+  if (!enteredRoom) {
+    alert('Zəhmət olmasa otaq kodunu və ya dəvət linkini daxil edin!');
+    roomInput.focus();
+    return;
+  }
+
+  // Serverdə bu adda otağın olub-olmadığını yoxla
+  try {
+    const res = await fetch(`/api/rooms/check/${enteredRoom}`);
+    const data = await res.json();
+    if (!data.exists) {
+      if (!currentUser || !currentUser.isGoogle) {
+        alert(`❌ "${enteredRoom}" adlı aktiv otaq tapılmadı!\n\nQeydiyyatsız yalnız dostunuzun açdığı mövcud otağa qoşula bilərsiniz. Yeni otaq yaratmaq üçün isə Google hesabı ilə daxil olun.`);
+        openAuthModal();
+        return;
+      } else {
+        const confirmCreate = confirm(`"${enteredRoom}" adlı otaq hələ açılmayıb. Bu kodla yeni otaq yaratmaq istəyirsiniz?`);
+        if (!confirmCreate) return;
+      }
+    }
+  } catch (err) {
+    console.warn('Otaq yoxlanışında xəta:', err);
+  }
+
+  enterRoomWithId(enteredRoom, username, false);
+}
+
+function enterRoomWithId(roomId, username, isHostIntent) {
+  currentUsername = username || (currentUser ? currentUser.username : 'İstifadəçi');
   currentRoom = roomId;
 
   const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?room=' + currentRoom;
@@ -298,7 +347,8 @@ function initSocket() {
     roomId: currentRoom,
     username: currentUsername,
     avatar: currentUser ? currentUser.avatar : '🍿',
-    authUserId: currentUser ? currentUser.id : null
+    authUserId: currentUser ? currentUser.id : null,
+    isGoogleAuth: !!(currentUser && currentUser.isGoogle)
   });
 
   socket.on('room-joined', (data) => {
@@ -318,6 +368,17 @@ function initSocket() {
     }
     if (data.history) renderHistory(data.history);
     showNotice(isHost ? '👑 Otaq rəhbərisiniz. Xoş gəldiniz!' : '🍿 Otağa qoşuldunuz!');
+  });
+
+  socket.on('room-create-denied', (data) => {
+    alert(`⛔ ${data.message || 'Yeni otaq yaratmaq üçün Google hesabı ilə daxil olmalısınız!'}`);
+    roomScreen.classList.remove('active');
+    lobbyScreen.classList.add('active');
+    if (socket) {
+      socket.disconnect();
+      socket = null;
+    }
+    openAuthModal();
   });
 
   socket.on('room-locked-denied', (data) => {
@@ -1593,7 +1654,7 @@ function escapeHtml(text) {
 let selectedAvatarChoice = '🍿';
 
 function setupAuth() {
-  // 1. LocalStorage-dən yadda saxlanılan istifadəçini bərpa et
+  // 1. LocalStorage-dən yadda saxlanılan Google istifadəçisini bərpa et
   try {
     const savedUserStr = localStorage.getItem('watchparty_user');
     if (savedUserStr) {
@@ -1611,7 +1672,7 @@ function setupAuth() {
   if (headerUserProfile) {
     headerUserProfile.addEventListener('click', (e) => {
       if (btnLogout && (e.target === btnLogout || btnLogout.contains(e.target))) {
-        return; // Çıxış düyməsinə basılıbsa modalı açma
+        return;
       }
       openAuthModal();
     });
@@ -1623,126 +1684,74 @@ function setupAuth() {
     });
   }
 
-  // 3. Auth tab keçidləri
-  const authTabBtns = document.querySelectorAll('.auth-tab-btn');
-  authTabBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      authTabBtns.forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.auth-pane').forEach(p => p.classList.remove('active'));
+  // 3. Chess.com Stilli "Continue with Google" Düyməsi
+  const btnChessGoogle = document.getElementById('btn-chess-google');
+  if (btnChessGoogle) {
+    btnChessGoogle.addEventListener('click', () => {
+      if (window.google && window.google.accounts && window.google.accounts.id) {
+        try {
+          window.google.accounts.id.prompt();
+        } catch (e) {}
+      }
+      const chooser = document.getElementById('google-account-chooser');
+      if (chooser) chooser.classList.remove('hidden');
+    });
+  }
 
-      btn.classList.add('active');
-      const tabName = btn.getAttribute('data-authtab');
-      const targetPane = document.getElementById(`pane-auth-${tabName}`);
-      if (targetPane) targetPane.classList.add('active');
-      clearAuthStatus();
+  // 4. Google Hesab Seçimi Kartları (Şəkildəki Vali Alashrafov və s. 1-kliklə daxil olmaq)
+  const userTiles = document.querySelectorAll('.google-user-tile:not(#tile-custom-google)');
+  userTiles.forEach(tile => {
+    tile.addEventListener('click', async () => {
+      const email = tile.getAttribute('data-email');
+      const name = tile.getAttribute('data-name');
+      await executeGoogleLogin(email, name);
     });
   });
 
-  // 4. Avatar seçimi qridi
-  if (avatarPickerGrid) {
-    const avatarOptions = avatarPickerGrid.querySelectorAll('.avatar-option');
-    avatarOptions.forEach(opt => {
-      opt.addEventListener('click', () => {
-        avatarOptions.forEach(o => o.classList.remove('selected'));
-        opt.classList.add('selected');
-        selectedAvatarChoice = opt.getAttribute('data-avatar') || '🍿';
-      });
+  // 5. Başqa Google hesabı daxil etmə forması
+  const tileCustom = document.getElementById('tile-custom-google');
+  const formCustom = document.getElementById('form-custom-google');
+  const customEmailInput = document.getElementById('custom-google-email');
+  if (tileCustom && formCustom) {
+    tileCustom.addEventListener('click', () => {
+      formCustom.classList.toggle('hidden');
+      if (!formCustom.classList.contains('hidden') && customEmailInput) {
+        customEmailInput.focus();
+      }
     });
   }
-
-  // 5. Google Sign-In (SDK & Sürətli Giriş)
-  initGoogleAuth();
-
-  if (googleQuickForm) {
-    googleQuickForm.addEventListener('submit', async (e) => {
+  if (formCustom) {
+    formCustom.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = googleEmailInput.value.trim();
-      const name = googleNameInput.value.trim();
+      const email = customEmailInput.value.trim();
       if (!email) return;
-
-      try {
-        showAuthStatus('Google ilə qoşulur...', 'info');
-        const res = await fetch('/api/auth/google', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, name, avatar: selectedAvatarChoice })
-        });
-        const data = await res.json();
-        if (data.success && data.user) {
-          saveUserSession(data.user);
-          showAuthStatus('Xoş gəldiniz! Giriş uğurla tamamlandı 🎉', 'success');
-          setTimeout(() => closeModal('modal-auth'), 800);
-        } else {
-          showAuthStatus(data.error || 'Giriş uğursuz oldu', 'error');
-        }
-      } catch (err) {
-        showAuthStatus('Şəbəkə xətası baş verdi', 'error');
-      }
+      const name = email.split('@')[0];
+      await executeGoogleLogin(email, name);
     });
   }
 
-  // 6. Login formu
-  if (loginForm) {
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const username = loginUsername.value.trim();
-      const password = loginPassword.value;
-      if (!username || !password) return;
+  // 6. Rəsmi Google GIS SDK-nı inisializasiya et
+  initGoogleAuth();
+}
 
-      try {
-        showAuthStatus('Giriş edilir...', 'info');
-        const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password })
-        });
-        const data = await res.json();
-        if (data.success && data.user) {
-          saveUserSession(data.user);
-          showAuthStatus('Xoş gəldiniz! 🎉', 'success');
-          setTimeout(() => closeModal('modal-auth'), 800);
-        } else {
-          showAuthStatus(data.error || 'İstifadəçi adı və ya şifrə yanlışdır', 'error');
-        }
-      } catch (err) {
-        showAuthStatus('Şəbəkə xətası baş verdi', 'error');
-      }
+async function executeGoogleLogin(email, name, credential) {
+  try {
+    showAuthStatus('Google ilə daxil olunur...', 'info');
+    const res = await fetch('/api/auth/google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, name, credential, picture: '🍿' })
     });
-  }
-
-  // 7. Qeydiyyat formu
-  if (registerForm) {
-    registerForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const username = registerUsername.value.trim();
-      const email = registerEmail.value.trim();
-      const password = registerPassword.value;
-      if (!username || !password) return;
-
-      try {
-        showAuthStatus('Qeydiyyat aparılır...', 'info');
-        const res = await fetch('/api/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            username,
-            email,
-            password,
-            avatar: selectedAvatarChoice
-          })
-        });
-        const data = await res.json();
-        if (data.success && data.user) {
-          saveUserSession(data.user);
-          showAuthStatus('Hesab uğurla yaradıldı! Xoş gəldiniz 🎉', 'success');
-          setTimeout(() => closeModal('modal-auth'), 800);
-        } else {
-          showAuthStatus(data.error || 'Qeydiyyat uğursuz oldu', 'error');
-        }
-      } catch (err) {
-        showAuthStatus('Şəbəkə xətası baş verdi', 'error');
-      }
-    });
+    const data = await res.json();
+    if (data.success && data.user) {
+      saveUserSession(data.user);
+      showAuthStatus(`Xoş gəldiniz, ${data.user.username}! 🎉`, 'success');
+      setTimeout(() => closeModal('modal-auth'), 600);
+    } else {
+      showAuthStatus(data.error || 'Google girişi uğursuz oldu', 'error');
+    }
+  } catch (err) {
+    showAuthStatus('Şəbəkə xətası baş verdi', 'error');
   }
 }
 
@@ -1765,7 +1774,7 @@ function initGoogleAuth() {
         width: 280
       });
     } catch (e) {
-      console.warn('Google One-Tap düymə render xətası:', e);
+      console.warn('Google One-Tap render xətası:', e);
     }
   }
 }
@@ -1782,7 +1791,7 @@ async function handleGoogleCredentialResponse(response) {
     if (data.success && data.user) {
       saveUserSession(data.user);
       showAuthStatus('Google ilə giriş tamamlandı! 🎉', 'success');
-      setTimeout(() => closeModal('modal-auth'), 800);
+      setTimeout(() => closeModal('modal-auth'), 600);
     } else {
       showAuthStatus(data.error || 'Google girişi uğursuz oldu', 'error');
     }
@@ -1792,6 +1801,7 @@ async function handleGoogleCredentialResponse(response) {
 }
 
 function saveUserSession(user) {
+  user.isGoogle = true;
   currentUser = user;
   currentUsername = user.username;
   try {
@@ -1803,7 +1813,7 @@ function saveUserSession(user) {
 
 function logoutUser() {
   currentUser = null;
-  currentUsername = 'İstifadəçi';
+  currentUsername = 'Qonaq';
   try {
     localStorage.removeItem('watchparty_user');
   } catch (e) {}
@@ -1812,19 +1822,30 @@ function logoutUser() {
 }
 
 function updateUserUI() {
-  if (currentUser) {
+  const hostLockStatusBadge = document.getElementById('host-lock-status-badge');
+  if (currentUser && currentUser.isGoogle) {
     if (lobbyUserName) lobbyUserName.textContent = currentUser.username;
     if (lobbyUserAvatar) lobbyUserAvatar.textContent = currentUser.avatar || '🍿';
     if (headerUserName) headerUserName.textContent = currentUser.username;
     if (headerUserAvatar) headerUserAvatar.textContent = currentUser.avatar || '🍿';
     if (inputAvatarPreview) inputAvatarPreview.textContent = currentUser.avatar || '🍿';
-    if (usernameInput) usernameInput.value = currentUser.username;
+    if (usernameInput && !usernameInput.value) usernameInput.value = currentUser.username;
+
+    if (hostLockStatusBadge) {
+      hostLockStatusBadge.textContent = '🟢 Google ilə Aktivdir';
+      hostLockStatusBadge.className = 'action-badge lock-badge logged-in';
+    }
   } else {
-    if (lobbyUserName) lobbyUserName.textContent = 'Giriş / Qeydiyyat';
-    if (lobbyUserAvatar) lobbyUserAvatar.textContent = '👤';
+    if (lobbyUserName) lobbyUserName.textContent = 'Google ilə Giriş';
+    if (lobbyUserAvatar) lobbyUserAvatar.textContent = '🌐';
     if (headerUserName) headerUserName.textContent = 'Qonaq';
     if (headerUserAvatar) headerUserAvatar.textContent = '🍿';
     if (inputAvatarPreview) inputAvatarPreview.textContent = '👤';
+
+    if (hostLockStatusBadge) {
+      hostLockStatusBadge.textContent = '🔒 Google Tələb Olunur';
+      hostLockStatusBadge.className = 'action-badge lock-badge';
+    }
   }
 }
 

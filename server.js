@@ -48,80 +48,10 @@ function saveUsers(users) {
 
 let usersDB = loadUsers();
 
-function hashPassword(password, salt) {
-  return crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
-}
-
-// 1.1 Yeni Hesab Qeydiyyatı (Register)
-app.post('/api/auth/register', (req, res) => {
-  const { username, email, password, avatar } = req.body;
-  if (!username || !password) {
-    return res.status(400).json({ error: 'İstifadəçi adı və şifrə mütləqdir.' });
-  }
-
-  const cleanUsername = username.trim();
-  const exists = usersDB.find(u => u.username.toLowerCase() === cleanUsername.toLowerCase());
-  if (exists) {
-    return res.status(400).json({ error: 'Bu adda istifadəçi artıq mövcuddur.' });
-  }
-
-  const salt = crypto.randomBytes(16).toString('hex');
-  const passwordHash = hashPassword(password, salt);
-  const newUser = {
-    id: 'u_' + Date.now(),
-    username: cleanUsername,
-    email: email ? email.trim() : '',
-    salt,
-    passwordHash,
-    avatar: avatar || '🍿',
-    createdAt: new Date().toISOString()
-  };
-
-  usersDB.push(newUser);
-  saveUsers(usersDB);
-
-  res.json({
-    success: true,
-    user: {
-      id: newUser.id,
-      username: newUser.username,
-      email: newUser.email,
-      avatar: newUser.avatar
-    }
-  });
-});
-
-// 1.2 Daxil Ol (Login)
-app.post('/api/auth/login', (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    return res.status(400).json({ error: 'İstifadəçi adı və şifrə daxil edin.' });
-  }
-
-  const cleanUsername = username.trim().toLowerCase();
-  const user = usersDB.find(u => u.username.toLowerCase() === cleanUsername || (u.email && u.email.toLowerCase() === cleanUsername));
-  if (!user) {
-    return res.status(400).json({ error: 'İstifadəçi tapılmadı. Zəhmət olmasa qeydiyyatdan keçin.' });
-  }
-
-  if (!user.salt || !user.passwordHash) {
-    return res.status(400).json({ error: 'Bu hesab Google ilə yaradılıb. Zəhmət olmasa Google ilə daxil olun.' });
-  }
-
-  const hash = hashPassword(password, user.salt);
-  if (hash !== user.passwordHash) {
-    return res.status(400).json({ error: 'Daxil edilmiş şifrə yanlışdır.' });
-  }
-
-  res.json({
-    success: true,
-    user: {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      avatar: user.avatar
-    }
-  });
+// 1. Otağın Mövcudluğunu Yoxlamaq (API)
+app.get('/api/rooms/check/:roomId', (req, res) => {
+  const rId = (req.params.roomId || '').toLowerCase();
+  res.json({ exists: !!rooms[rId] });
 });
 
 // 1.3 Google Hesabı ilə Daxil Ol (Google GIS OAuth)
@@ -182,11 +112,33 @@ io.on('connection', (socket) => {
   let currentUserAvatar = '🍿';
   let currentUserId = null;
 
+  // Otağın mövcudluğunu yoxla (Socket callback)
+  socket.on('check-room', ({ roomId }, callback) => {
+    const rId = (roomId || '').toLowerCase();
+    if (typeof callback === 'function') {
+      callback({ exists: !!rooms[rId] });
+    }
+  });
+
   // Otağa qoşulma
-  socket.on('join-room', ({ roomId, username, avatar, authUserId }) => {
+  socket.on('join-room', ({ roomId, username, avatar, authUserId, isGoogleAuth }) => {
+    const rId = (roomId || '').toLowerCase();
+    const roomExists = !!rooms[rId];
+
+    // Qayda: Qeydiyyatsız istifadəçilər (Google ilə daxil olmayanlar) YENİ OTAQ YARADA BİLMƏZ!
+    // Yalnız mövcud otaqlara qoşula bilərlər.
+    if (!roomExists) {
+      if (!isGoogleAuth && !authUserId) {
+        socket.emit('room-create-denied', {
+          message: 'Yeni kino otağı yaratmaq üçün Google hesabı ilə daxil olmalısınız! Qeydiyyatsız yalnız mövcud otaqlara qoşula bilərsiniz.'
+        });
+        return;
+      }
+    }
+
     // Əgər otaq mövcuddursa və kilidlənibsə, icazə yoxla
-    if (rooms[roomId] && rooms[roomId].isLocked) {
-      const isAllowed = rooms[roomId].allowedUsers && (rooms[roomId].allowedUsers[socket.id] || rooms[roomId].allowedUsers[authUserId]);
+    if (roomExists && rooms[rId].isLocked) {
+      const isAllowed = rooms[rId].allowedUsers && (rooms[rId].allowedUsers[socket.id] || rooms[rId].allowedUsers[authUserId]);
       if (!isAllowed) {
         socket.emit('room-locked-denied', {
           message: '🔒 Bu otaq rəhbər tərəfindən kilidlənib. Yalnız otaq sahibinin icazəsi ilə daxil olmaq olar.'
@@ -195,14 +147,14 @@ io.on('connection', (socket) => {
       }
     }
 
-    currentRoom = roomId;
+    currentRoom = rId;
     currentUsername = username || 'Qonaq';
     currentUserAvatar = avatar || '🍿';
     currentUserId = authUserId || ('guest_' + socket.id);
-    socket.join(roomId);
+    socket.join(rId);
 
-    if (!rooms[roomId]) {
-      rooms[roomId] = {
+    if (!rooms[rId]) {
+      rooms[rId] = {
         users: {},
         isLocked: false,
         hostSocketId: socket.id,
@@ -219,15 +171,15 @@ io.on('connection', (socket) => {
       };
     }
 
-    const isHost = Object.keys(rooms[roomId].users).length === 0;
-    if (isHost) rooms[roomId].hostSocketId = socket.id;
+    const isHost = Object.keys(rooms[rId].users).length === 0;
+    if (isHost) rooms[rId].hostSocketId = socket.id;
 
     // Cari istifadəçini icazəlilərə əlavə et
-    if (!rooms[roomId].allowedUsers) rooms[roomId].allowedUsers = {};
-    rooms[roomId].allowedUsers[socket.id] = true;
-    if (authUserId) rooms[roomId].allowedUsers[authUserId] = true;
+    if (!rooms[rId].allowedUsers) rooms[rId].allowedUsers = {};
+    rooms[rId].allowedUsers[socket.id] = true;
+    if (authUserId) rooms[rId].allowedUsers[authUserId] = true;
 
-    rooms[roomId].users[socket.id] = {
+    rooms[rId].users[socket.id] = {
       username: currentUsername,
       avatar: currentUserAvatar,
       isHost: isHost
@@ -235,25 +187,23 @@ io.on('connection', (socket) => {
 
     // İstifadəçiyə mövcud otaq vəziyyətini göndər
     socket.emit('room-joined', {
-      roomId,
+      roomId: rId,
       isHost,
-      isLocked: rooms[roomId].isLocked,
-      users: rooms[roomId].users,
-      videoState: rooms[roomId].videoState,
-      watchlist: rooms[roomId].watchlist || [],
-      history: rooms[roomId].history || []
+      isLocked: rooms[rId].isLocked,
+      users: rooms[rId].users,
+      videoState: rooms[rId].videoState,
+      watchlist: rooms[rId].watchlist || [],
+      history: rooms[rId].history || []
     });
 
     // Otaqdakı digər istifadəçilərə xəbər ver
-    socket.to(roomId).emit('user-joined', {
+    socket.to(rId).emit('user-joined', {
       socketId: socket.id,
       username: currentUsername,
-      avatar: currentUserAvatar,
-      isHost,
-      users: rooms[roomId].users
+      avatar: currentUserAvatar
     });
 
-    console.log(`[+] ${currentUsername} (${currentUserAvatar}) joined: ${roomId} (Host: ${isHost})`);
+    console.log(`[+] ${currentUsername} (${currentUserAvatar}) joined: ${rId} (Host: ${isHost})`);
   });
 
   // 2.1 Otağın Kilidlənməsi / Açılması (Host üçün)
