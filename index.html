@@ -7,84 +7,380 @@
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cinzel:wght@700&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cinzel:wght@600;700;900&family=Fira+Code:wght@500;700&display=swap" rel="stylesheet">
   <!-- Socket.io Client -->
   <script src="/socket.io/socket.io.js"></script>
   <!-- YouTube Iframe API -->
   <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body class="theme-netflix">
-  <!-- Kult Filmlərə Aid Qıraq Animasiyaları və İllüstrasiyaları -->
+  <!-- ========================================================
+       KULT FİLM & MARVEL AMBİENT TƏBƏQƏSİ (CANVAS + QIRAQ İNCƏSƏNƏTİ)
+       ======================================================== -->
   <div id="theme-ambient-container" class="theme-ambient-container">
     <canvas id="ambient-canvas"></canvas>
-    <div class="ambient-decor ambient-left" id="ambient-decor-left"></div>
-    <div class="ambient-decor ambient-right" id="ambient-decor-right"></div>
+
+    <!-- SOL TƏRƏF: QƏHRƏMAN SƏHNƏSİ (SPIDER-MAN, HEISENBERG, JON SNOW, BATMAN) -->
+    <div class="thematic-stage stage-left" id="stage-left">
+      <!-- 1. SPIDER-MAN SOL: KÜNC TORU & DUVARDA HÜCUM VƏZİYYƏTİ -->
+      <div class="character-art char-spiderman-left">
+        <svg class="char-svg" viewBox="0 0 260 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="spideyAura" cx="40%" cy="40%" r="60%">
+              <stop offset="0%" stop-color="#e2232a" stop-opacity="0.3" />
+              <stop offset="100%" stop-color="#080911" stop-opacity="0" />
+            </radialGradient>
+            <filter id="eyeGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#ffffff" flood-opacity="0.95"/>
+            </filter>
+          </defs>
+          <!-- Arxa fon Qırmızı Marvel parıltısı -->
+          <circle cx="90" cy="110" r="90" fill="url(#spideyAura)"/>
+          <!-- Künc Hörümçək Toru -->
+          <g stroke="rgba(255,255,255,0.18)" stroke-width="1.2">
+            <line x1="0" y1="0" x2="220" y2="40"/>
+            <line x1="0" y1="0" x2="180" y2="120"/>
+            <line x1="0" y1="0" x2="130" y2="190"/>
+            <line x1="0" y1="0" x2="60" y2="240"/>
+            <path d="M50,10 Q40,30 20,40" fill="none"/>
+            <path d="M100,20 Q80,60 40,80" fill="none"/>
+            <path d="M160,30 Q120,90 60,130" fill="none"/>
+            <path d="M210,40 Q160,120 80,180" fill="none"/>
+          </g>
+          <!-- Spider-Man Perched Wall-Crawl Silueti -->
+          <g class="spidey-crouch-body">
+            <!-- Gövdə və Kostyum (Qırmızı & Tünd Göy) -->
+            <path d="M85,95 C75,80 90,65 110,65 C125,65 135,78 130,95 C125,115 140,130 145,150 C150,170 135,185 115,185 C95,185 80,165 85,140 Z" fill="#d3222a"/>
+            <!-- Göy yan panellər -->
+            <path d="M86,110 C90,135 90,160 102,175 C95,170 88,155 86,135 Z" fill="#141a2e"/>
+            <path d="M128,110 C124,135 124,160 112,175 C119,170 126,155 128,135 Z" fill="#141a2e"/>
+            <!-- Qollar (Hücum/Tor buraxma) -->
+            <path d="M85,95 C65,95 45,110 35,130 C30,140 38,150 48,142 C58,134 72,118 85,112 Z" fill="#d3222a"/>
+            <path d="M130,95 C150,95 170,110 180,130 C185,140 177,150 167,142 C157,134 143,118 130,112 Z" fill="#d3222a"/>
+            <!-- Bükülmüş ayaqlar -->
+            <path d="M92,175 C70,180 50,200 45,225 C42,238 55,242 62,230 C72,215 88,195 102,185 Z" fill="#141a2e"/>
+            <path d="M122,175 C144,180 164,200 169,225 C172,238 159,242 152,230 C142,215 126,195 112,185 Z" fill="#141a2e"/>
+            <path d="M45,225 L38,245 L58,245 Z" fill="#d3222a"/>
+            <path d="M169,225 L176,245 L156,245 Z" fill="#d3222a"/>
+            <!-- Sinə Hörümçək Loqosu -->
+            <path d="M107,112 C105,108 102,106 99,108 C96,110 97,115 100,118 C97,117 94,120 95,124 C97,128 101,129 104,127 C103,130 105,135 107,138 C109,135 111,130 110,127 C113,129 117,128 119,124 C120,120 117,117 114,118 C117,115 118,110 115,108 C112,106 109,108 107,112 Z" fill="#0b0e14"/>
+            <!-- Baş və Mask -->
+            <ellipse cx="107" cy="72" rx="20" ry="24" fill="#e2232a"/>
+            <!-- Maskanın Hörümçək xətləri -->
+            <line x1="107" y1="50" x2="107" y2="94" stroke="#0b0e14" stroke-width="1.2"/>
+            <line x1="90" y1="72" x2="124" y2="72" stroke="#0b0e14" stroke-width="1.2"/>
+            <path d="M96,62 Q107,67 118,62" stroke="#0b0e14" stroke-width="1.2" fill="none"/>
+            <path d="M93,82 Q107,77 121,82" stroke="#0b0e14" stroke-width="1.2" fill="none"/>
+            <!-- Parlaq Ağ Gözlər (Blink/Squint Animasiyası) -->
+            <polygon class="spidey-eye" points="95,68 86,65 92,78 97,74" fill="#ffffff" stroke="#0b0e14" stroke-width="2.5" filter="url(#eyeGlow)"/>
+            <polygon class="spidey-eye" points="119,68 128,65 122,78 117,74" fill="#ffffff" stroke="#0b0e14" stroke-width="2.5" filter="url(#eyeGlow)"/>
+          </g>
+          <!-- Marvel Badge -->
+          <rect x="52" y="275" width="110" height="24" rx="4" fill="#e2232a"/>
+          <text x="107" y="291" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="800" fill="#ffffff" letter-spacing="2" text-anchor="middle">MARVEL CINEMA</text>
+        </svg>
+      </div>
+
+      <!-- 2. BREAKING BAD SOL: HEISENBERG PORTRET SKETÇİ & KİMYƏVİ FORMULLAR -->
+      <div class="character-art char-heisenberg">
+        <svg class="char-svg" viewBox="0 0 260 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="methHalo" cx="50%" cy="40%" r="55%">
+              <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.32" />
+              <stop offset="60%" stop-color="#00ff66" stop-opacity="0.12" />
+              <stop offset="100%" stop-color="#090e0b" stop-opacity="0" />
+            </radialGradient>
+          </defs>
+          <circle cx="130" cy="140" r="110" fill="url(#methHalo)"/>
+          <!-- Walter White Heisenberg Sketçi -->
+          <g class="heisenberg-sketch">
+            <!-- Fedora Şlyapası -->
+            <path d="M65,72 C65,42 90,34 130,34 C170,34 195,42 195,72 Z" fill="#14171a"/>
+            <path d="M85,44 Q130,52 175,44" stroke="#0a0c0e" stroke-width="4" fill="none"/>
+            <rect x="66" y="65" width="128" height="10" fill="#090b0d"/>
+            <ellipse cx="130" cy="74" rx="80" ry="12" fill="#20242a"/>
+            <!-- Üz və Qulaqlar Silueti -->
+            <path d="M86,76 L86,125 C86,170 110,198 130,202 C150,198 174,170 174,125 L174,76 Z" fill="#e2c4a8" opacity="0.88"/>
+            <path d="M82,105 C78,110 78,125 84,130 Z" fill="#cca78b"/>
+            <path d="M178,105 C182,110 182,125 176,130 Z" fill="#cca78b"/>
+            <!-- Qara Eynək (Iconic Sunglasses) -->
+            <rect x="85" y="104" width="38" height="24" rx="4" fill="#090a0d"/>
+            <rect x="137" y="104" width="38" height="24" rx="4" fill="#090a0d"/>
+            <line x1="123" y1="112" x2="137" y2="112" stroke="#090a0d" stroke-width="4"/>
+            <!-- Eynək Şüşəsində Ağ Parıltı Xətti -->
+            <line x1="90" y1="108" x2="108" y2="124" stroke="rgba(255,255,255,0.45)" stroke-width="2"/>
+            <line x1="142" y1="108" x2="160" y2="124" stroke="rgba(255,255,255,0.45)" stroke-width="2"/>
+            <!-- Burun Çizgisi -->
+            <path d="M127,125 L124,146 L136,146" stroke="#a8856a" stroke-width="2.5" fill="none"/>
+            <!-- Bığ və Keçi Saqqalı (Van Dyke Beard) -->
+            <path d="M104,154 Q130,150 156,154 Q130,166 104,154 Z" fill="#181a1e"/>
+            <path d="M110,172 Q130,170 150,172 L146,200 Q130,208 114,200 Z" fill="#181a1e"/>
+            <!-- Pencək yaxalığı və Çiyinlər -->
+            <path d="M40,240 L85,188 L120,224 L140,224 L175,188 L220,240 L230,320 L30,320 Z" fill="#12161a"/>
+            <line x1="130" y1="224" x2="130" y2="320" stroke="#090b0e" stroke-width="3"/>
+          </g>
+          <!-- Element Nişanları: [Br] [Ba] HEISENBERG -->
+          <g transform="translate(25, 296)">
+            <rect x="0" y="0" width="36" height="36" rx="4" fill="#0f2619" stroke="#00ff66" stroke-width="1.5"/>
+            <text x="18" y="24" font-family="'Fira Code', monospace" font-size="16" font-weight="700" fill="#00ff66" text-anchor="middle">Br</text>
+            <rect x="42" y="0" width="36" height="36" rx="4" fill="#0f2619" stroke="#00ff66" stroke-width="1.5"/>
+            <text x="60" y="24" font-family="'Fira Code', monospace" font-size="16" font-weight="700" fill="#00ff66" text-anchor="middle">Ba</text>
+            <text x="90" y="23" font-family="'Fira Code', monospace" font-size="14" font-weight="700" fill="#f0fdf4" letter-spacing="1">HEISENBERG</text>
+            <text x="90" y="34" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="600" fill="#86efac" letter-spacing="1">"I AM THE DANGER"</text>
+          </g>
+        </svg>
+      </div>
+
+      <!-- 3. GAME OF THRONES SOL: JON SNOW (LORD COMMANDER) & LONGCLAW QILINCI -->
+      <div class="character-art char-jonsnow">
+        <svg class="char-svg" viewBox="0 0 260 370" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="frostHalo" cx="50%" cy="35%" r="60%">
+              <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25" />
+              <stop offset="100%" stop-color="#080c14" stop-opacity="0" />
+            </radialGradient>
+          </defs>
+          <circle cx="130" cy="130" r="110" fill="url(#frostHalo)"/>
+          <!-- Stark Canavarı Arxa Fon Nişanı -->
+          <path d="M70,80 Q130,40 180,60 Q170,90 200,100 Q160,130 140,110 Q110,120 70,80 Z" fill="rgba(56,189,248,0.08)"/>
+          <g class="jonsnow-figure">
+            <!-- Şimal Qurd Kürk Xələti (Fur Mantle) -->
+            <path d="M35,160 Q80,115 130,118 Q180,115 225,160 Q195,195 170,188 Q130,210 90,188 Q65,195 35,160 Z" fill="#1e2633" stroke="#334155" stroke-width="2"/>
+            <!-- Dalğalı Qara Saçlar -->
+            <path d="M102,105 Q90,80 115,68 Q130,62 145,68 Q170,80 158,105 Q170,125 154,142 Q130,148 106,142 Q92,125 102,105 Z" fill="#0a0d13"/>
+            <!-- Üz və Saqqal Silueti -->
+            <path d="M112,98 C112,128 120,140 130,140 C140,140 148,128 148,98 Z" fill="#d9beaa" opacity="0.9"/>
+            <path d="M116,126 Q130,132 144,126 L140,142 Q130,146 120,142 Z" fill="#0d1117"/>
+            <!-- Qara Zireh və Plaş -->
+            <path d="M60,185 L100,180 L130,205 L160,180 L200,185 L215,310 L45,310 Z" fill="#111622"/>
+            <!-- LONGCLAW QILINCI (Valyrian Steel) -->
+            <!-- Qurd Başı Pommel (Ağ Qurd + Qırmızı Yaqut Gözlər) -->
+            <circle cx="130" cy="205" r="9" fill="#e2e8f0" stroke="#0a0d13" stroke-width="1.5"/>
+            <circle cx="127" cy="204" r="1.8" fill="#ef4444"/>
+            <circle cx="133" cy="204" r="1.8" fill="#ef4444"/>
+            <!-- Qulpun Dəri Sarğısı -->
+            <rect x="126" y="214" width="8" height="18" fill="#0f141c" stroke="#334155" stroke-width="1"/>
+            <!-- Qoruyucu Qol (Crossguard) -->
+            <path d="M108,232 L152,232 L148,236 L112,236 Z" fill="#94a3b8"/>
+            <!-- Valyrian Poladı Tişə (Blade with Fuller) -->
+            <path d="M127,236 L127,335 L130,342 L133,335 L133,236 Z" fill="#cbd5e1"/>
+            <line x1="130" y1="236" x2="130" y2="335" stroke="#475569" stroke-width="1.2"/>
+          </g>
+          <!-- Motto -->
+          <text x="130" y="340" font-family="'Cinzel', serif" font-size="12" font-weight="700" fill="#e2e8f0" letter-spacing="2" text-anchor="middle">WINTER IS COMING</text>
+          <text x="130" y="354" font-family="'Cinzel', serif" font-size="9" font-weight="600" fill="#38bdf8" letter-spacing="1" text-anchor="middle">KING IN THE NORTH</text>
+        </svg>
+      </div>
+
+      <!-- 4. BATMAN SOL: GOTHAM GARGOYLE QƏHRƏMANI -->
+      <div class="character-art char-batman">
+        <svg class="char-svg" viewBox="0 0 260 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M50,180 C40,240 80,310 130,310 C180,310 220,240 210,180 L180,110 L165,130 L130,90 L95,130 L80,110 Z" fill="#0b0c10"/>
+          <ellipse cx="130" cy="140" rx="35" ry="38" fill="#13151b"/>
+          <polygon points="108,100 115,130 102,125" fill="#0b0c10"/>
+          <polygon points="152,100 145,130 158,125" fill="#0b0c10"/>
+          <polygon points="118,135 125,138 120,144" fill="#ffffff" filter="drop-shadow(0 0 4px #eab308)"/>
+          <polygon points="142,135 135,138 140,144" fill="#ffffff" filter="drop-shadow(0 0 4px #eab308)"/>
+          <text x="130" y="338" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="800" fill="#eab308" letter-spacing="2" text-anchor="middle">THE DARK KNIGHT</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- SAĞ TƏRƏF: QƏHRƏMAN SƏHNƏSİ (HƏRƏKƏTLİ SPIDER-MAN, FLASK, BAT-SIGNAL) -->
+    <div class="thematic-stage stage-right" id="stage-right">
+      <!-- 1. SPIDER-MAN SAĞ: TORDAN TƏRS ASILMIŞ VƏ YELLƏNƏN SPIDER-MAN (ANIMATED HANGING SPIDEY) -->
+      <div class="character-art char-spiderman-hanging" id="char-spiderman-hanging">
+        <svg class="char-svg spidey-swing-svg" viewBox="0 0 180 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="webGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#ffffff" flood-opacity="0.8"/>
+            </filter>
+            <filter id="hangingEyeGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#ffffff" flood-opacity="0.95"/>
+            </filter>
+          </defs>
+          <!-- Tavan/Ekranın yuxarısından uzanan ipək Hörümçək Toru -->
+          <line x1="90" y1="0" x2="90" y2="108" stroke="#ffffff" stroke-width="2" filter="url(#webGlow)"/>
+          <ellipse cx="90" cy="108" rx="5" ry="3" fill="#ffffff"/>
+
+          <!-- Tərs Asılmış Spider-Man Gövdəsi (Bədən və Qollar) -->
+          <g class="hanging-spidey-body">
+            <!-- Əllər (Tordan tutan) -->
+            <ellipse cx="85" cy="108" rx="6" ry="5" fill="#d3222a"/>
+            <ellipse cx="95" cy="108" rx="6" ry="5" fill="#d3222a"/>
+
+            <!-- Yuxarı qollar (Tərs vəziyyətdə çiyinlərə doğru) -->
+            <path d="M85,110 L75,145 L86,150 L92,120 Z" fill="#d3222a"/>
+            <path d="M95,110 L105,145 L94,150 L88,120 Z" fill="#d3222a"/>
+
+            <!-- Bükülmüş Tərs Ayaqlar (Akrobatik qurbağa duruşu) -->
+            <!-- Budlar (Tünd Göy) -->
+            <path d="M72,160 C55,140 45,120 58,110 C70,102 82,125 80,150 Z" fill="#141a2e"/>
+            <path d="M108,160 C125,140 135,120 122,110 C110,102 98,125 100,150 Z" fill="#141a2e"/>
+            <!-- Baldırlar və Qırmızı Çəkmələr -->
+            <path d="M58,110 C62,130 68,145 68,155 L52,150 C50,135 52,120 58,110 Z" fill="#d3222a"/>
+            <path d="M122,110 C118,130 112,145 112,155 L128,150 C130,135 128,120 122,110 Z" fill="#d3222a"/>
+
+            <!-- Tərs Gövdə / Sinə (Qırmızı və Göy) -->
+            <path d="M72,150 C70,175 75,200 90,212 C105,200 110,175 108,150 Z" fill="#d3222a"/>
+            <path d="M72,160 C78,175 82,190 85,205 C78,195 74,180 72,160 Z" fill="#141a2e"/>
+            <path d="M108,160 C102,175 98,190 95,205 C102,195 106,180 108,160 Z" fill="#141a2e"/>
+
+            <!-- Qara Hörümçək Nişanı (Sinədə) -->
+            <ellipse cx="90" cy="180" rx="3.5" ry="5.5" fill="#0b0e14"/>
+            <path d="M90,178 Q82,172 78,176 M90,182 Q80,182 76,188 M90,178 Q98,172 102,176 M90,182 Q100,182 104,188" stroke="#0b0e14" stroke-width="1.4" fill="none"/>
+
+            <!-- Tərs Baş və Mask (Aşağıya baxır) -->
+            <ellipse cx="90" cy="240" rx="22" ry="26" fill="#e2232a"/>
+            <!-- Mask Hörümçək Toxuması -->
+            <line x1="90" y1="214" x2="90" y2="266" stroke="#0b0e14" stroke-width="1.2"/>
+            <line x1="68" y1="240" x2="112" y2="240" stroke="#0b0e14" stroke-width="1.2"/>
+            <path d="M78,228 Q90,233 102,228" stroke="#0b0e14" stroke-width="1.2" fill="none"/>
+            <path d="M78,252 Q90,247 102,252" stroke="#0b0e14" stroke-width="1.2" fill="none"/>
+
+            <!-- Gözlər (Tərs bucaqla, Parlaq Ağ Lampa) -->
+            <polygon class="spidey-eye" points="80,236 68,232 74,248 82,243" fill="#ffffff" stroke="#0b0e14" stroke-width="2.5" filter="url(#hangingEyeGlow)"/>
+            <polygon class="spidey-eye" points="100,236 112,232 106,248 98,243" fill="#ffffff" stroke="#0b0e14" stroke-width="2.5" filter="url(#hangingEyeGlow)"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- 2. BREAKING BAD SAĞ: KİMYƏVİ RETORTA / METH QABARCIQLARI -->
+      <div class="character-art char-methlab">
+        <svg class="char-svg" viewBox="0 0 200 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M90,70 L90,130 L40,240 C30,260 45,280 70,280 L130,280 C155,280 170,260 160,240 L110,130 L110,70 Z" stroke="#00ff66" stroke-width="3" fill="rgba(0,255,102,0.06)"/>
+          <line x1="80" y1="70" x2="120" y2="70" stroke="#00ff66" stroke-width="4"/>
+          <!-- Mavi Metan Mayesi (99.1% Pure) -->
+          <path d="M55,240 Q100,225 145,240 L130,274 L70,274 Z" fill="rgba(0,229,255,0.4)"/>
+          <!-- Qabarcıqlar -->
+          <circle cx="90" cy="245" r="5" fill="#00e5ff" opacity="0.8"/>
+          <circle cx="110" cy="235" r="4" fill="#00ff66" opacity="0.7"/>
+          <circle cx="100" cy="180" r="3" fill="#00e5ff" opacity="0.6"/>
+          <circle cx="95" cy="120" r="3" fill="#00ff66" opacity="0.5"/>
+          <text x="100" y="306" font-family="'Fira Code', monospace" font-size="11" font-weight="700" fill="#00e5ff" letter-spacing="1" text-anchor="middle">99.1% PURITY</text>
+        </svg>
+      </div>
+
+      <!-- 3. GAME OF THRONES SAĞ: STARK ULAYAN QURD VƏ TƏXTLƏR -->
+      <div class="character-art char-starksigil">
+        <svg class="char-svg" viewBox="0 0 200 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M40,160 Q80,70 150,80 Q180,120 160,180 Q140,240 70,260 Q40,220 40,160 Z" stroke="#38bdf8" stroke-width="2" fill="rgba(56,189,248,0.06)"/>
+          <path d="M70,140 L130,120 L150,150 L120,170 L80,160 Z" fill="#38bdf8" opacity="0.3"/>
+          <text x="100" y="295" font-family="'Cinzel', serif" font-size="11" font-weight="700" fill="#e2e8f0" letter-spacing="2" text-anchor="middle">HOUSE STARK</text>
+        </svg>
+      </div>
+
+      <!-- 4. BATMAN SAĞ: BAT-SIGNAL PROYEKTOR ŞÜASI -->
+      <div class="character-art char-batsignal">
+        <svg class="char-svg" viewBox="0 0 200 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="100,280 20,40 180,40" fill="rgba(234,179,8,0.12)"/>
+          <ellipse cx="100" cy="50" rx="60" ry="32" fill="rgba(234,179,8,0.25)" stroke="#eab308" stroke-width="2"/>
+          <path d="M100,42 Q110,34 125,34 Q120,50 145,46 Q135,66 115,74 Q100,66 100,66 Q100,66 85,74 Q65,66 55,46 Q80,50 75,34 Q90,34 100,42 Z" fill="#090a0f"/>
+        </svg>
+      </div>
+    </div>
   </div>
 
   <!-- Uçan Emojilər Konteyneri -->
   <div id="floating-emojis-container"></div>
 
-  <!-- 1. GİRİŞ & OTAQ SEÇİMİ (LOBBY) -->
+  <!-- ========================================================
+       1. GİRİŞ & OTAQ SEÇİMİ (LOBBY - YÜKSƏK KEYFİYYƏTLİ KİNOTİK DİZAYN)
+       ======================================================== -->
   <div id="lobby-screen" class="screen active">
+    <!-- Lobby Üst Menyu / Tema Seçici -->
+    <div class="lobby-top-bar">
+      <div class="lobby-badge-sync">
+        <span class="live-dot"></span>
+        <span>CINEMA SYNC 2.0</span>
+      </div>
+      <div class="lobby-theme-box">
+        <span class="lobby-theme-label">Tema:</span>
+        <select id="lobby-theme-select" class="theme-select-inline" title="Mövzunu seçin">
+          <option value="theme-netflix">🎬 Netflix Cinema</option>
+          <option value="theme-spiderman">🕷️ Marvel / Spider-Man</option>
+          <option value="theme-breaking-bad">🧪 Breaking Bad (Heisenberg)</option>
+          <option value="theme-got">⚔️ Game of Thrones (Winterfell)</option>
+          <option value="theme-batman">🦇 The Dark Knight (Gotham)</option>
+          <option value="theme-interstellar">🌌 Interstellar (Cosmos)</option>
+          <option value="theme-matrix">🕶️ The Matrix (Cyber)</option>
+          <option value="theme-discord">👾 Discord Dark</option>
+          <option value="theme-oled">🖤 OLED Minimal</option>
+        </select>
+      </div>
+    </div>
+
     <div class="lobby-card">
-      <div class="lobby-badge">🍿 Sinxron Kinoteatr Platforması</div>
-      <h1 class="lobby-title">WatchParty 🎬</h1>
-      <p class="lobby-subtitle">İstənilən film saytından, Netflix-dən, YouTube-dan dostlarınızla real vaxtda sinxron baxın və səsli danışın.</p>
+      <div class="brand-hero-badge">🍿 İki Nəfərlik & Qrup Kinoteatrı</div>
+      <h1 class="lobby-title">Watch<span>Party</span></h1>
+      <p class="lobby-subtitle">İstənilən film saytından, Netflix-dən və ya YouTube-dan dostlarınızla eyni anda kəsintisiz izləyin və canlı danışın.</p>
 
       <div class="input-group">
         <label for="username-input">Adınız / Ləqəbiniz:</label>
-        <input type="text" id="username-input" placeholder="Məsələn: Əli" maxlength="20">
+        <div class="input-icon-wrap">
+          <span class="input-glyph">👤</span>
+          <input type="text" id="username-input" placeholder="Məsələn: Əli" maxlength="20">
+        </div>
       </div>
 
       <div class="input-group">
         <label for="room-input">Otaq Kodu:</label>
         <div class="room-input-wrapper">
-          <input type="text" id="room-input" placeholder="Məsələn: kino-101">
-          <button id="btn-random-room" title="Təsadüfi otaq yarat">🎲 Təsadüfi</button>
+          <div class="input-icon-wrap">
+            <span class="input-glyph">🔑</span>
+            <input type="text" id="room-input" placeholder="Məs: kino-101">
+          </div>
+          <button id="btn-random-room" class="btn-subtle" title="Təsadüfi otaq yarat">🎲 Təsadüfi</button>
         </div>
       </div>
 
       <button id="btn-enter-room" class="btn-primary">
-        <span>Otağa Daxil Ol</span>
+        <span>Kinoteatra Daxil Ol</span>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>
 
       <div class="lobby-features">
         <div class="feature-item">
-          <span class="icon">💻</span>
-          <span>İstənilən Film Saytı</span>
+          <div class="feature-icon-badge">🖥️</div>
+          <span class="feature-name">Bütün Saytlar</span>
+          <span class="feature-sub">WebRTC HD Səs</span>
         </div>
         <div class="feature-item">
-          <span class="icon">🎙️</span>
-          <span>Səsli Danışıq</span>
+          <div class="feature-icon-badge">🎙️</div>
+          <span class="feature-name">Səsli Zəng</span>
+          <span class="feature-sub">İkitərəfli Canlı</span>
         </div>
         <div class="feature-item">
-          <span class="icon">🎧</span>
-          <span>Səs Balansı (Ducking)</span>
+          <div class="feature-icon-badge">🎧</div>
+          <span class="feature-name">Səs Balansı</span>
+          <span class="feature-sub">Auto Ducking</span>
         </div>
         <div class="feature-item">
-          <span class="icon">🎲</span>
-          <span>Film Ruletkası</span>
+          <div class="feature-icon-badge">🎡</div>
+          <span class="feature-name">Çarxıfələk</span>
+          <span class="feature-sub">Püşkatma Ruletkası</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 2. KİNO OTAĞI (CINEMA ROOM) -->
+  <!-- ========================================================
+       2. KİNO OTAĞI (CINEMA ROOM - LUXURY STREAMING UI)
+       ======================================================== -->
   <div id="room-screen" class="screen">
     <!-- Üst Başlıq (Header) -->
     <header class="room-header">
       <div class="header-left">
         <div class="brand-logo" id="brand-logo-text">🎬 Watch<span>Party</span></div>
         <div class="room-code-badge" id="btn-copy-link" title="Dəvət linkini kopyalamaq üçün klikləyin">
-          <span>Otaq:</span>
+          <span class="room-code-tag">OTAQ:</span>
           <strong id="display-room-id">...</strong>
-          <span class="copy-hint">📋 Linki Kopyala</span>
+          <span class="copy-hint" id="copy-hint-text">📋 Kopyala</span>
         </div>
 
         <!-- Əlavə Alətlər: Ruletka & Tarixçə -->
-        <button id="btn-open-watchlist" class="btn-tool" title="Nəyə baxaq? Püşkatma Ruletkası">
-          <span>🎲 Nəyə Baxaq?</span>
+        <button id="btn-open-watchlist" class="btn-tool" title="Nəyə baxaq? Çarxıfələk Ruletkası">
+          <span>🎡 Nəyə Baxaq?</span>
         </button>
         <button id="btn-open-history" class="btn-tool" title="Birlikdə baxdığımız filmlər arxivi">
           <span>📜 Filmlərimiz</span>
@@ -95,7 +391,7 @@
         <!-- Audio Ducking Status -->
         <div class="ducking-indicator" title="Siz danışarkən filmin səsi avtomatik 30% azalır, susanda bərpa olunur">
           <span class="duck-dot"></span>
-          <span>🎧 Səs Balansı: Aktiv</span>
+          <span>🎧 Balans: Aktiv</span>
         </div>
 
         <!-- Kult Film/Serial Tema Seçici -->
@@ -103,6 +399,7 @@
           <span class="theme-icon">🎨</span>
           <select id="theme-select" title="Kult film/serial mövzusunu seçin">
             <option value="theme-netflix">🎬 Netflix Cinema</option>
+            <option value="theme-spiderman">🕷️ Marvel / Spider-Man</option>
             <option value="theme-breaking-bad">🧪 Breaking Bad (Heisenberg)</option>
             <option value="theme-got">⚔️ Game of Thrones (Winterfell)</option>
             <option value="theme-batman">🦇 The Dark Knight (Gotham)</option>
@@ -123,7 +420,7 @@
         </button>
 
         <!-- Çatı Göstər/Gizlə (Mobil üçün) -->
-        <button id="btn-toggle-chat" class="btn-icon" title="Çat">
+        <button id="btn-toggle-chat" class="btn-icon btn-chat-toggle" title="Çat">
           <span>💬</span>
         </button>
       </div>
@@ -169,16 +466,34 @@
             <span>🔊 Filmin Səsini Aç (Klikləyin)</span>
           </button>
 
-          <!-- Boş vəziyyət -->
+          <!-- Boş vəziyyət (Minimalist və Qəşəng Dizayn) -->
           <div id="empty-player" class="empty-player-state">
-            <div class="empty-icon">🍿🎬</div>
-            <h2>Kinoteatr Hazırdır!</h2>
-            <p>Aşağıdakı rejimlərdən birini seçərək filmə baxmağa başlayın:</p>
-            <div class="empty-options">
-              <button class="empty-opt-btn" onclick="openSourceTab('stream')">💻 Sayt Tabını Yayımla (WebRTC)</button>
-              <button class="empty-opt-btn" onclick="openSourceTab('netflix')">🔴 Netflix / Prime İzlə</button>
-              <button class="empty-opt-btn" onclick="openSourceTab('youtube')">🔴 YouTube Linki</button>
-              <button class="empty-opt-btn" onclick="openSourceTab('direct')">🎬 Birbaşa Video Linki</button>
+            <div class="empty-hero-visual">
+              <div class="empty-film-projector">🎬</div>
+            </div>
+            <h2>Kinoteatr Seansı Hazırdır</h2>
+            <p>Aşağıdakı yayım mənbələrindən birini seçərək filmə baxmağa başlayın:</p>
+            <div class="empty-options-grid">
+              <div class="empty-opt-card" onclick="openSourceTab('stream')">
+                <div class="card-icon">🖥️</div>
+                <div class="card-title">Sayt Tabını Yayımla</div>
+                <div class="card-desc">İstənilən film saytını səsi ilə birgə HD paylaşın</div>
+              </div>
+              <div class="empty-opt-card" onclick="openSourceTab('netflix')">
+                <div class="card-icon">🔴</div>
+                <div class="card-title">Netflix & Prime İzlə</div>
+                <div class="card-desc">DRM qara ekran tənzimləməsi və canlı yayım</div>
+              </div>
+              <div class="empty-opt-card" onclick="openSourceTab('youtube')">
+                <div class="card-icon">▶️</div>
+                <div class="card-title">YouTube Sinxron</div>
+                <div class="card-desc">YouTube linki ilə avtomatik sinxron izləmə</div>
+              </div>
+              <div class="empty-opt-card" onclick="openSourceTab('direct')">
+                <div class="card-icon">🎞️</div>
+                <div class="card-title">Birbaşa Video / MP4</div>
+                <div class="card-desc">Online video linki və ya kompüterdən fayl</div>
+              </div>
             </div>
           </div>
         </div>
@@ -186,9 +501,9 @@
         <!-- Nəzarət və Mənbə Paneli -->
         <div class="source-control-bar">
           <div class="source-tabs">
-            <button class="tab-btn active" data-tab="stream">💻 İstənilən Film Saytı (Canlı Tab)</button>
-            <button class="tab-btn" data-tab="netflix">🔴 Netflix / Prime İzlə</button>
-            <button class="tab-btn" data-tab="youtube">🔴 YouTube</button>
+            <button class="tab-btn active" data-tab="stream">💻 Canlı Tab (WebRTC)</button>
+            <button class="tab-btn" data-tab="netflix">🔴 Netflix & Prime</button>
+            <button class="tab-btn" data-tab="youtube">▶️ YouTube</button>
             <button class="tab-btn" data-tab="direct">🎬 Birbaşa Video / MP4</button>
             <button class="tab-btn" data-tab="file">📁 Kompüterdən Video</button>
           </div>
@@ -197,7 +512,10 @@
           <div class="tab-pane active" id="pane-stream">
             <div class="stream-info-box">
               <div class="stream-guide">
-                <strong>💡 Necə işləyir:</strong> Brauzerdə sevdiyiniz film saytını açın. Sonra aşağıdakı düyməyə basaraq <strong>"Chrome Tab"</strong> bölməsindən həmin tabı seçin və <em>"Also share tab audio" (Səsi paylaş)</em> qutusunu mütləq işarələyin. Filmi HD keyfiyyətdə və təmiz səslə canlı izləyəcəksiniz!
+                <div class="guide-badge">💡 Addım-addım Bələdçi:</div>
+                <p>1. Yeni Chrome tabında baxmaq istədiyiniz film saytını açın.</p>
+                <p>2. Aşağıdakı düyməyə basaraq açılan pəncərədə <strong>"Chrome Tab"</strong> bölməsindən həmin saytı seçin.</p>
+                <p>3. Pəncərənin altındakı <strong>"Also share tab audio" (Səsi paylaş)</strong> qutusunu mütləq işarələyin!</p>
               </div>
               <div class="stream-actions">
                 <button id="btn-start-stream" class="btn-primary">
@@ -214,11 +532,12 @@
           <div class="tab-pane" id="pane-netflix">
             <div class="netflix-guide-box">
               <div class="netflix-steps">
-                <div class="step-badge">🔴 Netflix & Prime DRM Həlli:</div>
-                <p>Netflix qara ekran verməsin deyə Chrome-da: <strong>Parametrlər ➡️ Sistem (System) ➡️ "Use hardware acceleration when available"</strong> seçimini söndürün (və ya başqa film saytından baxın).</p>
-                <p>Sonra Netflix-də filmi açıb aşağıdakı düymə ilə həmin tabı yayımlayın:</p>
+                <div class="step-badge">🔴 Netflix & Prime Qara Ekranının Həlli:</div>
+                <p>Netflix qorunması səbəbilə qara ekran olmasın deyə brauzerdə bir dəfəlik:</p>
+                <p><strong>Parametrlər ➡️ Sistem (System) ➡️ "Use graphics acceleration when available"</strong> seçimini <em>söndürün (OFF)</em> və brauzeri yenidən başladın.</p>
+                <p>Sonra Netflix-də filmi açıb aşağıdakı düymə ilə tabı yayımlayın:</p>
               </div>
-              <button id="btn-start-netflix-stream" class="btn-primary" style="background:#e50914;">
+              <button id="btn-start-netflix-stream" class="btn-primary netflix-red-btn">
                 <span>🎬 Netflix Tabını Yayımla (Səslə)</span>
               </button>
             </div>
@@ -247,7 +566,7 @@
                 <span>📁 Kompüterdən Video Faylı Seçin (.mp4, .mkv, .webm)</span>
                 <input type="file" id="input-local-file" accept="video/*">
               </label>
-              <div class="file-hint">İpucu: Otaqdakılar da eyni video faylını kompüterindən seçdikdə, pleyer avtomatik sinxronlaşır.</div>
+              <div class="file-hint">İpucu: Otaqdakı dostunuz da eyni video faylını kompüterindən seçdikdə, pleyer avtomatik sinxronlaşır.</div>
             </div>
           </div>
 
@@ -265,15 +584,15 @@
       <aside class="sidebar-section" id="sidebar">
         <!-- Reaksiyalar Paneli -->
         <div class="reactions-bar">
-          <div class="reactions-title">Canlı Reaksiya Göndər:</div>
+          <div class="reactions-title">Canlı Reaksiya:</div>
           <div class="reactions-list">
-            <button class="reaction-btn" data-reaction="🍿">🍿</button>
-            <button class="reaction-btn" data-reaction="😂">😂</button>
-            <button class="reaction-btn" data-reaction="😮">😮</button>
-            <button class="reaction-btn" data-reaction="🎬">🎬</button>
-            <button class="reaction-btn" data-reaction="🔥">🔥</button>
-            <button class="reaction-btn" data-reaction="👏">👏</button>
-            <button class="reaction-btn" data-reaction="❤️">❤️</button>
+            <button class="reaction-btn" data-reaction="🍿" title="Popkorn">🍿</button>
+            <button class="reaction-btn" data-reaction="😂" title="Gülüş">😂</button>
+            <button class="reaction-btn" data-reaction="😮" title="Təəccüb">😮</button>
+            <button class="reaction-btn" data-reaction="🎬" title="Film">🎬</button>
+            <button class="reaction-btn" data-reaction="🔥" title="Alov">🔥</button>
+            <button class="reaction-btn" data-reaction="👏" title="Alqış">👏</button>
+            <button class="reaction-btn" data-reaction="❤️" title="Sevgi">❤️</button>
           </div>
         </div>
 
@@ -283,11 +602,11 @@
             <span>💬 Otaq Çatı</span>
           </div>
           <div class="chat-messages" id="chat-messages">
-            <div class="chat-system-msg">Otağa xoş gəlmisiniz! Yuxarıdakı linki dostlarınızla paylaşın 🍿</div>
+            <div class="chat-system-msg">Kinoteatra xoş gəlmisiniz! Otaq linkini dostunuzla paylaşaraq birgə izləyin 🍿</div>
           </div>
           <form class="chat-input-form" id="chat-form">
             <input type="text" id="chat-input" placeholder="Mesaj yazın..." autocomplete="off">
-            <button type="submit" class="btn-chat-send">
+            <button type="submit" class="btn-chat-send" title="Göndər">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
             </button>
           </form>
@@ -296,18 +615,20 @@
     </main>
   </div>
 
-  <!-- 3. MODAL: NƏYƏ BAXAQ? (ÇARXIFƏLƏK RULETKASI) -->
+  <!-- ========================================================
+       3. MODAL: NƏYƏ BAXAQ? (ÇARXIFƏLƏK RULETKASI)
+       ======================================================== -->
   <div id="modal-watchlist" class="modal-backdrop hidden">
     <div class="modal-card modal-wheel-card">
       <div class="modal-header">
         <h2>🎡 Nəyə Baxaq? (Çarxıfələk)</h2>
         <button class="modal-close" onclick="closeModal('modal-watchlist')">✕</button>
       </div>
-      <p class="modal-desc">Baxmaq istədiyiniz filmləri yazın və çarxı fırladın!</p>
+      <p class="modal-desc">Baxmaq istədiyiniz filmləri əlavə edin və çarxı fırladaraq şansınızı sınayın!</p>
 
       <form id="watchlist-form" class="modal-input-row">
-        <input type="text" id="input-watchlist-movie" placeholder="Film adı daxil edin (məs: Breaking Bad)" required>
-        <button type="submit" class="btn-primary" style="width:auto; padding:12px 20px;">+ Əlavə Et</button>
+        <input type="text" id="input-watchlist-movie" placeholder="Film adı yazın (məs: Spider-Man, Breaking Bad)" required>
+        <button type="submit" class="btn-primary btn-add-movie">+ Əlavə Et</button>
       </form>
 
       <!-- Çarxıfələk Sahəsi -->
@@ -323,21 +644,23 @@
         <div id="roulette-winner-box" class="winner-announcement hidden"></div>
       </div>
 
-      <div class="watchlist-section-title">Əlavə olunmuş filmlər:</div>
+      <div class="watchlist-section-title">Otaq Filmləri Siyahısı:</div>
       <div class="watchlist-items" id="watchlist-container">
         <!-- Dinamik siyahı -->
       </div>
     </div>
   </div>
 
-  <!-- 4. MODAL: FİLMLƏRİMİZ (XATİRƏ ARXİVİ) -->
+  <!-- ========================================================
+       4. MODAL: FİLMLƏRİMİZ (XATİRƏ ARXİVİ)
+       ======================================================== -->
   <div id="modal-history" class="modal-backdrop hidden">
     <div class="modal-card">
       <div class="modal-header">
         <h2>📜 Birlikdə Baxdığımız Filmlər</h2>
         <button class="modal-close" onclick="closeModal('modal-history')">✕</button>
       </div>
-      <p class="modal-desc">İzlədiyiniz filmləri və verdiyiniz xalları burada yadda saxlayın.</p>
+      <p class="modal-desc">İzlədiyiniz filmləri və verdiyiniz qiymətləri arxivdə qeyd edin.</p>
 
       <form id="history-form" class="history-input-box">
         <input type="text" id="input-history-title" placeholder="Film adı..." required>

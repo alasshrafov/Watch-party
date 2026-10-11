@@ -118,20 +118,24 @@ window.addEventListener('DOMContentLoaded', () => {
     roomInput.value = roomParam;
   }
 
-  // Kult Film/Serial Tema Seçici
+  // Kult Film/Serial Tema Seçiciləri (Lobby & Room Header)
   const themeSelect = document.getElementById('theme-select');
+  const lobbyThemeSelect = document.getElementById('lobby-theme-select');
   const savedTheme = localStorage.getItem('watchparty-theme') || 'theme-netflix';
   applyTheme(savedTheme);
+
   if (themeSelect) {
     themeSelect.value = savedTheme;
-    themeSelect.addEventListener('change', (e) => {
-      applyTheme(e.target.value);
-    });
+    themeSelect.addEventListener('change', (e) => applyTheme(e.target.value));
+  }
+  if (lobbyThemeSelect) {
+    lobbyThemeSelect.value = savedTheme;
+    lobbyThemeSelect.addEventListener('change', (e) => applyTheme(e.target.value));
   }
 
   // Təsadüfi otaq adı
   btnRandomRoom.addEventListener('click', () => {
-    const prefixes = ['kino', 'party', 'cinema', 'midnight', 'matrix', 'heisenberg', 'winterfell', 'gotham'];
+    const prefixes = ['kino', 'party', 'cinema', 'spiderman', 'matrix', 'heisenberg', 'winterfell', 'gotham'];
     const randNum = Math.floor(100 + Math.random() * 900);
     const randPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
     roomInput.value = `${randPrefix}-${randNum}`;
@@ -153,10 +157,18 @@ function applyTheme(themeName) {
   document.body.className = themeName;
   localStorage.setItem('watchparty-theme', themeName);
 
+  // Hər iki dropdown-u sinxronlaşdır
+  const themeSelect = document.getElementById('theme-select');
+  if (themeSelect) themeSelect.value = themeName;
+  const lobbyThemeSelect = document.getElementById('lobby-theme-select');
+  if (lobbyThemeSelect) lobbyThemeSelect.value = themeName;
+
   // Logo tərtibatı
   const logo = document.getElementById('brand-logo-text');
   if (logo) {
-    if (themeName === 'theme-breaking-bad') {
+    if (themeName === 'theme-spiderman') {
+      logo.innerHTML = '🕷️ Spider<span>Man</span>';
+    } else if (themeName === 'theme-breaking-bad') {
       logo.innerHTML = '🧪 [Br]eak<span>[Ba]d</span>';
     } else if (themeName === 'theme-got') {
       logo.innerHTML = '⚔️ Winter<span>fell</span>';
@@ -171,8 +183,29 @@ function applyTheme(themeName) {
     }
   }
 
+  // Çarxıfələk rəng palitrasını temaya uyğunlaşdır
+  updateWheelThemeColors(themeName);
+
   if (typeof drawWheel === 'function') {
     drawWheel();
+  }
+}
+
+function updateWheelThemeColors(themeName) {
+  if (themeName === 'theme-spiderman') {
+    wheelColors = ['#e2232a', '#141a2e', '#b91c1c', '#1e293b', '#f43f5e', '#0f172a'];
+  } else if (themeName === 'theme-breaking-bad') {
+    wheelColors = ['#00ff88', '#00e5ff', '#10b981', '#064e3b', '#f59e0b', '#047857'];
+  } else if (themeName === 'theme-got') {
+    wheelColors = ['#38bdf8', '#1e293b', '#0284c7', '#334155', '#7dd3fc', '#0f172a'];
+  } else if (themeName === 'theme-batman') {
+    wheelColors = ['#f59e0b', '#18181b', '#d97706', '#27272a', '#fbbf24', '#09090b'];
+  } else if (themeName === 'theme-interstellar') {
+    wheelColors = ['#f97316', '#1e1b4b', '#ea580c', '#312e81', '#fb923c', '#0f172a'];
+  } else if (themeName === 'theme-matrix') {
+    wheelColors = ['#22c55e', '#052e16', '#16a34a', '#14532d', '#4ade80', '#022c22'];
+  } else {
+    wheelColors = ['#e50914', '#1f2937', '#b91c1c', '#111827', '#dc2626', '#374151'];
   }
 }
 
@@ -896,10 +929,9 @@ function playRemoteVoice(stream) {
 let currentWatchlist = [];
 let wheelAngle = 0;
 let isWheelSpinning = false;
-const wheelColors = [
-  '#f43f5e', '#8b5cf6', '#06b6d4', '#10b981', 
-  '#f59e0b', '#ec4899', '#3b82f6', '#14b8a6', 
-  '#6366f1', '#e11d48'
+let wheelColors = [
+  '#e50914', '#1f2937', '#b91c1c', '#111827', 
+  '#dc2626', '#374151', '#f59e0b', '#10b981'
 ];
 
 function setupModalsAndFeatures() {
@@ -1077,20 +1109,21 @@ function spinWheelAnimation(winnerItem, onComplete) {
 
 function renderWatchlist(list) {
   currentWatchlist = list || [];
+  if (!watchlistContainer) return;
   watchlistContainer.innerHTML = '';
   if (!currentWatchlist || currentWatchlist.length === 0) {
-    watchlistContainer.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:10px;">Hələ heç bir film əlavə edilməyib.</div>';
+    watchlistContainer.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:10px; font-size:0.85rem;">Hələ heç bir film əlavə edilməyib.</div>';
     drawWheel();
     return;
   }
   currentWatchlist.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'watchlist-item';
-    div.innerHTML = `
-      <span>🎬 <strong>${escapeHtml(item.title)}</strong> <small style="opacity:0.7">(${escapeHtml(item.addedBy)})</small></span>
-      <button onclick="deleteWatchlistItem('${item.id}')" title="Sil">✕</button>
+    const chip = document.createElement('div');
+    chip.className = 'watchlist-chip';
+    chip.innerHTML = `
+      <span>🎬 <strong>${escapeHtml(item.title)}</strong> <small style="opacity:0.65">(${escapeHtml(item.addedBy)})</small></span>
+      <button class="watchlist-chip-remove" onclick="deleteWatchlistItem('${item.id}')" title="Sil">✕</button>
     `;
-    watchlistContainer.appendChild(div);
+    watchlistContainer.appendChild(chip);
   });
   drawWheel();
 }
@@ -1128,28 +1161,43 @@ function setupAmbientAnimations() {
   window.addEventListener('resize', resize);
   resize();
 
-  // Partikullar
-  const snowFlakes = Array.from({ length: 65 }, () => ({
+  // 1. Marvel / Spider-Man: Hörümçək toru və qırmızı/mavi partikullar
+  const spideyParticles = Array.from({ length: 42 }, () => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: Math.random() * 2.4 + 1.2,
+    speedX: (Math.random() - 0.5) * 0.9,
+    speedY: (Math.random() - 0.5) * 0.9,
+    color: Math.random() > 0.4 ? 'rgba(226, 35, 42, ' : 'rgba(56, 189, 248, '
+  }));
+
+  // 2. Game of Thrones: Çoxqatlı Şaxtalı qar dənəcikləri
+  const snowFlakes = Array.from({ length: 70 }, () => ({
     x: Math.random() * window.innerWidth,
     y: Math.random() * window.innerHeight,
     r: Math.random() * 3 + 1,
-    speedY: Math.random() * 1.5 + 0.5,
-    speedX: Math.random() * 0.8 - 0.4
+    speedY: Math.random() * 1.5 + 0.6,
+    speedX: Math.random() * 0.8 - 0.4,
+    alpha: Math.random() * 0.5 + 0.4
   }));
 
+  // 3. The Matrix: Rəqəmsal kod yağışı
   const matrixColumns = Math.floor(window.innerWidth / 20);
   const matrixDrops = Array.from({ length: matrixColumns }, () => Math.random() * -50);
   const matrixChars = "0101XYZ9823#$*+-=";
 
-  const bubbles = Array.from({ length: 25 }, () => ({
-    x: Math.random() * 160 + (Math.random() < 0.5 ? 0 : window.innerWidth - 160),
+  // 4. Breaking Bad: Qalxan kimyəvi tüstü və mavi kristal qabarcıqları
+  const bubbles = Array.from({ length: 30 }, () => ({
+    x: Math.random() * 180 + (Math.random() < 0.5 ? 0 : window.innerWidth - 180),
     y: window.innerHeight + Math.random() * 100,
     r: Math.random() * 6 + 3,
-    speedY: Math.random() * 1.5 + 0.8,
-    alpha: Math.random() * 0.4 + 0.2
+    speedY: Math.random() * 1.6 + 0.8,
+    alpha: Math.random() * 0.5 + 0.25,
+    isBlue: Math.random() > 0.5
   }));
 
-  const stars = Array.from({ length: 80 }, () => ({
+  // 5. Interstellar: Kosmik ulduzlar
+  const stars = Array.from({ length: 85 }, () => ({
     x: Math.random() * window.innerWidth,
     y: Math.random() * window.innerHeight,
     r: Math.random() * 1.8 + 0.5,
@@ -1157,23 +1205,76 @@ function setupAmbientAnimations() {
     speed: Math.random() * 0.02 + 0.005
   }));
 
+  // 6. Netflix / Default Cinema: Teatral işıq şüasında zərif toz zərrəcikləri
+  const cinemaDust = Array.from({ length: 35 }, () => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: Math.random() * 2 + 0.8,
+    speedY: Math.random() * 0.4 + 0.2,
+    alpha: Math.random() * 0.5 + 0.2
+  }));
+
   function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const theme = document.body.className;
 
-    if (theme.includes('theme-got')) {
+    if (theme.includes('theme-spiderman')) {
+      // Marvel / Spider-Man: İpək Hörümçək Torları və Parlaq Partikullar
+      for (let i = 0; i < spideyParticles.length; i++) {
+        const p = spideyParticles[i];
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, 2 * Math.PI);
+        ctx.fillStyle = p.color + '0.75)';
+        ctx.fill();
+
+        p.x += p.speedX;
+        p.y += p.speedY;
+
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+
+        // Yaxın olanlar arasında zərif tor sapları (web connection)
+        for (let j = i + 1; j < spideyParticles.length; j++) {
+          const p2 = spideyParticles[j];
+          const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+          if (dist < 115) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = `rgba(255, 255, 255, ${0.16 * (1 - dist / 115)})`;
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+          }
+        }
+      }
+    } else if (theme.includes('theme-got')) {
       // Game of Thrones: Şaxtalı qar dənəcikləri
-      ctx.fillStyle = 'rgba(224, 242, 254, 0.7)';
       snowFlakes.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgba(224, 242, 254, ${p.alpha})`;
         ctx.fill();
         p.y += p.speedY;
         p.x += p.speedX;
         if (p.y > canvas.height) { p.y = -5; p.x = Math.random() * canvas.width; }
       });
+    } else if (theme.includes('theme-breaking-bad')) {
+      // Breaking Bad: Kimyəvi tüstü və mavi metan kristalları qabarcıqları
+      bubbles.forEach(b => {
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, 2 * Math.PI);
+        ctx.fillStyle = b.isBlue ? `rgba(0, 229, 255, ${b.alpha})` : `rgba(0, 255, 102, ${b.alpha})`;
+        ctx.fill();
+        b.y -= b.speedY;
+        if (b.y < -10) {
+          b.y = canvas.height + 20;
+          b.x = Math.random() * 180 + (Math.random() < 0.5 ? 0 : canvas.width - 180);
+        }
+      });
     } else if (theme.includes('theme-matrix')) {
-      // The Matrix: Rəqəmsal kod yağışı (Yalnız sol və sağ kənarlarda)
+      // The Matrix: Rəqəmsal kod yağışı
       ctx.fillStyle = 'rgba(34, 197, 94, 0.85)';
       ctx.font = '14px monospace';
       for (let i = 0; i < matrixDrops.length; i++) {
@@ -1188,19 +1289,6 @@ function setupAmbientAnimations() {
           matrixDrops[i]++;
         }
       }
-    } else if (theme.includes('theme-breaking-bad')) {
-      // Breaking Bad: Qalxan kimyəvi tüstü qabarcıqları (yanlarda)
-      bubbles.forEach(b => {
-        ctx.beginPath();
-        ctx.arc(b.x, b.y, b.r, 0, 2 * Math.PI);
-        ctx.fillStyle = `rgba(0, 255, 102, ${b.alpha})`;
-        ctx.fill();
-        b.y -= b.speedY;
-        if (b.y < -10) {
-          b.y = canvas.height + 20;
-          b.x = Math.random() * 160 + (Math.random() < 0.5 ? 0 : canvas.width - 160);
-        }
-      });
     } else if (theme.includes('theme-interstellar')) {
       // Interstellar: Sayrışan kosmik ulduzlar
       stars.forEach(s => {
@@ -1210,6 +1298,19 @@ function setupAmbientAnimations() {
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.r, 0, 2 * Math.PI);
         ctx.fill();
+      });
+    } else {
+      // Netflix / Default: Kinoteatr işıq şüasında üzən incə toz zərrəcikləri
+      cinemaDust.forEach(d => {
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.r, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgba(229, 9, 20, ${d.alpha * 0.35})`;
+        ctx.fill();
+        d.y -= d.speedY;
+        if (d.y < 0) {
+          d.y = canvas.height;
+          d.x = Math.random() * canvas.width;
+        }
       });
     }
 
