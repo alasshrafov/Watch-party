@@ -17,9 +17,9 @@ const io = new Server(server, {
 
 app.use(cors());
 app.use(express.json());
-// Həm public qovluğunu, həm də əsas qovluğu dəstəkləyir
-app.use(express.static(path.join(__dirname, 'public')));
+// Əsas qovluq birinci gəlir (GitHub-a birbaşa atılan fayllar dərhal aktiv olsun)
 app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ==========================================
 // 1. İSTİFADƏÇİ VƏ QEYDİYYAT SİSTEMİ (AUTH DB)
@@ -111,10 +111,10 @@ app.post('/api/auth/google', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  const p1 = path.join(__dirname, 'public', 'index.html');
-  const p2 = path.join(__dirname, 'index.html');
-  if (fs.existsSync(p1)) return res.sendFile(p1);
-  if (fs.existsSync(p2)) return res.sendFile(p2);
+  const pRoot = path.join(__dirname, 'index.html');
+  const pPublic = path.join(__dirname, 'public', 'index.html');
+  if (fs.existsSync(pRoot)) return res.sendFile(pRoot);
+  if (fs.existsSync(pPublic)) return res.sendFile(pPublic);
   res.send('<h1>Kino Otağı Serveri İşləyir</h1>');
 });
 
