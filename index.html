@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OneCouch 🛋️🍿 — Two screens. One couch.</title>
+  <link rel="icon" type="image/png" href="/assets/logo.png">
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,52 +25,22 @@
   <!-- Uçan Emojilər Konteyneri -->
   <div id="floating-emojis-container"></div>
 
-  <!-- YELLƏNƏN SPIDER-MAN MASKOTU (Ekranın yuxarısından tərs asılıb yellənir) -->
-  <div class="spidey-hanging-mascot" id="spidey-hanging-mascot">
-    <svg viewBox="0 0 160 360" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <filter id="webGlowLine" x="-30%" y="-30%" width="160%" height="160%">
-          <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#ffffff" flood-opacity="0.9"/>
-        </filter>
-        <filter id="spideyHangingEyeGlow" x="-30%" y="-30%" width="160%" height="160%">
-          <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#ffffff" flood-opacity="1"/>
-        </filter>
-      </defs>
-      <line x1="80" y1="0" x2="80" y2="105" stroke="#ffffff" stroke-width="2.2" filter="url(#webGlowLine)"/>
-      <circle cx="80" cy="105" r="4" fill="#ffffff"/>
-      <ellipse cx="74" cy="106" rx="5" ry="4" fill="#d3222a"/>
-      <ellipse cx="86" cy="106" rx="5" ry="4" fill="#d3222a"/>
-      <path d="M74,107 L64,138 L75,142 L82,116 Z" fill="#d3222a"/>
-      <path d="M86,107 L96,138 L85,142 L78,116 Z" fill="#d3222a"/>
-      <path d="M62,150 C45,132 36,112 48,102 C60,94 72,116 70,140 Z" fill="#141a2e"/>
-      <path d="M98,150 C115,132 124,112 112,102 C100,94 88,116 90,140 Z" fill="#141a2e"/>
-      <path d="M48,102 C52,120 58,135 58,145 L44,140 C42,125 43,112 48,102 Z" fill="#d3222a"/>
-      <path d="M112,102 C108,120 102,135 102,145 L116,140 C118,125 117,112 112,102 Z" fill="#d3222a"/>
-      <path d="M62,140 C60,165 65,190 80,202 C95,190 100,165 98,140 Z" fill="#d3222a"/>
-      <path d="M62,150 C68,165 72,180 75,195 C68,185 64,170 62,150 Z" fill="#141a2e"/>
-      <path d="M98,150 C92,165 88,180 85,195 C92,185 96,170 98,150 Z" fill="#141a2e"/>
-      <ellipse cx="80" cy="170" rx="3.5" ry="5.5" fill="#0b0e14"/>
-      <path d="M80,168 Q72,162 68,166 M80,172 Q70,172 66,178 M80,168 Q88,162 92,166 M80,172 Q90,172 94,178" stroke="#0b0e14" stroke-width="1.3" fill="none"/>
-      <ellipse cx="80" cy="230" rx="20" ry="24" fill="#e2232a"/>
-      <line x1="80" y1="206" x2="80" y2="254" stroke="#0b0e14" stroke-width="1.2"/>
-      <line x1="60" y1="230" x2="100" y2="230" stroke="#0b0e14" stroke-width="1.2"/>
-      <path d="M70,220 Q80,224 90,220" stroke="#0b0e14" stroke-width="1.2" fill="none"/>
-      <path d="M70,240 Q80,236 90,240" stroke="#0b0e14" stroke-width="1.2" fill="none"/>
-      <polygon class="spidey-eye-swing" points="71,226 60,222 66,238 73,233" fill="#ffffff" stroke="#0b0e14" stroke-width="2.5" filter="url(#spideyHangingEyeGlow)"/>
-      <polygon class="spidey-eye-swing" points="89,226 100,222 94,238 87,233" fill="#ffffff" stroke="#0b0e14" stroke-width="2.5" filter="url(#spideyHangingEyeGlow)"/>
-    </svg>
-  </div>
-
   <!-- ========================================================
-       1. GİRİŞ & OTAQ SEÇİMİ (LOBBY - KİNOTİK DİZAYN)
+       1. GİRİŞ & OTAQ SEÇİMİ (LOBBY - CINEVERSE 4K REALISTIC UI)
        ======================================================== -->
   <div id="lobby-screen" class="screen active">
     <!-- 1.1 YUXARI NAVİQASİYA (TOP NAVBAR) -->
     <header class="lobby-navbar">
       <div class="lobby-nav-brand">
-        <span class="brand-couch-icon">🛋️</span>
-        <span class="brand-name">One<span>Couch</span></span>
+        <img src="/assets/logo.png" alt="OneCouch Logo" class="brand-logo-img">
+        <span class="brand-sub-badge">CINEMA</span>
       </div>
+
+      <nav class="lobby-nav-links" aria-label="Naviqasiya menyusu">
+        <a href="#section-characters" class="nav-menu-link" id="nav-link-characters">Xarakterlər</a>
+        <a href="#section-archetypes" class="nav-menu-link" id="nav-link-archetypes">Arxetiplər</a>
+        <a href="#action-console" class="nav-menu-link nav-highlight" id="nav-link-rooms">Kino Otağı</a>
+      </nav>
 
       <div class="lobby-nav-actions">
         <!-- 🌍 DİL SEÇİMİ (AZ, TR, EN, RU) -->
@@ -89,13 +60,11 @@
 
         <!-- 👤 İSTİFADƏÇİ PROFİLİ VƏ ÇIXIŞ (USER PROFILE & LOGOUT) -->
         <div class="profile-area-wrapper">
-          <!-- Daxil olmayanda: Google ilə Giriş Düyməsi -->
           <button id="btn-open-auth-lobby" class="btn-lobby-login" type="button">
             <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
             <span id="top-login-label">Google ilə Giriş</span>
           </button>
 
-          <!-- Daxil olanda: Açılan Profil Kartı və Çıxış Düyməsi -->
           <div id="lobby-user-profile-menu" class="lobby-user-profile-menu hidden">
             <button id="btn-profile-trigger" class="btn-profile-pill" type="button">
               <span id="lobby-user-avatar" class="user-avatar-tag">🍿</span>
@@ -125,229 +94,291 @@
       </div>
     </header>
 
-    <!-- 1.2 DÜNYANIN ƏN MƏŞHUR KİNOLARINDAN BALACA FİQURLAR VƏ ŞƏKİLLƏR (CINEMA DECOR PINS) -->
-    <div class="cinema-floating-decor" aria-hidden="true">
-      <!-- Sol Tərəf: Spider-Man, Batman, Harry Potter, Star Wars, Joker -->
-      <div class="mini-movie-figure fig-spiderman pos-spiderman" data-title="Spider-Man" title="Spider-Man (Marvel)">
-        <div class="figure-aura"></div>
-        <svg viewBox="0 0 36 36" fill="none">
-          <circle cx="18" cy="18" r="16" fill="#e2232a"/>
-          <path d="M18 2 L18 34 M2 18 L34 18 M6 6 L30 30 M6 30 L30 6" stroke="#141a2e" stroke-width="1.2" opacity="0.5"/>
-          <path d="M10 14 Q13 21 16 19 Q15 13 10 14 Z" fill="#ffffff" stroke="#000" stroke-width="1.4"/>
-          <path d="M26 14 Q23 21 20 19 Q21 13 26 14 Z" fill="#ffffff" stroke="#000" stroke-width="1.4"/>
-        </svg>
-        <span class="figure-tooltip">Spider-Man</span>
-      </div>
-
-      <div class="mini-movie-figure fig-batman pos-batman" data-title="Batman" title="The Dark Knight (Batman)">
-        <div class="figure-aura"></div>
-        <svg viewBox="0 0 36 36" fill="none">
-          <circle cx="18" cy="18" r="16" fill="#18181b"/>
-          <path d="M8 18 Q12 12 15 16 Q16 13 18 15 Q20 13 21 16 Q24 12 28 18 Q25 22 18 24 Q11 22 8 18 Z" fill="#f59e0b"/>
-        </svg>
-        <span class="figure-tooltip">Batman</span>
-      </div>
-
-      <div class="mini-movie-figure fig-potter pos-potter" data-title="Harry Potter" title="Harry Potter (Hogwarts)">
-        <div class="figure-aura"></div>
-        <svg viewBox="0 0 36 36" fill="none">
-          <circle cx="18" cy="18" r="16" fill="#2d060d"/>
-          <circle cx="13" cy="20" r="4.5" stroke="#fbbf24" stroke-width="1.6"/>
-          <circle cx="23" cy="20" r="4.5" stroke="#fbbf24" stroke-width="1.6"/>
-          <line x1="17.5" y1="20" x2="18.5" y2="20" stroke="#fbbf24" stroke-width="1.6"/>
-          <path d="M17 9 L15 14 L18 14 L16 18" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-        <span class="figure-tooltip">Harry Potter</span>
-      </div>
-
-      <div class="mini-movie-figure fig-starwars pos-starwars" data-title="Star Wars" title="Star Wars (Darth Vader)">
-        <div class="figure-aura"></div>
-        <svg viewBox="0 0 36 36" fill="none">
-          <circle cx="18" cy="18" r="16" fill="#090d16"/>
-          <line x1="10" y1="10" x2="26" y2="26" stroke="#ef4444" stroke-width="2.4" stroke-linecap="round"/>
-          <line x1="26" y1="10" x2="10" y2="26" stroke="#38bdf8" stroke-width="2.4" stroke-linecap="round"/>
-          <circle cx="18" cy="18" r="2.5" fill="#ffffff"/>
-        </svg>
-        <span class="figure-tooltip">Star Wars</span>
-      </div>
-
-      <div class="mini-movie-figure fig-joker pos-joker" data-title="Joker" title="Joker (Why So Serious)">
-        <div class="figure-aura"></div>
-        <svg viewBox="0 0 36 36" fill="none">
-          <circle cx="18" cy="18" r="16" fill="#2e1065"/>
-          <rect x="12" y="10" width="12" height="16" rx="2" fill="#faf5ff" stroke="#a855f7" stroke-width="1"/>
-          <path d="M14 20 Q18 24 22 20" stroke="#dc2626" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-          <circle cx="18" cy="14" r="1.5" fill="#9333ea"/>
-        </svg>
-        <span class="figure-tooltip">Joker</span>
-      </div>
-
-      <!-- Sağ Tərəf: Heisenberg, Matrix, Interstellar, Lord of the Rings, Cinema Popcorn -->
-      <div class="mini-movie-figure fig-heisenberg pos-heisenberg" data-title="Breaking Bad" title="Breaking Bad (Heisenberg)">
-        <div class="figure-aura"></div>
-        <svg viewBox="0 0 36 36" fill="none">
-          <circle cx="18" cy="18" r="16" fill="#042f2e"/>
-          <path d="M9 16 L27 16 M12 16 L12 11 Q18 10 24 11 L24 16" stroke="#10b981" stroke-width="1.8" stroke-linecap="round"/>
-          <rect x="11" y="19" width="6" height="4" rx="1" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
-          <rect x="19" y="19" width="6" height="4" rx="1" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
-          <line x1="17" y1="21" x2="19" y2="21" stroke="#10b981" stroke-width="1.2"/>
-        </svg>
-        <span class="figure-tooltip">Heisenberg</span>
-      </div>
-
-      <div class="mini-movie-figure fig-matrix pos-matrix" data-title="The Matrix" title="The Matrix (Neo)">
-        <div class="figure-aura"></div>
-        <svg viewBox="0 0 36 36" fill="none">
-          <circle cx="18" cy="18" r="16" fill="#022c22"/>
-          <path d="M10 18 Q14 16 17 18 L17 21 Q13 22 10 19 Z" fill="#0f172a" stroke="#22c55e" stroke-width="1.2"/>
-          <path d="M26 18 Q22 16 19 18 L19 21 Q23 22 26 19 Z" fill="#0f172a" stroke="#22c55e" stroke-width="1.2"/>
-          <line x1="17" y1="19" x2="19" y2="19" stroke="#22c55e" stroke-width="1.2"/>
-          <circle cx="13" cy="12" r="1" fill="#4ade80"/>
-          <circle cx="23" cy="13" r="1" fill="#4ade80"/>
-        </svg>
-        <span class="figure-tooltip">The Matrix</span>
-      </div>
-
-      <div class="mini-movie-figure fig-interstellar pos-interstellar" data-title="Interstellar" title="Interstellar (Gargantua)">
-        <div class="figure-aura"></div>
-        <svg viewBox="0 0 36 36" fill="none">
-          <circle cx="18" cy="18" r="16" fill="#1e1b4b"/>
-          <ellipse cx="18" cy="18" rx="13" ry="4" fill="none" stroke="#818cf8" stroke-width="1.8" transform="rotate(-25 18 18)"/>
-          <circle cx="18" cy="18" r="6" fill="#0b0f19" stroke="#c7d2fe" stroke-width="1"/>
-        </svg>
-        <span class="figure-tooltip">Interstellar</span>
-      </div>
-
-      <div class="mini-movie-figure fig-lotr pos-lotr" data-title="Lord of the Rings" title="The Lord of the Rings">
-        <div class="figure-aura"></div>
-        <svg viewBox="0 0 36 36" fill="none">
-          <circle cx="18" cy="18" r="16" fill="#451a03"/>
-          <circle cx="18" cy="18" r="8" fill="none" stroke="#fbbf24" stroke-width="2.6"/>
-          <circle cx="18" cy="18" r="9.6" fill="none" stroke="#ef4444" stroke-width="0.8" opacity="0.8"/>
-        </svg>
-        <span class="figure-tooltip">Lord of the Rings</span>
-      </div>
-
-      <div class="mini-movie-figure fig-cinema pos-cinema" data-title="Cinema Classics" title="Cinema Classics (Popcorn)">
-        <div class="figure-aura"></div>
-        <svg viewBox="0 0 36 36" fill="none">
-          <circle cx="18" cy="18" r="16" fill="#7f1d1d"/>
-          <path d="M11 16 L25 16 L23 26 L13 26 Z" fill="#ffffff" stroke="#dc2626" stroke-width="1"/>
-          <line x1="15" y1="16" x2="14" y2="26" stroke="#dc2626" stroke-width="1"/>
-          <line x1="21" y1="16" x2="22" y2="26" stroke="#dc2626" stroke-width="1"/>
-          <circle cx="14" cy="14" r="2.2" fill="#fef08a"/>
-          <circle cx="18" cy="12" r="2.6" fill="#fef08a"/>
-          <circle cx="22" cy="14" r="2.2" fill="#fef08a"/>
-        </svg>
-        <span class="figure-tooltip">Popcorn</span>
+    <!-- 1.2 KİNOTİK 35MM FİLM LENTİ (BACKGROUND CINEMA REEL RIBBON) -->
+    <div class="ambient-filmstrip-ribbon" aria-hidden="true">
+      <div class="filmstrip-track">
+        <span class="film-frame"><span class="film-icon">🎬</span> The Godfather</span>
+        <span class="film-frame"><span class="film-icon">🦇</span> The Dark Knight</span>
+        <span class="film-frame"><span class="film-icon">🧪</span> Breaking Bad</span>
+        <span class="film-frame"><span class="film-icon">🌌</span> Interstellar</span>
+        <span class="film-frame"><span class="film-icon">🕶️</span> The Matrix</span>
+        <span class="film-frame"><span class="film-icon">⚔️</span> Gladiator</span>
+        <span class="film-frame"><span class="film-icon">☕</span> Pulp Fiction</span>
+        <span class="film-frame"><span class="film-icon">🏙️</span> Fight Club</span>
+        <span class="film-frame"><span class="film-icon">⚡</span> Inception</span>
+        <span class="film-frame"><span class="film-icon">💍</span> Lord of the Rings</span>
+        <!-- Dövr üçün təkrarlanan hissə -->
+        <span class="film-frame"><span class="film-icon">🎬</span> The Godfather</span>
+        <span class="film-frame"><span class="film-icon">🦇</span> The Dark Knight</span>
+        <span class="film-frame"><span class="film-icon">🧪</span> Breaking Bad</span>
+        <span class="film-frame"><span class="film-icon">🌌</span> Interstellar</span>
+        <span class="film-frame"><span class="film-icon">🕶️</span> The Matrix</span>
+        <span class="film-frame"><span class="film-icon">⚔️</span> Gladiator</span>
       </div>
     </div>
 
-    <!-- 1.3 MƏRKƏZİ KART (MAIN LOBBY HERO & FLOW) -->
-    <main class="lobby-card">
-      <!-- BÖYÜK ƏSAS ŞÜAR VƏ HERO TYPOGRAPHY -->
-      <div class="lobby-hero-header">
+    <!-- 1.3 CINEVERSE HERO SHOWCASE (3D FAN KARTLARI VƏ ƏSAS ŞÜAR) -->
+    <section class="cine-hero-showcase" id="section-characters">
+      <div class="hero-atmosphere-glow"></div>
+      
+      <!-- HERO BAŞLIQ VƏ ŞÜAR -->
+      <div class="cine-hero-content">
+        <div class="hero-logo-banner">
+          <img src="/assets/logo.png" alt="OneCouch Logo" class="hero-brand-logo-img">
+        </div>
         <div class="hero-mini-pill">
           <span class="pulse-sparkle">✨</span>
           <span id="lobby-hero-badge">İKİ EKRAN. TƏK DİVAN.</span>
         </div>
-        <h1 class="lobby-hero-slogan">Two screens. One couch.</h1>
-        <p class="lobby-hero-subtitle" id="lobby-hero-desc">İstənilən film saytından, Netflix və YouTube-dan dostlarınızla sanki eyni divanda yanaşı oturmuş kimi birlikdə izləyin və canlı danışın.</p>
+        <h1 class="cine-main-title">SƏHNƏ SƏNİNDİR</h1>
+        <p class="cine-sub-slogan">Two screens. One couch.</p>
+        <p class="lobby-hero-subtitle" id="lobby-hero-desc">
+          İstənilən film saytından, Netflix və YouTube-dan dostlarınızla sanki eyni divanda yanaşı oturmuş kimi birlikdə izləyin və canlı danışın.
+        </p>
+        <div class="cine-hero-cta-group">
+          <a href="#action-console" class="btn-cine-cta primary" id="btn-hero-cta-room">
+            <span>🛋️ İndi Otaq Aç</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#section-archetypes" class="btn-cine-cta secondary" id="btn-hero-cta-explore">
+            <span>🎭 Xarakterləri Kəşf Et</span>
+          </a>
+        </div>
       </div>
 
-      <!-- HOST VƏ GUEST BÖLÜMÜ (YAN-YANA LUXURY GRID) -->
-      <div class="lobby-flow-container">
-        <!-- 1. YENİ OTAQ YARAT (HOST - YALNIZ GOOGLE İLƏ) -->
-        <div class="lobby-action-box host-box">
-          <div class="action-header">
-            <div class="action-badge-row">
-              <span class="action-badge host-badge" id="host-badge-text">👑 Otaq Sahibi</span>
-              <span id="host-lock-status-badge" class="action-badge lock-badge">🔒 Google Tələb Olunur</span>
-            </div>
-            <h3 id="host-title-text">Yeni Kino Otağı Yarat</h3>
-            <p id="host-desc-text">Öz kinoteatr zalınızı başladın, filmi idarə edin və dostlarınıza link göndərin.</p>
+      <!-- 3D FAN CHARACTERS SHOWCASE (5 REALİSTİK 8K FOTO KART) -->
+      <div class="cine-characters-fan">
+        <!-- 1. Cyber Warrior -->
+        <div class="cine-char-card card-fan-1" data-char="cyberpunk">
+          <div class="char-image-wrap">
+            <img src="/assets/characters/cyberpunk.jpg" alt="Cyber Warrior" loading="lazy">
+            <div class="char-card-overlay"></div>
           </div>
-
-          <!-- Qonaq olduqda birbaşa Google ilə giriş düyməsi -->
-          <div id="host-auth-prompt" class="host-auth-prompt">
-            <button id="btn-host-google-login" class="btn-chess-google" type="button">
-              <svg class="google-logo-svg" width="22" height="22" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-              </svg>
-              <span id="btn-host-google-text">Continue with Google</span>
-            </button>
-            <span class="host-google-hint" id="host-hint-text">⚡ 1 kliklə daxil olub dərhal otaq başladın</span>
+          <div class="char-card-info">
+            <span class="char-badge cyan">SCI-FI</span>
+            <h4 class="char-name">KİBER DÖYÜŞÇÜ</h4>
+            <span class="char-sub">Gələcək və Neon</span>
           </div>
-
-          <!-- Google ilə daxil olduqda aktiv olan Otaq Yarat düyməsi -->
-          <button id="btn-create-room" class="btn-primary btn-create-room-action hidden">
-            <span id="btn-create-room-text">🛋️ Yeni Otaq Yarat</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
         </div>
 
-        <div class="lobby-or-divider"><span id="divider-or-text">VƏ YA</span></div>
-
-        <!-- 2. MÖVCUD OTAĞA QOŞUL (QONAQLAR ÜÇÜN - QEYDİYYATSIZ DA OLAR) -->
-        <div class="lobby-action-box guest-box">
-          <div class="action-header">
-            <span class="action-badge guest-badge" id="guest-badge-text">🚪 Qonaq və ya İştirakçı</span>
-            <h3 id="guest-title-text">Mövcud Otağa Qoşul</h3>
-            <p id="guest-desc-text">Dostunuzun otaq kodunu və ya dəvət linkini daxil edərək birbaşa qoşulun.</p>
+        <!-- 2. Don Vito Corleone -->
+        <div class="cine-char-card card-fan-2" data-char="godfather">
+          <div class="char-image-wrap">
+            <img src="/assets/characters/godfather.jpg" alt="The Godfather Don Corleone" loading="lazy">
+            <div class="char-card-overlay"></div>
           </div>
+          <div class="char-card-info">
+            <span class="char-badge crimson">AİLƏ & GÜC</span>
+            <h4 class="char-name">XAÇ ATASI</h4>
+            <span class="char-sub">Don Vito Corleone</span>
+          </div>
+        </div>
 
-          <div class="input-group">
-            <label for="username-input" id="label-nickname-text">Adınız / Ləqəbiniz:</label>
-            <div class="input-icon-wrap">
-              <span class="input-glyph" id="input-avatar-preview">👤</span>
-              <input type="text" id="username-input" placeholder="Məsələn: Əli" maxlength="20">
+        <!-- 3. Walter White / Heisenberg (Center Featured) -->
+        <div class="cine-char-card card-fan-center" data-char="heisenberg">
+          <div class="center-star-ribbon">⭐ KULT SİMA</div>
+          <div class="char-image-wrap">
+            <img src="/assets/characters/heisenberg.jpg" alt="Walter White Heisenberg" loading="lazy">
+            <div class="char-card-overlay"></div>
+          </div>
+          <div class="char-card-info">
+            <span class="char-badge emerald">ZƏKA OYUNÇUSU</span>
+            <h4 class="char-name">HEİSENBERG</h4>
+            <span class="char-sub">Walter White (Breaking Bad)</span>
+          </div>
+        </div>
+
+        <!-- 4. The Dark Knight -->
+        <div class="cine-char-card card-fan-4" data-char="batman">
+          <div class="char-image-wrap">
+            <img src="/assets/characters/batman.jpg" alt="The Dark Knight Batman" loading="lazy">
+            <div class="char-card-overlay"></div>
+          </div>
+          <div class="char-card-info">
+            <span class="char-badge gold">QƏHRƏMAN</span>
+            <h4 class="char-name">QARANLIQ CƏNGAVƏR</h4>
+            <span class="char-sub">The Dark Knight (Gotham)</span>
+          </div>
+        </div>
+
+        <!-- 5. Noir Detective -->
+        <div class="cine-char-card card-fan-5" data-char="detective">
+          <div class="char-image-wrap">
+            <img src="/assets/characters/detective.jpg" alt="Noir Detective" loading="lazy">
+            <div class="char-card-overlay"></div>
+          </div>
+          <div class="char-card-info">
+            <span class="char-badge amber">NOİR DEDEKTİV</span>
+            <h4 class="char-name">SİRR VƏ KÖLGƏ</h4>
+            <span class="char-sub">Klassik Kino Noiri</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1.4 İNTERAKTİV KİNO KONSOLU (HOST & GUEST FLOW DECK) -->
+    <main class="lobby-action-console" id="action-console">
+      <div class="console-glass-panel">
+        <div class="lobby-flow-container">
+          <!-- 1. YENİ OTAQ YARAT (HOST - YALNIZ GOOGLE İLƏ) -->
+          <div class="lobby-action-box host-box">
+            <div class="action-header">
+              <div class="action-badge-row">
+                <span class="action-badge host-badge" id="host-badge-text">👑 Otaq Sahibi</span>
+                <span id="host-lock-status-badge" class="action-badge lock-badge">🔒 Google Tələb Olunur</span>
+              </div>
+              <h3 id="host-title-text">Yeni Kino Otağı Yarat</h3>
+              <p id="host-desc-text">Öz kinoteatr zalınızı başladın, filmi idarə edin və dostlarınıza link göndərin.</p>
             </div>
+
+            <!-- Qonaq olduqda birbaşa Google ilə giriş düyməsi -->
+            <div id="host-auth-prompt" class="host-auth-prompt">
+              <button id="btn-host-google-login" class="btn-chess-google" type="button">
+                <svg class="google-logo-svg" width="22" height="22" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+                <span id="btn-host-google-text">Continue with Google</span>
+              </button>
+              <span class="host-google-hint" id="host-hint-text">⚡ 1 kliklə daxil olub dərhal otaq başladın</span>
+            </div>
+
+            <!-- Google ilə daxil olduqda aktiv olan Otaq Yarat düyməsi -->
+            <button id="btn-create-room" class="btn-primary btn-create-room-action hidden">
+              <span id="btn-create-room-text">🛋️ Yeni Otaq Yarat</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
           </div>
 
-          <div class="input-group">
-            <label for="room-input" id="label-room-text">Otaq Kodu və ya Link:</label>
-            <div class="room-input-wrapper">
+          <div class="lobby-or-divider"><span id="divider-or-text">VƏ YA</span></div>
+
+          <!-- 2. MÖVCUD OTAĞA QOŞUL (QONAQLAR ÜÇÜN - QEYDİYYATSIZ DA OLAR) -->
+          <div class="lobby-action-box guest-box">
+            <div class="action-header">
+              <span class="action-badge guest-badge" id="guest-badge-text">🚪 Qonaq və ya İştirakçı</span>
+              <h3 id="guest-title-text">Mövcud Otağa Qoşul</h3>
+              <p id="guest-desc-text">Dostunuzun otaq kodunu və ya dəvət linkini daxil edərək birbaşa qoşulun.</p>
+            </div>
+
+            <div class="input-group">
+              <label for="username-input" id="label-nickname-text">Adınız / Ləqəbiniz:</label>
               <div class="input-icon-wrap">
-                <span class="input-glyph">🔑</span>
-                <input type="text" id="room-input" placeholder="Məs: kino-101">
+                <span class="input-glyph" id="input-avatar-preview">👤</span>
+                <input type="text" id="username-input" placeholder="Məsələn: Əli" maxlength="20">
               </div>
             </div>
+
+            <div class="input-group">
+              <label for="room-input" id="label-room-text">Otaq Kodu və ya Link:</label>
+              <div class="room-input-wrapper">
+                <div class="input-icon-wrap">
+                  <span class="input-glyph">🔑</span>
+                  <input type="text" id="room-input" placeholder="Məs: kino-101">
+                </div>
+              </div>
+            </div>
+
+            <button id="btn-enter-room" class="btn-secondary btn-join-room-action">
+              <span id="btn-join-text">Otağa Daxil Ol</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
           </div>
+        </div>
 
-          <button id="btn-enter-room" class="btn-secondary btn-join-room-action">
-            <span id="btn-join-text">Otağa Daxil Ol</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- XÜSUSİYYƏTLƏR XƏTTİ (BOTTOM HIGHLIGHTS) -->
-      <div class="lobby-features">
-        <div class="feature-item">
-          <div class="feature-icon-badge">🖥️</div>
-          <span class="feature-name" id="feat-1-title">Bütün Saytlar</span>
-          <span class="feature-sub" id="feat-1-sub">WebRTC HD Səs</span>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon-badge">🎙️</div>
-          <span class="feature-name" id="feat-2-title">Səsli Zəng</span>
-          <span class="feature-sub" id="feat-2-sub">İkitərəfli Canlı</span>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon-badge">🎧</div>
-          <span class="feature-name" id="feat-3-title">Səs Balansı</span>
-          <span class="feature-sub" id="feat-3-sub">Auto Ducking</span>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon-badge">🎡</div>
-          <span class="feature-name" id="feat-4-title">Çarxıfələk</span>
-          <span class="feature-sub" id="feat-4-sub">Püşkatma Ruletkası</span>
+        <!-- XÜSUSİYYƏTLƏR XƏTTİ (BOTTOM HIGHLIGHTS) -->
+        <div class="lobby-features">
+          <div class="feature-item">
+            <div class="feature-icon-badge">🖥️</div>
+            <span class="feature-name" id="feat-1-title">Bütün Saytlar</span>
+            <span class="feature-sub" id="feat-1-sub">WebRTC HD Səs</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon-badge">🎙️</div>
+            <span class="feature-name" id="feat-2-title">Səsli Zəng</span>
+            <span class="feature-sub" id="feat-2-sub">İkitərəfli Canlı</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon-badge">🎧</div>
+            <span class="feature-name" id="feat-3-title">Səs Balansı</span>
+            <span class="feature-sub" id="feat-3-sub">Auto Ducking</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon-badge">🎡</div>
+            <span class="feature-name" id="feat-4-title">Çarxıfələk</span>
+            <span class="feature-sub" id="feat-4-sub">Püşkatma Ruletkası</span>
+          </div>
         </div>
       </div>
     </main>
+
+    <!-- 1.5 XARAKTER ARXETİPLƏRİ (HIGH DEFINITION CINEMATIC ARCHETYPES SECTION) -->
+    <section class="cine-archetypes-section" id="section-archetypes">
+      <div class="archetypes-header">
+        <span class="section-tag-pill">🎭 KİNO ARXETİPLƏRİ</span>
+        <h2 class="archetypes-title" id="archetypes-title-text">Kult Qəhrəmanlar və Rollar</h2>
+        <p class="archetypes-sub" id="archetypes-sub-text">Dünya kino tarixinin ən unudulmaz simvolları və xarakterləri.</p>
+      </div>
+
+      <div class="archetypes-grid">
+        <!-- 1. Zəka Oyunçusu (Walter White) -->
+        <article class="archetype-card">
+          <div class="arch-media-wrap">
+            <img src="/assets/characters/heisenberg.jpg" alt="Walter White Heisenberg" loading="lazy">
+            <div class="arch-vignette"></div>
+          </div>
+          <div class="arch-body">
+            <span class="arch-category emerald">BREAKING BAD • ZƏKA</span>
+            <h3 class="arch-title">Walter White — Heisenberg</h3>
+            <blockquote class="arch-quote">"I am the one who knocks."</blockquote>
+            <p class="arch-desc">Zəka, kimya və sonsuz strateji düşüncənin simvolu. Qazanmaq üçün hər həddi aşan dahi.</p>
+          </div>
+        </article>
+
+        <!-- 2. Qotham Qaranlığı (Batman) -->
+        <article class="archetype-card">
+          <div class="arch-media-wrap">
+            <img src="/assets/characters/batman.jpg" alt="The Dark Knight Batman" loading="lazy">
+            <div class="arch-vignette"></div>
+          </div>
+          <div class="arch-body">
+            <span class="arch-category gold">DC CINEMA • ƏDALƏT</span>
+            <h3 class="arch-title">Batman — Qaranlıq Cəngavər</h3>
+            <blockquote class="arch-quote">"It's not who I am underneath, but what I do that defines me."</blockquote>
+            <p class="arch-desc">Gecənin kölgəsində təkbaşına ədalət axtaran, sarsılmaz iradə və gücün tərənnümü.</p>
+          </div>
+        </article>
+
+        <!-- 3. Ailə və Güc (Don Vito Corleone) -->
+        <article class="archetype-card">
+          <div class="arch-media-wrap">
+            <img src="/assets/characters/godfather.jpg" alt="The Godfather Don Corleone" loading="lazy">
+            <div class="arch-vignette"></div>
+          </div>
+          <div class="arch-body">
+            <span class="arch-category crimson">KLASSİK KİNO • NÜFUZ</span>
+            <h3 class="arch-title">Don Vito Corleone — Xaç Atası</h3>
+            <blockquote class="arch-quote">"I'm gonna make him an offer he can't refuse."</blockquote>
+            <p class="arch-desc">Ailəyə sədaqət, intizam, sakitlik və sözün çəkisini bilən əfsanəvi lider obrazı.</p>
+          </div>
+        </article>
+
+        <!-- 4. Gələcəyin Qəhrəmanı (Cyber Samurai) -->
+        <article class="archetype-card">
+          <div class="arch-media-wrap">
+            <img src="/assets/characters/cyberpunk.jpg" alt="Cyber Warrior" loading="lazy">
+            <div class="arch-vignette"></div>
+          </div>
+          <div class="arch-body">
+            <span class="arch-category cyan">SCI-FI • KİBERPANK</span>
+            <h3 class="arch-title">Cyber Warrior — Kiber Döyüşçü</h3>
+            <blockquote class="arch-quote">"The future belongs to the connected minds."</blockquote>
+            <p class="arch-desc">Süni intellekt, neon işıqlar və rəqəmsal dünyanın gələcək döyüşçü cəngavəri.</p>
+          </div>
+        </article>
+      </div>
+    </section>
   </div>
 
   <!-- ========================================================
@@ -357,7 +388,9 @@
     <!-- Üst Başlıq (Header) -->
     <header class="room-header">
       <div class="header-left">
-        <div class="brand-logo" id="brand-logo-text" title="Əsas ekrana (Lobby) qayıtmaq üçün klikləyin">🛋️ One<span>Couch</span></div>
+        <div class="brand-logo" id="brand-logo-text" title="Əsas ekrana (Lobby) qayıtmaq üçün klikləyin">
+          <img src="/assets/logo.png" alt="OneCouch Logo" class="room-brand-logo-img">
+        </div>
         <div class="room-code-badge" id="btn-copy-link" title="Dəvət linkini kopyalamaq üçün klikləyin">
           <span class="room-code-tag">OTAQ:</span>
           <strong id="display-room-id">...</strong>

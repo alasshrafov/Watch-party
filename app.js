@@ -155,9 +155,16 @@ const I18N = {
     topLogin: 'Google ilə Giriş',
     dropdownStatus: 'Google Hesabı Aktivdir',
     dropdownLogout: 'Hesabdan Çıx',
+    navCharacters: 'Xarakterlər',
+    navArchetypes: 'Arxetiplər',
+    navRooms: 'Kino Otağı',
     heroBadge: 'İKİ EKRAN. TƏK DİVAN.',
     heroSlogan: 'Two screens. One couch.',
     heroDesc: 'İstənilən film saytından, Netflix və YouTube-dan dostlarınızla sanki eyni divanda yanaşı oturmuş kimi birlikdə izləyin və canlı danışın.',
+    btnHeroRoom: '🛋️ İndi Otaq Aç',
+    btnHeroExplore: '🎭 Xarakterləri Kəşf Et',
+    archetypeTitle: 'Kult Qəhrəmanlar və Rollar',
+    archetypeSub: 'Dünya kino tarixinin ən unudulmaz simvolları və xarakterləri.',
     hostBadge: '👑 Otaq Sahibi',
     hostLockRequired: '🔒 Google Tələb Olunur',
     hostLockActive: '🟢 Google ilə Aktivdir',
@@ -196,9 +203,16 @@ const I18N = {
     topLogin: 'Google ile Giriş',
     dropdownStatus: 'Google Hesabı Aktif',
     dropdownLogout: 'Çıkış Yap',
+    navCharacters: 'Karakterler',
+    navArchetypes: 'Arketipler',
+    navRooms: 'Sinema Odası',
     heroBadge: 'İKİ EKRAN. TEK KOLTUK.',
     heroSlogan: 'Two screens. One couch.',
     heroDesc: 'Tüm film sitelerinden, Netflix ve YouTube\'dan arkadaşlarınızla sanki aynı koltukta oturuyormuş gibi birlikte izleyin ve sesli sohbet edin.',
+    btnHeroRoom: '🛋️ Şimdi Oda Aç',
+    btnHeroExplore: '🎭 Karakterleri Keşfet',
+    archetypeTitle: 'Kült Kahramanlar ve Roller',
+    archetypeSub: 'Dünya sinema tarihinin en unutulmaz ikonları ve karakterleri.',
     hostBadge: '👑 Oda Sahibi',
     hostLockRequired: '🔒 Google Gerekli',
     hostLockActive: '🟢 Google ile Aktif',
@@ -237,9 +251,16 @@ const I18N = {
     topLogin: 'Sign in with Google',
     dropdownStatus: 'Google Account Active',
     dropdownLogout: 'Log out',
+    navCharacters: 'Characters',
+    navArchetypes: 'Archetypes',
+    navRooms: 'Cinema Room',
     heroBadge: 'TWO SCREENS. ONE COUCH.',
     heroSlogan: 'Two screens. One couch.',
     heroDesc: 'Watch movies together from any streaming site, Netflix & YouTube, and voice chat with friends like you are sitting on the same couch.',
+    btnHeroRoom: '🛋️ Start Watch Party',
+    btnHeroExplore: '🎭 Explore Characters',
+    archetypeTitle: 'Cult Heroes & Icons',
+    archetypeSub: 'The most unforgettable characters in cinematic history.',
     hostBadge: '👑 Room Host',
     hostLockRequired: '🔒 Google Required',
     hostLockActive: '🟢 Google Active',
@@ -278,9 +299,16 @@ const I18N = {
     topLogin: 'Вход через Google',
     dropdownStatus: 'Google Аккаунт Активен',
     dropdownLogout: 'Выйти',
+    navCharacters: 'Персонажи',
+    navArchetypes: 'Архетипы',
+    navRooms: 'Кинокомната',
     heroBadge: 'ДВА ЭКРАНА. ОДИН ДИВАН.',
     heroSlogan: 'Two screens. One couch.',
     heroDesc: 'Смотрите фильмы с любых сайтов, Netflix и YouTube вместе с друзьями и общайтесь голосом, будто сидите на одном диване.',
+    btnHeroRoom: '🛋️ Создать Комнату',
+    btnHeroExplore: '🎭 Исследовать',
+    archetypeTitle: 'Культовые Персонажи',
+    archetypeSub: 'Самые незабываемые образы мирового кинематографа.',
     hostBadge: '👑 Создатель',
     hostLockRequired: '🔒 Требуется Google',
     hostLockActive: '🟢 Google Активен',
@@ -327,8 +355,21 @@ function setLanguage(lang) {
   if (el('top-login-label')) el('top-login-label').textContent = t.topLogin;
   if (el('dropdown-status-text')) el('dropdown-status-text').textContent = t.dropdownStatus;
   if (el('dropdown-logout-label')) el('dropdown-logout-label').textContent = t.dropdownLogout;
+  if (el('nav-link-characters')) el('nav-link-characters').textContent = t.navCharacters;
+  if (el('nav-link-archetypes')) el('nav-link-archetypes').textContent = t.navArchetypes;
+  if (el('nav-link-rooms')) el('nav-link-rooms').textContent = t.navRooms;
   if (el('lobby-hero-badge')) el('lobby-hero-badge').textContent = t.heroBadge;
   if (el('lobby-hero-desc')) el('lobby-hero-desc').textContent = t.heroDesc;
+  if (el('btn-hero-cta-room')) {
+    const span = el('btn-hero-cta-room').querySelector('span');
+    if (span) span.textContent = t.btnHeroRoom;
+  }
+  if (el('btn-hero-cta-explore')) {
+    const span = el('btn-hero-cta-explore').querySelector('span');
+    if (span) span.textContent = t.btnHeroExplore;
+  }
+  if (el('archetypes-title-text')) el('archetypes-title-text').textContent = t.archetypeTitle;
+  if (el('archetypes-sub-text')) el('archetypes-sub-text').textContent = t.archetypeSub;
   if (el('host-badge-text')) el('host-badge-text').textContent = t.hostBadge;
   if (el('host-title-text')) el('host-title-text').textContent = t.hostTitle;
   if (el('host-desc-text')) el('host-desc-text').textContent = t.hostDesc;
@@ -393,27 +434,49 @@ function setupLanguageSwitcher() {
 }
 
 function setupMiniMovieFigures() {
-  const figureEmojis = {
-    'Spider-Man': '🕷️',
-    'Batman': '🦇',
-    'Harry Potter': '⚡',
-    'Star Wars': '⚔️',
-    'Joker': '🃏',
-    'Breaking Bad': '🧪',
-    'The Matrix': '🕶️',
-    'Interstellar': '🪐',
-    'Lord of the Rings': '💍',
-    'Cinema Classics': '🍿'
+  const charDetails = {
+    cyberpunk: { emoji: '⚡', title: 'Kiber Döyüşçü (Sci-Fi)' },
+    godfather: { emoji: '🌹', title: 'Don Vito Corleone (Xaç Atası)' },
+    heisenberg: { emoji: '🧪', title: 'Walter White (Heisenberg)' },
+    batman: { emoji: '🦇', title: 'Batman (The Dark Knight)' },
+    detective: { emoji: '🕶️', title: 'Noir Dedektiv (Classic)' }
   };
 
-  document.querySelectorAll('.mini-movie-figure').forEach(fig => {
-    fig.addEventListener('click', () => {
-      const title = fig.getAttribute('data-title');
-      const emoji = figureEmojis[title] || '🍿';
+  // 1. 3D Fanned Character Cards
+  document.querySelectorAll('.cine-char-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const charKey = card.getAttribute('data-char');
+      const info = charDetails[charKey] || { emoji: '🍿', title: 'Kino Qəhrəmanı' };
+      
+      if (typeof selectedAvatarChoice !== 'undefined') {
+        selectedAvatarChoice = info.emoji;
+      }
+      const avatarPreview = document.getElementById('input-avatar-preview');
+      if (avatarPreview) {
+        avatarPreview.textContent = info.emoji;
+        avatarPreview.style.transform = 'scale(1.3)';
+        setTimeout(() => { avatarPreview.style.transform = ''; }, 300);
+      }
+
       if (typeof spawnFloatingEmoji === 'function') {
-        spawnFloatingEmoji(emoji);
+        spawnFloatingEmoji(info.emoji);
+        spawnFloatingEmoji('✨');
+        spawnFloatingEmoji('⭐');
+      }
+
+      showNotice(`🎭 ${info.title} seçildi!`);
+    });
+  });
+
+  // 2. Archetype Cards Click
+  document.querySelectorAll('.archetype-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const title = card.querySelector('.arch-title')?.textContent || 'Arxetip';
+      if (typeof spawnFloatingEmoji === 'function') {
+        spawnFloatingEmoji('🎬');
         spawnFloatingEmoji('✨');
       }
+      showNotice(`🎬 ${title}`);
     });
   });
 }
