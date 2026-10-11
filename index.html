@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OneCouch 🛋️🍿 — Two screens. One couch.</title>
   <link rel="icon" type="image/png" href="assets/logo.png">
-  <link rel="stylesheet" href="style.css?v=2.5">
+  <link rel="stylesheet" href="style.css?v=2.6">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Cinzel:wght@600;700;900&family=Fira+Code:wght@500;700&display=swap" rel="stylesheet">
@@ -397,69 +397,78 @@
           <span class="copy-hint" id="copy-hint-text">📋 Kopyala</span>
         </div>
 
-        <!-- 1. Otağı Kilidlə / Aç (Private Lock) -->
-        <button id="btn-lock-room" class="btn-tool btn-lock" title="Otağı kilidlə (kənar şəxslərin girişini blokla)">
-          <span id="lock-icon">🔓</span>
-          <span id="lock-text">Açıqdır</span>
-        </button>
-
-        <!-- 4. İşıqları Söndür (Cinema Lights Dimmer) -->
-        <button id="btn-dim-lights" class="btn-tool btn-dim" title="Kinoteatr zalı rejimi: İşıqları söndür">
-          <span>💡 İşıqlar</span>
-        </button>
-
-        <!-- 3. Seans Sonu Qiymətləndirmə -->
-        <button id="btn-open-review" class="btn-tool" title="Bu filmi qiymətləndir">
-          <span>⭐ Qiymətləndir</span>
-        </button>
-
-        <!-- Əlavə Alətlər: Ruletka & Tarixçə -->
-        <button id="btn-open-watchlist" class="btn-tool" title="Nəyə baxaq? Çarxıfələk Ruletkası">
-          <span>🎡 Ruletka</span>
-        </button>
-        <button id="btn-open-history" class="btn-tool" title="Birlikdə baxdığımız filmlər arxivi">
-          <span>📜 Filmlərimiz</span>
-        </button>
+        <!-- ⚙️ Səliqəli Otaq Alətləri Menyu (Açılan Dropdown) -->
+        <div class="room-tools-dropdown-wrapper">
+          <button id="btn-room-tools-toggle" class="btn-tool btn-tools-menu" title="Otaq parametrləri və alətlər">
+            <span>⚙️ Alətlər</span>
+            <span class="tools-caret">▾</span>
+          </button>
+          <div id="room-tools-dropdown" class="room-tools-menu-box hidden">
+            <!-- 1. Otağı Kilidlə / Aç (Private Lock) -->
+            <button id="btn-lock-room" class="tool-dropdown-row" title="Otağı kilidlə (kənar şəxslərin girişini blokla)">
+              <span id="lock-icon" class="row-icon">🔓</span>
+              <span id="lock-text">Otaq Açıqdır</span>
+            </button>
+            <!-- 2. İşıqları Söndür (Cinema Lights Dimmer) -->
+            <button id="btn-dim-lights" class="tool-dropdown-row" title="Kinoteatr zalı rejimi: İşıqları söndür">
+              <span class="row-icon">💡</span>
+              <span>İşıqları Söndür</span>
+            </button>
+            <!-- 3. Seans Sonu Qiymətləndirmə -->
+            <button id="btn-open-review" class="tool-dropdown-row" title="Bu filmi qiymətləndir">
+              <span class="row-icon">⭐</span>
+              <span>Filmi Qiymətləndir</span>
+            </button>
+            <!-- 4. Nəyə baxaq? Çarxıfələk Ruletkası -->
+            <button id="btn-open-watchlist" class="tool-dropdown-row" title="Nəyə baxaq? Çarxıfələk Ruletkası">
+              <span class="row-icon">🎡</span>
+              <span>Püşkatma Ruletkası</span>
+            </button>
+            <!-- 5. Baxılmış Filmlər Arxivi -->
+            <button id="btn-open-history" class="tool-dropdown-row" title="Birlikdə baxdığımız filmlər arxivi">
+              <span class="row-icon">📜</span>
+              <span>Baxılmış Filmlər</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <div class="header-right">
         <!-- Audio Ducking Status -->
         <div class="ducking-indicator" title="Siz danışarkən filmin səsi avtomatik 30% azalır, susanda bərpa olunur">
           <span class="duck-dot"></span>
-          <span>🎧 Balans: Aktiv</span>
+          <span>🎧 Balans</span>
         </div>
 
         <!-- Kult Film/Serial Tema Seçici -->
         <div class="theme-select-wrapper">
           <span class="theme-icon">🎨</span>
           <select id="theme-select" title="Kult film/serial mövzusunu seçin">
-            <option value="theme-netflix">🎬 Netflix Cinema</option>
-            <option value="theme-spiderman">🕷️ Marvel / Avengers (MCU)</option>
-            <option value="theme-breaking-bad">🧪 Breaking Bad (Heisenberg)</option>
-            <option value="theme-got">⚔️ Game of Thrones (Winterfell)</option>
-            <option value="theme-batman">🦇 The Dark Knight (Gotham)</option>
-            <option value="theme-interstellar">🌌 Interstellar (Cosmos)</option>
-            <option value="theme-matrix">🕶️ The Matrix (Cyber)</option>
+            <option value="theme-netflix">🎬 Netflix</option>
+            <option value="theme-spiderman">🕷️ Marvel MCU</option>
+            <option value="theme-breaking-bad">🧪 Breaking Bad</option>
+            <option value="theme-got">⚔️ Game of Thrones</option>
+            <option value="theme-batman">🦇 The Dark Knight</option>
+            <option value="theme-interstellar">🌌 Interstellar</option>
+            <option value="theme-matrix">🕶️ The Matrix</option>
             <option value="theme-discord">👾 Discord Dark</option>
             <option value="theme-oled">🖤 OLED Minimal</option>
           </select>
         </div>
 
-        <!-- İştirakçılar və Səs Halələri -->
-        <div class="active-users-bar" id="users-list"></div>
-
-        <!-- Mikrofon Canlı Səsli Danışıq Düyməsi -->
-        <button id="btn-voice-toggle" class="btn-icon btn-voice" title="Mikrofon (Otaqdakılarla canlı danışın)">
+        <!-- CANLI SƏSLİ ZƏNG DÜYMƏSİ (BÖYÜK VƏ ƏSAS VURĞU) -->
+        <button id="btn-voice-toggle" class="btn-voice-main" title="Otaqdakılarla canlı danışın">
           <span class="mic-icon">🎙️</span>
-          <span class="mic-text">Səsli Zəng: Qoşul</span>
+          <span class="mic-text">Səsli Zəng</span>
         </button>
 
-        <!-- İstifadəçi Profil Kartı & Çıxış -->
-        <div id="header-user-profile" class="header-user-profile" title="Cari profiliniz">
-          <span id="header-user-avatar" class="header-avatar-circle">🍿</span>
-          <span id="header-user-name" class="header-user-name">Qonaq</span>
-          <button id="btn-logout" class="btn-logout-small" title="Hesabdan çıx">✕</button>
-        </div>
+        <!-- İştirakçılar və Səs Halələri (Yeganə iştirakçı siyahısı, dublikat yoxdur) -->
+        <div class="active-users-bar" id="users-list"></div>
+
+        <!-- Çıxış Düyməsi -->
+        <button id="btn-logout" class="btn-leave-room" title="Otaqdan çıxıb lobbiyə qayıt">
+          <span>🚪 Çıxış</span>
+        </button>
 
         <!-- Çatı Göstər/Gizlə (Mobil üçün) -->
         <button id="btn-toggle-chat" class="btn-icon btn-chat-toggle" title="Çat">
@@ -855,6 +864,10 @@
         <div class="chat-wrapper">
           <div class="chat-header">
             <span>💬 Otaq Çatı</span>
+            <button id="btn-voice-chat-sidebar" class="btn-voice-sidebar" title="Səsli zəngə qoşul / mikrofonu idarə et">
+              <span class="mic-icon">🎙️</span>
+              <span class="mic-text">Səsli Zəng</span>
+            </button>
           </div>
           <div class="chat-messages" id="chat-messages">
             <div class="chat-system-msg">Kinoteatra xoş gəlmisiniz! Otaq linkini dostunuzla paylaşaraq birgə izləyin 🍿</div>
@@ -1046,6 +1059,6 @@
   <audio id="remote-voice-audio" autoplay playsinline></audio>
 
   <!-- Əsas Tətbiq Skripti -->
-  <script src="app.js?v=2.5"></script>
+  <script src="app.js?v=2.6"></script>
 </body>
 </html>

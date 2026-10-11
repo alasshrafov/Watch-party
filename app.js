@@ -25,6 +25,8 @@ let screenPeerConnection = null;
 let localVoiceStream = null;
 let isVoiceActive = false;
 const voicePeerConnections = {};
+const voiceIceCandidatesQueue = {};
+let currentRoomUsers = {};
 
 // Audio Ducking (Səs Balansı)
 let audioContext = null;
@@ -785,7 +787,7 @@ window.addEventListener('DOMContentLoaded', () => {
   setupLightsDimmer();
 });
 
-function applyTheme(themeName) {
+function applyTheme(themeName, syncWithRoom = true) {
   document.body.className = themeName;
   localStorage.setItem('watchparty-theme', themeName);
 
@@ -794,6 +796,11 @@ function applyTheme(themeName) {
   if (themeSelect) themeSelect.value = themeName;
   const lobbyThemeSelect = document.getElementById('lobby-theme-select');
   if (lobbyThemeSelect) lobbyThemeSelect.value = themeName;
+
+  // Otaqda olan digər iştirakçılarla dərhal sinxronlaşdır
+  if (syncWithRoom && socket && currentRoom) {
+    socket.emit('change-room-theme', { theme: themeName });
+  }
 
   // Logo tərtibatı
   const logo = document.getElementById('brand-logo-text');
@@ -988,12 +995,19 @@ function initSocket() {
     username: currentUsername,
     avatar: currentUser ? currentUser.avatar : '🍿',
     authUserId: currentUser ? currentUser.id : null,
-    isGoogleAuth: !!(currentUser && currentUser.isGoogle)
+    isGoogleAuth: !!(currentUser && currentUser.isGoogle),
+    initialTheme: localStorage.getItem('watchparty-theme') || 'theme-netflix'
   });
 
   socket.on('room-joined', (data) => {
     isHost = data.isHost;
-    updateUsersList(data.users);
+    if (data.theme) {
+      applyTheme(data.theme, false);
+    }
+    if (data.users) {
+      currentRoomUsers = data.users;
+      updateUsersList(data.users);
+    }
     if (data.isLocked !== undefined) {
       isRoomLocked = data.isLocked;
       updateRoomLockUI(data.isLocked);
@@ -1008,6 +1022,18 @@ function initSocket() {
     }
     if (data.history) renderHistory(data.history);
     showNotice(isHost ? '👑 Otaq rəhbərisiniz. Xoş gəldiniz!' : '🍿 Otağa qoşuldunuz!');
+  });
+
+  socket.on('room-theme-changed', ({ theme, changedBy }) => {
+    applyTheme(theme, false);
+    showNotice(`🎨 Otaq mövzusu yeniləndi: ${getThemeName(theme)} (${changedBy})`);
+  });
+
+  socket.on('voice-users-updated', (users) => {
+    if (users) {
+      currentRoomUsers = users;
+      updateUsersList(users);
+    }
   });
 
   socket.on('room-create-denied', (data) => {
@@ -1058,16 +1084,23 @@ function initSocket() {
   });
 
   socket.on('user-joined', (data) => {
-    updateUsersList(data.users);
+    if (data.users) currentRoomUsers = data.users;
+    updateUsersList(data.users || currentRoomUsers);
     showNotice(`👋 ${data.username} otağa daxil oldu!`);
     if (localScreenStream) {
       initiateScreenPeer(data.socketId);
     }
+    // Əgər mikrofon aktivdirsə, otağa yeni girən iştirakçını da səsli zəngə qoş
+    if (isVoiceActive && localVoiceStream) {
+      callVoicePeer(data.socketId);
+    }
   });
 
   socket.on('user-left', (data) => {
-    updateUsersList(data.users);
+    if (data.users) currentRoomUsers = data.users;
+    updateUsersList(data.users || currentRoomUsers);
     showNotice(`👋 ${data.username} otaqdan ayrıldı`);
+    cleanupVoicePeer(data.socketId);
   });
 
   socket.on('video-changed', (videoState) => {
@@ -1139,10 +1172,7 @@ function initSocket() {
   });
 
   socket.on('voice-peer-left', ({ peerId }) => {
-    if (voicePeerConnections[peerId]) {
-      voicePeerConnections[peerId].close();
-      delete voicePeerConnections[peerId];
-    }
+    cleanupVoicePeer(peerId);
   });
 
   socket.on('voice-offer', async ({ sender, sdp }) => {
@@ -1150,23 +1180,40 @@ function initSocket() {
   });
 
   socket.on('voice-answer', async ({ sender, sdp }) => {
-    if (voicePeerConnections[sender]) {
-      await voicePeerConnections[sender].setRemoteDescription(new RTCSessionDescription(sdp));
+    const pc = voicePeerConnections[sender];
+    if (pc) {
+      try {
+        await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+        if (voiceIceCandidatesQueue[sender]) {
+          for (const cand of voiceIceCandidatesQueue[sender]) {
+            try { await pc.addIceCandidate(new RTCIceCandidate(cand)); } catch (e) {}
+          }
+          delete voiceIceCandidatesQueue[sender];
+        }
+      } catch (err) {
+        console.warn('Voice answer remote desc error:', err);
+      }
     }
   });
 
   socket.on('voice-ice', async ({ sender, candidate }) => {
-    if (voicePeerConnections[sender] && candidate) {
+    if (!candidate) return;
+    const pc = voicePeerConnections[sender];
+    if (pc && pc.remoteDescription && pc.remoteDescription.type) {
       try {
-        await voicePeerConnections[sender].addIceCandidate(new RTCIceCandidate(candidate));
+        await pc.addIceCandidate(new RTCIceCandidate(candidate));
       } catch (e) {}
+    } else {
+      if (!voiceIceCandidatesQueue[sender]) voiceIceCandidatesQueue[sender] = [];
+      voiceIceCandidatesQueue[sender].push(candidate);
     }
   });
 }
 
 function updateUsersList(users) {
+  if (users) currentRoomUsers = users;
   usersList.innerHTML = '';
-  Object.entries(users).forEach(([sockId, u]) => {
+  Object.entries(users || {}).forEach(([sockId, u]) => {
     const pill = document.createElement('div');
     pill.className = 'user-pill';
     pill.id = `user-pill-${sockId}`;
@@ -1175,6 +1222,7 @@ function updateUsersList(users) {
       <span class="user-avatar-tag">${u.avatar || '🍿'}</span>
       <span class="status-dot"></span>
       <span>${escapeHtml(u.username)} ${u.isHost ? '👑' : ''}</span>
+      ${u.isVoiceActive ? '<span class="mic-status-tag" title="Mikrofon Aktivdir">🎙️</span>' : ''}
     `;
     usersList.appendChild(pill);
   });
@@ -1535,13 +1583,21 @@ if (btnUnmuteOverlay) {
 // ==========================================
 
 function setupVoiceChat() {
-  btnVoiceToggle.addEventListener('click', async () => {
+  const toggleHandler = async () => {
     if (!isVoiceActive) {
       await startVoiceChat();
     } else {
       stopVoiceChat();
     }
-  });
+  };
+
+  if (btnVoiceToggle) {
+    btnVoiceToggle.addEventListener('click', toggleHandler);
+  }
+  const btnVoiceSidebar = document.getElementById('btn-voice-chat-sidebar');
+  if (btnVoiceSidebar) {
+    btnVoiceSidebar.addEventListener('click', toggleHandler);
+  }
 }
 
 async function startVoiceChat() {
@@ -1555,20 +1611,25 @@ async function startVoiceChat() {
       video: false
     });
     isVoiceActive = true;
-    btnVoiceToggle.classList.add('active');
-    btnVoiceToggle.querySelector('.mic-text').textContent = 'Səs: Açıq 🟢';
+    updateVoiceUI(true);
     showNotice('🎙️ Mikrofon aktivdir! Canlı danışa bilərsiniz.');
 
     // Audio Ducking Aktiv Et
     setupAudioDucking(localVoiceStream);
 
-    Object.values(voicePeerConnections).forEach(pc => {
-      localVoiceStream.getTracks().forEach(track => {
-        pc.addTrack(track, localVoiceStream);
+    // Otaqdakı bütün digər istifadəçilərə zəng göndər
+    if (currentRoomUsers && socket) {
+      Object.keys(currentRoomUsers).forEach(peerId => {
+        if (peerId !== socket.id) {
+          callVoicePeer(peerId);
+        }
       });
-    });
+    }
 
-    socket.emit('voice-peer-ready');
+    if (socket) {
+      socket.emit('voice-peer-ready');
+      socket.emit('voice-user-state', { isVoiceActive: true });
+    }
   } catch (err) {
     console.error('Mikrofon xətası:', err);
     alert('Mikrofon icazəsi verilmədi! Brauzerinizin parametrlərindən mikrofonu aktivləşdirin.');
@@ -1586,16 +1647,56 @@ function stopVoiceChat() {
     setSelfSpeakingHalo(false);
     if (socket) socket.emit('user-speaking', { isSpeaking: false });
   }
-  btnVoiceToggle.classList.remove('active');
-  btnVoiceToggle.querySelector('.mic-text').textContent = 'Səsli Zəng: Qoşul';
+  updateVoiceUI(false);
 
   stopAudioDucking();
 
-  Object.values(voicePeerConnections).forEach(pc => pc.close());
-  for (let key in voicePeerConnections) delete voicePeerConnections[key];
+  Object.keys(voicePeerConnections).forEach(peerId => {
+    cleanupVoicePeer(peerId);
+  });
 
-  socket.emit('voice-peer-left');
+  if (socket) {
+    socket.emit('voice-peer-left');
+    socket.emit('voice-user-state', { isVoiceActive: false });
+  }
   showNotice('🎙️ Mikrofon bağlandı');
+}
+
+function updateVoiceUI(active) {
+  if (btnVoiceToggle) {
+    const micText = btnVoiceToggle.querySelector('.mic-text');
+    if (active) {
+      btnVoiceToggle.classList.add('voice-active');
+      if (micText) micText.textContent = 'Səs Açıq 🟢';
+    } else {
+      btnVoiceToggle.classList.remove('voice-active');
+      if (micText) micText.textContent = 'Səsli Zəng';
+    }
+  }
+  const btnVoiceSidebar = document.getElementById('btn-voice-chat-sidebar');
+  if (btnVoiceSidebar) {
+    const micText = btnVoiceSidebar.querySelector('.mic-text');
+    if (active) {
+      btnVoiceSidebar.classList.add('voice-active');
+      if (micText) micText.textContent = 'Səs Açıq 🟢';
+    } else {
+      btnVoiceSidebar.classList.remove('voice-active');
+      if (micText) micText.textContent = 'Səsli Zəng';
+    }
+  }
+}
+
+function cleanupVoicePeer(peerId) {
+  if (voicePeerConnections[peerId]) {
+    try { voicePeerConnections[peerId].close(); } catch (e) {}
+    delete voicePeerConnections[peerId];
+  }
+  delete voiceIceCandidatesQueue[peerId];
+  const audioEl = document.getElementById(`remote-voice-audio-${peerId}`);
+  if (audioEl) {
+    audioEl.srcObject = null;
+    audioEl.remove();
+  }
 }
 
 function setSelfSpeakingHalo(speaking) {
@@ -1679,70 +1780,143 @@ function applyDuckingVolume(duck) {
 }
 
 async function callVoicePeer(targetSocketId) {
-  if (voicePeerConnections[targetSocketId]) voicePeerConnections[targetSocketId].close();
+  if (!targetSocketId) return;
+  if (voicePeerConnections[targetSocketId]) {
+    try { voicePeerConnections[targetSocketId].close(); } catch (e) {}
+    delete voicePeerConnections[targetSocketId];
+  }
 
   const pc = new RTCPeerConnection(rtcConfig);
   voicePeerConnections[targetSocketId] = pc;
 
-  if (localVoiceStream) {
-    localVoiceStream.getTracks().forEach(track => pc.addTrack(track, localVoiceStream));
+  if (localVoiceStream && localVoiceStream.getAudioTracks().length > 0) {
+    localVoiceStream.getAudioTracks().forEach(track => {
+      pc.addTrack(track, localVoiceStream);
+    });
   } else {
     pc.addTransceiver('audio', { direction: 'recvonly' });
   }
 
-  pc.ontrack = (event) => playRemoteVoice(event.streams[0]);
+  pc.ontrack = (event) => {
+    const stream = (event.streams && event.streams[0]) ? event.streams[0] : new MediaStream([event.track]);
+    playRemoteVoice(stream, targetSocketId);
+  };
 
   pc.onicecandidate = (event) => {
-    if (event.candidate) {
+    if (event.candidate && socket) {
       socket.emit('voice-ice', { target: targetSocketId, candidate: event.candidate });
     }
   };
 
-  const offer = await pc.createOffer();
-  await pc.setLocalDescription(offer);
-  socket.emit('voice-offer', { target: targetSocketId, sdp: offer });
+  try {
+    const offer = await pc.createOffer({ offerToReceiveAudio: true });
+    await pc.setLocalDescription(offer);
+    if (socket) {
+      socket.emit('voice-offer', { target: targetSocketId, sdp: offer });
+    }
+  } catch (err) {
+    console.error('Call voice peer offer error:', err);
+  }
 }
 
 async function handleVoiceOffer(senderSocketId, sdp) {
-  if (voicePeerConnections[senderSocketId]) voicePeerConnections[senderSocketId].close();
+  if (!senderSocketId || !sdp) return;
+  if (voicePeerConnections[senderSocketId]) {
+    try { voicePeerConnections[senderSocketId].close(); } catch (e) {}
+    delete voicePeerConnections[senderSocketId];
+  }
 
   const pc = new RTCPeerConnection(rtcConfig);
   voicePeerConnections[senderSocketId] = pc;
 
-  if (localVoiceStream) {
-    localVoiceStream.getTracks().forEach(track => pc.addTrack(track, localVoiceStream));
+  if (localVoiceStream && localVoiceStream.getAudioTracks().length > 0) {
+    localVoiceStream.getAudioTracks().forEach(track => {
+      pc.addTrack(track, localVoiceStream);
+    });
   } else {
     pc.addTransceiver('audio', { direction: 'recvonly' });
   }
 
-  pc.ontrack = (event) => playRemoteVoice(event.streams[0]);
+  pc.ontrack = (event) => {
+    const stream = (event.streams && event.streams[0]) ? event.streams[0] : new MediaStream([event.track]);
+    playRemoteVoice(stream, senderSocketId);
+  };
 
   pc.onicecandidate = (event) => {
-    if (event.candidate) {
+    if (event.candidate && socket) {
       socket.emit('voice-ice', { target: senderSocketId, candidate: event.candidate });
     }
   };
 
-  await pc.setRemoteDescription(new RTCSessionDescription(sdp));
-  const answer = await pc.createAnswer();
-  await pc.setLocalDescription(answer);
-  socket.emit('voice-answer', { target: senderSocketId, sdp: answer });
+  try {
+    await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+
+    // Növbədə gözləyən ICE namizədlərini əlavə et
+    if (voiceIceCandidatesQueue[senderSocketId]) {
+      for (const cand of voiceIceCandidatesQueue[senderSocketId]) {
+        try {
+          await pc.addIceCandidate(new RTCIceCandidate(cand));
+        } catch (e) {}
+      }
+      delete voiceIceCandidatesQueue[senderSocketId];
+    }
+
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    if (socket) {
+      socket.emit('voice-answer', { target: senderSocketId, sdp: answer });
+    }
+  } catch (err) {
+    console.error('Handle voice offer error:', err);
+  }
 }
 
-function playRemoteVoice(stream) {
-  let audioEl = document.getElementById('remote-voice-audio');
+function playRemoteVoice(stream, peerId) {
+  let audioEl = document.getElementById(`remote-voice-audio-${peerId}`);
   if (!audioEl) {
     audioEl = document.createElement('audio');
-    audioEl.id = 'remote-voice-audio';
+    audioEl.id = `remote-voice-audio-${peerId}`;
     audioEl.autoplay = true;
     audioEl.playsInline = true;
+    audioEl.style.display = 'none';
     document.body.appendChild(audioEl);
   }
-  audioEl.srcObject = stream;
+  if (audioEl.srcObject !== stream) {
+    audioEl.srcObject = stream;
+  }
   audioEl.muted = false;
   audioEl.volume = 1.0;
-  audioEl.play().catch(() => {});
+
+  const playPromise = audioEl.play();
+  if (playPromise !== undefined) {
+    playPromise.catch(err => {
+      console.warn(`[WebRTC Voice] Autoplay blocked for ${peerId}:`, err);
+      const unlockAudio = () => {
+        audioEl.play().catch(() => {});
+        document.removeEventListener('click', unlockAudio);
+        document.removeEventListener('keydown', unlockAudio);
+      };
+      document.addEventListener('click', unlockAudio, { once: true });
+      document.addEventListener('keydown', unlockAudio, { once: true });
+    });
+  }
+
   showNotice('💖 Canlı səsli danışıq qoşuldu!');
+}
+
+function getThemeName(theme) {
+  const map = {
+    'theme-netflix': '🎬 Netflix Cinema',
+    'theme-spiderman': '🕷️ Marvel / Avengers (MCU)',
+    'theme-breaking-bad': '🧪 Breaking Bad (Heisenberg)',
+    'theme-got': '⚔️ Game of Thrones (Winterfell)',
+    'theme-batman': '🦇 The Dark Knight (Gotham)',
+    'theme-interstellar': '🌌 Interstellar (Cosmos)',
+    'theme-matrix': '🕶️ The Matrix (Cyber)',
+    'theme-discord': '👾 Discord Dark',
+    'theme-oled': '🖤 OLED Minimal'
+  };
+  return map[theme] || theme;
 }
 
 // ==========================================
@@ -2320,7 +2494,7 @@ function setupAuth() {
   if (btnLogout) {
     btnLogout.addEventListener('click', (e) => {
       e.stopPropagation();
-      logoutUser();
+      leaveRoomAndReturnToLobby();
     });
   }
 
@@ -2651,6 +2825,8 @@ function clearAuthStatus() {
 // ==========================================
 
 function setupRoomLock() {
+  setupRoomToolsDropdown();
+
   if (!btnLockRoom) return;
   btnLockRoom.addEventListener('click', () => {
     if (!socket) return;
@@ -2660,6 +2836,31 @@ function setupRoomLock() {
     }
     socket.emit('toggle-room-lock');
   });
+}
+
+function setupRoomToolsDropdown() {
+  const btnToggle = document.getElementById('btn-room-tools-toggle');
+  const dropdown = document.getElementById('room-tools-dropdown');
+  if (btnToggle && dropdown) {
+    btnToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle('hidden');
+    });
+
+    dropdown.querySelectorAll('.tool-dropdown-row').forEach(btn => {
+      btn.addEventListener('click', () => {
+        dropdown.classList.add('hidden');
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!dropdown.classList.contains('hidden')) {
+        if (!dropdown.contains(e.target) && !btnToggle.contains(e.target)) {
+          dropdown.classList.add('hidden');
+        }
+      }
+    });
+  }
 }
 
 function updateRoomLockUI(locked) {

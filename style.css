@@ -1518,11 +1518,14 @@ body.theme-spiderman .spidey-hanging-mascot {
   padding-left: 7px;
 }
 
+/* ----------------------------------------------------------
+   5. ROOM HEADER & ELEGANT TOOLS MENU
+   ---------------------------------------------------------- */
 .btn-tool {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
   color: var(--text-main);
-  padding: 5px 12px;
+  padding: 6px 14px;
   border-radius: 50px;
   font-size: 0.8rem;
   font-weight: 600;
@@ -1532,6 +1535,7 @@ body.theme-spiderman .spidey-hanging-mascot {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-shrink: 0;
 }
 .btn-tool:hover {
   border-color: var(--primary);
@@ -1539,10 +1543,81 @@ body.theme-spiderman .spidey-hanging-mascot {
   transform: translateY(-1px);
 }
 
+/* Otaq Alətləri Dropdown Menyusu */
+.room-tools-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+}
+.btn-tools-menu {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+.btn-tools-menu:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.tools-caret {
+  font-size: 0.72rem;
+  opacity: 0.8;
+  margin-left: 2px;
+}
+.room-tools-menu-box {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 230px;
+  background: rgba(14, 16, 24, 0.95);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.5);
+  border-radius: 14px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 1000;
+  animation: dropdownFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.room-tools-menu-box.hidden {
+  display: none !important;
+}
+@keyframes dropdownFade {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.tool-dropdown-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-main);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+}
+.tool-dropdown-row:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transform: translateX(3px);
+}
+.tool-dropdown-row .row-icon {
+  font-size: 1rem;
+  width: 22px;
+  text-align: center;
+}
+
 .header-right {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 .ducking-indicator {
@@ -1551,11 +1626,12 @@ body.theme-spiderman .spidey-hanging-mascot {
   gap: 6px;
   background: var(--bg-input);
   border: 1px solid var(--border-color);
-  padding: 5px 10px;
+  padding: 5px 11px;
   border-radius: 50px;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-muted);
+  flex-shrink: 0;
 }
 .duck-dot {
   width: 7px;
@@ -1574,8 +1650,9 @@ body.theme-spiderman .spidey-hanging-mascot {
   gap: 6px;
   background: var(--bg-input);
   border: 1px solid var(--border-color);
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: 50px;
+  flex-shrink: 0;
 }
 .theme-icon {
   font-size: 0.9rem;
@@ -1595,27 +1672,119 @@ body.theme-spiderman .spidey-hanging-mascot {
   color: var(--text-main);
 }
 
-.active-users-bar {
-  display: flex;
+/* Əsas Səsli Zəng Düyməsi */
+.btn-voice-main {
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 7px;
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  color: #34d399;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.22s ease;
+  font-family: inherit;
 }
-.user-avatar-badge {
+.btn-voice-main:hover {
+  background: rgba(16, 185, 129, 0.24);
+  border-color: #10b981;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.35);
+  transform: translateY(-1px);
+}
+.btn-voice-main.voice-active {
+  background: #10b981 !important;
+  color: #064e3b !important;
+  border-color: #10b981 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.65) !important;
+  animation: voicePulse 1.8s infinite ease-in-out;
+}
+@keyframes voicePulse {
+  0% { transform: scale(1); box-shadow: 0 0 14px rgba(16, 185, 129, 0.5); }
+  50% { transform: scale(1.03); box-shadow: 0 0 24px rgba(16, 185, 129, 0.85); }
+  100% { transform: scale(1); box-shadow: 0 0 14px rgba(16, 185, 129, 0.5); }
+}
+
+/* Çat Başlığındakı Səsli Zəng Düyməsi */
+.btn-voice-sidebar {
   display: inline-flex;
   align-items: center;
   gap: 5px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #34d399;
+  padding: 4px 10px;
+  border-radius: 50px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+.btn-voice-sidebar:hover {
+  background: rgba(16, 185, 129, 0.22);
+  border-color: #10b981;
+}
+.btn-voice-sidebar.voice-active {
+  background: #10b981;
+  color: #064e3b;
+  font-weight: 800;
+}
+
+/* Otaqdan Çıxış Düyməsi */
+.btn-leave-room {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  padding: 5px 12px;
+  border-radius: 50px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+.btn-leave-room:hover {
+  background: rgba(239, 68, 68, 0.22);
+  border-color: #ef4444;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.active-users-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.user-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: var(--bg-input);
   border: 1px solid var(--border-color);
-  padding: 3px 10px;
+  padding: 4px 11px;
   border-radius: 50px;
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   font-weight: 700;
+  transition: all 0.25s ease;
 }
-.user-avatar-badge .voice-wave {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #10b981;
+.user-pill.speaking-halo {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.75), inset 0 0 8px rgba(16, 185, 129, 0.3) !important;
+  transform: scale(1.04);
+}
+.mic-status-tag {
+  font-size: 0.75rem;
+  margin-left: 2px;
 }
 
 .btn-icon {
@@ -1628,28 +1797,6 @@ body.theme-spiderman .spidey-hanging-mascot {
   cursor: pointer;
   font-family: inherit;
   transition: all 0.2s ease;
-}
-
-.btn-voice {
-  gap: 7px;
-  padding: 6px 14px;
-  border-radius: 50px;
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-.btn-voice:hover {
-  border-color: var(--primary);
-}
-.btn-voice.voice-active {
-  background: rgba(16, 185, 129, 0.15);
-  border-color: #10b981;
-  color: #10b981;
-  box-shadow: 0 0 14px rgba(16, 185, 129, 0.4);
-}
-.btn-voice.voice-muted {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: #ef4444;
-  color: #ef4444;
 }
 
 .btn-chat-toggle {
