@@ -1219,12 +1219,14 @@ function setupAmbientAnimations() {
     const theme = document.body.className;
 
     if (theme.includes('theme-spiderman')) {
-      // Marvel / Spider-Man: İpək Hörümçək Torları və Parlaq Partikullar
+      // Marvel / Spider-Man: İpək Hörümçək Torları və Parlaq Qırmızı/Mavi Partikullar
       for (let i = 0; i < spideyParticles.length; i++) {
         const p = spideyParticles[i];
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, 2 * Math.PI);
-        ctx.fillStyle = p.color + '0.75)';
+        ctx.fillStyle = p.color + '0.9)';
+        ctx.shadowColor = p.color + '1)';
+        ctx.shadowBlur = 8;
         ctx.fill();
 
         p.x += p.speedX;
@@ -1235,44 +1237,53 @@ function setupAmbientAnimations() {
         if (p.y < 0) p.y = canvas.height;
         if (p.y > canvas.height) p.y = 0;
 
-        // Yaxın olanlar arasında zərif tor sapları (web connection)
+        // Yaxın olanlar arasında aydın görünən tor sapları
         for (let j = i + 1; j < spideyParticles.length; j++) {
           const p2 = spideyParticles[j];
           const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-          if (dist < 115) {
+          if (dist < 135) {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(255, 255, 255, ${0.16 * (1 - dist / 115)})`;
-            ctx.lineWidth = 0.8;
+            ctx.strokeStyle = `rgba(255, 255, 255, ${0.4 * (1 - dist / 135)})`;
+            ctx.lineWidth = 1.2;
+            ctx.shadowBlur = 4;
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
             ctx.stroke();
           }
         }
       }
+      ctx.shadowBlur = 0;
     } else if (theme.includes('theme-got')) {
       // Game of Thrones: Şaxtalı qar dənəcikləri
       snowFlakes.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, 2 * Math.PI);
         ctx.fillStyle = `rgba(224, 242, 254, ${p.alpha})`;
+        ctx.shadowColor = 'rgba(56, 189, 248, 0.5)';
+        ctx.shadowBlur = 6;
         ctx.fill();
         p.y += p.speedY;
         p.x += p.speedX;
         if (p.y > canvas.height) { p.y = -5; p.x = Math.random() * canvas.width; }
       });
+      ctx.shadowBlur = 0;
     } else if (theme.includes('theme-breaking-bad')) {
       // Breaking Bad: Kimyəvi tüstü və mavi metan kristalları qabarcıqları
       bubbles.forEach(b => {
         ctx.beginPath();
         ctx.arc(b.x, b.y, b.r, 0, 2 * Math.PI);
         ctx.fillStyle = b.isBlue ? `rgba(0, 229, 255, ${b.alpha})` : `rgba(0, 255, 102, ${b.alpha})`;
+        ctx.shadowColor = b.isBlue ? 'rgba(0, 229, 255, 0.8)' : 'rgba(0, 255, 102, 0.8)';
+        ctx.shadowBlur = 8;
         ctx.fill();
         b.y -= b.speedY;
         if (b.y < -10) {
           b.y = canvas.height + 20;
-          b.x = Math.random() * 180 + (Math.random() < 0.5 ? 0 : canvas.width - 180);
+          b.x = Math.random() * 250 + (Math.random() < 0.5 ? 0 : canvas.width - 250);
         }
       });
+      ctx.shadowBlur = 0;
     } else if (theme.includes('theme-matrix')) {
       // The Matrix: Rəqəmsal kod yağışı
       ctx.fillStyle = 'rgba(34, 197, 94, 0.85)';

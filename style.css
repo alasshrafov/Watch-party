@@ -1,7 +1,8 @@
 /* ==========================================================
-   WATCHPARTY CINEMA 2.0 - PREMIUM STREAMING STYLESHEET
-   Supports: Marvel/Spider-Man, Breaking Bad, Game of Thrones,
-   The Dark Knight, Interstellar, The Matrix, Discord, OLED.
+   WATCHPARTY CINEMA 2.0 - ULTIMATE MULTI-THEME STYLESHEET
+   Supports: Marvel (MCU / Avengers / Spidey / Iron Man),
+   Breaking Bad (Heisenberg / Lab), Game of Thrones (Stark / Jon Snow),
+   The Dark Knight (Gotham), Interstellar, The Matrix, Discord, OLED.
    ========================================================== */
 
 /* ----------------------------------------------------------
@@ -11,65 +12,65 @@
 /* 1.1 NETFLIX CINEMA (Default) */
 body.theme-netflix, body {
   --bg-dark: #0a0b10;
-  --bg-card: rgba(17, 19, 28, 0.78);
-  --bg-card-solid: #11131c;
-  --bg-input: rgba(24, 27, 40, 0.85);
+  --bg-card: rgba(18, 20, 30, 0.82);
+  --bg-card-solid: #12141e;
+  --bg-input: rgba(26, 29, 44, 0.88);
   --primary: #e50914;
   --primary-hover: #f40612;
-  --primary-glow: rgba(229, 9, 20, 0.4);
+  --primary-glow: rgba(229, 9, 20, 0.45);
   --accent-gold: #ffb830;
   --text-main: #ffffff;
   --text-muted: #9ba1b5;
   --border-color: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(229, 9, 20, 0.45);
+  --border-hover: rgba(229, 9, 20, 0.5);
   --radius: 16px;
   --radius-sm: 10px;
   --brand-font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  --theme-ambient-glow: rgba(229, 9, 20, 0.08);
+  --theme-ambient-glow: rgba(229, 9, 20, 0.12);
 }
 
-/* 1.2 MARVEL / SPIDER-MAN (Queens Vigilante) */
+/* 1.2 MARVEL / AVENGERS / SPIDER-MAN (MCU) */
 body.theme-spiderman {
-  --bg-dark: #070810;
-  --bg-card: rgba(14, 17, 30, 0.82);
-  --bg-card-solid: #0e111e;
-  --bg-input: rgba(21, 26, 44, 0.88);
+  --bg-dark: #070812;
+  --bg-card: rgba(15, 18, 34, 0.86);
+  --bg-card-solid: #0f1222;
+  --bg-input: rgba(23, 28, 52, 0.9);
   --primary: #e2232a;
   --primary-hover: #ff2a33;
-  --primary-glow: rgba(226, 35, 42, 0.45);
-  --accent-gold: #38bdf8;
+  --primary-glow: rgba(226, 35, 42, 0.5);
+  --accent-gold: #00e5ff;
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
-  --border-color: rgba(226, 35, 42, 0.22);
-  --border-hover: rgba(226, 35, 42, 0.6);
+  --border-color: rgba(226, 35, 42, 0.28);
+  --border-hover: rgba(226, 35, 42, 0.7);
   --radius: 16px;
   --radius-sm: 10px;
   --brand-font: 'Plus Jakarta Sans', sans-serif;
-  --theme-ambient-glow: rgba(226, 35, 42, 0.12);
+  --theme-ambient-glow: rgba(226, 35, 42, 0.18);
 }
 body.theme-spiderman .brand-logo span {
   color: #e2232a;
-  text-shadow: 0 0 16px rgba(226, 35, 42, 0.6);
+  text-shadow: 0 0 16px rgba(226, 35, 42, 0.7);
 }
 
 /* 1.3 BREAKING BAD (Heisenberg / 99.1% Purity) */
 body.theme-breaking-bad {
-  --bg-dark: #060a08;
-  --bg-card: rgba(11, 19, 14, 0.84);
-  --bg-card-solid: #0c1610;
-  --bg-input: rgba(18, 30, 22, 0.88);
+  --bg-dark: #050a07;
+  --bg-card: rgba(10, 20, 14, 0.88);
+  --bg-card-solid: #0a140e;
+  --bg-input: rgba(18, 32, 22, 0.92);
   --primary: #00ff88;
   --primary-hover: #10e070;
-  --primary-glow: rgba(0, 255, 136, 0.4);
+  --primary-glow: rgba(0, 255, 136, 0.45);
   --accent-gold: #00e5ff;
   --text-main: #f0fdf4;
   --text-muted: #86efac;
-  --border-color: rgba(0, 255, 136, 0.2);
-  --border-hover: rgba(0, 255, 136, 0.55);
+  --border-color: rgba(0, 255, 136, 0.25);
+  --border-hover: rgba(0, 255, 136, 0.65);
   --radius: 12px;
   --radius-sm: 8px;
   --brand-font: 'Fira Code', monospace;
-  --theme-ambient-glow: rgba(0, 229, 255, 0.1);
+  --theme-ambient-glow: rgba(0, 229, 255, 0.15);
 }
 body.theme-breaking-bad .brand-logo {
   font-family: 'Fira Code', monospace;
@@ -77,34 +78,34 @@ body.theme-breaking-bad .brand-logo {
 }
 body.theme-breaking-bad .brand-logo span {
   background: #00ff88;
-  color: #060a08;
+  color: #050a07;
   padding: 1px 6px;
   border-radius: 4px;
   font-weight: 800;
 }
 body.theme-breaking-bad .btn-primary {
-  color: #060a08;
+  color: #050a07;
   font-weight: 800;
 }
 
 /* 1.4 GAME OF THRONES (Winterfell / King in the North) */
 body.theme-got {
-  --bg-dark: #060912;
-  --bg-card: rgba(12, 18, 32, 0.84);
-  --bg-card-solid: #0c1220;
-  --bg-input: rgba(19, 28, 48, 0.88);
+  --bg-dark: #050812;
+  --bg-card: rgba(11, 18, 34, 0.88);
+  --bg-card-solid: #0b1222;
+  --bg-input: rgba(18, 28, 52, 0.92);
   --primary: #38bdf8;
   --primary-hover: #0ea5e9;
-  --primary-glow: rgba(56, 189, 248, 0.4);
+  --primary-glow: rgba(56, 189, 248, 0.45);
   --accent-gold: #cbd5e1;
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
-  --border-color: rgba(56, 189, 248, 0.22);
-  --border-hover: rgba(56, 189, 248, 0.55);
+  --border-color: rgba(56, 189, 248, 0.28);
+  --border-hover: rgba(56, 189, 248, 0.65);
   --radius: 14px;
   --radius-sm: 8px;
   --brand-font: 'Cinzel', serif;
-  --theme-ambient-glow: rgba(56, 189, 248, 0.12);
+  --theme-ambient-glow: rgba(56, 189, 248, 0.16);
 }
 body.theme-got .brand-logo,
 body.theme-got h1,
@@ -117,101 +118,101 @@ body.theme-got .lobby-title {
 /* 1.5 THE DARK KNIGHT (Gotham Noir) */
 body.theme-batman {
   --bg-dark: #050508;
-  --bg-card: rgba(13, 13, 19, 0.86);
+  --bg-card: rgba(13, 13, 19, 0.9);
   --bg-card-solid: #0d0d13;
-  --bg-input: rgba(22, 22, 32, 0.88);
+  --bg-input: rgba(22, 22, 32, 0.92);
   --primary: #f59e0b;
   --primary-hover: #d97706;
-  --primary-glow: rgba(245, 158, 11, 0.4);
+  --primary-glow: rgba(245, 158, 11, 0.45);
   --accent-gold: #fef08a;
   --text-main: #ffffff;
   --text-muted: #8e90a6;
-  --border-color: rgba(245, 158, 11, 0.2);
-  --border-hover: rgba(245, 158, 11, 0.55);
+  --border-color: rgba(245, 158, 11, 0.25);
+  --border-hover: rgba(245, 158, 11, 0.65);
   --radius: 10px;
   --radius-sm: 6px;
   --brand-font: 'Plus Jakarta Sans', sans-serif;
-  --theme-ambient-glow: rgba(245, 158, 11, 0.08);
+  --theme-ambient-glow: rgba(245, 158, 11, 0.12);
 }
 
 /* 1.6 INTERSTELLAR (Cosmos Orange / Gargantua) */
 body.theme-interstellar {
   --bg-dark: #07060d;
-  --bg-card: rgba(16, 14, 27, 0.84);
+  --bg-card: rgba(16, 14, 27, 0.88);
   --bg-card-solid: #100e1b;
-  --bg-input: rgba(26, 22, 42, 0.88);
+  --bg-input: rgba(26, 22, 42, 0.92);
   --primary: #f97316;
   --primary-hover: #ea580c;
-  --primary-glow: rgba(249, 115, 22, 0.4);
+  --primary-glow: rgba(249, 115, 22, 0.45);
   --accent-gold: #fbbf24;
   --text-main: #fff7ed;
   --text-muted: #a89bb9;
-  --border-color: rgba(249, 115, 22, 0.22);
-  --border-hover: rgba(249, 115, 22, 0.55);
+  --border-color: rgba(249, 115, 22, 0.25);
+  --border-hover: rgba(249, 115, 22, 0.65);
   --radius: 16px;
   --radius-sm: 10px;
   --brand-font: 'Plus Jakarta Sans', sans-serif;
-  --theme-ambient-glow: rgba(249, 115, 22, 0.1);
+  --theme-ambient-glow: rgba(249, 115, 22, 0.14);
 }
 
 /* 1.7 THE MATRIX (Cyber Green) */
 body.theme-matrix {
   --bg-dark: #020703;
-  --bg-card: rgba(6, 18, 9, 0.86);
+  --bg-card: rgba(6, 18, 9, 0.9);
   --bg-card-solid: #061209;
-  --bg-input: rgba(12, 32, 17, 0.9);
+  --bg-input: rgba(12, 32, 17, 0.94);
   --primary: #22c55e;
   --primary-hover: #16a34a;
-  --primary-glow: rgba(34, 197, 94, 0.4);
+  --primary-glow: rgba(34, 197, 94, 0.45);
   --accent-gold: #86efac;
   --text-main: #dcfce7;
   --text-muted: #4ade80;
-  --border-color: rgba(34, 197, 94, 0.22);
-  --border-hover: rgba(34, 197, 94, 0.55);
+  --border-color: rgba(34, 197, 94, 0.28);
+  --border-hover: rgba(34, 197, 94, 0.65);
   --radius: 6px;
   --radius-sm: 4px;
   --brand-font: 'Fira Code', monospace;
-  --theme-ambient-glow: rgba(34, 197, 94, 0.1);
+  --theme-ambient-glow: rgba(34, 197, 94, 0.15);
 }
 
 /* 1.8 DISCORD DARK THEME */
 body.theme-discord {
   --bg-dark: #18191c;
-  --bg-card: rgba(35, 37, 41, 0.86);
+  --bg-card: rgba(35, 37, 41, 0.9);
   --bg-card-solid: #232529;
-  --bg-input: rgba(49, 51, 57, 0.9);
+  --bg-input: rgba(49, 51, 57, 0.94);
   --primary: #5865f2;
   --primary-hover: #4752c4;
-  --primary-glow: rgba(88, 101, 242, 0.38);
+  --primary-glow: rgba(88, 101, 242, 0.4);
   --accent-gold: #f0b232;
   --text-main: #f2f3f5;
   --text-muted: #949ba4;
   --border-color: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(88, 101, 242, 0.5);
+  --border-hover: rgba(88, 101, 242, 0.6);
   --radius: 14px;
   --radius-sm: 8px;
   --brand-font: 'Plus Jakarta Sans', sans-serif;
-  --theme-ambient-glow: rgba(88, 101, 242, 0.1);
+  --theme-ambient-glow: rgba(88, 101, 242, 0.12);
 }
 
 /* 1.9 OLED MINIMAL THEME */
 body.theme-oled {
   --bg-dark: #000000;
-  --bg-card: rgba(10, 10, 10, 0.9);
+  --bg-card: rgba(10, 10, 10, 0.92);
   --bg-card-solid: #0a0a0a;
-  --bg-input: rgba(22, 22, 22, 0.95);
+  --bg-input: rgba(22, 22, 22, 0.96);
   --primary: #ffffff;
   --primary-hover: #e5e5e5;
-  --primary-glow: rgba(255, 255, 255, 0.25);
+  --primary-glow: rgba(255, 255, 255, 0.3);
   --accent-gold: #eab308;
   --text-main: #ffffff;
   --text-muted: #888888;
-  --border-color: rgba(255, 255, 255, 0.12);
-  --border-hover: rgba(255, 255, 255, 0.35);
+  --border-color: rgba(255, 255, 255, 0.15);
+  --border-hover: rgba(255, 255, 255, 0.45);
   --radius: 12px;
   --radius-sm: 6px;
   --brand-font: 'Plus Jakarta Sans', sans-serif;
-  --theme-ambient-glow: rgba(255, 255, 255, 0.04);
+  --theme-ambient-glow: rgba(255, 255, 255, 0.05);
 }
 body.theme-oled .btn-primary {
   color: #000000;
@@ -238,21 +239,20 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   user-select: none;
-  transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              color 0.3s ease;
+  transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s ease;
   -webkit-font-smoothing: antialiased;
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -269,7 +269,7 @@ body {
 }
 
 /* ----------------------------------------------------------
-   3. THEMATIC AMBIENT STAGE & ARTWORK (SPIDER-MAN, HEISENBERG, JON SNOW)
+   3. ARXA FON KƏTANI & YELLƏNƏN SPIDER-MAN
    ---------------------------------------------------------- */
 .theme-ambient-container {
   position: fixed;
@@ -290,170 +290,37 @@ body {
   z-index: 0;
 }
 
-/* Qəhrəman Səhnələri (Sol və Sağ Yanlar) */
-.thematic-stage {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  pointer-events: none;
-  z-index: 1;
-  transition: opacity 0.5s ease;
-}
-
-.stage-left {
-  left: 0;
-  width: 270px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding-left: 10px;
-}
-
-.stage-right {
-  right: 0;
-  width: 260px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-end;
-  padding-right: 10px;
-}
-
-/* Default olaraq sənət gizlidir */
-.character-art {
+/* Yellənən Tərs Spider-Man Maskotu (Tavandan asılmış) */
+.spidey-hanging-mascot {
   display: none;
-  pointer-events: none;
-  width: 100%;
-  max-width: 260px;
-}
-
-.char-svg {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* Tema aktiv olanda müvafiq personajlar açılır */
-body.theme-spiderman .char-spiderman-left,
-body.theme-spiderman .char-spiderman-hanging {
-  display: block;
-}
-
-body.theme-breaking-bad .char-heisenberg,
-body.theme-breaking-bad .char-methlab {
-  display: block;
-}
-
-body.theme-got .char-jonsnow,
-body.theme-got .char-starksigil {
-  display: block;
-}
-
-body.theme-batman .char-batman,
-body.theme-batman .char-batsignal {
-  display: block;
-}
-
-/* ========================================================
-   ANIMASIYALAR: SPIDER-MAN, HEISENBERG, JON SNOW
-   ======================================================== */
-
-/* 1. Tordan Asılıb Yellənən Spider-Man (Pendulum Physics) */
-.char-spiderman-hanging {
   position: fixed;
   top: 0;
-  right: 42px;
-  width: 155px;
-  height: 350px;
-  z-index: 85;
+  right: 365px;
+  width: 130px;
+  height: 310px;
+  z-index: 999;
   pointer-events: none;
-  transform-origin: 90px 0px;
-  animation: spideyPendulum 5.6s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite alternate;
+  transform-origin: 65px 0px;
+  animation: spideyPendulum 5.5s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite alternate;
+}
+
+body.theme-spiderman .spidey-hanging-mascot {
+  display: block;
 }
 
 @keyframes spideyPendulum {
-  0% {
-    transform: rotate(-5.5deg) translateY(0);
-  }
-  50% {
-    transform: rotate(4.2deg) translateY(8px);
-  }
-  100% {
-    transform: rotate(-5.5deg) translateY(0);
-  }
+  0% { transform: rotate(-5.5deg) translateY(0); }
+  50% { transform: rotate(4.5deg) translateY(6px); }
+  100% { transform: rotate(-5.5deg) translateY(0); }
 }
 
-/* Spider-Man Göz Qırpımı / Squint */
-.spidey-eye {
+.spidey-eye-swing {
   transform-origin: center;
-  animation: spideyEyeSquint 6.5s ease-in-out infinite;
+  animation: spideyEyeBlink 6.5s ease-in-out infinite;
 }
-
-@keyframes spideyEyeSquint {
-  0%, 86%, 100% {
-    transform: scale(1);
-  }
-  90%, 94% {
-    transform: scale(0.85, 0.35);
-  }
-}
-
-/* Spider-Man Sol Tərəf Künc Parıltısı */
-.char-spiderman-left {
-  animation: spideyLeftFloat 6s ease-in-out infinite alternate;
-  filter: drop-shadow(0 15px 35px rgba(226, 35, 42, 0.28));
-}
-
-@keyframes spideyLeftFloat {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-10px); }
-}
-
-/* 2. Heisenberg Nəfəsalma & Kimyəvi Duman Parıltısı */
-.char-heisenberg {
-  animation: heisenbergAura 6s ease-in-out infinite alternate;
-  filter: drop-shadow(0 15px 35px rgba(0, 229, 255, 0.25));
-}
-
-@keyframes heisenbergAura {
-  0% {
-    transform: translateY(0);
-    filter: drop-shadow(0 15px 30px rgba(0, 229, 255, 0.2));
-  }
-  100% {
-    transform: translateY(-8px);
-    filter: drop-shadow(0 20px 45px rgba(0, 255, 136, 0.3));
-  }
-}
-
-.char-methlab {
-  animation: methlabBob 5s ease-in-out infinite alternate;
-}
-@keyframes methlabBob {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-6px); }
-}
-
-/* 3. Jon Snow Qış Küləyi & Qılınc Parıltısı */
-.char-jonsnow {
-  animation: jonsnowWind 7s ease-in-out infinite alternate;
-  filter: drop-shadow(0 15px 35px rgba(56, 189, 248, 0.25));
-}
-
-@keyframes jonsnowWind {
-  0% {
-    transform: translateY(0) skewX(0);
-  }
-  100% {
-    transform: translateY(-6px) skewX(-1.2deg);
-  }
-}
-
-.char-starksigil {
-  animation: starksigilPulse 6s ease-in-out infinite alternate;
-}
-@keyframes starksigilPulse {
-  0% { opacity: 0.5; }
-  100% { opacity: 0.9; }
+@keyframes spideyEyeBlink {
+  0%, 86%, 100% { transform: scale(1); }
+  90%, 94% { transform: scale(0.85, 0.35); }
 }
 
 /* ----------------------------------------------------------
@@ -470,7 +337,6 @@ body.theme-batman .char-batsignal {
   z-index: 10;
 }
 
-/* Lobby Üst Menyu */
 .lobby-top-bar {
   display: flex;
   align-items: center;
@@ -504,7 +370,6 @@ body.theme-batman .char-batsignal {
   box-shadow: 0 0 10px #10b981;
   animation: pulseDot 2s infinite;
 }
-
 @keyframes pulseDot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.5; transform: scale(0.85); }
@@ -532,7 +397,7 @@ body.theme-batman .char-batsignal {
   border: none;
   color: var(--text-main);
   font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: 700;
   outline: none;
   cursor: pointer;
   font-family: inherit;
@@ -542,7 +407,6 @@ body.theme-batman .char-batsignal {
   color: var(--text-main);
 }
 
-/* Əsas Giriş Kartı */
 .lobby-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -550,8 +414,7 @@ body.theme-batman .char-batsignal {
   padding: 38px 34px;
   max-width: 490px;
   width: 100%;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.75),
-              inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   text-align: center;
   backdrop-filter: blur(28px) saturate(180%);
   position: relative;
@@ -568,12 +431,11 @@ body.theme-batman .char-batsignal {
   border-radius: 50px;
   margin-bottom: 16px;
   border: 1px solid var(--border-color);
-  letter-spacing: 0.02em;
 }
 
 .lobby-title {
   font-size: 2.3rem;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: -0.03em;
   margin-bottom: 10px;
 }
@@ -588,12 +450,10 @@ body.theme-batman .char-batsignal {
   margin-bottom: 26px;
 }
 
-/* Input Qrupları */
 .input-group {
   text-align: left;
   margin-bottom: 18px;
 }
-
 .input-group label {
   display: block;
   font-size: 0.8rem;
@@ -610,7 +470,6 @@ body.theme-batman .char-batsignal {
   align-items: center;
   width: 100%;
 }
-
 .input-glyph {
   position: absolute;
   left: 14px;
@@ -632,7 +491,6 @@ body.theme-batman .char-batsignal {
   outline: none;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
 .input-icon-wrap input:focus,
 .input-group input:focus {
   border-color: var(--primary);
@@ -663,7 +521,6 @@ body.theme-batman .char-batsignal {
   border-color: var(--primary);
 }
 
-/* Əsas Düymə */
 .btn-primary {
   width: 100%;
   display: flex;
@@ -676,16 +533,12 @@ body.theme-batman .char-batsignal {
   border: none;
   border-radius: var(--radius-sm);
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 800;
   font-family: inherit;
   cursor: pointer;
-  box-shadow: 0 8px 24px var(--primary-glow),
-              inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.2s ease,
-              filter 0.2s ease;
+  box-shadow: 0 8px 24px var(--primary-glow), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, filter 0.2s ease;
 }
-
 .btn-primary:hover {
   transform: translateY(-2px);
   filter: brightness(1.08);
@@ -700,7 +553,6 @@ body.theme-batman .char-batsignal {
   color: #fff !important;
 }
 
-/* Xüsusiyyətlər Bölməsi */
 .lobby-features {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -709,25 +561,21 @@ body.theme-batman .char-batsignal {
   padding-top: 20px;
   border-top: 1px solid var(--border-color);
 }
-
 .feature-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
 }
-
 .feature-icon-badge {
   font-size: 1.3rem;
   margin-bottom: 2px;
 }
-
 .feature-name {
   font-size: 0.74rem;
   font-weight: 700;
   color: var(--text-main);
 }
-
 .feature-sub {
   font-size: 0.65rem;
   font-weight: 500;
@@ -741,11 +589,12 @@ body.theme-batman .char-batsignal {
   flex-direction: column;
   position: relative;
   z-index: 10;
+  background: transparent;
 }
 
 .room-header {
   height: 60px;
-  background: rgba(10, 12, 18, 0.88);
+  background: rgba(10, 12, 18, 0.9);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-color);
   display: flex;
@@ -764,7 +613,7 @@ body.theme-batman .char-batsignal {
 
 .brand-logo {
   font-size: 1.25rem;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: -0.02em;
   white-space: nowrap;
 }
@@ -788,19 +637,16 @@ body.theme-batman .char-batsignal {
   border-color: var(--primary);
   background: rgba(255, 255, 255, 0.08);
 }
-
 .room-code-tag {
   font-size: 0.68rem;
   font-weight: 800;
   color: var(--text-muted);
   letter-spacing: 0.05em;
 }
-
 .room-code-badge strong {
   color: var(--accent-gold);
   font-weight: 700;
 }
-
 .copy-hint {
   font-size: 0.72rem;
   color: var(--text-muted);
@@ -808,7 +654,6 @@ body.theme-batman .char-batsignal {
   padding-left: 7px;
 }
 
-/* Alət Düymələri (Ruletka & Filmlər) */
 .btn-tool {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
@@ -836,7 +681,6 @@ body.theme-batman .char-batsignal {
   gap: 10px;
 }
 
-/* Audio Ducking İndikatoru */
 .ducking-indicator {
   display: flex;
   align-items: center;
@@ -860,7 +704,6 @@ body.theme-batman .char-batsignal {
   color: var(--primary);
 }
 
-/* Tema Seçici Dropdown */
 .theme-select-wrapper {
   display: flex;
   align-items: center;
@@ -878,7 +721,7 @@ body.theme-batman .char-batsignal {
   border: none;
   color: var(--text-main);
   font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: 700;
   outline: none;
   cursor: pointer;
   font-family: inherit;
@@ -888,7 +731,6 @@ body.theme-batman .char-batsignal {
   color: var(--text-main);
 }
 
-/* İştirakçılar */
 .active-users-bar {
   display: flex;
   align-items: center;
@@ -912,7 +754,6 @@ body.theme-batman .char-batsignal {
   background: #10b981;
 }
 
-/* Mikrofon Düyməsi (Səsli Zəng) */
 .btn-icon {
   display: flex;
   align-items: center;
@@ -956,7 +797,8 @@ body.theme-batman .char-batsignal {
 }
 
 /* ----------------------------------------------------------
-   6. MAIN CINEMA CONTENT & PLAYER SECTION
+   6. MAIN ROOM CONTENT LAYOUT
+   3-COLUMN: HERO WING + CINEMA SECTION + CHAT SIDEBAR
    ---------------------------------------------------------- */
 .room-content {
   flex: 1;
@@ -965,14 +807,489 @@ body.theme-batman .char-batsignal {
   overflow: hidden;
   position: relative;
   z-index: 10;
+  background: transparent;
 }
 
-/* Kinoteatr Sol Bölmə */
+/* ==========================================================
+   7. SOL QƏHRƏMAN PANELİ (THEMATIC HERO WING)
+   ========================================================== */
+.theme-hero-wing {
+  width: 275px;
+  min-width: 275px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  margin: 14px 0 14px 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  z-index: 20;
+}
+
+.wing-character {
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+/* Aktiv temaya görə Sol Qanadın açılması */
+body.theme-spiderman .wing-marvel {
+  display: flex;
+}
+body.theme-breaking-bad .wing-breaking-bad {
+  display: flex;
+}
+body.theme-got .wing-got {
+  display: flex;
+}
+body.theme-batman .wing-batman {
+  display: flex;
+}
+body.theme-netflix .wing-netflix,
+body:not(.theme-spiderman):not(.theme-breaking-bad):not(.theme-got):not(.theme-batman) .wing-netflix {
+  display: flex;
+}
+
+/* Kainat Başlıq Nişanı */
+.wing-universe-badge {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.badge-marvel {
+  background: #e2232a;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(226, 35, 42, 0.4);
+}
+.badge-bb {
+  background: rgba(0, 255, 136, 0.15);
+  border: 1px solid #00ff88;
+  color: #00ff88;
+}
+.badge-got {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid #38bdf8;
+  color: #38bdf8;
+}
+.badge-batman {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid #f59e0b;
+  color: #f59e0b;
+}
+.badge-netflix {
+  background: #e50914;
+  color: #ffffff;
+}
+
+/* 7.1 MARVEL WIDGETLƏRİ */
+.marvel-hero-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.marvel-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.hero-name {
+  font-size: 0.84rem;
+  font-weight: 900;
+  color: #f87171;
+  letter-spacing: 0.05em;
+}
+.hero-tech {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #00e5ff;
+}
+
+.ironman-visual-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.ironman-helmet-svg {
+  width: 90px;
+  height: 70px;
+  filter: drop-shadow(0 6px 16px rgba(226, 35, 42, 0.4));
+}
+
+/* Parıldayan & Fırlanan Arc Reactor Core */
+.arc-reactor-core {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  position: relative;
+  background: #071018;
+  border: 2px solid #00e5ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.6), inset 0 0 15px rgba(0, 229, 255, 0.5);
+}
+.arc-ring-outer {
+  position: absolute;
+  inset: 4px;
+  border: 2px dashed #00e5ff;
+  border-radius: 50%;
+  animation: arcSpin 8s linear infinite;
+}
+.arc-ring-inner {
+  position: absolute;
+  inset: 12px;
+  border: 1.5px dotted #38bdf8;
+  border-radius: 50%;
+  animation: arcCounterSpin 5s linear infinite;
+}
+.arc-core-glow {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 14px #00e5ff, 0 0 25px #00e5ff;
+  animation: arcPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes arcSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes arcCounterSpin { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+@keyframes arcPulse { 0% { transform: scale(0.85); opacity: 0.8; } 100% { transform: scale(1.15); opacity: 1; } }
+
+/* Jarvis Holografik Fırlanan HUD Kartı */
+.marvel-hud-card {
+  background: rgba(0, 229, 255, 0.04);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 16px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.hud-circle-container {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hud-ring-spin {
+  position: absolute;
+  inset: 0;
+  border: 2px solid transparent;
+  border-top-color: #00e5ff;
+  border-bottom-color: #00e5ff;
+  border-radius: 50%;
+  animation: hudRotate 6s linear infinite;
+}
+.hud-ring-counter {
+  position: absolute;
+  inset: 12px;
+  border: 1.5px dashed rgba(0, 229, 255, 0.6);
+  border-radius: 50%;
+  animation: hudCounterRotate 4s linear infinite;
+}
+.hud-crosshair {
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background: rgba(0, 229, 255, 0.3);
+}
+.hud-crosshair::after {
+  content: '';
+  position: absolute;
+  top: -55px;
+  left: 55px;
+  width: 1px;
+  height: 110px;
+  background: rgba(0, 229, 255, 0.3);
+}
+.hud-telemetry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.7rem;
+  color: #00e5ff;
+  z-index: 2;
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.8);
+}
+.hud-stat {
+  font-size: 0.58rem;
+  color: #86efac;
+}
+
+@keyframes hudRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes hudCounterRotate { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+
+/* Captain America Vibranium Qalxanı */
+.marvel-shield-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+}
+.cap-shield-svg {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 4px 10px rgba(220, 38, 38, 0.5));
+  animation: shieldGleam 4s ease-in-out infinite alternate;
+}
+@keyframes shieldGleam { 0% { transform: scale(1); } 100% { transform: scale(1.06); } }
+
+.shield-desc {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.shield-desc strong {
+  font-size: 0.76rem;
+  color: #f1f5f9;
+}
+.shield-desc span {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+/* 7.2 BREAKING BAD WIDGETLƏRİ */
+.bb-portrait-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 14px 10px;
+  text-align: center;
+}
+.heisenberg-vector-svg {
+  width: 140px;
+  height: 160px;
+  display: block;
+  margin: 0 auto;
+  filter: drop-shadow(0 8px 24px rgba(0, 229, 255, 0.3));
+  animation: heisenbergBreathe 6s ease-in-out infinite alternate;
+}
+@keyframes heisenbergBreathe { 0% { transform: translateY(0); } 100% { transform: translateY(-5px); } }
+
+.heisenberg-quote {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #00ff88;
+  margin-top: 8px;
+  letter-spacing: 0.04em;
+}
+
+.bb-elements-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+}
+.element-box {
+  width: 44px;
+  height: 48px;
+  background: rgba(0, 255, 136, 0.12);
+  border: 1.5px solid #00ff88;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fira Code', monospace;
+}
+.el-num { font-size: 0.55rem; color: #86efac; }
+.el-sym { font-size: 1.15rem; font-weight: 900; color: #00ff88; }
+.el-name { font-size: 0.5rem; color: #f0fdf4; }
+
+.bb-name-tag {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.bb-name-tag strong {
+  font-size: 0.85rem;
+  color: #f0fdf4;
+}
+.bb-name-tag span {
+  font-size: 0.68rem;
+  color: #00e5ff;
+  font-weight: 700;
+}
+
+.bb-flask-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+}
+.flask-icon-wrap { font-size: 1.8rem; }
+.flask-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.flask-info strong { font-size: 0.78rem; color: #f0fdf4; }
+.purity-bar {
+  width: 100%;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.purity-fill {
+  width: 99.1%;
+  height: 100%;
+  background: linear-gradient(90deg, #00ff88, #00e5ff);
+}
+
+/* 7.3 GAME OF THRONES WIDGETLƏRİ */
+.got-hero-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 14px 10px;
+  text-align: center;
+}
+.jonsnow-svg {
+  width: 130px;
+  height: 165px;
+  margin: 0 auto;
+  display: block;
+  filter: drop-shadow(0 8px 24px rgba(56, 189, 248, 0.35));
+}
+.jonsnow-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: #f8fafc;
+  margin-top: 6px;
+  letter-spacing: 1px;
+}
+.jonsnow-sub {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+.got-sigil-card, .got-dragon-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+}
+.sigil-icon, .dragon-icon { font-size: 1.6rem; }
+.sigil-info strong, .dragon-info strong {
+  font-size: 0.76rem;
+  font-family: 'Cinzel', serif;
+  color: #f1f5f9;
+}
+.sigil-info span, .dragon-info span {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+/* 7.4 BATMAN WIDGETLƏRİ */
+.batman-hero-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 14px 10px;
+  text-align: center;
+}
+.batman-svg {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+}
+.batman-title {
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #f59e0b;
+  margin-top: 8px;
+}
+.batman-sub { font-size: 0.7rem; color: var(--text-muted); }
+.bat-signal-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+}
+.batsignal-icon { font-size: 1.6rem; }
+
+/* 7.5 NETFLIX DEFAULT WIDGET */
+.netflix-hero-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 18px 12px;
+  text-align: center;
+}
+.netflix-icon-big { font-size: 2.2rem; margin-bottom: 6px; }
+.netflix-title { font-size: 0.95rem; font-weight: 800; }
+.netflix-sub { font-size: 0.75rem; color: var(--text-muted); }
+
+.cinema-stats-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.stat-row strong { color: var(--text-main); }
+
+/* ----------------------------------------------------------
+   8. MAIN CINEMA PLAYER SECTION
+   ---------------------------------------------------------- */
 .cinema-section {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 16px;
+  padding: 14px 16px;
   overflow-y: auto;
   gap: 14px;
 }
@@ -989,8 +1306,7 @@ body.theme-batman .char-batsignal {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85),
-              0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85), 0 0 35px var(--theme-ambient-glow);
 }
 
 .player-frame {
@@ -1012,13 +1328,12 @@ body.theme-batman .char-batsignal {
   display: none !important;
 }
 
-/* Sinxronizasiya Bildirişi */
 .sync-notice {
   position: absolute;
   top: 16px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.85);
   border: 1px solid var(--border-color);
   color: #fff;
   padding: 8px 18px;
@@ -1028,19 +1343,12 @@ body.theme-batman .char-batsignal {
   backdrop-filter: blur(10px);
   z-index: 30;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-  animation: fadeInDown 0.3s ease;
 }
 
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translate(-50%, -10px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
-}
-
-/* Unmute Overlay Düyməsi */
 .unmute-overlay {
   position: absolute;
   bottom: 24px;
-  background: rgba(14, 18, 28, 0.92);
+  background: rgba(14, 18, 28, 0.94);
   border: 1px solid var(--primary);
   color: #fff;
   padding: 12px 24px;
@@ -1053,17 +1361,15 @@ body.theme-batman .char-batsignal {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px var(--primary-glow);
   animation: pulseButton 2s infinite;
 }
-
 @keyframes pulseButton {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.04); }
 }
 
-/* Trivia Fasilə Overlay */
 .pause-trivia-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.78);
+  background: rgba(0, 0, 0, 0.82);
   backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
@@ -1071,7 +1377,6 @@ body.theme-batman .char-batsignal {
   z-index: 35;
   padding: 20px;
 }
-
 .trivia-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -1082,14 +1387,12 @@ body.theme-batman .char-batsignal {
   text-align: center;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
 }
-
 .trivia-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 14px;
 }
-
 .trivia-badge {
   background: var(--bg-input);
   color: var(--primary);
@@ -1098,7 +1401,6 @@ body.theme-batman .char-batsignal {
   padding: 4px 12px;
   border-radius: 50px;
 }
-
 .trivia-close-btn {
   background: transparent;
   border: none;
@@ -1106,19 +1408,16 @@ body.theme-batman .char-batsignal {
   font-size: 1.1rem;
   cursor: pointer;
 }
-
 .trivia-card h3 {
   font-size: 1.15rem;
   font-weight: 700;
   margin-bottom: 18px;
 }
-
 .trivia-options {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-
 .trivia-opt {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
@@ -1137,7 +1436,7 @@ body.theme-batman .char-batsignal {
   border-color: var(--primary);
 }
 
-/* Boş Vəziyyət (Minimalist və Qəşəng Dizayn) */
+/* Boş Vəziyyət */
 .empty-player-state {
   display: flex;
   flex-direction: column;
@@ -1148,7 +1447,6 @@ body.theme-batman .char-batsignal {
   width: 100%;
   height: 100%;
 }
-
 .empty-hero-visual {
   width: 60px;
   height: 60px;
@@ -1162,20 +1460,17 @@ body.theme-batman .char-batsignal {
   margin-bottom: 14px;
   box-shadow: 0 0 30px var(--theme-ambient-glow);
 }
-
 .empty-player-state h2 {
   font-size: 1.5rem;
   font-weight: 800;
   margin-bottom: 6px;
   letter-spacing: -0.02em;
 }
-
 .empty-player-state p {
   color: var(--text-muted);
   font-size: 0.88rem;
   margin-bottom: 22px;
 }
-
 .empty-options-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1183,7 +1478,6 @@ body.theme-batman .char-batsignal {
   max-width: 780px;
   width: 100%;
 }
-
 .empty-opt-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -1199,7 +1493,6 @@ body.theme-batman .char-batsignal {
   border-color: var(--primary);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 20px var(--primary-glow);
 }
-
 .card-icon {
   font-size: 1.5rem;
   margin-bottom: 8px;
@@ -1217,7 +1510,7 @@ body.theme-batman .char-batsignal {
 }
 
 /* ----------------------------------------------------------
-   7. SOURCE CONTROLS & TAB PANEL
+   9. SOURCE CONTROLS & TAB PANEL
    ---------------------------------------------------------- */
 .source-control-bar {
   background: var(--bg-card);
@@ -1226,7 +1519,6 @@ body.theme-batman .char-batsignal {
   padding: 16px;
   backdrop-filter: blur(20px);
 }
-
 .source-tabs {
   display: flex;
   gap: 6px;
@@ -1236,7 +1528,6 @@ body.theme-batman .char-batsignal {
   margin-bottom: 14px;
   overflow-x: auto;
 }
-
 .tab-btn {
   flex: 1;
   padding: 8px 12px;
@@ -1267,34 +1558,33 @@ body.theme-batman .char-batsignal {
   display: block;
 }
 
-/* 1. Stream Tab Guide */
-.stream-info-box {
+.stream-info-box, .netflix-guide-box {
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
-
-.stream-guide {
+.stream-guide, .netflix-steps {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   padding: 14px 18px;
   font-size: 0.84rem;
-  color: var(--text-main);
   line-height: 1.6;
 }
-
 .guide-badge {
   color: var(--accent-gold);
   font-weight: 800;
   margin-bottom: 4px;
 }
-
+.step-badge {
+  color: #e50914;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
 .stream-actions {
   display: flex;
   gap: 10px;
 }
-
 .btn-danger {
   width: 100%;
   padding: 14px 24px;
@@ -1309,29 +1599,6 @@ body.theme-batman .char-batsignal {
   font-family: inherit;
 }
 
-/* 2. Netflix Guide */
-.netflix-guide-box {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.netflix-steps {
-  background: var(--bg-input);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: 14px 18px;
-  font-size: 0.84rem;
-  line-height: 1.6;
-}
-
-.step-badge {
-  color: #e50914;
-  font-weight: 800;
-  margin-bottom: 4px;
-}
-
-/* 3. URL Girişləri */
 .url-input-form {
   display: flex;
   gap: 10px;
@@ -1356,7 +1623,6 @@ body.theme-batman .char-batsignal {
   white-space: nowrap;
 }
 
-/* 4. Fayl Rejimi */
 .file-mode {
   flex-direction: column;
 }
@@ -1374,16 +1640,13 @@ body.theme-batman .char-batsignal {
   border-color: var(--primary);
   background: rgba(255, 255, 255, 0.05);
 }
-.file-label input {
-  display: none;
-}
+.file-label input { display: none; }
 .file-hint {
   font-size: 0.76rem;
   color: var(--text-muted);
   margin-top: 8px;
 }
 
-/* Tez Alətlər Paneli */
 .quick-tools-bar {
   display: flex;
   align-items: center;
@@ -1392,7 +1655,6 @@ body.theme-batman .char-batsignal {
   padding-top: 12px;
   border-top: 1px solid var(--border-color);
 }
-
 .tool-btn {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
@@ -1409,7 +1671,6 @@ body.theme-batman .char-batsignal {
   border-color: var(--primary);
   color: var(--primary);
 }
-
 .status-indicator {
   font-size: 0.78rem;
   color: var(--text-muted);
@@ -1417,23 +1678,23 @@ body.theme-batman .char-batsignal {
 }
 
 /* ----------------------------------------------------------
-   8. SIDEBAR SECTION (CHAT & LIVE REACTIONS)
+   10. SIDEBAR SECTION (CHAT & REAKSIYALAR)
    ---------------------------------------------------------- */
 .sidebar-section {
-  width: 350px;
+  width: 340px;
+  min-width: 340px;
   background: var(--bg-card);
   border-left: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   backdrop-filter: blur(20px);
+  z-index: 20;
 }
 
-/* Reaksiyalar Paneli */
 .reactions-bar {
   padding: 12px 16px;
   border-bottom: 1px solid var(--border-color);
 }
-
 .reactions-title {
   font-size: 0.72rem;
   font-weight: 700;
@@ -1442,13 +1703,11 @@ body.theme-batman .char-batsignal {
   color: var(--text-muted);
   margin-bottom: 8px;
 }
-
 .reactions-list {
   display: flex;
   justify-content: space-between;
   gap: 4px;
 }
-
 .reaction-btn {
   flex: 1;
   background: var(--bg-input);
@@ -1457,8 +1716,7 @@ body.theme-batman .char-batsignal {
   padding: 6px 0;
   font-size: 1.15rem;
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-              background 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease;
 }
 .reaction-btn:hover {
   transform: scale(1.22);
@@ -1468,14 +1726,12 @@ body.theme-batman .char-batsignal {
   transform: scale(0.95);
 }
 
-/* Çat Paneli */
 .chat-wrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
-
 .chat-header {
   padding: 12px 16px;
   border-bottom: 1px solid var(--border-color);
@@ -1485,7 +1741,6 @@ body.theme-batman .char-batsignal {
   align-items: center;
   justify-content: space-between;
 }
-
 .chat-messages {
   flex: 1;
   overflow-y: auto;
@@ -1494,7 +1749,6 @@ body.theme-batman .char-batsignal {
   flex-direction: column;
   gap: 10px;
 }
-
 .chat-system-msg {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border-color);
@@ -1505,21 +1759,14 @@ body.theme-batman .char-batsignal {
   text-align: center;
   line-height: 1.4;
 }
-
 .chat-msg {
   display: flex;
   flex-direction: column;
   gap: 3px;
   max-width: 88%;
 }
-
-.chat-msg.msg-self {
-  align-self: flex-end;
-}
-.chat-msg.msg-peer {
-  align-self: flex-start;
-}
-
+.chat-msg.msg-self { align-self: flex-end; }
+.chat-msg.msg-peer { align-self: flex-start; }
 .chat-msg-header {
   display: flex;
   align-items: center;
@@ -1527,15 +1774,11 @@ body.theme-batman .char-batsignal {
   font-size: 0.7rem;
   color: var(--text-muted);
 }
-.chat-msg.msg-self .chat-msg-header {
-  justify-content: flex-end;
-}
-
+.chat-msg.msg-self .chat-msg-header { justify-content: flex-end; }
 .chat-msg-user {
   font-weight: 700;
   color: var(--primary);
 }
-
 .chat-msg-bubble {
   padding: 10px 14px;
   border-radius: 12px;
@@ -1549,24 +1792,21 @@ body.theme-batman .char-batsignal {
   border-bottom-right-radius: 3px;
 }
 body.theme-breaking-bad .chat-msg.msg-self .chat-msg-bubble {
-  color: #060a08;
+  color: #050a07;
   font-weight: 600;
 }
-
 .chat-msg.msg-peer .chat-msg-bubble {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
   color: var(--text-main);
   border-bottom-left-radius: 3px;
 }
-
 .chat-input-form {
   padding: 12px 16px;
   border-top: 1px solid var(--border-color);
   display: flex;
   gap: 8px;
 }
-
 .chat-input-form input {
   flex: 1;
   padding: 11px 14px;
@@ -1578,10 +1818,7 @@ body.theme-breaking-bad .chat-msg.msg-self .chat-msg-bubble {
   font-family: inherit;
   outline: none;
 }
-.chat-input-form input:focus {
-  border-color: var(--primary);
-}
-
+.chat-input-form input:focus { border-color: var(--primary); }
 .btn-chat-send {
   background: var(--primary);
   border: none;
@@ -1595,17 +1832,15 @@ body.theme-breaking-bad .chat-msg.msg-self .chat-msg-bubble {
   cursor: pointer;
   transition: transform 0.2s ease;
 }
-.btn-chat-send:hover {
-  transform: scale(1.06);
-}
+.btn-chat-send:hover { transform: scale(1.06); }
 
 /* ----------------------------------------------------------
-   9. MODALS (ÇARXIFƏLƏK RULETKASI & FİLMLƏRİMİZ)
+   11. MODALS (ÇARXIFƏLƏK RULETKASI & FİLMLƏRİMİZ)
    ---------------------------------------------------------- */
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.78);
   backdrop-filter: blur(16px);
   display: flex;
   align-items: center;
@@ -1613,7 +1848,6 @@ body.theme-breaking-bad .chat-msg.msg-self .chat-msg-bubble {
   z-index: 1000;
   padding: 20px;
 }
-
 .modal-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -1621,45 +1855,30 @@ body.theme-breaking-bad .chat-msg.msg-self .chat-msg-bubble {
   padding: 30px;
   max-width: 500px;
   width: 100%;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(24px);
 }
-
-.modal-wheel-card {
-  max-width: 440px;
-  text-align: center;
-}
-
+.modal-wheel-card { max-width: 440px; text-align: center; }
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 6px;
 }
-
-.modal-header h2 {
-  font-size: 1.3rem;
-  font-weight: 800;
-}
-
+.modal-header h2 { font-size: 1.3rem; font-weight: 800; }
 .modal-close {
   background: transparent;
   border: none;
   color: var(--text-muted);
   font-size: 1.2rem;
   cursor: pointer;
-  transition: color 0.2s ease;
 }
-.modal-close:hover {
-  color: var(--primary);
-}
-
+.modal-close:hover { color: var(--primary); }
 .modal-desc {
   color: var(--text-muted);
   font-size: 0.84rem;
   margin-bottom: 18px;
 }
-
 .modal-input-row {
   display: flex;
   gap: 8px;
@@ -1675,15 +1894,12 @@ body.theme-breaking-bad .chat-msg.msg-self .chat-msg-bubble {
   outline: none;
   font-family: inherit;
 }
-.modal-input-row input:focus {
-  border-color: var(--primary);
-}
+.modal-input-row input:focus { border-color: var(--primary); }
 .btn-add-movie {
   width: auto !important;
   padding: 11px 18px !important;
 }
 
-/* Çarxıfələk Səhnəsi */
 .wheel-stage-wrapper {
   position: relative;
   display: flex;
@@ -1693,13 +1909,10 @@ body.theme-breaking-bad .chat-msg.msg-self .chat-msg-bubble {
   width: 340px;
   height: 340px;
 }
-
 #wheel-canvas {
   border-radius: 50%;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7),
-              0 0 25px var(--primary-glow);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 25px var(--primary-glow);
 }
-
 .wheel-pointer-arrow {
   position: absolute;
   top: -8px;
@@ -1712,10 +1925,7 @@ body.theme-breaking-bad .chat-msg.msg-self .chat-msg-bubble {
   pointer-events: none;
 }
 
-.roulette-action-box {
-  margin-bottom: 18px;
-}
-
+.roulette-action-box { margin-bottom: 18px; }
 .btn-spin {
   width: 100%;
   padding: 15px 24px;
@@ -1735,9 +1945,7 @@ body.theme-breaking-bad .chat-msg.msg-self .chat-msg-bubble {
   transform: scale(1.02);
   filter: brightness(1.1);
 }
-body.theme-breaking-bad .btn-spin {
-  color: #060a08;
-}
+body.theme-breaking-bad .btn-spin { color: #050a07; }
 
 .winner-announcement {
   margin-top: 12px;
@@ -1748,14 +1956,7 @@ body.theme-breaking-bad .btn-spin {
   border-radius: var(--radius-sm);
   font-weight: 800;
   font-size: 1rem;
-  animation: bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-
-@keyframes bounceIn {
-  from { opacity: 0; transform: scale(0.85); }
-  to { opacity: 1; transform: scale(1); }
-}
-
 .watchlist-section-title {
   text-align: left;
   font-size: 0.76rem;
@@ -1765,7 +1966,6 @@ body.theme-breaking-bad .btn-spin {
   color: var(--text-muted);
   margin-bottom: 8px;
 }
-
 .watchlist-items {
   display: flex;
   flex-wrap: wrap;
@@ -1774,7 +1974,6 @@ body.theme-breaking-bad .btn-spin {
   overflow-y: auto;
   justify-content: flex-start;
 }
-
 .watchlist-chip {
   display: inline-flex;
   align-items: center;
@@ -1793,11 +1992,8 @@ body.theme-breaking-bad .btn-spin {
   cursor: pointer;
   font-size: 0.85rem;
 }
-.watchlist-chip-remove:hover {
-  color: #ef4444;
-}
+.watchlist-chip-remove:hover { color: #ef4444; }
 
-/* Tarixçə Formu və Siyahısı */
 .history-input-box {
   display: flex;
   flex-direction: column;
@@ -1807,7 +2003,6 @@ body.theme-breaking-bad .btn-spin {
   padding: 16px;
   border-radius: var(--radius-sm);
 }
-
 .history-input-box input {
   padding: 10px 14px;
   background: var(--bg-card);
@@ -1817,20 +2012,14 @@ body.theme-breaking-bad .btn-spin {
   outline: none;
   font-family: inherit;
 }
-.history-input-box input:focus {
-  border-color: var(--primary);
-}
-
+.history-input-box input:focus { border-color: var(--primary); }
 .history-rating-row {
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 0.88rem;
 }
-.history-rating-row input {
-  width: 80px;
-}
-
+.history-rating-row input { width: 80px; }
 .history-list {
   display: flex;
   flex-direction: column;
@@ -1838,7 +2027,6 @@ body.theme-breaking-bad .btn-spin {
   max-height: 250px;
   overflow-y: auto;
 }
-
 .history-card {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
@@ -1848,38 +2036,18 @@ body.theme-breaking-bad .btn-spin {
   flex-direction: column;
   gap: 4px;
 }
-
 .history-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-
-.history-title {
-  font-weight: 700;
-  font-size: 0.95rem;
-}
-
-.history-badge {
-  color: var(--accent-gold);
-  font-weight: 800;
-  font-size: 0.88rem;
-}
-
-.history-note {
-  font-size: 0.82rem;
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-.history-meta {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  opacity: 0.7;
-}
+.history-title { font-weight: 700; font-size: 0.95rem; }
+.history-badge { color: var(--accent-gold); font-weight: 800; font-size: 0.88rem; }
+.history-note { font-size: 0.82rem; color: var(--text-muted); font-style: italic; }
+.history-meta { font-size: 0.72rem; color: var(--text-muted); opacity: 0.7; }
 
 /* ----------------------------------------------------------
-   10. UÇAN CANLI EMOJİLƏR
+   12. UÇAN EMOJİLƏR
    ---------------------------------------------------------- */
 #floating-emojis-container {
   position: fixed;
@@ -1888,57 +2056,38 @@ body.theme-breaking-bad .btn-spin {
   z-index: 9999;
   overflow: hidden;
 }
-
 .floating-emoji {
   position: absolute;
   bottom: 60px;
   font-size: 2.5rem;
   animation: floatUpAnimation 3.2s ease-in forwards;
 }
-
 @keyframes floatUpAnimation {
-  0% {
-    opacity: 1;
-    transform: translateY(0) scale(0.6) rotate(0deg);
-  }
-  50% {
-    opacity: 0.95;
-    transform: translateY(-45vh) scale(1.2) rotate(10deg);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-90vh) scale(1.5) rotate(-10deg);
-  }
+  0% { opacity: 1; transform: translateY(0) scale(0.6); }
+  50% { opacity: 0.95; transform: translateY(-45vh) scale(1.2); }
+  100% { opacity: 0; transform: translateY(-90vh) scale(1.5); }
 }
 
 /* ----------------------------------------------------------
-   11. RESPONSIVE DESIGN (MOBİL & TABLET)
+   13. RESPONSIVE DESIGN (TABLET & MOBİL)
    ---------------------------------------------------------- */
-@media (max-width: 1080px) {
-  .stage-left, .stage-right {
-    opacity: 0.25;
-    width: 180px;
+@media (max-width: 1050px) {
+  .theme-hero-wing {
+    display: none !important;
   }
-  .char-spiderman-hanging {
-    right: 15px;
-    width: 120px;
-    height: 270px;
+  .spidey-hanging-mascot {
+    display: none !important;
   }
 }
 
-@media (max-width: 900px) {
-  .stage-left, .stage-right {
-    display: none !important;
-  }
-  .char-spiderman-hanging {
-    display: none !important;
-  }
+@media (max-width: 850px) {
   .room-content {
     flex-direction: column;
     height: auto;
   }
   .sidebar-section {
     width: 100%;
+    min-width: 100%;
     height: 480px;
   }
   .empty-options-grid {
