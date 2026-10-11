@@ -1687,6 +1687,29 @@ body.theme-spiderman .spidey-hanging-mascot {
   100% { transform: scale(1); box-shadow: 0 0 14px rgba(16, 185, 129, 0.5); }
 }
 
+/* Səs Rejimi Düyməsi (Qulaqlıq / Dinamik) */
+.btn-audio-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  color: #60a5fa;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  font-family: inherit;
+}
+.btn-audio-mode-toggle:hover {
+  background: rgba(59, 130, 246, 0.24);
+  border-color: #3b82f6;
+  box-shadow: 0 0 14px rgba(59, 130, 246, 0.35);
+  transform: translateY(-1px);
+}
+
 /* Çat Başlığındakı Səsli Zəng Düyməsi */
 .btn-voice-sidebar {
   display: inline-flex;

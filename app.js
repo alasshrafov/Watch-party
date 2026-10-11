@@ -1023,14 +1023,7 @@ function initSocket() {
     if (data.users) {
       currentRoomUsers = data.users;
       updateUsersList(data.users);
-      // Əgər bizim mikrofon aktivdirsə, otaqdakı hər kəsə səs zəngi et
-      if (isVoiceActive && localVoiceStream) {
-        Object.keys(data.users).forEach(peerId => {
-          if (peerId !== socket.id) {
-            callVoicePeer(peerId);
-          }
-        });
-      }
+      // Səs axını 100% zəmanətli WebSocket PCM Relay ilə ötürülür
     }
     if (data.isLocked !== undefined) {
       isRoomLocked = data.isLocked;
@@ -1124,10 +1117,7 @@ function initSocket() {
     if (localScreenStream) {
       initiateScreenPeer(data.socketId);
     }
-    // Əgər bizim mikrofon aktivdirsə, yeni qoşulan iştirakçıya səs zəngi et
-    if (isVoiceActive && localVoiceStream && data.socketId && data.socketId !== socket.id) {
-      callVoicePeer(data.socketId);
-    }
+    // Səs axını 100% zəmanətli WebSocket PCM Relay ilə ötürülür
   });
 
   socket.on('user-left', (data) => {
@@ -1234,9 +1224,7 @@ function initSocket() {
 
   // WebRTC Səsli Zəng Siqnalları
   socket.on('voice-peer-ready', async ({ sender }) => {
-    if (socket && sender && sender !== socket.id && isVoiceActive && localVoiceStream) {
-      callVoicePeer(sender);
-    }
+    // Səs axını 100% zəmanətli WebSocket PCM Relay ilə ötürülür
   });
 
   socket.on('voice-peer-left', ({ peerId }) => {
@@ -1865,20 +1853,56 @@ function setupVoiceChat() {
   if (btnVoiceSidebar) {
     btnVoiceSidebar.addEventListener('click', toggleHandler);
   }
+  setupAudioModeToggle();
+}
+
+let isHeadphoneMode = true; // Susmaya görə: Qulaqlıq Rejimi (Kino səsi 100% təmiz qalır, heç bir boğulma olmur)
+
+function setupAudioModeToggle() {
+  const btnMode = document.getElementById('btn-audio-mode');
+  if (btnMode) {
+    btnMode.addEventListener('click', async () => {
+      isHeadphoneMode = !isHeadphoneMode;
+      updateAudioModeUI();
+      if (isVoiceActive) {
+        showNotice(isHeadphoneMode ? '🎧 Qulaqlıq Rejimi: Video səsi 100% təmizdir' : '🔊 Dinamik Rejimi: Əks-səda filtri aktivdir');
+        await startVoiceChat();
+      } else {
+        showNotice(isHeadphoneMode ? '🎧 Rejim: Qulaqlıq seçildi (Kino səsi təmiz)' : '🔊 Rejim: Dinamik seçildi (Əks-səda filtri)');
+      }
+    });
+  }
+  updateAudioModeUI();
+}
+
+function updateAudioModeUI() {
+  const icon = document.getElementById('audio-mode-icon');
+  const txt = document.getElementById('audio-mode-text');
+  const btn = document.getElementById('btn-audio-mode');
+  if (icon && txt) {
+    if (isHeadphoneMode) {
+      icon.textContent = '🎧';
+      txt.textContent = 'Qulaqlıq';
+      if (btn) btn.title = 'Qulaqlıq Rejimi: Film səsi 100% təmiz qalır (Boğulma olmur). Dinamik üçün toxunun.';
+    } else {
+      icon.textContent = '🔊';
+      txt.textContent = 'Dinamik';
+      if (btn) btn.title = 'Dinamik Rejimi: Əks-səda əleyhinə filtr aktivdir. Qulaqlıq üçün toxunun.';
+    }
+  }
 }
 
 let voiceCaptureContext = null;
 let voiceCaptureProcessor = null;
 let voiceCaptureSource = null;
 let audioPlaybackContext = null;
-let scheduledPlayTime = 0;
+const scheduledPlayTimes = {}; // Hər danışan üçün fərdi jitter vaxtı
 const speakerTimeouts = {};
 
 function getPlaybackContext() {
   if (!audioPlaybackContext) {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (AudioCtx) {
-      // Təbii sistem tezliyi (48000Hz). Heç vaxt 24kHz-ə məcbur etmirik ki, film və YouTube səsi zərrə qədər də keyfiyyətini itirməsin!
       audioPlaybackContext = new AudioCtx();
     }
   }
@@ -1909,19 +1933,22 @@ function handleIncomingVoiceChunk(senderId, username, arrayBuffer) {
     source.connect(ctx.destination);
 
     const now = ctx.currentTime;
-    if (scheduledPlayTime < now) {
-      scheduledPlayTime = now + 0.025; // 25ms jitter buffer
+    let playAt = scheduledPlayTimes[senderId] || 0;
+
+    // Adaptiv Jitter Buferi (70ms başlanğıc buferi - şəbəkə dalğalanmalarını tam udur, səsdə qırılma və ilişmə olmur)
+    if (playAt < now || playAt > now + 0.350) {
+      playAt = now + 0.070;
     }
 
-    source.start(scheduledPlayTime);
-    scheduledPlayTime += audioBuffer.duration;
+    source.start(playAt);
+    scheduledPlayTimes[senderId] = playAt + audioBuffer.duration;
 
     // Discord Səs Haləsi (Qarşı tərəf danışanda dərhal yaşıl yanır)
     updateSpeakingVisual(senderId, true);
     clearTimeout(speakerTimeouts[senderId]);
     speakerTimeouts[senderId] = setTimeout(() => {
       updateSpeakingVisual(senderId, false);
-    }, 300);
+    }, 400);
   } catch (err) {
     console.warn('[Voice Engine] Playback chunk error:', err);
   }
@@ -1932,7 +1959,6 @@ function startAudioChunkCapture(stream) {
   try {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) return;
-    // Təbii sistem tezliyi ilə açırıq - Windows səs kartını dəyişmirik
     voiceCaptureContext = new AudioCtx();
     if (voiceCaptureContext.state === 'suspended') {
       voiceCaptureContext.resume().catch(() => {});
@@ -1941,12 +1967,13 @@ function startAudioChunkCapture(stream) {
     voiceCaptureSource = voiceCaptureContext.createMediaStreamSource(stream);
     const nativeRate = voiceCaptureContext.sampleRate || 48000;
     const downsampleStep = nativeRate / 24000;
-    // ~85ms bufer ölçüsü: 48000Hz-də 4096 nümunə
     const bufferSize = nativeRate >= 44100 ? 4096 : 2048;
     voiceCaptureProcessor = voiceCaptureContext.createScriptProcessor(bufferSize, 1, 1);
 
     let silenceCount = 0;
     let isSpeakingState = false;
+    let isGateOpen = false;
+    let preRollBuffer = []; // Cümlənin başlanğıcının kəsilməməsi üçün 5 paketlik (~425ms) dairəvi bufer
 
     voiceCaptureProcessor.onaudioprocess = (e) => {
       if (!isVoiceActive) return;
@@ -1958,10 +1985,31 @@ function startAudioChunkCapture(stream) {
         sum += input[i] * input[i];
       }
       const rms = Math.sqrt(sum / input.length);
-      const isVoice = rms > 0.012; // Danışıq həddi
+      // Həssas danışıq həddi (pıçıltı və yumşaq samitləri dərhal tutur)
+      const isVoice = rms > 0.005;
+
+      // 24kHz PCM-ə çevir
+      const outLen = Math.floor(input.length / downsampleStep);
+      const int16 = new Int16Array(outLen);
+      for (let i = 0; i < outLen; i++) {
+        const sample = input[Math.floor(i * downsampleStep)];
+        int16[i] = Math.max(-32768, Math.min(32767, Math.floor(sample * 32767)));
+      }
+      const chunkBuffer = int16.buffer;
 
       if (isVoice) {
         silenceCount = 0;
+        if (!isGateOpen) {
+          isGateOpen = true;
+          // CÜMLƏNİN ƏVVƏLİ: Pre-roll buferdəki bütün əvvəlki paketləri dərhal göndər!
+          // Beləliklə, cümlənin ilk hecası/sözü zərrə qədər də kəsilmir!
+          if (socket && preRollBuffer.length > 0) {
+            preRollBuffer.forEach(prev => {
+              socket.emit('voice-chunk', prev);
+            });
+            preRollBuffer = [];
+          }
+        }
         if (!isSpeakingState) {
           isSpeakingState = true;
           updateSpeakingVisual(socket ? socket.id : null, true);
@@ -1969,7 +2017,10 @@ function startAudioChunkCapture(stream) {
         }
       } else {
         silenceCount++;
-        if (silenceCount > 4) { // ~340ms sükut
+        // CÜMLƏNİN SONU: 15 paketlik (~1.3 saniyə) geniş bufer.
+        // Tənəffüs və cümlə sonundakı səslər qətiyyən kəsilmir!
+        if (silenceCount > 15) {
+          if (isGateOpen) isGateOpen = false;
           if (isSpeakingState) {
             isSpeakingState = false;
             updateSpeakingVisual(socket ? socket.id : null, false);
@@ -1978,21 +2029,19 @@ function startAudioChunkCapture(stream) {
         }
       }
 
-      // Əgər danışırsa və ya sükut buferindədirsə, səs paketini 24kHz-ə çevirib serverə göndər
-      if (silenceCount < 5) {
-        const outLen = Math.floor(input.length / downsampleStep);
-        const int16 = new Int16Array(outLen);
-        for (let i = 0; i < outLen; i++) {
-          const sample = input[Math.floor(i * downsampleStep)];
-          int16[i] = Math.max(-32768, Math.min(32767, Math.floor(sample * 32767)));
-        }
+      if (isGateOpen || silenceCount <= 15) {
         if (socket) {
-          socket.emit('voice-chunk', int16.buffer);
+          socket.emit('voice-chunk', chunkBuffer);
+        }
+      } else {
+        // Sükut zamanı ən son 5 paketi (~425ms) pre-roll üçün yaddaşda saxla
+        preRollBuffer.push(chunkBuffer);
+        if (preRollBuffer.length > 5) {
+          preRollBuffer.shift();
         }
       }
     };
 
-    // İstifadəçinin öz səsinin özünə əks-səda verməməsi üçün muteNode ilə destination-a bağla
     const muteNode = voiceCaptureContext.createGain();
     muteNode.gain.value = 0;
 
@@ -2022,19 +2071,34 @@ function stopAudioChunkCapture() {
 
 async function startVoiceChat() {
   try {
+    // Əgər artıq mikrofon axını varsa, təmiz bağla
+    if (localVoiceStream) {
+      localVoiceStream.getTracks().forEach(t => t.stop());
+      localVoiceStream = null;
+    }
+
+    // Qulaqlıq rejimində: echoCancellation=false, noiseSuppression=false
+    // Bu zaman Windows heç vaxt videonun səsini boğmur və kəsmir, 100% təmiz stereo saxlayır!
+    const audioConstraints = isHeadphoneMode ? {
+      echoCancellation: false,
+      noiseSuppression: false,
+      autoGainControl: false,
+      channelCount: 1
+    } : {
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: false,
+      channelCount: 1
+    };
+
     localVoiceStream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: false, // OFF: Filmin və videonun səsinin boğulmasının və qəribələşməsinin qarşısını alır
-        channelCount: 1
-      },
+      audio: audioConstraints,
       video: false
     });
 
     isVoiceActive = true;
     updateVoiceUI(true);
-    showNotice('🎙️ Səsli danışıq aktivdir! Canlı danışa bilərsiniz.');
+    showNotice(isHeadphoneMode ? '🎙️ Səsli danışıq aktivdir! (Qulaqlıq rejimi: Film səsi 100% təmizdir)' : '🎙️ Səsli danışıq aktivdir! (Dinamik rejimi)');
 
     // Səs oxutma sistemini aç
     const pCtx = getPlaybackContext();
@@ -2042,7 +2106,7 @@ async function startVoiceChat() {
       pCtx.resume().catch(() => {});
     }
 
-    // 100% Zəmanətli Server-Relayed Canlı Audio Capturer-i işə sal
+    // 100% Zəmanətli Pre-Roll & Hangover Canlı Audio Capturer-i işə sal
     startAudioChunkCapture(localVoiceStream);
 
     if (socket) {
@@ -2241,47 +2305,8 @@ async function drainIceCandidates(peerId, pc) {
 }
 
 function playRemoteVoice(stream, peerId, track) {
-  let audioEl = document.getElementById(`remote-voice-audio-${peerId}`);
-  if (!audioEl) {
-    audioEl = document.createElement('audio');
-    audioEl.id = `remote-voice-audio-${peerId}`;
-    audioEl.autoplay = true;
-    audioEl.playsInline = true;
-    audioEl.style.position = 'fixed';
-    audioEl.style.top = '-9999px';
-    audioEl.style.left = '-9999px';
-    audioEl.style.width = '1px';
-    audioEl.style.height = '1px';
-    audioEl.style.opacity = '0.01';
-    document.body.appendChild(audioEl);
-  }
-
-  audioEl.srcObject = stream;
-  audioEl.muted = false;
-  audioEl.volume = 1.0;
-
-  const tryPlay = () => {
-    const playPromise = audioEl.play();
-    if (playPromise !== undefined) {
-      playPromise.then(() => {
-        hideAudioUnlockBanner();
-      }).catch(err => {
-        console.warn(`[WebRTC Voice] Autoplay bloklandı (${peerId}):`, err);
-        showAudioUnlockBanner();
-      });
-    }
-  };
-
-  tryPlay();
-
-  if (track) {
-    track.onunmute = () => {
-      console.log(`[WebRTC Voice] Track açıldı (unmuted): ${peerId}`);
-      tryPlay();
-    };
-  }
-
-  showNotice(`🔊 ${getPeerUsername(peerId)} ilə canlı səs aktivdir!`);
+  // Səs axını 100% zəmanətli şəkildə WebSocket PCM Relay (voice-chunk) ilə ötürülür və Web Audio ilə oxunur.
+  // Burada əlavə <audio> elementi yaradılmır ki, Windows brauzerə "VoIP zəng" rejimi tətbiq edib videonun səsini boğmasın!
 }
 
 function cleanupVoicePeer(peerId) {
