@@ -1014,12 +1014,14 @@ function initSocket() {
     if (data.users) {
       currentRoomUsers = data.users;
       updateUsersList(data.users);
-      // Otaqda olan digər iştirakçılarla səsli WebRTC əlaqəsi qur
-      Object.keys(data.users).forEach(peerId => {
-        if (peerId !== socket.id) {
-          connectVoicePeer(peerId);
-        }
-      });
+      // Əgər bizim mikrofon aktivdirsə, otaqdakı hər kəsə səs zəngi et
+      if (isVoiceActive && localVoiceStream) {
+        Object.keys(data.users).forEach(peerId => {
+          if (peerId !== socket.id) {
+            callVoicePeer(peerId);
+          }
+        });
+      }
     }
     if (data.isLocked !== undefined) {
       isRoomLocked = data.isLocked;
@@ -1113,9 +1115,9 @@ function initSocket() {
     if (localScreenStream) {
       initiateScreenPeer(data.socketId);
     }
-    // Yeni qoşulan iştirakçı ilə deterministik səs əlaqəsi qur
-    if (data.socketId && data.socketId !== socket.id) {
-      connectVoicePeer(data.socketId);
+    // Əgər bizim mikrofon aktivdirsə, yeni qoşulan iştirakçıya səs zəngi et
+    if (isVoiceActive && localVoiceStream && data.socketId && data.socketId !== socket.id) {
+      callVoicePeer(data.socketId);
     }
   });
 
@@ -1191,8 +1193,8 @@ function initSocket() {
 
   // WebRTC Səsli Zəng Siqnalları
   socket.on('voice-peer-ready', async ({ sender }) => {
-    if (socket && sender && sender !== socket.id) {
-      connectVoicePeer(sender);
+    if (socket && sender && sender !== socket.id && isVoiceActive && localVoiceStream) {
+      callVoicePeer(sender);
     }
   });
 
@@ -1450,7 +1452,9 @@ function createYTPlayer(videoId) {
         autoplay: 1,
         controls: 1,
         rel: 0,
-        modestbranding: 1
+        modestbranding: 1,
+        enablejsapi: 1,
+        origin: window.location.origin
       },
       events: {
         'onReady': (event) => {
@@ -1488,6 +1492,67 @@ function onYouTubeStateChange(event) {
     socket.emit('video-action', { action: 'pause', time: currentTime });
     showRandomTrivia();
   }
+}
+
+// Qonaq və ya Host YouTube videosunu dayandırdıqda/başlatdıqda 100% zəmanətli avtomatik sinxronizasiya
+let lastYtSyncState = null;
+setInterval(() => {
+  if (isRemoteAction || !socket || !ytPlayer || currentVideoState.type !== 'youtube') return;
+  try {
+    if (typeof ytPlayer.getPlayerState === 'function') {
+      const state = ytPlayer.getPlayerState();
+      let curTime = 0;
+      if (typeof ytPlayer.getCurrentTime === 'function') curTime = ytPlayer.getCurrentTime();
+
+      if (state !== lastYtSyncState) {
+        if (state === 2) { // PAUSED
+          lastYtSyncState = 2;
+          socket.emit('video-action', { action: 'pause', time: curTime });
+          showRandomTrivia();
+        } else if (state === 1) { // PLAYING
+          lastYtSyncState = 1;
+          socket.emit('video-action', { action: 'play', time: curTime });
+          hideTrivia();
+        }
+      }
+    }
+  } catch (e) {}
+}, 400);
+
+// Alətlər panelindəki Otaq Play/Pause Düymələri (Həm Qonaq, həm Host üçün anında sinxron)
+const btnRoomPlay = document.getElementById('btn-room-play');
+const btnRoomPause = document.getElementById('btn-room-pause');
+
+if (btnRoomPlay) {
+  btnRoomPlay.addEventListener('click', () => {
+    let curTime = 0;
+    if (currentVideoState.type === 'youtube' && ytPlayer) {
+      if (typeof ytPlayer.playVideo === 'function') ytPlayer.playVideo();
+      if (typeof ytPlayer.getCurrentTime === 'function') curTime = ytPlayer.getCurrentTime();
+    } else if (currentVideoState.type === 'direct') {
+      directPlayer.play().catch(() => {});
+      curTime = directPlayer.currentTime;
+    }
+    if (socket) socket.emit('video-action', { action: 'play', time: curTime });
+    showNotice('▶️ Video başladıldı (Hamı üçün)');
+    hideTrivia();
+  });
+}
+
+if (btnRoomPause) {
+  btnRoomPause.addEventListener('click', () => {
+    let curTime = 0;
+    if (currentVideoState.type === 'youtube' && ytPlayer) {
+      if (typeof ytPlayer.pauseVideo === 'function') ytPlayer.pauseVideo();
+      if (typeof ytPlayer.getCurrentTime === 'function') curTime = ytPlayer.getCurrentTime();
+    } else if (currentVideoState.type === 'direct') {
+      directPlayer.pause();
+      curTime = directPlayer.currentTime;
+    }
+    if (socket) socket.emit('video-action', { action: 'pause', time: curTime });
+    showNotice('⏸️ Video saxlanıldı (Hamı üçün)');
+    showRandomTrivia();
+  });
 }
 
 btnLoadYt.addEventListener('click', () => {
@@ -1703,60 +1768,37 @@ function setupVoiceChat() {
 
 async function startVoiceChat() {
   try {
-    localVoiceStream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: true,
-        channelCount: 1,
-        sampleRate: 48000
-      },
-      video: false
-    });
+    if (!localVoiceStream || !localVoiceStream.active) {
+      localVoiceStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          channelCount: 1,
+          sampleRate: 48000
+        },
+        video: false
+      });
+    }
+
+    localVoiceStream.getAudioTracks().forEach(t => { t.enabled = true; });
     isVoiceActive = true;
     updateVoiceUI(true);
     showNotice('🎙️ Mikrofon aktivdir! Canlı danışa bilərsiniz.');
 
-    // Real səs fəallığını təyin et və haləni (Discord Voice Halo) aktiv et
+    // Real vaxt səs dalğası izləyicisi (Discord Voice Halo)
     startLocalSpeakingDetection(localVoiceStream);
 
     if (socket) {
       socket.emit('voice-user-state', { isVoiceActive: true });
+      socket.emit('voice-peer-ready');
     }
 
-    const localTrack = localVoiceStream.getAudioTracks()[0];
-    if (localTrack) {
-      // Mövcud bütün peer-lərin səs kanalına dərhal yerli mikrofonu qoş (replaceTrack ilə sıfır gecikmə)
-      for (const [peerId, pc] of Object.entries(voicePeerConnections)) {
-        let replaced = false;
-        if (pc.getSenders) {
-          const senders = pc.getSenders();
-          const audioSender = senders.find(s => (s.track && s.track.kind === 'audio') || s.kind === 'audio');
-          if (audioSender) {
-            try {
-              await audioSender.replaceTrack(localTrack);
-              replaced = true;
-              console.log(`[WebRTC Voice] replaceTrack succeeded for peer ${peerId}`);
-            } catch (e) {
-              console.warn(`[WebRTC Voice] replaceTrack error for ${peerId}:`, e);
-            }
-          }
-        }
-        if (!replaced) {
-          try {
-            pc.addTrack(localTrack, localVoiceStream);
-          } catch (e) {
-            console.warn(`[WebRTC Voice] addTrack fallback error for ${peerId}:`, e);
-          }
-        }
-      }
-    }
-
-    // Əgər otaqda hələ əlaqə qurulmamış peer-lər varsa, onlarla dərhal əlaqə qur
+    // Otaqdakı bütün digər istifadəçilərə canlı səs axını göndər
     if (currentRoomUsers && socket) {
       Object.keys(currentRoomUsers).forEach(peerId => {
-        if (peerId !== socket.id && !voicePeerConnections[peerId]) {
-          connectVoicePeer(peerId);
+        if (peerId !== socket.id) {
+          callVoicePeer(peerId);
         }
       });
     }
@@ -1771,30 +1813,18 @@ function stopVoiceChat() {
   stopLocalSpeakingDetection();
 
   if (localVoiceStream) {
-    localVoiceStream.getTracks().forEach(track => track.stop());
-    localVoiceStream = null;
+    localVoiceStream.getAudioTracks().forEach(track => {
+      track.enabled = false;
+    });
   }
   isVoiceActive = false;
   updateVoiceUI(false);
 
-  // Bütün peer əlaqələrindən mikrofonu dərhal susdur (əlaqəni kəsmədən, anında sükut)
-  Object.values(voicePeerConnections).forEach(pc => {
-    try {
-      if (pc.getSenders) {
-        pc.getSenders().forEach(s => {
-          if (s.track && s.track.kind === 'audio') {
-            s.replaceTrack(null).catch(() => {});
-          }
-        });
-      }
-    } catch (e) {}
-  });
-
   if (socket) {
     socket.emit('voice-user-state', { isVoiceActive: false });
     socket.emit('user-speaking', { isSpeaking: false });
-    updateSpeakingVisual(socket.id, false);
   }
+  updateSpeakingVisual(socket.id, false);
   showNotice('🎙️ Mikrofon bağlandı');
 }
 
@@ -1822,166 +1852,98 @@ function updateVoiceUI(active) {
   }
 }
 
-// Deterministik Əlaqə: Otaqdakı hər iki istifadəçi arasında yalnız BİR tərəf zəngi başladır
-function connectVoicePeer(peerId) {
+async function callVoicePeer(peerId) {
   if (!socket || !peerId || peerId === socket.id) return;
+  console.log(`[WebRTC Voice] Zəng göndərilir -> ${peerId}`);
 
-  // Leksikoqrafik qayda: socket.id < peerId olan tərəf İNİTİATOR-dur.
-  // Bu qətiyyən glare və ya toqquşma ehtimalı buraxmır!
-  const isInitiator = socket.id < peerId;
-  if (isInitiator) {
-    console.log(`[WebRTC Voice] Biz təşəbbüskarıq (${socket.id} < ${peerId}). Təklif hazırlanır...`);
-    negotiateVoicePeer(peerId);
-  } else {
-    console.log(`[WebRTC Voice] Peer ${peerId} təşəbbüskardır (${peerId} < ${socket.id}). Təklif gözlənilir.`);
-    getOrCreateVoicePeerConnection(peerId);
-  }
-}
-
-function getOrCreateVoicePeerConnection(peerId) {
   if (voicePeerConnections[peerId]) {
-    const pc = voicePeerConnections[peerId];
-    if (pc.connectionState !== 'closed') {
-      return pc;
-    }
+    try { voicePeerConnections[peerId].close(); } catch (e) {}
+    delete voicePeerConnections[peerId];
   }
 
-  console.log(`[WebRTC Voice] RTCPeerConnection yaradılır: ${peerId}`);
   const pc = new RTCPeerConnection(rtcConfig);
   voicePeerConnections[peerId] = pc;
-  pcMakingOffer[peerId] = false;
 
-  // Hər iki tərəfdə əvvəlcədən ikitərəfli səs transiveri ('sendrecv') aç
-  try {
-    const transceiver = pc.addTransceiver('audio', { direction: 'sendrecv' });
-    if (localVoiceStream && isVoiceActive) {
-      const audioTrack = localVoiceStream.getAudioTracks()[0];
-      if (audioTrack && transceiver.sender) {
-        transceiver.sender.replaceTrack(audioTrack).catch(() => {});
-      }
-    }
-  } catch (e) {
-    if (localVoiceStream && isVoiceActive) {
-      localVoiceStream.getAudioTracks().forEach(t => {
-        try { pc.addTrack(t, localVoiceStream); } catch (err) {}
-      });
-    }
+  // Real mikrofon səsini əlaqəyə qoş
+  if (localVoiceStream && localVoiceStream.getAudioTracks().length > 0) {
+    localVoiceStream.getAudioTracks().forEach(track => {
+      try { pc.addTrack(track, localVoiceStream); } catch (e) {}
+    });
   }
 
   // Qarşı tərəfdən gələn səs axını
   pc.ontrack = (event) => {
-    console.log(`[WebRTC Voice] ontrack hadisəsi baş verdi (${peerId}):`, event.track);
+    console.log(`[WebRTC Voice] Səs axını qəbul edildi (${peerId}):`, event.track);
     const stream = (event.streams && event.streams[0]) ? event.streams[0] : new MediaStream([event.track]);
     playRemoteVoice(stream, peerId, event.track);
   };
 
-  // ICE Namizədləri göndər
   pc.onicecandidate = (event) => {
     if (event.candidate && socket) {
       socket.emit('voice-ice', { target: peerId, candidate: event.candidate });
     }
   };
 
-  // ICE Vəziyyəti İzlənməsi və Avtomatik Bərpa
   pc.oniceconnectionstatechange = () => {
     console.log(`[WebRTC Voice] ICE Vəziyyəti (${peerId}): ${pc.iceConnectionState}`);
     if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
-      console.log(`[WebRTC Voice] Səs kanalı uğurla qoşuldu: ${peerId}`);
-      unlockAllRemoteAudios();
-    } else if (pc.iceConnectionState === 'failed') {
-      console.warn(`[WebRTC Voice] ICE əlaqəsi kəsildi (${peerId}). ICE restart başladılır...`);
-      if (typeof pc.restartIce === 'function') {
-        pc.restartIce();
-      } else if (socket.id < peerId) {
-        negotiateVoicePeer(peerId, true);
-      }
-    }
-  };
-
-  pc.onconnectionstatechange = () => {
-    console.log(`[WebRTC Voice] Peer Əlaqə Vəziyyəti (${peerId}): ${pc.connectionState}`);
-    if (pc.connectionState === 'connected') {
       unlockAllRemoteAudios();
     }
   };
-
-  return pc;
-}
-
-async function negotiateVoicePeer(peerId, isRestart = false) {
-  if (!socket || !peerId || peerId === socket.id) return;
-  const pc = getOrCreateVoicePeerConnection(peerId);
-
-  // Əgər yerli mikrofon aktivdirsə, səsi göndəriciyə bağla
-  if (localVoiceStream && isVoiceActive) {
-    const audioTrack = localVoiceStream.getAudioTracks()[0];
-    if (audioTrack && pc.getSenders) {
-      const audioSender = pc.getSenders().find(s => (s.track && s.track.kind === 'audio') || s.kind === 'audio');
-      if (audioSender) {
-        try { await audioSender.replaceTrack(audioTrack); } catch (e) {}
-      }
-    }
-  }
 
   try {
-    pcMakingOffer[peerId] = true;
-    const offer = await pc.createOffer({
-      offerToReceiveAudio: true,
-      iceRestart: isRestart
-    });
-    if (pc.signalingState !== 'stable') return;
+    const offer = await pc.createOffer({ offerToReceiveAudio: true });
     await pc.setLocalDescription(offer);
-    console.log(`[WebRTC Voice] Səs təklifi (offer) göndərilir -> ${peerId}`);
-    socket.emit('voice-offer', { target: peerId, sdp: pc.localDescription });
+    socket.emit('voice-offer', { target: peerId, sdp: offer });
   } catch (err) {
     console.error(`[WebRTC Voice] Təklif yaratma xətası (${peerId}):`, err);
-  } finally {
-    pcMakingOffer[peerId] = false;
   }
 }
 
 async function handleVoiceOffer(senderId, sdp) {
   if (!senderId || !sdp || !socket) return;
-  console.log(`[WebRTC Voice] Səs təklifi (offer) qəbul edildi <- ${senderId}`);
+  console.log(`[WebRTC Voice] Səs təklifi qəbul edildi <- ${senderId}`);
 
-  const pc = getOrCreateVoicePeerConnection(senderId);
-  const isPolite = socket.id > senderId;
-  const isMakingOffer = pcMakingOffer[senderId] || false;
-  const offerCollision = (sdp.type === 'offer') &&
-                         (isMakingOffer || pc.signalingState !== 'stable');
-
-  if (offerCollision && !isPolite) {
-    console.log(`[WebRTC Voice] Toqquşma qarşısı alındı: qeyri-polite peer təklifi ötürür (${senderId})`);
-    return;
+  let pc = voicePeerConnections[senderId];
+  if (!pc || pc.signalingState === 'closed') {
+    pc = new RTCPeerConnection(rtcConfig);
+    voicePeerConnections[senderId] = pc;
   }
 
-  if (offerCollision && isPolite) {
-    console.log(`[WebRTC Voice] Toqquşma qarşısı alındı: polite peer rollback edir (${senderId})`);
-    try {
-      await pc.setLocalDescription({ type: 'rollback' });
-    } catch (e) {
-      console.warn('[WebRTC Voice] Rollback xətası:', e);
+  // Əgər bizim də mikrofonumuz aktivdirsə, öz səsimizi də cavaba əlavə et
+  if (localVoiceStream && isVoiceActive && localVoiceStream.getAudioTracks().length > 0) {
+    const senders = pc.getSenders();
+    if (!senders || senders.length === 0) {
+      localVoiceStream.getAudioTracks().forEach(track => {
+        try { pc.addTrack(track, localVoiceStream); } catch (e) {}
+      });
     }
   }
+
+  pc.ontrack = (event) => {
+    console.log(`[WebRTC Voice] Səs axını qəbul edildi (${senderId}):`, event.track);
+    const stream = (event.streams && event.streams[0]) ? event.streams[0] : new MediaStream([event.track]);
+    playRemoteVoice(stream, senderId, event.track);
+  };
+
+  pc.onicecandidate = (event) => {
+    if (event.candidate && socket) {
+      socket.emit('voice-ice', { target: senderId, candidate: event.candidate });
+    }
+  };
+
+  pc.oniceconnectionstatechange = () => {
+    if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
+      unlockAllRemoteAudios();
+    }
+  };
 
   try {
     await pc.setRemoteDescription(new RTCSessionDescription(sdp));
     drainIceCandidates(senderId, pc);
 
-    // Əgər bizim də mikrofonumuz aktivdirsə, cavaba dərhal öz səsimizi əlavə et
-    if (localVoiceStream && isVoiceActive) {
-      const audioTrack = localVoiceStream.getAudioTracks()[0];
-      if (audioTrack && pc.getSenders) {
-        const audioSender = pc.getSenders().find(s => (s.track && s.track.kind === 'audio') || s.kind === 'audio');
-        if (audioSender) {
-          try { await audioSender.replaceTrack(audioTrack); } catch (e) {}
-        }
-      }
-    }
-
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
-    console.log(`[WebRTC Voice] Səs cavabı (answer) göndərilir -> ${senderId}`);
     socket.emit('voice-answer', { target: senderId, sdp: answer });
   } catch (err) {
     console.error(`[WebRTC Voice] handleVoiceOffer xətası (${senderId}):`, err);
@@ -1990,7 +1952,7 @@ async function handleVoiceOffer(senderId, sdp) {
 
 async function handleVoiceAnswer(senderId, sdp) {
   if (!senderId || !sdp) return;
-  console.log(`[WebRTC Voice] Səs cavabı (answer) qəbul edildi <- ${senderId}`);
+  console.log(`[WebRTC Voice] Səs cavabı qəbul edildi <- ${senderId}`);
   const pc = voicePeerConnections[senderId];
   if (!pc) return;
 
@@ -2050,7 +2012,7 @@ function playRemoteVoice(stream, peerId, track) {
   audioEl.muted = false;
   audioEl.volume = 1.0;
 
-  const attemptPlay = () => {
+  const tryPlay = () => {
     const playPromise = audioEl.play();
     if (playPromise !== undefined) {
       playPromise.then(() => {
@@ -2062,16 +2024,16 @@ function playRemoteVoice(stream, peerId, track) {
     }
   };
 
-  attemptPlay();
+  tryPlay();
 
   if (track) {
     track.onunmute = () => {
       console.log(`[WebRTC Voice] Track açıldı (unmuted): ${peerId}`);
-      attemptPlay();
+      tryPlay();
     };
   }
 
-  showNotice(`🔊 ${getPeerUsername(peerId)} səsə qoşuldu!`);
+  showNotice(`🔊 ${getPeerUsername(peerId)} ilə canlı səs aktivdir!`);
 }
 
 function cleanupVoicePeer(peerId) {
