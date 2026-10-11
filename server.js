@@ -175,8 +175,18 @@ io.on('connection', (socket) => {
   });
 
   // WebRTC Səsli Zəng (Mikrofon) Siqnalları
+  socket.on('voice-peer-ready', () => {
+    if (!currentRoom) return;
+    socket.to(currentRoom).emit('voice-peer-ready', { sender: socket.id, username: currentUsername });
+  });
+
+  socket.on('voice-peer-left', () => {
+    if (!currentRoom) return;
+    socket.to(currentRoom).emit('voice-peer-left', { peerId: socket.id, username: currentUsername });
+  });
+
   socket.on('voice-offer', ({ target, sdp }) => {
-    io.to(target).emit('voice-offer', { sender: socket.id, sdp });
+    io.to(target).emit('voice-offer', { sender: socket.id, sdp, username: currentUsername });
   });
 
   socket.on('voice-answer', ({ target, sdp }) => {

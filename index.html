@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Birlikdə Kino Otağımız 🎬🍿</title>
+  <title>WatchParty 🎬🍿 - Birlikdə Video & Film İzlə</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,26 +13,26 @@
   <!-- YouTube Iframe API -->
   <script src="https://www.youtube.com/iframe_api"></script>
 </head>
-<body>
+<body class="theme-netflix">
   <!-- Uçan Emojilər Konteyneri -->
   <div id="floating-emojis-container"></div>
 
   <!-- 1. GİRİŞ & OTAQ SEÇİMİ (LOBBY) -->
   <div id="lobby-screen" class="screen active">
     <div class="lobby-card">
-      <div class="lobby-badge">🍿 İkimiz Üçün Xüsusi</div>
-      <h1 class="lobby-title">Birlikdə Kino Gecəsi 🎬</h1>
-      <p class="lobby-subtitle">İstədiyiniz film saytından, YouTube-dan və ya birbaşa linkdən sevgilinizlə eyni anda, sinxron kino izləyin.</p>
+      <div class="lobby-badge">🍿 Sinxron Kinoteatr Platforması</div>
+      <h1 class="lobby-title">WatchParty 🎬</h1>
+      <p class="lobby-subtitle">İstənilən film saytından, YouTube-dan və ya video linkindən dostlarınızla real vaxtda sinxron baxın və səsli danışın.</p>
 
       <div class="input-group">
-        <label for="username-input">Adınız və ya Ləqəbiniz:</label>
+        <label for="username-input">Adınız / Ləqəbiniz:</label>
         <input type="text" id="username-input" placeholder="Məsələn: Əli" maxlength="20">
       </div>
 
       <div class="input-group">
         <label for="room-input">Otaq Kodu:</label>
         <div class="room-input-wrapper">
-          <input type="text" id="room-input" placeholder="Məsələn: bizim-kino">
+          <input type="text" id="room-input" placeholder="Məsələn: kino-101">
           <button id="btn-random-room" title="Təsadüfi otaq yarat">🎲 Təsadüfi</button>
         </div>
       </div>
@@ -44,16 +44,16 @@
 
       <div class="lobby-features">
         <div class="feature-item">
-          <span class="icon">✨</span>
-          <span>Sıfır Gecikmə</span>
-        </div>
-        <div class="feature-item">
           <span class="icon">💻</span>
-          <span>İstənilən Saytı Yayımla</span>
+          <span>İstənilən Film Saytı</span>
         </div>
         <div class="feature-item">
           <span class="icon">🎙️</span>
-          <span>Səsli Zəng</span>
+          <span>Canlı Səsli Zəng</span>
+        </div>
+        <div class="feature-item">
+          <span class="icon">⚡</span>
+          <span>HD Sinxronizasiya</span>
         </div>
       </div>
     </div>
@@ -64,7 +64,7 @@
     <!-- Üst Başlıq (Header) -->
     <header class="room-header">
       <div class="header-left">
-        <div class="brand-logo">🎬 Kino<span>Otağı</span></div>
+        <div class="brand-logo">🎬 Watch<span>Party</span></div>
         <div class="room-code-badge" id="btn-copy-link" title="Dəvət linkini kopyalamaq üçün klikləyin">
           <span>Otaq:</span>
           <strong id="display-room-id">...</strong>
@@ -73,15 +73,25 @@
       </div>
 
       <div class="header-right">
-        <!-- İştirakçılar -->
-        <div class="active-users-bar" id="users-list">
-          <!-- Dinamik olaraq doldurulur -->
+        <!-- Tema Seçimi (Theme Switcher) -->
+        <div class="theme-select-wrapper">
+          <span class="theme-icon">🎨</span>
+          <select id="theme-select" title="Mövzunu dəyişdirin">
+            <option value="theme-netflix">🎬 Netflix (Qırmızı)</option>
+            <option value="theme-discord">👾 Discord (Göy)</option>
+            <option value="theme-cyberpunk">⚡ Cyberpunk (Neon)</option>
+            <option value="theme-oled">🖤 OLED (Qara)</option>
+            <option value="theme-emerald">🌲 Emerald (Zümrüd)</option>
+          </select>
         </div>
 
-        <!-- Mikrofon Səsli Zəng Düyməsi -->
-        <button id="btn-voice-toggle" class="btn-icon" title="Mikrofon (Səsli Əlaqə)">
+        <!-- İştirakçılar -->
+        <div class="active-users-bar" id="users-list"></div>
+
+        <!-- Mikrofon Canlı Səsli Danışıq Düyməsi -->
+        <button id="btn-voice-toggle" class="btn-icon btn-voice" title="Mikrofon (Otaqdakılarla canlı danışın)">
           <span class="mic-icon">🎙️</span>
-          <span class="mic-text">Səs: Bağlı</span>
+          <span class="mic-text">Səsli Zəng: Qoşul</span>
         </button>
 
         <!-- Çatı Göstər/Gizlə (Mobil üçün) -->
@@ -118,11 +128,11 @@
           <!-- Boş vəziyyət (Hələ video seçilməyibsə) -->
           <div id="empty-player" class="empty-player-state">
             <div class="empty-icon">🍿🎬</div>
-            <h2>Kinoteatr Hazırdır!</h2>
-            <p>Aşağıdakı seçimlərdən birini istifadə edərək filmə baxmağa başlayın:</p>
+            <h2>Otaq Hazırdır!</h2>
+            <p>Aşağıdakı rejimlərdən birini seçərək filmə və ya videoya baxmağa başlayın:</p>
             <div class="empty-options">
-              <button class="empty-opt-btn" onclick="openSourceTab('youtube')">🔴 YouTube Linki</button>
               <button class="empty-opt-btn" onclick="openSourceTab('stream')">💻 Sayt Tabını Yayımla (WebRTC)</button>
+              <button class="empty-opt-btn" onclick="openSourceTab('youtube')">🔴 YouTube Linki</button>
               <button class="empty-opt-btn" onclick="openSourceTab('direct')">🎬 Birbaşa Video Linki</button>
             </div>
           </div>
@@ -141,7 +151,7 @@
           <div class="tab-pane active" id="pane-stream">
             <div class="stream-info-box">
               <div class="stream-guide">
-                <strong>💡 Necə işləyir:</strong> Brauzerdə sevdiyiniz film saytını açın. Sonra aşağıdakı düyməyə basaraq həmin tabı <em>(səsi ilə birlikdə)</em> seçin. Sevgiliniz sizin açdığınız filmi HD keyfiyyətlə və heç bir reklam/bloklama olmadan canlı izləyəcək!
+                <strong>💡 Necə işləyir:</strong> Brauzerdə sevdiyiniz film saytını açın. Sonra aşağıdakı düyməyə basaraq <strong>"Chrome Tab"</strong> bölməsindən həmin tabı seçin və aşağıda <em>"Also share tab audio" (Səsi paylaş)</em> qutusunu işarələyin. Otaqdakılar filmi canlı, HD keyfiyyətdə və təmiz səslə izləyəcək!
               </div>
               <div class="stream-actions">
                 <button id="btn-start-stream" class="btn-primary">
@@ -177,13 +187,13 @@
                 <span>📁 Kompüterdən Video Faylı Seçin (.mp4, .mkv, .webm)</span>
                 <input type="file" id="input-local-file" accept="video/*">
               </label>
-              <div class="file-hint">İpucu: Hər ikiniz öz kompüterinizdə eyni film faylını seçdikdə, pleyer bir-biri ilə millisaniyə dəqiqliyi ilə sinxronlaşır!</div>
+              <div class="file-hint">İpucu: Otaqdakılar da eyni video faylını kompüterindən seçdikdə, pleyer avtomatik sinxronlaşır.</div>
             </div>
           </div>
 
           <!-- Sinxronizasiya Alətləri -->
           <div class="quick-tools-bar">
-            <button id="btn-sync-now" class="tool-btn" title="Gecikmə olarsa basaraq tam eyni saniyəyə gətirin">
+            <button id="btn-sync-now" class="tool-btn" title="Gecikmə olarsa basaraq eyni saniyəyə gətirin">
               <span>🔄 Sinxronlaşdır</span>
             </button>
             <span class="status-indicator" id="playback-status">Hazırdır 🍿</span>
@@ -197,26 +207,26 @@
         <div class="reactions-bar">
           <div class="reactions-title">Canlı Reaksiya Göndər:</div>
           <div class="reactions-list">
-            <button class="reaction-btn" data-reaction="❤️">❤️</button>
             <button class="reaction-btn" data-reaction="🍿">🍿</button>
             <button class="reaction-btn" data-reaction="😂">😂</button>
-            <button class="reaction-btn" data-reaction="🥺">🥺</button>
+            <button class="reaction-btn" data-reaction="😮">😮</button>
             <button class="reaction-btn" data-reaction="🎬">🎬</button>
             <button class="reaction-btn" data-reaction="🔥">🔥</button>
-            <button class="reaction-btn" data-reaction="😱">😱</button>
+            <button class="reaction-btn" data-reaction="👏">👏</button>
+            <button class="reaction-btn" data-reaction="❤️">❤️</button>
           </div>
         </div>
 
         <!-- Çat Mesajları -->
         <div class="chat-wrapper">
           <div class="chat-header">
-            <span>💬 Sevgi Çatı</span>
+            <span>💬 Otaq Çatı</span>
           </div>
           <div class="chat-messages" id="chat-messages">
-            <div class="chat-system-msg">Otağa xoş gəlmisiniz! Yuxarıdakı linki sevgilinizə göndərin 💌</div>
+            <div class="chat-system-msg">Otağa xoş gəlmisiniz! Yuxarıdakı linki dostlarınızla paylaşın 🍿</div>
           </div>
           <form class="chat-input-form" id="chat-form">
-            <input type="text" id="chat-input" placeholder="Bir şey yazın..." autocomplete="off">
+            <input type="text" id="chat-input" placeholder="Mesaj yazın..." autocomplete="off">
             <button type="submit" class="btn-chat-send">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
             </button>
@@ -226,8 +236,8 @@
     </main>
   </div>
 
-  <!-- Səsli Zəng üçün Gizli Audio Element -->
-  <audio id="remote-voice-audio" autoplay></audio>
+  <!-- Səsli Zəng üçün Audio Element -->
+  <audio id="remote-voice-audio" autoplay playsinline></audio>
 
   <!-- Əsas Tətbiq Skripti -->
   <script src="app.js"></script>
