@@ -1,16 +1,16 @@
 // ==========================================
-// KİNO OTAĞI - CLIENT APP.JS
+// WATCHPARTY - CLIENT APP.JS
 // ==========================================
 
 let socket = null;
 let currentRoom = null;
-let currentUsername = 'Mən';
+let currentUsername = 'İstifadəçi';
 let isHost = false;
 
 // Media & Pleyer vəziyyətləri
 let ytPlayer = null;
 let isYtReady = false;
-let isRemoteAction = false; // Sinxronizasiya dövrəsinin qarşısını almaq üçün
+let isRemoteAction = false;
 let currentVideoState = { type: 'empty', url: '', isPlaying: false, time: 0 };
 
 // WebRTC Tab Yayımı
@@ -19,10 +19,27 @@ let screenPeerConnection = null;
 
 // WebRTC Səsli Zəng (Mikrofon)
 let localVoiceStream = null;
-let voicePeerConnection = null;
 let isVoiceActive = false;
+const voicePeerConnections = {};
 
-// STUN Serverləri (WebRTC P2P əlaqəsi üçün)
+// Audio Ducking (Səs Balansı)
+let audioContext = null;
+let analyserNode = null;
+let duckingTimer = null;
+let isDucked = false;
+
+// Trivia Sualları
+const triviaList = [
+  { q: "Popkorn və ya çay gətirmək növbəsi kimdədir? 🍿", opts: ["Məndədir, qaçdım gətirməyə 🏃‍♂️", "Səndədir, tez ol gəl! ⏳", "Gəl filmə davam edək ▶️"] },
+  { q: "🧪 Breaking Bad: Walter White-ın gizli kimyagər ləqəbi nə idi?", opts: ["Heisenberg (Düzgün)", "Gus Fring", "Cap'n Cook"] },
+  { q: "⚔️ Game of Thrones: Dəmir Taxt hansı paytaxt şəhərdə yerləşir?", opts: ["King's Landing (Düzgün)", "Winterfell", "Braavos"] },
+  { q: "🌌 Interstellar: Qara Dəliyin (Black Hole) adı nə idi?", opts: ["Gargantua (Düzgün)", "Millers", "Edmunds"] },
+  { q: "🦇 Batman: The Dark Knight-da Cokeri (Joker) hansı əfsanəvi aktyor oynamışdı?", opts: ["Heath Ledger (Düzgün)", "Joaquin Phoenix", "Christian Bale"] },
+  { q: "🕶️ The Matrix: Neo həqiqəti görmək üçün hansı rəng həbi seçir?", opts: ["Qırmızı həb (Düzgün)", "Mavi həb", "Yaşıl həb"] }
+];
+let currentTriviaIndex = 0;
+
+// STUN Serverləri
 const rtcConfig = {
   iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
@@ -41,7 +58,7 @@ const displayRoomId = document.getElementById('display-room-id');
 const btnCopyLink = document.getElementById('btn-copy-link');
 const usersList = document.getElementById('users-list');
 
-// Pleyerlər
+// Pleyerlər & Overlay
 const emptyPlayer = document.getElementById('empty-player');
 const ytPlayerFrame = document.getElementById('youtube-player');
 const directPlayer = document.getElementById('direct-player');
@@ -50,12 +67,17 @@ const btnUnmuteOverlay = document.getElementById('btn-unmute-overlay');
 const syncNotice = document.getElementById('sync-notice');
 const syncNoticeText = document.getElementById('sync-notice-text');
 const playbackStatus = document.getElementById('playback-status');
+const pauseTriviaOverlay = document.getElementById('pause-trivia-overlay');
+const triviaQuestion = document.getElementById('trivia-question');
+const triviaOptions = document.getElementById('trivia-options');
+const btnCloseTrivia = document.getElementById('btn-close-trivia');
 
-// WebRTC Yayım Düymələri
+// Yayım Düymələri
 const btnStartStream = document.getElementById('btn-start-stream');
 const btnStopStream = document.getElementById('btn-stop-stream');
+const btnStartNetflixStream = document.getElementById('btn-start-netflix-stream');
 
-// URL və Fayl Girişləri
+// Girişlər & Alətlər
 const inputYtUrl = document.getElementById('input-youtube-url');
 const btnLoadYt = document.getElementById('btn-load-youtube');
 const inputDirectUrl = document.getElementById('input-direct-url');
@@ -70,12 +92,25 @@ const chatForm = document.getElementById('chat-form');
 const chatInput = document.getElementById('chat-input');
 const chatMessages = document.getElementById('chat-messages');
 const floatingEmojisContainer = document.getElementById('floating-emojis-container');
+const duckingBadge = document.querySelector('.ducking-indicator');
+
+// Modallar (Ruletka & Xatirə)
+const btnOpenWatchlist = document.getElementById('btn-open-watchlist');
+const btnOpenHistory = document.getElementById('btn-open-history');
+const modalWatchlist = document.getElementById('modal-watchlist');
+const modalHistory = document.getElementById('modal-history');
+const watchlistForm = document.getElementById('watchlist-form');
+const inputWatchlistMovie = document.getElementById('input-watchlist-movie');
+const watchlistContainer = document.getElementById('watchlist-container');
+const btnSpinRoulette = document.getElementById('btn-spin-roulette');
+const rouletteWinnerBox = document.getElementById('roulette-winner-box');
+const historyForm = document.getElementById('history-form');
+const historyContainer = document.getElementById('history-container');
 
 // ==========================================
-// 1. İLKİN YÜKLƏNMƏ VƏ LOBBY
+// 1. İLKİN YÜKLƏNMƏ VƏ TEMA SİSTEMİ
 // ==========================================
 
-// URL-dən otaq kodunu yoxla (?room=ad)
 window.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
   const roomParam = urlParams.get('room');
@@ -83,42 +118,60 @@ window.addEventListener('DOMContentLoaded', () => {
     roomInput.value = roomParam;
   }
 
-  // Tema Seçici Tənzimləməsi
+  // Kult Film/Serial Tema Seçici
   const themeSelect = document.getElementById('theme-select');
   const savedTheme = localStorage.getItem('watchparty-theme') || 'theme-netflix';
-  document.body.className = savedTheme;
+  applyTheme(savedTheme);
   if (themeSelect) {
     themeSelect.value = savedTheme;
     themeSelect.addEventListener('change', (e) => {
-      document.body.className = e.target.value;
-      localStorage.setItem('watchparty-theme', e.target.value);
+      applyTheme(e.target.value);
     });
   }
 
-  // Təsadüfi otaq adı generatoru
+  // Təsadüfi otaq adı
   btnRandomRoom.addEventListener('click', () => {
-    const prefixes = ['kino', 'party', 'cinema', 'midnight', 'room', 'prime'];
+    const prefixes = ['kino', 'party', 'cinema', 'midnight', 'matrix', 'heisenberg', 'winterfell', 'gotham'];
     const randNum = Math.floor(100 + Math.random() * 900);
     const randPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
     roomInput.value = `${randPrefix}-${randNum}`;
   });
 
-  // Otağa daxil ol
+  // Otağa giriş
   btnEnterRoom.addEventListener('click', enterRoom);
   usernameInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') enterRoom(); });
   roomInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') enterRoom(); });
 
-  // Tab keçidləri
   setupTabs();
-  // Pleyer hadisələri
   setupDirectPlayerEvents();
-  // Çat & Reaksiyalar
   setupChatAndReactions();
-  // Səsli Zəng
   setupVoiceChat();
+  setupModalsAndFeatures();
 });
 
-// Otağa giriş funksiyası
+function applyTheme(themeName) {
+  document.body.className = themeName;
+  localStorage.setItem('watchparty-theme', themeName);
+
+  // Logo tərtibatı
+  const logo = document.getElementById('brand-logo-text');
+  if (logo) {
+    if (themeName === 'theme-breaking-bad') {
+      logo.innerHTML = '🧪 [Br]eak<span>[Ba]d</span>';
+    } else if (themeName === 'theme-got') {
+      logo.innerHTML = '⚔️ Winter<span>fell</span>';
+    } else if (themeName === 'theme-batman') {
+      logo.innerHTML = '🦇 Gotham<span>Cinema</span>';
+    } else if (themeName === 'theme-interstellar') {
+      logo.innerHTML = '🌌 Gargan<span>tua</span>';
+    } else if (themeName === 'theme-matrix') {
+      logo.innerHTML = '🕶️ The<span>Matrix</span>';
+    } else {
+      logo.innerHTML = '🎬 Watch<span>Party</span>';
+    }
+  }
+}
+
 function enterRoom() {
   const username = usernameInput.value.trim() || 'İstifadəçi';
   let roomId = roomInput.value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
@@ -130,19 +183,16 @@ function enterRoom() {
   currentUsername = username;
   currentRoom = roomId;
 
-  // URL-i yenilə (səhifə yenilənmədən)
   const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?room=' + currentRoom;
   window.history.pushState({ path: newUrl }, '', newUrl);
 
   initSocket();
 
-  // Ekranı dəyiş
   lobbyScreen.classList.remove('active');
   roomScreen.classList.add('active');
   displayRoomId.textContent = currentRoom;
 }
 
-// Linki kopyala
 btnCopyLink.addEventListener('click', () => {
   const inviteUrl = window.location.href;
   navigator.clipboard.writeText(inviteUrl).then(() => {
@@ -151,63 +201,68 @@ btnCopyLink.addEventListener('click', () => {
 });
 
 // ==========================================
-// 2. SOCKET.IO VƏ OTAQ ƏLAQƏSİ
+// 2. SOCKET.IO SİSTEMİ
 // ==========================================
 
 function initSocket() {
   socket = io();
 
-  // Otağa qoşul
   socket.emit('join-room', {
     roomId: currentRoom,
     username: currentUsername
   });
 
-  // Uğurla qoşulduqda
   socket.on('room-joined', (data) => {
     isHost = data.isHost;
     updateUsersList(data.users);
     if (data.videoState && data.videoState.type !== 'empty') {
       applyVideoState(data.videoState, false);
     }
+    if (data.watchlist) renderWatchlist(data.watchlist);
+    if (data.history) renderHistory(data.history);
     showNotice(isHost ? '👑 Otaq rəhbərisiniz. Xoş gəldiniz!' : '🍿 Otağa qoşuldunuz!');
   });
 
-  // Yeni istifadəçi qoşulduqda
   socket.on('user-joined', (data) => {
     updateUsersList(data.users);
-    showNotice(`💖 ${data.username} otağa daxil oldu!`);
-
-    // Əgər Host biziksə və hazırda WebRTC yayım ediriksə, yeni gələnə stream təklifi göndər
+    showNotice(`👋 ${data.username} otağa daxil oldu!`);
     if (localScreenStream) {
       initiateScreenPeer(data.socketId);
     }
   });
 
-  // İstifadəçi çıxdıqda
   socket.on('user-left', (data) => {
     updateUsersList(data.users);
     showNotice(`👋 ${data.username} otaqdan ayrıldı`);
   });
 
-  // Video mənbəyi dəyişdikdə
   socket.on('video-changed', (videoState) => {
     applyVideoState(videoState, true);
   });
 
-  // Video əməliyyatları (Play / Pause / Seek)
   socket.on('video-action', (data) => {
     handleRemoteVideoAction(data);
   });
 
-  // Mesaj gəldikdə
   socket.on('receive-message', (msg) => {
     appendChatMessage(msg);
   });
 
-  // Reaksiya gəldikdə
   socket.on('receive-reaction', (data) => {
     spawnFloatingEmoji(data.reaction);
+  });
+
+  // Watchlist & History Hadisələri
+  socket.on('watchlist-updated', (list) => {
+    renderWatchlist(list);
+  });
+
+  socket.on('watchlist-winner', ({ winner, spinner }) => {
+    showWinnerAnnouncement(winner, spinner);
+  });
+
+  socket.on('history-updated', (list) => {
+    renderHistory(list);
   });
 
   // WebRTC Tab Yayımı Siqnalları
@@ -235,9 +290,7 @@ function initSocket() {
     if (screenPeerConnection && candidate) {
       try {
         await screenPeerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-      } catch (e) {
-        console.error('ICE candidate error', e);
-      }
+      } catch (e) {}
     }
   });
 
@@ -286,18 +339,18 @@ function updateUsersList(users) {
 }
 
 // ==========================================
-// 3. PLEYERİN İDARƏ EDİLMƏSİ VƏ SİNXRONİZASİYA
+// 3. PLEYER SİNXRONİZASİYASI & TRIVIA
 // ==========================================
 
 function applyVideoState(state, showNotification = true) {
   currentVideoState = state;
 
-  // Bütün pleyerləri gizlət
   emptyPlayer.classList.add('hidden');
   ytPlayerFrame.classList.add('hidden');
   directPlayer.classList.add('hidden');
   streamPlayer.classList.add('hidden');
   if (btnUnmuteOverlay) btnUnmuteOverlay.classList.add('hidden');
+  if (pauseTriviaOverlay) pauseTriviaOverlay.classList.add('hidden');
 
   if (state.type === 'youtube') {
     ytPlayerFrame.classList.remove('hidden');
@@ -315,13 +368,15 @@ function applyVideoState(state, showNotification = true) {
     if (showNotification) showNotice('🎬 Birbaşa video açıldı');
   } else if (state.type === 'stream') {
     streamPlayer.classList.remove('hidden');
+    if (!localScreenStream) {
+      socket.emit('stream-ready');
+    }
     if (showNotification) showNotice('💻 Canlı film yayımı aktivdir');
   } else {
     emptyPlayer.classList.remove('hidden');
   }
 }
 
-// Digər tərəfdən gələn Play/Pause/Seek
 function handleRemoteVideoAction({ action, time, sender }) {
   isRemoteAction = true;
 
@@ -332,9 +387,11 @@ function handleRemoteVideoAction({ action, time, sender }) {
     if (action === 'play') {
       ytPlayer.playVideo();
       showNotice(`▶️ ${sender} videonu başlatdı`);
+      hideTrivia();
     } else if (action === 'pause') {
       ytPlayer.pauseVideo();
       showNotice(`⏸️ ${sender} videonu saxladı`);
+      showRandomTrivia();
     } else if (action === 'seek') {
       ytPlayer.seekTo(time, true);
       showNotice(`⏩ ${sender} vaxtı dəyişdi (${formatTime(time)})`);
@@ -346,9 +403,11 @@ function handleRemoteVideoAction({ action, time, sender }) {
     if (action === 'play') {
       directPlayer.play().catch(() => {});
       showNotice(`▶️ ${sender} videonu başlatdı`);
+      hideTrivia();
     } else if (action === 'pause') {
       directPlayer.pause();
       showNotice(`⏸️ ${sender} videonu saxladı`);
+      showRandomTrivia();
     } else if (action === 'seek') {
       directPlayer.currentTime = time;
       showNotice(`⏩ ${sender} vaxtı dəyişdi (${formatTime(time)})`);
@@ -359,6 +418,32 @@ function handleRemoteVideoAction({ action, time, sender }) {
     isRemoteAction = false;
   }, 400);
 }
+
+// Fasilə Trivia Sistemi
+function showRandomTrivia() {
+  if (!pauseTriviaOverlay) return;
+  const t = triviaList[Math.floor(Math.random() * triviaList.length)];
+  triviaQuestion.textContent = t.q;
+  triviaOptions.innerHTML = '';
+  t.opts.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'trivia-opt';
+    btn.textContent = opt;
+    btn.onclick = () => answerTrivia(idx, opt);
+    triviaOptions.appendChild(btn);
+  });
+  pauseTriviaOverlay.classList.remove('hidden');
+}
+
+window.answerTrivia = function(idx, text) {
+  showNotice(`💬 Cavab: "${text}"`);
+  hideTrivia();
+};
+
+function hideTrivia() {
+  if (pauseTriviaOverlay) pauseTriviaOverlay.classList.add('hidden');
+}
+if (btnCloseTrivia) btnCloseTrivia.addEventListener('click', hideTrivia);
 
 // ==========================================
 // 4. YOUTUBE İNTEQRASİYASI
@@ -403,13 +488,14 @@ function loadYouTubeVideo(url) {
 
 function onYouTubeStateChange(event) {
   if (isRemoteAction || !socket) return;
-
   const currentTime = ytPlayer.getCurrentTime();
 
   if (event.data === YT.PlayerState.PLAYING) {
     socket.emit('video-action', { action: 'play', time: currentTime });
+    hideTrivia();
   } else if (event.data === YT.PlayerState.PAUSED) {
     socket.emit('video-action', { action: 'pause', time: currentTime });
+    showRandomTrivia();
   }
 }
 
@@ -427,11 +513,13 @@ function setupDirectPlayerEvents() {
   directPlayer.addEventListener('play', () => {
     if (isRemoteAction || !socket) return;
     socket.emit('video-action', { action: 'play', time: directPlayer.currentTime });
+    hideTrivia();
   });
 
   directPlayer.addEventListener('pause', () => {
     if (isRemoteAction || !socket) return;
     socket.emit('video-action', { action: 'pause', time: directPlayer.currentTime });
+    showRandomTrivia();
   });
 
   directPlayer.addEventListener('seeked', () => {
@@ -446,17 +534,14 @@ btnLoadDirect.addEventListener('click', () => {
   socket.emit('change-video', { type: 'direct', url });
 });
 
-// Lokal Fayl Seçildikdə
 inputLocalFile.addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
-
   const fileUrl = URL.createObjectURL(file);
   applyVideoState({ type: 'direct', url: fileUrl, isPlaying: true, time: 0 });
-  showNotice(`📁 Lokal fayl yükləndi: ${file.name}. Sevgiliniz də eyni faylı seçərsə sinxron baxacaqsınız!`);
+  showNotice(`📁 Lokal fayl: ${file.name}. Digər iştirakçı da eyni faylı seçdikdə sinxronlaşacaq.`);
 });
 
-// Sinxronlaşdır Düyməsi
 btnSyncNow.addEventListener('click', () => {
   if (currentVideoState.type === 'youtube' && ytPlayer) {
     socket.emit('video-action', { action: 'seek', time: ytPlayer.getCurrentTime() });
@@ -468,12 +553,16 @@ btnSyncNow.addEventListener('click', () => {
 });
 
 // ==========================================
-// 6. WEBRTC TAB/EKRAN YAYIMI ("İstənilən Film Saytı")
+// 6. WEBRTC TAB YAYIMI & NETFLIX
 // ==========================================
 
-btnStartStream.addEventListener('click', async () => {
+btnStartStream.addEventListener('click', startScreenCapture);
+if (btnStartNetflixStream) {
+  btnStartNetflixStream.addEventListener('click', startScreenCapture);
+}
+
+async function startScreenCapture() {
   try {
-    // Səs və video ilə ekran/tab paylaşımı
     localScreenStream = await navigator.mediaDevices.getDisplayMedia({
       video: {
         displaySurface: 'browser',
@@ -492,7 +581,6 @@ btnStartStream.addEventListener('click', async () => {
       alert("⚠️ DİQQƏT: Filmin səsi qoşulmadı!\n\nChrome pəncərəsi açılanda aşağıdakı 'Also share tab audio' (Səsi paylaş) qutusunu mütləq işarələyin və 'Pəncərə' yox, 'Chrome Tab' (və ya Bütöv Ekran) seçin.");
     }
 
-    // Öz pleyerimizdə göstər (özümüz üçün muted edirik ki, əks-səda verməsin)
     streamPlayer.srcObject = localScreenStream;
     streamPlayer.muted = true;
     streamPlayer.classList.remove('hidden');
@@ -502,19 +590,15 @@ btnStartStream.addEventListener('click', async () => {
     btnStartStream.classList.add('hidden');
     btnStopStream.classList.remove('hidden');
 
-    // Serverə xəbər ver ki, canlı yayım başladı
     socket.emit('change-video', { type: 'stream', url: 'live-tab' });
     socket.emit('stream-ready');
 
-    // İstifadəçi brauzerdən "Stop sharing" basanda
     localScreenStream.getVideoTracks()[0].onended = stopScreenStream;
-
     showNotice('🎥 Film tabı yayımlanır! Səs aktivdir.');
   } catch (err) {
     console.error('Ekran yayımı xətası:', err);
-    alert('Yayımı başlatmaq üçün pəncərəni və ya tabı seçməlisiniz.');
   }
-});
+}
 
 btnStopStream.addEventListener('click', stopScreenStream);
 
@@ -540,13 +624,10 @@ function stopScreenStream() {
   showNotice('⏹️ Yayım dayandırıldı');
 }
 
-// Yayımçının Peer başlatması
 async function initiateScreenPeer(targetSocketId) {
   if (!localScreenStream) return;
+  if (screenPeerConnection) screenPeerConnection.close();
 
-  if (screenPeerConnection) {
-    screenPeerConnection.close();
-  }
   screenPeerConnection = new RTCPeerConnection(rtcConfig);
 
   localScreenStream.getTracks().forEach(track => {
@@ -561,21 +642,17 @@ async function initiateScreenPeer(targetSocketId) {
 
   const offer = await screenPeerConnection.createOffer();
   await screenPeerConnection.setLocalDescription(offer);
-
   socket.emit('webrtc-offer', { target: targetSocketId, sdp: offer });
 }
 
-// İzləyicinin təklifi qəbul etməsi
 async function handleScreenOffer(senderSocketId, sdp) {
-  if (screenPeerConnection) {
-    screenPeerConnection.close();
-  }
+  if (screenPeerConnection) screenPeerConnection.close();
+
   screenPeerConnection = new RTCPeerConnection(rtcConfig);
 
   screenPeerConnection.ontrack = (event) => {
-    console.log('[WebRTC] Stream track alındı:', event.track.kind);
     streamPlayer.srcObject = event.streams[0];
-    streamPlayer.muted = false; // İzləyici mütləq səsi eşitsin
+    streamPlayer.muted = false;
     streamPlayer.volume = 1.0;
 
     const playPromise = streamPlayer.play();
@@ -583,7 +660,7 @@ async function handleScreenOffer(senderSocketId, sdp) {
       playPromise.then(() => {
         if (btnUnmuteOverlay) btnUnmuteOverlay.classList.add('hidden');
       }).catch(err => {
-        console.warn('[WebRTC] Autoplay audio bloklandı (istifadəçi klikləməlidir):', err);
+        console.warn('Autoplay audio blocked:', err);
         if (btnUnmuteOverlay) btnUnmuteOverlay.classList.remove('hidden');
       });
     }
@@ -598,11 +675,9 @@ async function handleScreenOffer(senderSocketId, sdp) {
   await screenPeerConnection.setRemoteDescription(new RTCSessionDescription(sdp));
   const answer = await screenPeerConnection.createAnswer();
   await screenPeerConnection.setLocalDescription(answer);
-
   socket.emit('webrtc-answer', { target: senderSocketId, sdp: answer });
 }
 
-// Səsi açmaq üçün düyməyə basıldıqda
 if (btnUnmuteOverlay) {
   btnUnmuteOverlay.addEventListener('click', () => {
     streamPlayer.muted = false;
@@ -614,10 +689,8 @@ if (btnUnmuteOverlay) {
 }
 
 // ==========================================
-// 7. WEBRTC SƏSLİ ZƏNG (MİKROFON)
+// 7. WEBRTC SƏSLİ ZƏNG & AUDIO DUCKING
 // ==========================================
-
-const voicePeerConnections = {};
 
 function setupVoiceChat() {
   btnVoiceToggle.addEventListener('click', async () => {
@@ -642,16 +715,17 @@ async function startVoiceChat() {
     isVoiceActive = true;
     btnVoiceToggle.classList.add('active');
     btnVoiceToggle.querySelector('.mic-text').textContent = 'Səs: Açıq 🟢';
-    showNotice('🎙️ Mikrofon açıldı! Birlikdə canlı danışa bilərsiniz.');
+    showNotice('🎙️ Mikrofon aktivdir! Canlı danışa bilərsiniz.');
 
-    // Mövcud səs bağlantılarına audio track-lərimizi əlavə edirik
+    // Audio Ducking Aktiv Et
+    setupAudioDucking(localVoiceStream);
+
     Object.values(voicePeerConnections).forEach(pc => {
       localVoiceStream.getTracks().forEach(track => {
         pc.addTrack(track, localVoiceStream);
       });
     });
 
-    // Otaqdakı digər şəxslərə səsli zəngə qoşulduğumuzu bildiririk
     socket.emit('voice-peer-ready');
   } catch (err) {
     console.error('Mikrofon xətası:', err);
@@ -666,7 +740,9 @@ function stopVoiceChat() {
   }
   isVoiceActive = false;
   btnVoiceToggle.classList.remove('active');
-  btnVoiceToggle.querySelector('.mic-text').textContent = 'Səs: Bağlı';
+  btnVoiceToggle.querySelector('.mic-text').textContent = 'Səsli Zəng: Qoşul';
+
+  stopAudioDucking();
 
   Object.values(voicePeerConnections).forEach(pc => pc.close());
   for (let key in voicePeerConnections) delete voicePeerConnections[key];
@@ -675,26 +751,77 @@ function stopVoiceChat() {
   showNotice('🎙️ Mikrofon bağlandı');
 }
 
-// Zəngi başladan tərəf (Zəng edir)
-async function callVoicePeer(targetSocketId) {
-  if (voicePeerConnections[targetSocketId]) {
-    voicePeerConnections[targetSocketId].close();
+// Audio Ducking: Danışanda filmin səsini 30%-ə salır, susanda 100%-ə qaldırır
+function setupAudioDucking(stream) {
+  try {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const source = audioContext.createMediaStreamSource(stream);
+    analyserNode = audioContext.createAnalyser();
+    analyserNode.fftSize = 256;
+    source.connect(analyserNode);
+
+    const dataArray = new Uint8Array(analyserNode.frequencyBinCount);
+
+    if (duckingTimer) clearInterval(duckingTimer);
+    duckingTimer = setInterval(() => {
+      if (!isVoiceActive || !analyserNode) return;
+      analyserNode.getByteFrequencyData(dataArray);
+
+      let sum = 0;
+      for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+      let avg = sum / dataArray.length;
+
+      if (avg > 16) {
+        if (!isDucked) {
+          isDucked = true;
+          applyDuckingVolume(true);
+          if (duckingBadge) duckingBadge.classList.add('ducking-active');
+        }
+      } else {
+        if (isDucked) {
+          isDucked = false;
+          applyDuckingVolume(false);
+          if (duckingBadge) duckingBadge.classList.remove('ducking-active');
+        }
+      }
+    }, 200);
+  } catch (err) {
+    console.warn('Audio Ducking işə düşmədi:', err);
   }
+}
+
+function stopAudioDucking() {
+  if (duckingTimer) clearInterval(duckingTimer);
+  if (audioContext) {
+    audioContext.close().catch(() => {});
+    audioContext = null;
+  }
+  applyDuckingVolume(false);
+  if (duckingBadge) duckingBadge.classList.remove('ducking-active');
+}
+
+function applyDuckingVolume(duck) {
+  const targetVol = duck ? 0.35 : 1.0;
+  const ytVol = duck ? 35 : 100;
+
+  if (streamPlayer) streamPlayer.volume = targetVol;
+  if (directPlayer) directPlayer.volume = targetVol;
+  if (ytPlayer && ytPlayer.setVolume) ytPlayer.setVolume(ytVol);
+}
+
+async function callVoicePeer(targetSocketId) {
+  if (voicePeerConnections[targetSocketId]) voicePeerConnections[targetSocketId].close();
 
   const pc = new RTCPeerConnection(rtcConfig);
   voicePeerConnections[targetSocketId] = pc;
 
   if (localVoiceStream) {
-    localVoiceStream.getTracks().forEach(track => {
-      pc.addTrack(track, localVoiceStream);
-    });
+    localVoiceStream.getTracks().forEach(track => pc.addTrack(track, localVoiceStream));
   } else {
     pc.addTransceiver('audio', { direction: 'recvonly' });
   }
 
-  pc.ontrack = (event) => {
-    playRemoteVoice(event.streams[0]);
-  };
+  pc.ontrack = (event) => playRemoteVoice(event.streams[0]);
 
   pc.onicecandidate = (event) => {
     if (event.candidate) {
@@ -707,26 +834,19 @@ async function callVoicePeer(targetSocketId) {
   socket.emit('voice-offer', { target: targetSocketId, sdp: offer });
 }
 
-// Zəngi qəbul edən tərəf
 async function handleVoiceOffer(senderSocketId, sdp) {
-  if (voicePeerConnections[senderSocketId]) {
-    voicePeerConnections[senderSocketId].close();
-  }
+  if (voicePeerConnections[senderSocketId]) voicePeerConnections[senderSocketId].close();
 
   const pc = new RTCPeerConnection(rtcConfig);
   voicePeerConnections[senderSocketId] = pc;
 
   if (localVoiceStream) {
-    localVoiceStream.getTracks().forEach(track => {
-      pc.addTrack(track, localVoiceStream);
-    });
+    localVoiceStream.getTracks().forEach(track => pc.addTrack(track, localVoiceStream));
   } else {
     pc.addTransceiver('audio', { direction: 'recvonly' });
   }
 
-  pc.ontrack = (event) => {
-    playRemoteVoice(event.streams[0]);
-  };
+  pc.ontrack = (event) => playRemoteVoice(event.streams[0]);
 
   pc.onicecandidate = (event) => {
     if (event.candidate) {
@@ -752,16 +872,117 @@ function playRemoteVoice(stream) {
   audioEl.srcObject = stream;
   audioEl.muted = false;
   audioEl.volume = 1.0;
-
-  audioEl.play().catch(err => {
-    console.warn('Autoplay voice audio blocked:', err);
-    showNotice('🔊 Qarşı tərəfin səsini eşitmək üçün ekrana toxunun!');
-  });
-  showNotice('💖 Səsli danışıq aktivdir! Bir-birinizi eşidə bilərsiniz.');
+  audioEl.play().catch(() => {});
+  showNotice('💖 Canlı səsli danışıq qoşuldu!');
 }
 
 // ==========================================
-// 8. ÇAT VƏ UÇAN EMOJİLƏR
+// 8. WATCHLIST & XATİRƏ ARXİVİ MODALLARI
+// ==========================================
+
+function setupModalsAndFeatures() {
+  btnOpenWatchlist.addEventListener('click', () => openModal('modal-watchlist'));
+  btnOpenHistory.addEventListener('click', () => openModal('modal-history'));
+
+  // Watchlist Əlavə Et
+  watchlistForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const title = inputWatchlistMovie.value.trim();
+    if (!title || !socket) return;
+    socket.emit('watchlist-add', { title });
+    inputWatchlistMovie.value = '';
+  });
+
+  // Ruletkanı Fırlat
+  btnSpinRoulette.addEventListener('click', () => {
+    if (!socket) return;
+    btnSpinRoulette.textContent = '🎲 Fırlanır...';
+    btnSpinRoulette.disabled = true;
+    socket.emit('watchlist-spin');
+    setTimeout(() => {
+      btnSpinRoulette.innerHTML = '<span>🎯 Ruletkanı Fırlat və Seç!</span>';
+      btnSpinRoulette.disabled = false;
+    }, 2000);
+  });
+
+  // Tarixçə Əlavə Et
+  historyForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const title = document.getElementById('input-history-title').value.trim();
+    const rating = document.getElementById('input-history-rating').value;
+    const note = document.getElementById('input-history-note').value.trim();
+    if (!title || !socket) return;
+
+    socket.emit('history-add', { title, rating, note });
+    document.getElementById('input-history-title').value = '';
+    document.getElementById('input-history-note').value = '';
+    showNotice('📜 Film xatirələr siyahısına əlavə olundu!');
+  });
+}
+
+function renderWatchlist(list) {
+  watchlistContainer.innerHTML = '';
+  if (!list || list.length === 0) {
+    watchlistContainer.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:10px;">Hələ heç bir film əlavə edilməyib.</div>';
+    return;
+  }
+  list.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'watchlist-item';
+    div.innerHTML = `
+      <span>🎬 <strong>${escapeHtml(item.title)}</strong> <small style="opacity:0.7">(${escapeHtml(item.addedBy)})</small></span>
+      <button onclick="deleteWatchlistItem('${item.id}')" title="Sil">✕</button>
+    `;
+    watchlistContainer.appendChild(div);
+  });
+}
+
+window.deleteWatchlistItem = function(id) {
+  if (socket) socket.emit('watchlist-remove', { id });
+};
+
+function showWinnerAnnouncement(winner, spinner) {
+  rouletteWinnerBox.classList.remove('hidden');
+  rouletteWinnerBox.innerHTML = `
+    🎉 <strong>${escapeHtml(spinner)}</strong> ruletkanı fırlatdı!<br>
+    🍿 Bu gecənin qalib filmi: <strong style="color:var(--primary); font-size:1.3rem;">${escapeHtml(winner.title)}</strong>!
+  `;
+  showNotice(`🎯 Qalib seçildi: ${winner.title}`);
+}
+
+function renderHistory(list) {
+  historyContainer.innerHTML = '';
+  if (!list || list.length === 0) {
+    historyContainer.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:10px;">Hələ izlənmiş film qeyd olunmayıb.</div>';
+    return;
+  }
+  list.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'history-card';
+    card.innerHTML = `
+      <div class="history-card-header">
+        <span class="history-title">🎬 ${escapeHtml(item.title)}</span>
+        <span class="history-badge">⭐ ${item.rating}/10</span>
+      </div>
+      ${item.note ? `<div class="history-note">"${escapeHtml(item.note)}"</div>` : ''}
+      <div class="history-meta">📅 ${item.date} — ${escapeHtml(item.addedBy)}</div>
+    `;
+    historyContainer.appendChild(card);
+  });
+}
+
+window.openModal = function(modalId) {
+  const el = document.getElementById(modalId);
+  if (el) el.classList.remove('hidden');
+};
+
+window.closeModal = function(modalId) {
+  const el = document.getElementById(modalId);
+  if (el) el.classList.add('hidden');
+};
+
+// ==========================================
+// 9. ÇAT VƏ EMOJİLƏR
 // ==========================================
 
 function setupChatAndReactions() {
@@ -773,7 +994,6 @@ function setupChatAndReactions() {
     chatInput.value = '';
   });
 
-  // Reaksiyalar
   document.querySelectorAll('.reaction-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const emoji = btn.getAttribute('data-reaction');
@@ -805,7 +1025,6 @@ function spawnFloatingEmoji(emoji) {
   el.className = 'floating-emoji';
   el.textContent = emoji;
 
-  // Təsadüfi üfüqi mövqe (10% - 85%)
   const randomLeft = 10 + Math.random() * 75;
   el.style.left = `${randomLeft}%`;
 
@@ -817,7 +1036,7 @@ function spawnFloatingEmoji(emoji) {
 }
 
 // ==========================================
-// 9. KÖMƏKÇİ FUNKSİYALAR
+// 10. KÖMƏKÇİ FUNKSİYALAR
 // ==========================================
 
 function setupTabs() {
@@ -843,9 +1062,8 @@ window.openSourceTab = function(tabName) {
 function showNotice(text) {
   syncNoticeText.textContent = text;
   syncNotice.classList.remove('hidden');
-  // Animasiyanı sıfırlamaq üçün
   syncNotice.style.animation = 'none';
-  syncNotice.offsetHeight; /* trigger reflow */
+  syncNotice.offsetHeight;
   syncNotice.style.animation = null;
 
   setTimeout(() => {

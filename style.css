@@ -1,25 +1,124 @@
 /* ==========================================
-   WATCHPARTY CSS THEMES & STYLING
+   WATCHPARTY MULTI-THEME & FEATURE STYLES
    ========================================== */
 
-/* 1. NETFLIX CINEMA THEME (Default) */
+/* 1. NETFLIX CINEMA (Default) */
 body.theme-netflix, body {
   --bg-dark: #101115;
   --bg-card: #181920;
   --bg-input: #22242e;
   --primary: #e50914;
   --primary-hover: #f40612;
-  --primary-glow: rgba(229, 9, 20, 0.35);
+  --primary-glow: rgba(229, 9, 20, 0.4);
   --accent-gold: #ffb830;
   --text-main: #ffffff;
   --text-muted: #9598a6;
   --border-color: #2b2e3b;
   --radius: 12px;
   --radius-sm: 8px;
-  --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  --brand-font: 'Plus Jakarta Sans', sans-serif;
 }
 
-/* 2. DISCORD THEME */
+/* 2. BREAKING BAD (Heisenberg / Toxic Green) */
+body.theme-breaking-bad {
+  --bg-dark: #090e0b;
+  --bg-card: #111a14;
+  --bg-input: #1a271f;
+  --primary: #00ff66;
+  --primary-hover: #10e060;
+  --primary-glow: rgba(0, 255, 102, 0.4);
+  --accent-gold: #facc15;
+  --text-main: #f0fdf4;
+  --text-muted: #86efac;
+  --border-color: #23392b;
+  --radius: 8px;
+  --radius-sm: 4px;
+  --brand-font: 'Fira Code', monospace;
+}
+body.theme-breaking-bad .brand-logo {
+  font-family: 'Fira Code', monospace;
+  letter-spacing: 1px;
+}
+body.theme-breaking-bad .brand-logo span {
+  background: #00ff66;
+  color: #090e0b;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* 3. GAME OF THRONES (Winterfell Ice) */
+body.theme-got {
+  --bg-dark: #080c14;
+  --bg-card: #0f1624;
+  --bg-input: #172136;
+  --primary: #38bdf8;
+  --primary-hover: #0ea5e9;
+  --primary-glow: rgba(56, 189, 248, 0.4);
+  --accent-gold: #e2e8f0;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: #22324f;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --brand-font: 'Cinzel', serif;
+}
+body.theme-got .brand-logo, body.theme-got h2, body.theme-got .lobby-title {
+  font-family: 'Cinzel', serif;
+  letter-spacing: 2px;
+}
+
+/* 4. THE DARK KNIGHT (Gotham Noir) */
+body.theme-batman {
+  --bg-dark: #060608;
+  --bg-card: #0e0e13;
+  --bg-input: #181820;
+  --primary: #eab308;
+  --primary-hover: #ca8a04;
+  --primary-glow: rgba(234, 179, 8, 0.4);
+  --accent-gold: #fef08a;
+  --text-main: #ffffff;
+  --text-muted: #858598;
+  --border-color: #262633;
+  --radius: 6px;
+  --radius-sm: 4px;
+  --brand-font: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* 5. INTERSTELLAR (Cosmos Orange / Gargantua) */
+body.theme-interstellar {
+  --bg-dark: #08070d;
+  --bg-card: #120f1d;
+  --bg-input: #1d182e;
+  --primary: #f97316;
+  --primary-hover: #ea580c;
+  --primary-glow: rgba(249, 115, 22, 0.4);
+  --accent-gold: #fbbf24;
+  --text-main: #fff7ed;
+  --text-muted: #a89bb9;
+  --border-color: #2d2645;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --brand-font: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* 6. THE MATRIX (Cyber Green) */
+body.theme-matrix {
+  --bg-dark: #030804;
+  --bg-card: #07150a;
+  --bg-input: #0e2413;
+  --primary: #22c55e;
+  --primary-hover: #16a34a;
+  --primary-glow: rgba(34, 197, 94, 0.4);
+  --accent-gold: #86efac;
+  --text-main: #dcfce7;
+  --text-muted: #4ade80;
+  --border-color: #173b1f;
+  --radius: 4px;
+  --radius-sm: 2px;
+  --brand-font: 'Fira Code', monospace;
+}
+
+/* 7. DISCORD THEME */
 body.theme-discord {
   --bg-dark: #1e1f22;
   --bg-card: #2b2d31;
@@ -31,48 +130,26 @@ body.theme-discord {
   --text-main: #f2f3f5;
   --text-muted: #949ba4;
   --border-color: #3f4147;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --brand-font: 'Plus Jakarta Sans', sans-serif;
 }
 
-/* 3. CYBERPUNK NEON THEME */
-body.theme-cyberpunk {
-  --bg-dark: #070913;
-  --bg-card: #0d1224;
-  --bg-input: #151d38;
-  --primary: #00f2fe;
-  --primary-hover: #4facfe;
-  --primary-glow: rgba(0, 242, 254, 0.4);
-  --accent-gold: #fcee0a;
-  --text-main: #f0f6fc;
-  --text-muted: #798eb4;
-  --border-color: #1e294b;
-}
-
-/* 4. OLED BLACK THEME */
+/* 8. OLED MINIMAL THEME */
 body.theme-oled {
   --bg-dark: #000000;
   --bg-card: #0c0c0c;
   --bg-input: #181818;
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
-  --primary-glow: rgba(59, 130, 246, 0.35);
+  --primary: #ffffff;
+  --primary-hover: #e5e5e5;
+  --primary-glow: rgba(255, 255, 255, 0.25);
   --accent-gold: #eab308;
   --text-main: #ffffff;
   --text-muted: #808080;
   --border-color: #242424;
-}
-
-/* 5. EMERALD DARK THEME */
-body.theme-emerald {
-  --bg-dark: #061412;
-  --bg-card: #0d221e;
-  --bg-input: #15332d;
-  --primary: #10b981;
-  --primary-hover: #059669;
-  --primary-glow: rgba(16, 185, 129, 0.35);
-  --accent-gold: #fbbf24;
-  --text-main: #ecfdf5;
-  --text-muted: #6ee7b7;
-  --border-color: #1e453d;
+  --radius: 8px;
+  --radius-sm: 4px;
+  --brand-font: 'Plus Jakarta Sans', sans-serif;
 }
 
 * {
@@ -82,7 +159,7 @@ body.theme-emerald {
 }
 
 body {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--brand-font, 'Plus Jakarta Sans', sans-serif);
   background-color: var(--bg-dark);
   color: var(--text-main);
   min-height: 100vh;
@@ -113,19 +190,13 @@ body {
 .lobby-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 20px;
+  border-radius: var(--radius);
   padding: 38px;
   max-width: 480px;
   width: 100%;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
   text-align: center;
   backdrop-filter: blur(10px);
-  animation: slideFadeIn 0.4s ease-out;
-}
-
-@keyframes slideFadeIn {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 .lobby-badge {
@@ -176,12 +247,11 @@ body {
   padding: 13px 16px;
   background: var(--bg-input);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   color: var(--text-main);
   font-size: 0.95rem;
   font-family: inherit;
   outline: none;
-  transition: var(--transition);
 }
 
 .input-group input:focus {
@@ -203,12 +273,11 @@ body {
   border: 1px solid var(--border-color);
   color: var(--text-main);
   padding: 0 16px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  transition: var(--transition);
 }
 
 #btn-random-room:hover {
@@ -225,13 +294,18 @@ body {
   background: var(--primary);
   color: #fff;
   border: none;
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   font-size: 1rem;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
   box-shadow: 0 6px 20px var(--primary-glow);
-  transition: var(--transition);
+  transition: transform 0.2s, filter 0.2s;
+}
+
+body.theme-breaking-bad .btn-primary,
+body.theme-oled .btn-primary {
+  color: #000;
 }
 
 .btn-primary:hover {
@@ -252,13 +326,9 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 600;
   color: var(--text-muted);
-}
-
-.feature-item .icon {
-  font-size: 1.25rem;
 }
 
 /* 2. CINEMA ROOM SCREEN */
@@ -281,7 +351,7 @@ body {
 .header-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 
 .brand-logo {
@@ -304,7 +374,6 @@ body {
   border: 1px solid var(--border-color);
   font-size: 0.85rem;
   cursor: pointer;
-  transition: var(--transition);
 }
 
 .room-code-badge strong {
@@ -318,8 +387,22 @@ body {
   padding-left: 8px;
 }
 
-.room-code-badge:hover {
+/* Alət Düymələri (Ruletka & Filmlər) */
+.btn-tool {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-tool:hover {
   border-color: var(--primary);
+  color: var(--primary);
 }
 
 .header-right {
@@ -328,14 +411,40 @@ body {
   gap: 10px;
 }
 
-/* Tema Seçici */
+/* Audio Ducking İndikatoru */
+.ducking-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.duck-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+}
+
+.ducking-indicator.ducking-active {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Tema Seçici Dropdown */
 .theme-select-wrapper {
   display: flex;
   align-items: center;
   gap: 6px;
   background: var(--bg-input);
   border: 1px solid var(--border-color);
-  padding: 4px 10px;
+  padding: 5px 10px;
   border-radius: var(--radius-sm);
 }
 
@@ -397,14 +506,13 @@ body {
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.2s;
 }
 
 .btn-icon:hover {
   background: var(--border-color);
 }
 
-/* Səsli Zəng Düyməsi Aktiv Olduqda */
 .btn-voice.active {
   background: rgba(16, 185, 129, 0.2);
   border-color: #10b981;
@@ -412,7 +520,7 @@ body {
   box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
 }
 
-/* Main Content (Cinema + Chat) */
+/* Main Content */
 .room-content {
   flex: 1;
   display: flex;
@@ -420,7 +528,7 @@ body {
   overflow: hidden;
 }
 
-/* Cinema Section (Sol Tərəf) */
+/* Cinema Section */
 .cinema-section {
   flex: 1;
   display: flex;
@@ -457,11 +565,14 @@ body {
 .empty-player-state.hidden,
 .sync-notice.hidden,
 .unmute-overlay.hidden,
+.pause-trivia-overlay.hidden,
+.modal-backdrop.hidden,
+.winner-announcement.hidden,
 .btn-danger.hidden {
   display: none !important;
 }
 
-/* Sync Notice Overlay */
+/* Sync Notice */
 .sync-notice {
   position: absolute;
   top: 16px;
@@ -495,11 +606,86 @@ body {
   cursor: pointer;
   z-index: 70;
   box-shadow: 0 8px 30px var(--primary-glow);
-  transition: transform 0.2s;
 }
 
-.unmute-overlay:hover {
-  transform: translateX(-50%) scale(1.05);
+body.theme-breaking-bad .unmute-overlay,
+body.theme-oled .unmute-overlay {
+  color: #000;
+}
+
+/* Fasilə Viktorinası / Trivia Kartı */
+.pause-trivia-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 80;
+  width: 90%;
+  max-width: 440px;
+}
+
+.trivia-card {
+  background: rgba(18, 20, 28, 0.95);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(12px);
+  text-align: center;
+}
+
+.trivia-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.trivia-badge {
+  background: var(--bg-input);
+  color: var(--accent-gold);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 50px;
+}
+
+.trivia-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.trivia-card h3 {
+  font-size: 1.15rem;
+  margin-bottom: 18px;
+  line-height: 1.4;
+}
+
+.trivia-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.trivia-opt {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.trivia-opt:hover {
+  border-color: var(--primary);
+  background: var(--bg-input);
 }
 
 /* Boş Vəziyyət */
@@ -544,7 +730,7 @@ body {
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.2s;
 }
 
 .empty-opt-btn:hover {
@@ -581,7 +767,7 @@ body {
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.2s;
   white-space: nowrap;
 }
 
@@ -596,12 +782,42 @@ body {
   box-shadow: 0 4px 12px var(--primary-glow);
 }
 
+body.theme-breaking-bad .tab-btn.active,
+body.theme-oled .tab-btn.active {
+  color: #000;
+}
+
 .tab-pane {
   display: none;
 }
 
 .tab-pane.active {
   display: block;
+}
+
+/* Netflix Bələdçi Qutusu */
+.netflix-guide-box {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-left: 3px solid #e50914;
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.netflix-steps .step-badge {
+  font-weight: 800;
+  color: #e50914;
+  margin-bottom: 6px;
+}
+
+.netflix-steps p {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 4px;
 }
 
 /* Stream Tab */
@@ -631,10 +847,9 @@ body {
   color: #fff;
   border: none;
   padding: 12px 20px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   font-weight: 700;
   cursor: pointer;
-  transition: var(--transition);
 }
 
 /* URL Girişi */
@@ -648,7 +863,7 @@ body {
   padding: 12px 16px;
   background: var(--bg-input);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   color: var(--text-main);
   font-size: 0.95rem;
   outline: none;
@@ -674,16 +889,14 @@ body {
   background: var(--bg-input);
   border: 2px dashed var(--border-color);
   padding: 20px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   text-align: center;
   cursor: pointer;
   font-weight: 600;
-  transition: var(--transition);
 }
 
 .file-label:hover {
   border-color: var(--primary);
-  color: var(--primary);
 }
 
 .file-label input {
@@ -713,7 +926,6 @@ body {
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: var(--transition);
 }
 
 .tool-btn:hover {
@@ -725,7 +937,7 @@ body {
   color: var(--text-muted);
 }
 
-/* Sidebar Section (Sağ Tərəf: Çat & Reaksiyalar) */
+/* Sidebar Section (Çat & Reaksiyalar) */
 .sidebar-section {
   width: 330px;
   background: var(--bg-card);
@@ -756,7 +968,7 @@ body {
 .reaction-btn {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
-  border-radius: 10px;
+  border-radius: 8px;
   font-size: 1.25rem;
   width: 38px;
   height: 38px;
@@ -764,12 +976,11 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: var(--transition);
+  transition: transform 0.2s;
 }
 
 .reaction-btn:hover {
   transform: scale(1.25) translateY(-2px);
-  background: var(--border-color);
   border-color: var(--primary);
 }
 
@@ -836,7 +1047,7 @@ body {
 
 .chat-msg-bubble {
   padding: 10px 14px;
-  border-radius: 14px;
+  border-radius: 12px;
   font-size: 0.9rem;
   line-height: 1.4;
   word-break: break-word;
@@ -845,14 +1056,17 @@ body {
 .chat-msg.mine .chat-msg-bubble {
   background: var(--primary);
   color: #fff;
-  border-bottom-right-radius: 4px;
+}
+
+body.theme-breaking-bad .chat-msg.mine .chat-msg-bubble,
+body.theme-oled .chat-msg.mine .chat-msg-bubble {
+  color: #000;
 }
 
 .chat-msg.theirs .chat-msg-bubble {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
   color: var(--text-main);
-  border-bottom-left-radius: 4px;
 }
 
 .chat-input-form {
@@ -874,10 +1088,6 @@ body {
   outline: none;
 }
 
-.chat-input-form input:focus {
-  border-color: var(--primary);
-}
-
 .btn-chat-send {
   background: var(--primary);
   border: none;
@@ -889,7 +1099,215 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: var(--transition);
+}
+
+body.theme-breaking-bad .btn-chat-send,
+body.theme-oled .btn-chat-send {
+  color: #000;
+}
+
+/* Modals */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 28px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.modal-header h2 {
+  font-size: 1.35rem;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.modal-desc {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.modal-input-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.modal-input-row input {
+  flex: 1;
+  padding: 12px 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  outline: none;
+}
+
+.watchlist-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.watchlist-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-input);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+.watchlist-item button {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+.btn-spin {
+  width: 100%;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent-gold) 100%);
+  color: #000;
+  border: none;
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.btn-spin:hover {
+  transform: scale(1.02);
+}
+
+.winner-announcement {
+  margin-top: 18px;
+  background: var(--bg-input);
+  border: 2px solid var(--accent-gold);
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 700;
+  animation: popIn 0.3s ease-out;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* History Form & List */
+.history-input-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+  background: var(--bg-input);
+  padding: 16px;
+  border-radius: var(--radius-sm);
+}
+
+.history-input-box input {
+  padding: 10px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  outline: none;
+}
+
+.history-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+}
+
+.history-rating-row input {
+  width: 80px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.history-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.history-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-title {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.history-badge {
+  color: var(--accent-gold);
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.history-note {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.history-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  opacity: 0.7;
 }
 
 /* Uçan Emojilər */
@@ -909,21 +1327,11 @@ body {
 }
 
 @keyframes floatUpAnimation {
-  0% {
-    opacity: 1;
-    transform: translateY(0) scale(0.6) rotate(0deg);
-  }
-  50% {
-    opacity: 0.9;
-    transform: translateY(-40vh) scale(1.2) rotate(15deg);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-85vh) scale(1.5) rotate(-15deg);
-  }
+  0% { opacity: 1; transform: translateY(0) scale(0.6); }
+  50% { opacity: 0.9; transform: translateY(-40vh) scale(1.2); }
+  100% { opacity: 0; transform: translateY(-85vh) scale(1.5); }
 }
 
-/* Responsiv */
 @media (max-width: 900px) {
   .room-content {
     flex-direction: column;
@@ -932,8 +1340,5 @@ body {
   .sidebar-section {
     width: 100%;
     height: 450px;
-  }
-  .player-wrapper {
-    max-height: 50vh;
   }
 }

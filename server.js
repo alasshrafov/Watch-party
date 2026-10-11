@@ -54,7 +54,9 @@ io.on('connection', (socket) => {
           isPlaying: false,
           time: 0,
           lastUpdate: Date.now()
-        }
+        },
+        watchlist: [],
+        history: []
       };
     }
 
@@ -69,7 +71,9 @@ io.on('connection', (socket) => {
       roomId,
       isHost,
       users: rooms[roomId].users,
-      videoState: rooms[roomId].videoState
+      videoState: rooms[roomId].videoState,
+      watchlist: rooms[roomId].watchlist || [],
+      history: rooms[roomId].history || []
     });
 
     // Otaqdakı digər istifadəçilərə xəbər ver
@@ -134,13 +138,53 @@ io.on('connection', (socket) => {
     io.to(currentRoom).emit('receive-message', msg);
   });
 
-  // Uçan romantik/əyləncəli reaksiyalar (❤️, 🍿, 😂 və s.)
+  // Uçan reaksiyalar (🍿, 😂, 🔥 və s.)
   socket.on('send-reaction', ({ reaction }) => {
     if (!currentRoom) return;
     io.to(currentRoom).emit('receive-reaction', {
       reaction,
       sender: currentUsername
     });
+  });
+
+  // Watchlist (Nəyə Baxaq? Püşkatma)
+  socket.on('watchlist-add', ({ title }) => {
+    if (!currentRoom || !rooms[currentRoom] || !title) return;
+    const item = {
+      id: Date.now() + Math.random().toString(36).substr(2, 4),
+      title: title.trim(),
+      addedBy: currentUsername
+    };
+    rooms[currentRoom].watchlist.push(item);
+    io.to(currentRoom).emit('watchlist-updated', rooms[currentRoom].watchlist);
+  });
+
+  socket.on('watchlist-remove', ({ id }) => {
+    if (!currentRoom || !rooms[currentRoom]) return;
+    rooms[currentRoom].watchlist = rooms[currentRoom].watchlist.filter(i => i.id !== id);
+    io.to(currentRoom).emit('watchlist-updated', rooms[currentRoom].watchlist);
+  });
+
+  socket.on('watchlist-spin', () => {
+    if (!currentRoom || !rooms[currentRoom] || rooms[currentRoom].watchlist.length === 0) return;
+    const list = rooms[currentRoom].watchlist;
+    const winner = list[Math.floor(Math.random() * list.length)];
+    io.to(currentRoom).emit('watchlist-winner', { winner, spinner: currentUsername });
+  });
+
+  // History / Xatirə Arxivi
+  socket.on('history-add', (entry) => {
+    if (!currentRoom || !rooms[currentRoom]) return;
+    const record = {
+      id: Date.now(),
+      title: entry.title,
+      rating: entry.rating || 10,
+      note: entry.note || '',
+      date: new Date().toLocaleDateString('az-AZ'),
+      addedBy: currentUsername
+    };
+    rooms[currentRoom].history.unshift(record);
+    io.to(currentRoom).emit('history-updated', rooms[currentRoom].history);
   });
 
   // WebRTC Siqnalları (Tab / Ekran Paylaşımı üçün)

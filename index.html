@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WatchParty 🎬🍿 - Birlikdə Video & Film İzlə</title>
+  <title>WatchParty 🎬🍿 - Birlikdə Film & Serial İzlə</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cinzel:wght@700&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
   <!-- Socket.io Client -->
   <script src="/socket.io/socket.io.js"></script>
   <!-- YouTube Iframe API -->
@@ -22,7 +22,7 @@
     <div class="lobby-card">
       <div class="lobby-badge">🍿 Sinxron Kinoteatr Platforması</div>
       <h1 class="lobby-title">WatchParty 🎬</h1>
-      <p class="lobby-subtitle">İstənilən film saytından, YouTube-dan və ya video linkindən dostlarınızla real vaxtda sinxron baxın və səsli danışın.</p>
+      <p class="lobby-subtitle">İstənilən film saytından, Netflix-dən, YouTube-dan dostlarınızla real vaxtda sinxron baxın və səsli danışın.</p>
 
       <div class="input-group">
         <label for="username-input">Adınız / Ləqəbiniz:</label>
@@ -49,11 +49,15 @@
         </div>
         <div class="feature-item">
           <span class="icon">🎙️</span>
-          <span>Canlı Səsli Zəng</span>
+          <span>Səsli Danışıq</span>
         </div>
         <div class="feature-item">
-          <span class="icon">⚡</span>
-          <span>HD Sinxronizasiya</span>
+          <span class="icon">🎧</span>
+          <span>Səs Balansı (Ducking)</span>
+        </div>
+        <div class="feature-item">
+          <span class="icon">🎲</span>
+          <span>Film Ruletkası</span>
         </div>
       </div>
     </div>
@@ -64,24 +68,41 @@
     <!-- Üst Başlıq (Header) -->
     <header class="room-header">
       <div class="header-left">
-        <div class="brand-logo">🎬 Watch<span>Party</span></div>
+        <div class="brand-logo" id="brand-logo-text">🎬 Watch<span>Party</span></div>
         <div class="room-code-badge" id="btn-copy-link" title="Dəvət linkini kopyalamaq üçün klikləyin">
           <span>Otaq:</span>
           <strong id="display-room-id">...</strong>
           <span class="copy-hint">📋 Linki Kopyala</span>
         </div>
+
+        <!-- Əlavə Alətlər: Ruletka & Tarixçə -->
+        <button id="btn-open-watchlist" class="btn-tool" title="Nəyə baxaq? Püşkatma Ruletkası">
+          <span>🎲 Nəyə Baxaq?</span>
+        </button>
+        <button id="btn-open-history" class="btn-tool" title="Birlikdə baxdığımız filmlər arxivi">
+          <span>📜 Filmlərimiz</span>
+        </button>
       </div>
 
       <div class="header-right">
-        <!-- Tema Seçimi (Theme Switcher) -->
+        <!-- Audio Ducking Status -->
+        <div class="ducking-indicator" title="Siz danışarkən filmin səsi avtomatik 30% azalır, susanda bərpa olunur">
+          <span class="duck-dot"></span>
+          <span>🎧 Səs Balansı: Aktiv</span>
+        </div>
+
+        <!-- Kult Film/Serial Tema Seçici -->
         <div class="theme-select-wrapper">
           <span class="theme-icon">🎨</span>
-          <select id="theme-select" title="Mövzunu dəyişdirin">
-            <option value="theme-netflix">🎬 Netflix (Qırmızı)</option>
-            <option value="theme-discord">👾 Discord (Göy)</option>
-            <option value="theme-cyberpunk">⚡ Cyberpunk (Neon)</option>
-            <option value="theme-oled">🖤 OLED (Qara)</option>
-            <option value="theme-emerald">🌲 Emerald (Zümrüd)</option>
+          <select id="theme-select" title="Kult film/serial mövzusunu seçin">
+            <option value="theme-netflix">🎬 Netflix Cinema</option>
+            <option value="theme-breaking-bad">🧪 Breaking Bad (Heisenberg)</option>
+            <option value="theme-got">⚔️ Game of Thrones (Winterfell)</option>
+            <option value="theme-batman">🦇 The Dark Knight (Gotham)</option>
+            <option value="theme-interstellar">🌌 Interstellar (Cosmos)</option>
+            <option value="theme-matrix">🕶️ The Matrix (Cyber)</option>
+            <option value="theme-discord">👾 Discord Dark</option>
+            <option value="theme-oled">🖤 OLED Minimal</option>
           </select>
         </div>
 
@@ -106,9 +127,25 @@
       <!-- Sol Tərəf: Pleyer & Nəzarət -->
       <section class="cinema-section">
         <div class="player-wrapper" id="player-container">
-          <!-- Bildiriş Overlay (Kim pauza etdi və s.) -->
+          <!-- Bildiriş Overlay -->
           <div id="sync-notice" class="sync-notice hidden">
             <span id="sync-notice-text">Video sinxronlaşdırıldı</span>
+          </div>
+
+          <!-- Fasilə Viktorinası / Trivia Kartı (Video Pause olanda) -->
+          <div id="pause-trivia-overlay" class="pause-trivia-overlay hidden">
+            <div class="trivia-card">
+              <div class="trivia-header">
+                <span class="trivia-badge">☕ Fasilə Zamanı!</span>
+                <button id="btn-close-trivia" class="trivia-close-btn" title="Bağla">✕</button>
+              </div>
+              <h3 id="trivia-question">Popkorn gətirmək növbəsi kimdədir? 🍿</h3>
+              <div class="trivia-options" id="trivia-options">
+                <button class="trivia-opt" onclick="answerTrivia(0)">Məndədir, qaçdım gətirməyə 🏃‍♂️</button>
+                <button class="trivia-opt" onclick="answerTrivia(1)">Səndədir, tez ol gəl! ⏳</button>
+                <button class="trivia-opt" onclick="answerTrivia(2)">Gəl filmə davam edək ▶️</button>
+              </div>
+            </div>
           </div>
 
           <!-- YouTube Pleyer -->
@@ -120,18 +157,19 @@
           <!-- WebRTC Canlı Ekran / Film Tabı Yayımlayıcı -->
           <video id="stream-player" class="player-frame hidden" autoplay playsinline controls></video>
 
-          <!-- Səsi Açmaq Üçün Təcili Düymə (Brauzer səsi bloklayanda) -->
+          <!-- Səsi Açmaq Üçün Düymə (Brauzer autoplay səsi bloklayanda) -->
           <button id="btn-unmute-overlay" class="unmute-overlay hidden">
             <span>🔊 Filmin Səsini Aç (Klikləyin)</span>
           </button>
 
-          <!-- Boş vəziyyət (Hələ video seçilməyibsə) -->
+          <!-- Boş vəziyyət -->
           <div id="empty-player" class="empty-player-state">
             <div class="empty-icon">🍿🎬</div>
-            <h2>Otaq Hazırdır!</h2>
-            <p>Aşağıdakı rejimlərdən birini seçərək filmə və ya videoya baxmağa başlayın:</p>
+            <h2>Kinoteatr Hazırdır!</h2>
+            <p>Aşağıdakı rejimlərdən birini seçərək filmə baxmağa başlayın:</p>
             <div class="empty-options">
               <button class="empty-opt-btn" onclick="openSourceTab('stream')">💻 Sayt Tabını Yayımla (WebRTC)</button>
+              <button class="empty-opt-btn" onclick="openSourceTab('netflix')">🔴 Netflix / Prime İzlə</button>
               <button class="empty-opt-btn" onclick="openSourceTab('youtube')">🔴 YouTube Linki</button>
               <button class="empty-opt-btn" onclick="openSourceTab('direct')">🎬 Birbaşa Video Linki</button>
             </div>
@@ -142,6 +180,7 @@
         <div class="source-control-bar">
           <div class="source-tabs">
             <button class="tab-btn active" data-tab="stream">💻 İstənilən Film Saytı (Canlı Tab)</button>
+            <button class="tab-btn" data-tab="netflix">🔴 Netflix / Prime İzlə</button>
             <button class="tab-btn" data-tab="youtube">🔴 YouTube</button>
             <button class="tab-btn" data-tab="direct">🎬 Birbaşa Video / MP4</button>
             <button class="tab-btn" data-tab="file">📁 Kompüterdən Video</button>
@@ -151,7 +190,7 @@
           <div class="tab-pane active" id="pane-stream">
             <div class="stream-info-box">
               <div class="stream-guide">
-                <strong>💡 Necə işləyir:</strong> Brauzerdə sevdiyiniz film saytını açın. Sonra aşağıdakı düyməyə basaraq <strong>"Chrome Tab"</strong> bölməsindən həmin tabı seçin və aşağıda <em>"Also share tab audio" (Səsi paylaş)</em> qutusunu işarələyin. Otaqdakılar filmi canlı, HD keyfiyyətdə və təmiz səslə izləyəcək!
+                <strong>💡 Necə işləyir:</strong> Brauzerdə sevdiyiniz film saytını açın. Sonra aşağıdakı düyməyə basaraq <strong>"Chrome Tab"</strong> bölməsindən həmin tabı seçin və <em>"Also share tab audio" (Səsi paylaş)</em> qutusunu mütləq işarələyin. Filmi HD keyfiyyətdə və təmiz səslə canlı izləyəcəksiniz!
               </div>
               <div class="stream-actions">
                 <button id="btn-start-stream" class="btn-primary">
@@ -164,7 +203,21 @@
             </div>
           </div>
 
-          <!-- 2. YouTube Linki Girişi -->
+          <!-- 2. Netflix / Prime Bələdçisi və Yayımı -->
+          <div class="tab-pane" id="pane-netflix">
+            <div class="netflix-guide-box">
+              <div class="netflix-steps">
+                <div class="step-badge">🔴 Netflix & Prime DRM Həlli:</div>
+                <p>Netflix qara ekran verməsin deyə Chrome-da: <strong>Parametrlər ➡️ Sistem (System) ➡️ "Use hardware acceleration when available"</strong> seçimini söndürün (və ya başqa film saytından baxın).</p>
+                <p>Sonra Netflix-də filmi açıb aşağıdakı düymə ilə həmin tabı yayımlayın:</p>
+              </div>
+              <button id="btn-start-netflix-stream" class="btn-primary" style="background:#e50914;">
+                <span>🎬 Netflix Tabını Yayımla (Səslə)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. YouTube Linki Girişi -->
           <div class="tab-pane" id="pane-youtube">
             <div class="url-input-form">
               <input type="text" id="input-youtube-url" placeholder="YouTube video linkini bura yapışdırın (məs: https://www.youtube.com/watch?v=...)">
@@ -172,7 +225,7 @@
             </div>
           </div>
 
-          <!-- 3. Birbaşa Video Linki Girişi -->
+          <!-- 4. Birbaşa Video Linki Girişi -->
           <div class="tab-pane" id="pane-direct">
             <div class="url-input-form">
               <input type="text" id="input-direct-url" placeholder="Video və ya film linki (məs: https://sayt.com/kino.mp4)">
@@ -180,7 +233,7 @@
             </div>
           </div>
 
-          <!-- 4. Lokal Fayl Seçimi -->
+          <!-- 5. Lokal Fayl Seçimi -->
           <div class="tab-pane" id="pane-file">
             <div class="url-input-form file-mode">
               <label for="input-local-file" class="file-label">
@@ -234,6 +287,58 @@
         </div>
       </aside>
     </main>
+  </div>
+
+  <!-- 3. MODAL: NƏYƏ BAXAQ? (RULETKA) -->
+  <div id="modal-watchlist" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>🎲 Nəyə Baxaq? (Püşkatma)</h2>
+        <button class="modal-close" onclick="closeModal('modal-watchlist')">✕</button>
+      </div>
+      <p class="modal-desc">Hər kəs istədiyi filmləri yazsın, ruletka təsadüfi birini seçsin!</p>
+
+      <form id="watchlist-form" class="modal-input-row">
+        <input type="text" id="input-watchlist-movie" placeholder="Film adı yazın (məs: Interstellar)" required>
+        <button type="submit" class="btn-primary" style="width:auto; padding:12px 20px;">Əlavə Et</button>
+      </form>
+
+      <div class="watchlist-items" id="watchlist-container">
+        <!-- Dinamik siyahı -->
+      </div>
+
+      <div class="roulette-action-box">
+        <button id="btn-spin-roulette" class="btn-spin">
+          <span>🎯 Ruletkanı Fırlat və Seç!</span>
+        </button>
+        <div id="roulette-winner-box" class="winner-announcement hidden"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. MODAL: FİLMLƏRİMİZ (XATİRƏ ARXİVİ) -->
+  <div id="modal-history" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>📜 Birlikdə Baxdığımız Filmlər</h2>
+        <button class="modal-close" onclick="closeModal('modal-history')">✕</button>
+      </div>
+      <p class="modal-desc">İzlədiyiniz filmləri və verdiyiniz xalları burada yadda saxlayın.</p>
+
+      <form id="history-form" class="history-input-box">
+        <input type="text" id="input-history-title" placeholder="Film adı..." required>
+        <div class="history-rating-row">
+          <label>Qiymət (⭐ 1-10):</label>
+          <input type="number" id="input-history-rating" min="1" max="10" value="10" required>
+        </div>
+        <input type="text" id="input-history-note" placeholder="Fikriniz və ya xatirəniz (istəyə görə)...">
+        <button type="submit" class="btn-primary">Arxivə Əlavə Et</button>
+      </form>
+
+      <div class="history-list" id="history-container">
+        <!-- Tarixçə kartları -->
+      </div>
+    </div>
   </div>
 
   <!-- Səsli Zəng üçün Audio Element -->
