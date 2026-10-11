@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OneCouch 🛋️🍿 — Two screens. One couch.</title>
   <link rel="icon" type="image/png" href="assets/logo.png">
-  <link rel="stylesheet" href="style.css?v=3.0">
+  <link rel="stylesheet" href="style.css?v=4.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Cinzel:wght@600;700;900&family=Fira+Code:wght@500;700&display=swap" rel="stylesheet">
@@ -385,6 +385,12 @@
        2. KİNO OTAĞI (CINEMA ROOM - LUXURY STREAMING UI)
        ======================================================== -->
   <div id="room-screen" class="screen">
+    <!-- 💡 Kinoteatr İşıqları Sönəndə Həmişə Görünən Düymə -->
+    <button id="btn-floating-restore-lights" class="floating-cinema-lights-btn hidden" title="İşıqları yandır və kinoteatr zalı rejimindən çıx">
+      <span class="bulb-icon">💡</span>
+      <span>İşıqları Yandır</span>
+    </button>
+
     <!-- Üst Başlıq (Header) -->
     <header class="room-header">
       <div class="header-left">
@@ -434,12 +440,6 @@
       </div>
 
       <div class="header-right">
-        <!-- Audio Ducking Status -->
-        <div class="ducking-indicator" title="Siz danışarkən filmin səsi avtomatik 30% azalır, susanda bərpa olunur">
-          <span class="duck-dot"></span>
-          <span>🎧 Balans</span>
-        </div>
-
         <!-- Kult Film/Serial Tema Seçici -->
         <div class="theme-select-wrapper">
           <span class="theme-icon">🎨</span>
@@ -1073,6 +1073,6 @@
   <audio id="remote-voice-audio" autoplay playsinline></audio>
 
   <!-- Əsas Tətbiq Skripti -->
-  <script src="app.js?v=3.0"></script>
+  <script src="app.js?v=4.0"></script>
 </body>
 </html>

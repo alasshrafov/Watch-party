@@ -1620,29 +1620,7 @@ body.theme-spiderman .spidey-hanging-mascot {
   flex-shrink: 0;
 }
 
-.ducking-indicator {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--bg-input);
-  border: 1px solid var(--border-color);
-  padding: 5px 11px;
-  border-radius: 50px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  flex-shrink: 0;
-}
-.duck-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #10b981;
-}
-.ducking-indicator.ducking-active {
-  border-color: var(--primary);
-  color: var(--primary);
-}
+
 
 .theme-select-wrapper {
   display: flex;
@@ -3690,27 +3668,58 @@ body.lights-dimmed .theme-hero-wing,
 body.lights-dimmed .sidebar-section,
 body.lights-dimmed .spidey-hanging-mascot,
 body.lights-dimmed .bb-flask-decoration {
-  opacity: 0.08 !important;
-  filter: brightness(0.2) blur(1px) !important;
-  transition: opacity 0.5s ease, filter 0.5s ease;
-  pointer-events: none;
+  opacity: 0.18 !important;
+  filter: brightness(0.4) !important;
+  transition: opacity 0.4s ease, filter 0.4s ease;
 }
 body.lights-dimmed .room-header:hover,
-body.lights-dimmed .sidebar-section:hover {
-  opacity: 0.95 !important;
+body.lights-dimmed .sidebar-section:hover,
+body.lights-dimmed .theme-hero-wing:hover {
+  opacity: 0.96 !important;
   filter: none !important;
-  pointer-events: auto;
 }
 body.lights-dimmed .player-section {
-  box-shadow: 0 0 80px rgba(0, 0, 0, 0.98), 0 0 30px rgba(229, 9, 20, 0.2);
+  box-shadow: 0 0 100px rgba(0, 0, 0, 0.99), 0 0 40px rgba(229, 9, 20, 0.3);
   z-index: 100;
-  transition: all 0.5s ease;
+  transition: all 0.4s ease;
 }
 .btn-dim.active {
   background: #f59e0b !important;
   color: #111827 !important;
   border-color: #f59e0b !important;
   box-shadow: 0 0 14px rgba(245, 158, 11, 0.6);
+}
+
+/* 💡 Həmişə Görünən Kinoteatr İşıqları Düyməsi */
+.floating-cinema-lights-btn {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #111827;
+  font-weight: 800;
+  font-size: 0.88rem;
+  padding: 8px 18px;
+  border-radius: 50px;
+  border: 2px solid #fbbf24;
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.8), 0 4px 14px rgba(0, 0, 0, 0.5);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  animation: floatLightsPulse 1.8s infinite alternate ease-in-out;
+}
+.floating-cinema-lights-btn:hover {
+  transform: translateX(-50%) scale(1.06);
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  box-shadow: 0 0 35px rgba(245, 158, 11, 1), 0 6px 20px rgba(0, 0, 0, 0.6);
+}
+@keyframes floatLightsPulse {
+  0% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.6); }
+  100% { box-shadow: 0 0 30px rgba(245, 158, 11, 0.95); }
 }
 
 /* ----------------------------------------------------------
@@ -3904,5 +3913,44 @@ body.lights-dimmed .player-section {
   background: rgba(100, 116, 139, 0.12);
   color: #94a3b8;
 }
+
+/* ==========================================
+   18. SƏS KİLİDİ AÇMA BANNERİ (MOBILE AUTOPLAY)
+   ========================================== */
+.voice-unlock-banner {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 12px 24px;
+  border-radius: 999px;
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.45);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 99999;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: pulseVoiceBanner 1.6s infinite alternate;
+}
+
+.voice-unlock-banner:hover {
+  transform: translateX(-50%) scale(1.04);
+  box-shadow: 0 12px 35px rgba(16, 185, 129, 0.65);
+}
+
+.voice-unlock-banner.hidden {
+  display: none !important;
+}
+
+@keyframes pulseVoiceBanner {
+  0% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+  100% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.85); }
+}
+
 
 

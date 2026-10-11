@@ -174,6 +174,7 @@ io.on('connection', (socket) => {
       rooms[rId] = {
         users: {},
         isLocked: false,
+        lightsDimmed: false,
         theme: initialTheme || 'theme-netflix',
         hostSocketId: socket.id,
         allowedUsers: {},
@@ -209,6 +210,7 @@ io.on('connection', (socket) => {
       roomId: rId,
       isHost,
       isLocked: rooms[rId].isLocked,
+      lightsDimmed: !!rooms[rId].lightsDimmed,
       theme: rooms[rId].theme || 'theme-netflix',
       users: rooms[rId].users,
       videoState: rooms[rId].videoState,
@@ -242,6 +244,17 @@ io.on('connection', (socket) => {
       by: user.username
     });
     console.log(`[Lock] Room ${currentRoom} lock changed to: ${rooms[currentRoom].isLocked}`);
+  });
+
+  // 2.15 Kinoteatr İşıqları (Dim Lights) Sinxronizasiyası
+  socket.on('toggle-room-lights', ({ dimmed }) => {
+    if (!currentRoom || !rooms[currentRoom]) return;
+    rooms[currentRoom].lightsDimmed = !!dimmed;
+    io.to(currentRoom).emit('room-lights-changed', {
+      dimmed: rooms[currentRoom].lightsDimmed,
+      by: currentUsername
+    });
+    console.log(`[Lights] Room ${currentRoom} lights dimmed: ${rooms[currentRoom].lightsDimmed} by ${currentUsername}`);
   });
 
   // 2.2 Səsli Danışıq: Kim Danışır (Discord Voice Halo)
