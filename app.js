@@ -143,8 +143,255 @@ const btnDimLights = document.getElementById('btn-dim-lights');
 
 
 // ==========================================
-// 1. İLKİN YÜKLƏNMƏ VƏ TEMA SİSTEMİ
+// 1. ÇOXDİLLİ SİSTEM (I18N) & TEMA SİSTEMİ
 // ==========================================
+
+let currentLang = 'az';
+
+const I18N = {
+  az: {
+    langLabel: 'AZ',
+    langFlag: '🇦🇿',
+    topLogin: 'Google ilə Giriş',
+    dropdownStatus: 'Google Hesabı Aktivdir',
+    dropdownLogout: 'Hesabdan Çıx',
+    heroBadge: 'İKİ EKRAN. TƏK DİVAN.',
+    heroSlogan: 'Two screens. One couch.',
+    heroDesc: 'İstənilən film saytından, Netflix və YouTube-dan dostlarınızla sanki eyni divanda yanaşı oturmuş kimi birlikdə izləyin və canlı danışın.',
+    hostBadge: '👑 Otaq Sahibi',
+    hostLockRequired: '🔒 Google Tələb Olunur',
+    hostLockActive: '🟢 Google ilə Aktivdir',
+    hostTitle: 'Yeni Kino Otağı Yarat',
+    hostDesc: 'Öz kinoteatr zalınızı başladın, filmi idarə edin və dostlarınıza link göndərin.',
+    hostContinueGoogle: 'Continue with Google',
+    hostHint: '⚡ 1 kliklə daxil olub dərhal otaq başladın',
+    btnCreateRoom: '🛋️ Yeni Otaq Yarat',
+    dividerOr: 'VƏ YA',
+    guestBadge: '🚪 Qonaq və ya İştirakçı',
+    guestTitle: 'Mövcud Otağa Qoşul',
+    guestDesc: 'Dostunuzun otaq kodunu və ya dəvət linkini daxil edərək birbaşa qoşulun.',
+    labelNickname: 'Adınız / Ləqəbiniz:',
+    placeholderNickname: 'Məsələn: Əli',
+    labelRoom: 'Otaq Kodu və ya Link:',
+    placeholderRoom: 'Məs: kino-101',
+    btnJoin: 'Otağa Daxil Ol',
+    feat1Title: 'Bütün Saytlar',
+    feat1Sub: 'WebRTC HD Səs',
+    feat2Title: 'Səsli Zəng',
+    feat2Sub: 'İkitərəfli Canlı',
+    feat3Title: 'Səs Balansı',
+    feat3Sub: 'Auto Ducking',
+    feat4Title: 'Çarxıfələk',
+    feat4Sub: 'Püşkatma Ruletkası',
+    copyHint: '📋 Kopyala',
+    noticeLogout: '👋 Hesabdan çıxış edildi',
+    noticeLogin: '👤 Xoş gəldiniz',
+    noticeRoomReq: '⚠️ Zəhmət olmasa otaq kodunu daxil edin!',
+    noticeReturnLobby: '🛋️ Əsas ekrana qayıtdınız',
+    confirmLeave: 'Kino otağından çıxıb əsas ekrana (Lobby) qayıtmaq istəyirsiniz?'
+  },
+  tr: {
+    langLabel: 'TR',
+    langFlag: '🇹🇷',
+    topLogin: 'Google ile Giriş',
+    dropdownStatus: 'Google Hesabı Aktif',
+    dropdownLogout: 'Çıkış Yap',
+    heroBadge: 'İKİ EKRAN. TEK KOLTUK.',
+    heroSlogan: 'Two screens. One couch.',
+    heroDesc: 'Tüm film sitelerinden, Netflix ve YouTube\'dan arkadaşlarınızla sanki aynı koltukta oturuyormuş gibi birlikte izleyin ve sesli sohbet edin.',
+    hostBadge: '👑 Oda Sahibi',
+    hostLockRequired: '🔒 Google Gerekli',
+    hostLockActive: '🟢 Google ile Aktif',
+    hostTitle: 'Yeni Sinema Odası Oluştur',
+    hostDesc: 'Kendi sinema odanızı başlatın, filmi yönetin ve arkadaşlarınıza davet linki gönderin.',
+    hostContinueGoogle: 'Continue with Google',
+    hostHint: '⚡ 1 tıkla giriş yapıp hemen oda başlatın',
+    btnCreateRoom: '🛋️ Yeni Oda Oluştur',
+    dividerOr: 'VEYA',
+    guestBadge: '🚪 Misafir veya Katılımcı',
+    guestTitle: 'Mevcut Odaya Katıl',
+    guestDesc: 'Arkadaşınızın oda kodunu veya davet bağlantısını girerek doğrudan katılın.',
+    labelNickname: 'Adınız / Takma Adınız:',
+    placeholderNickname: 'Örn: Ali',
+    labelRoom: 'Oda Kodu veya Link:',
+    placeholderRoom: 'Örn: sinema-101',
+    btnJoin: 'Odaya Katıl',
+    feat1Title: 'Tüm Siteler',
+    feat1Sub: 'WebRTC HD Ses',
+    feat2Title: 'Sesli Sohbet',
+    feat2Sub: 'Canlı & Kesintisiz',
+    feat3Title: 'Ses Dengesi',
+    feat3Sub: 'Auto Ducking',
+    feat4Title: 'Çarkıfelek',
+    feat4Sub: 'Kura Ruleti',
+    copyHint: '📋 Kopyala',
+    noticeLogout: '👋 Hesaptan çıkış yapıldı',
+    noticeLogin: '👤 Hoş geldiniz',
+    noticeRoomReq: '⚠️ Lütfen oda kodunu girin!',
+    noticeReturnLobby: '🛋️ Ana ekrana dönüldü',
+    confirmLeave: 'Sinema odasından çıkıp ana ekrana (Lobi) dönmek istiyor musunuz?'
+  },
+  en: {
+    langLabel: 'EN',
+    langFlag: '🇬🇧',
+    topLogin: 'Sign in with Google',
+    dropdownStatus: 'Google Account Active',
+    dropdownLogout: 'Log out',
+    heroBadge: 'TWO SCREENS. ONE COUCH.',
+    heroSlogan: 'Two screens. One couch.',
+    heroDesc: 'Watch movies together from any streaming site, Netflix & YouTube, and voice chat with friends like you are sitting on the same couch.',
+    hostBadge: '👑 Room Host',
+    hostLockRequired: '🔒 Google Required',
+    hostLockActive: '🟢 Google Active',
+    hostTitle: 'Create New Cinema Room',
+    hostDesc: 'Start your personal theater, control the playback, and share the invite link with friends.',
+    hostContinueGoogle: 'Continue with Google',
+    hostHint: '⚡ Sign in with 1 click to start your room',
+    btnCreateRoom: '🛋️ Create New Room',
+    dividerOr: 'OR',
+    guestBadge: '🚪 Guest / Participant',
+    guestTitle: 'Join Existing Room',
+    guestDesc: 'Enter your friend\'s room code or invite link to join instantly.',
+    labelNickname: 'Your Name / Nickname:',
+    placeholderNickname: 'e.g. Alex',
+    labelRoom: 'Room Code or Link:',
+    placeholderRoom: 'e.g. movie-101',
+    btnJoin: 'Join Room',
+    feat1Title: 'Any Website',
+    feat1Sub: 'WebRTC HD Audio',
+    feat2Title: 'Voice Chat',
+    feat2Sub: 'Two-way Live',
+    feat3Title: 'Audio Ducking',
+    feat3Sub: 'Smart Ducking',
+    feat4Title: 'Movie Wheel',
+    feat4Sub: 'Random Picker',
+    copyHint: '📋 Copy',
+    noticeLogout: '👋 Logged out successfully',
+    noticeLogin: '👤 Welcome',
+    noticeRoomReq: '⚠️ Please enter room code!',
+    noticeReturnLobby: '🛋️ Returned to Lobby',
+    confirmLeave: 'Do you want to leave the cinema room and return to the lobby?'
+  },
+  ru: {
+    langLabel: 'RU',
+    langFlag: '🇷🇺',
+    topLogin: 'Вход через Google',
+    dropdownStatus: 'Google Аккаунт Активен',
+    dropdownLogout: 'Выйти',
+    heroBadge: 'ДВА ЭКРАНА. ОДИН ДИВАН.',
+    heroSlogan: 'Two screens. One couch.',
+    heroDesc: 'Смотрите фильмы с любых сайтов, Netflix и YouTube вместе с друзьями и общайтесь голосом, будто сидите на одном диване.',
+    hostBadge: '👑 Создатель',
+    hostLockRequired: '🔒 Требуется Google',
+    hostLockActive: '🟢 Google Активен',
+    hostTitle: 'Создать Кинокомнату',
+    hostDesc: 'Создайте свой кинозал, управляйте просмотром и отправьте ссылку друзьям.',
+    hostContinueGoogle: 'Continue with Google',
+    hostHint: '⚡ Войдите в 1 клик и сразу начните',
+    btnCreateRoom: '🛋️ Создать Комнату',
+    dividerOr: 'ИЛИ',
+    guestBadge: '🚪 Гость или Участник',
+    guestTitle: 'Присоединиться к Комнате',
+    guestDesc: 'Введите код комнаты или ссылку приглашения от друга, чтобы присоединиться.',
+    labelNickname: 'Ваше Имя / Никнейм:',
+    placeholderNickname: 'Напр: Алекс',
+    labelRoom: 'Код Комнаты или Ссылка:',
+    placeholderRoom: 'Напр: kino-101',
+    btnJoin: 'Войти в Комнату',
+    feat1Title: 'Любые Сайты',
+    feat1Sub: 'WebRTC HD Звук',
+    feat2Title: 'Голосовой Чат',
+    feat2Sub: 'Двусторонний',
+    feat3Title: 'Баланс Звука',
+    feat3Sub: 'Авто-приглушение',
+    feat4Title: 'Колесо Фортуны',
+    feat4Sub: 'Случайный Выбор',
+    copyHint: '📋 Копировать',
+    noticeLogout: '👋 Вы вышли из аккаунта',
+    noticeLogin: '👤 Добро пожаловать',
+    noticeRoomReq: '⚠️ Пожалуйста, введите код комнаты!',
+    noticeReturnLobby: '🛋️ Возврат на главный экран',
+    confirmLeave: 'Вы действительно хотите покинуть кинокомнату и вернуться в лобби?'
+  }
+};
+
+function setLanguage(lang) {
+  if (!I18N[lang]) lang = 'az';
+  currentLang = lang;
+  try { localStorage.setItem('onecouch_lang', lang); } catch (e) {}
+
+  const t = I18N[lang];
+  const el = (id) => document.getElementById(id);
+
+  if (el('current-lang-flag')) el('current-lang-flag').textContent = t.langFlag;
+  if (el('current-lang-label')) el('current-lang-label').textContent = t.langLabel;
+  if (el('top-login-label')) el('top-login-label').textContent = t.topLogin;
+  if (el('dropdown-status-text')) el('dropdown-status-text').textContent = t.dropdownStatus;
+  if (el('dropdown-logout-label')) el('dropdown-logout-label').textContent = t.dropdownLogout;
+  if (el('lobby-hero-badge')) el('lobby-hero-badge').textContent = t.heroBadge;
+  if (el('lobby-hero-desc')) el('lobby-hero-desc').textContent = t.heroDesc;
+  if (el('host-badge-text')) el('host-badge-text').textContent = t.hostBadge;
+  if (el('host-title-text')) el('host-title-text').textContent = t.hostTitle;
+  if (el('host-desc-text')) el('host-desc-text').textContent = t.hostDesc;
+  if (el('btn-host-google-text')) el('btn-host-google-text').textContent = t.hostContinueGoogle;
+  if (el('host-hint-text')) el('host-hint-text').textContent = t.hostHint;
+  if (el('btn-create-room-text')) el('btn-create-room-text').textContent = t.btnCreateRoom;
+  if (el('divider-or-text')) el('divider-or-text').textContent = t.dividerOr;
+  if (el('guest-badge-text')) el('guest-badge-text').textContent = t.guestBadge;
+  if (el('guest-title-text')) el('guest-title-text').textContent = t.guestTitle;
+  if (el('guest-desc-text')) el('guest-desc-text').textContent = t.guestDesc;
+  if (el('label-nickname-text')) el('label-nickname-text').textContent = t.labelNickname;
+  if (usernameInput) usernameInput.placeholder = t.placeholderNickname;
+  if (el('label-room-text')) el('label-room-text').textContent = t.labelRoom;
+  if (roomInput) roomInput.placeholder = t.placeholderRoom;
+  if (el('btn-join-text')) el('btn-join-text').textContent = t.btnJoin;
+  if (el('feat-1-title')) el('feat-1-title').textContent = t.feat1Title;
+  if (el('feat-1-sub')) el('feat-1-sub').textContent = t.feat1Sub;
+  if (el('feat-2-title')) el('feat-2-title').textContent = t.feat2Title;
+  if (el('feat-2-sub')) el('feat-2-sub').textContent = t.feat2Sub;
+  if (el('feat-3-title')) el('feat-3-title').textContent = t.feat3Title;
+  if (el('feat-3-sub')) el('feat-3-sub').textContent = t.feat3Sub;
+  if (el('feat-4-title')) el('feat-4-title').textContent = t.feat4Title;
+  if (el('feat-4-sub')) el('feat-4-sub').textContent = t.feat4Sub;
+  if (el('copy-hint-text')) el('copy-hint-text').textContent = t.copyHint;
+
+  document.querySelectorAll('.lang-option').forEach(opt => {
+    if (opt.getAttribute('data-lang') === lang) {
+      opt.classList.add('active');
+    } else {
+      opt.classList.remove('active');
+    }
+  });
+
+  updateUserUI();
+}
+
+function setupLanguageSwitcher() {
+  const btnLangToggle = document.getElementById('btn-lang-toggle');
+  const langMenuDropdown = document.getElementById('lang-menu-dropdown');
+  if (btnLangToggle && langMenuDropdown) {
+    btnLangToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      langMenuDropdown.classList.toggle('hidden');
+      const profileCard = document.getElementById('profile-dropdown-card');
+      if (profileCard) profileCard.classList.add('hidden');
+    });
+  }
+
+  const langOptions = document.querySelectorAll('.lang-option');
+  langOptions.forEach(opt => {
+    opt.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const lang = opt.getAttribute('data-lang');
+      if (lang) {
+        setLanguage(lang);
+      }
+      if (langMenuDropdown) {
+        langMenuDropdown.classList.add('hidden');
+      }
+    });
+  });
+}
 
 window.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -153,19 +400,14 @@ window.addEventListener('DOMContentLoaded', () => {
     roomInput.value = roomParam;
   }
 
-  // Kult Film/Serial Tema Seçiciləri (Lobby & Room Header)
+  // Kult Film/Serial Tema Seçicisi (Yalnız Otaq Daxilində)
   const themeSelect = document.getElementById('theme-select');
-  const lobbyThemeSelect = document.getElementById('lobby-theme-select');
   const savedTheme = localStorage.getItem('watchparty-theme') || 'theme-netflix';
   applyTheme(savedTheme);
 
   if (themeSelect) {
     themeSelect.value = savedTheme;
     themeSelect.addEventListener('change', (e) => applyTheme(e.target.value));
-  }
-  if (lobbyThemeSelect) {
-    lobbyThemeSelect.value = savedTheme;
-    lobbyThemeSelect.addEventListener('change', (e) => applyTheme(e.target.value));
   }
 
   // Təsadüfi otaq adı
@@ -198,6 +440,11 @@ window.addEventListener('DOMContentLoaded', () => {
   if (roomInput) {
     roomInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleGuestEnterRoom(); });
   }
+
+  // Dil Dəstəyi (I18N)
+  setupLanguageSwitcher();
+  const savedLang = localStorage.getItem('onecouch_lang') || 'az';
+  setLanguage(savedLang);
 
   setupTabs();
   setupDirectPlayerEvents();
@@ -286,7 +533,8 @@ async function handleGuestEnterRoom() {
   const username = usernameInput.value.trim() || (currentUser ? currentUser.username : 'Qonaq');
 
   if (!enteredRoom) {
-    alert('Zəhmət olmasa otaq kodunu və ya dəvət linkini daxil edin!');
+    const t = (typeof I18N !== 'undefined' && I18N[currentLang]) ? I18N[currentLang] : null;
+    alert(t ? t.noticeRoomReq : 'Zəhmət olmasa otaq kodunu və ya dəvət linkini daxil edin!');
     roomInput.focus();
     return;
   }
@@ -334,8 +582,9 @@ btnCopyLink.addEventListener('click', () => {
 });
 
 function leaveRoomAndReturnToLobby() {
+  const t = (typeof I18N !== 'undefined' && I18N[currentLang]) ? I18N[currentLang] : null;
   if (roomScreen && roomScreen.classList.contains('active')) {
-    const confirmLeave = confirm('Kino otağından çıxıb əsas ekrana (Lobby) qayıtmaq istəyirsiniz?');
+    const confirmLeave = confirm(t ? t.confirmLeave : 'Kino otağından çıxıb əsas ekrana (Lobby) qayıtmaq istəyirsiniz?');
     if (!confirmLeave) return;
   } else {
     return;
@@ -396,7 +645,7 @@ function leaveRoomAndReturnToLobby() {
 
   // 7. UI-ı yenilə
   updateUserUI();
-  showNotice('🛋️ Əsas ekrana qayıtdınız');
+  showNotice(t ? t.noticeReturnLobby : '🛋️ Əsas ekrana qayıtdınız');
 }
 
 // ==========================================
@@ -1747,6 +1996,42 @@ function setupAuth() {
     });
   }
 
+  // 2.2 Lobby Profil Açılan Menyu & Çıxış Düyməsi
+  const btnProfileTrigger = document.getElementById('btn-profile-trigger');
+  const profileDropdownCard = document.getElementById('profile-dropdown-card');
+  if (btnProfileTrigger && profileDropdownCard) {
+    btnProfileTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      profileDropdownCard.classList.toggle('hidden');
+      const langDropdown = document.getElementById('lang-menu-dropdown');
+      if (langDropdown) langDropdown.classList.add('hidden');
+    });
+  }
+
+  const btnLobbyLogout = document.getElementById('btn-lobby-logout');
+  if (btnLobbyLogout) {
+    btnLobbyLogout.addEventListener('click', (e) => {
+      e.stopPropagation();
+      logoutUser();
+    });
+  }
+
+  // Kənara kliklədikdə açılan menyuları bağla
+  document.addEventListener('click', (e) => {
+    if (profileDropdownCard && !profileDropdownCard.classList.contains('hidden')) {
+      if (!profileDropdownCard.contains(e.target) && (!btnProfileTrigger || !btnProfileTrigger.contains(e.target))) {
+        profileDropdownCard.classList.add('hidden');
+      }
+    }
+    const langDropdown = document.getElementById('lang-menu-dropdown');
+    const langToggle = document.getElementById('btn-lang-toggle');
+    if (langDropdown && !langDropdown.classList.contains('hidden')) {
+      if (!langDropdown.contains(e.target) && (!langToggle || !langToggle.contains(e.target))) {
+        langDropdown.classList.add('hidden');
+      }
+    }
+  });
+
   // 2.5 Host kartındakı birbaşa Google Giriş Düyməsi (Google prompt + Hesab seçimi modalını açır)
   const btnHostGoogleLogin = document.getElementById('btn-host-google-login');
   if (btnHostGoogleLogin) {
@@ -1933,7 +2218,8 @@ function saveUserSession(user) {
     localStorage.setItem('watchparty_user', JSON.stringify(user));
   } catch (e) {}
   updateUserUI();
-  showNotice(`👤 Xoş gəldiniz, ${user.username}!`);
+  const t = (typeof I18N !== 'undefined' && I18N[currentLang]) ? I18N[currentLang] : null;
+  showNotice(t ? `${t.noticeLogin}, ${user.username}! 🎉` : `👤 Xoş gəldiniz, ${user.username}!`);
 }
 
 function logoutUser() {
@@ -1942,14 +2228,26 @@ function logoutUser() {
   try {
     localStorage.removeItem('watchparty_user');
   } catch (e) {}
+  const profileCard = document.getElementById('profile-dropdown-card');
+  if (profileCard) profileCard.classList.add('hidden');
   updateUserUI();
-  showNotice('👋 Hesabdan çıxış edildi');
+  const t = (typeof I18N !== 'undefined' && I18N[currentLang]) ? I18N[currentLang] : null;
+  showNotice(t ? t.noticeLogout : '👋 Hesabdan çıxış edildi');
 }
 
 function updateUserUI() {
   const hostLockStatusBadge = document.getElementById('host-lock-status-badge');
   const hostAuthPrompt = document.getElementById('host-auth-prompt');
   const btnCreateRoom = document.getElementById('btn-create-room');
+
+  const btnOpenAuthLobby = document.getElementById('btn-open-auth-lobby');
+  const lobbyUserProfileMenu = document.getElementById('lobby-user-profile-menu');
+  const dropdownFullName = document.getElementById('dropdown-full-name');
+  const dropdownEmailText = document.getElementById('dropdown-email-text');
+  const dropdownAvatarCircle = document.getElementById('dropdown-avatar-circle');
+  const dropdownStatusText = document.getElementById('dropdown-status-text');
+
+  const t = (typeof I18N !== 'undefined' && I18N[currentLang]) ? I18N[currentLang] : null;
 
   if (currentUser && currentUser.isGoogle) {
     if (lobbyUserName) lobbyUserName.textContent = currentUser.username;
@@ -1959,22 +2257,41 @@ function updateUserUI() {
     if (inputAvatarPreview) inputAvatarPreview.textContent = currentUser.avatar || '🍿';
     if (usernameInput && !usernameInput.value) usernameInput.value = currentUser.username;
 
+    // Lobby yuxarı profil/giriş düymələrini dəyişdir
+    if (btnOpenAuthLobby) btnOpenAuthLobby.classList.add('hidden');
+    if (lobbyUserProfileMenu) lobbyUserProfileMenu.classList.remove('hidden');
+
+    if (dropdownFullName) dropdownFullName.textContent = currentUser.username;
+    if (dropdownEmailText) dropdownEmailText.textContent = currentUser.email || 'google.user@gmail.com';
+    if (dropdownStatusText && t) dropdownStatusText.textContent = t.dropdownStatus;
+    if (dropdownAvatarCircle) {
+      if (currentUser.username) {
+        const parts = currentUser.username.trim().split(/\s+/);
+        const initials = parts.map(p => p[0]).join('').substring(0, 2).toUpperCase();
+        dropdownAvatarCircle.textContent = initials || 'VA';
+      }
+    }
+
     if (hostLockStatusBadge) {
-      hostLockStatusBadge.textContent = '🟢 Google ilə Aktivdir';
+      hostLockStatusBadge.textContent = t ? t.hostLockActive : '🟢 Google ilə Aktivdir';
       hostLockStatusBadge.className = 'action-badge lock-badge logged-in';
     }
 
     if (hostAuthPrompt) hostAuthPrompt.classList.add('hidden');
     if (btnCreateRoom) btnCreateRoom.classList.remove('hidden');
   } else {
-    if (lobbyUserName) lobbyUserName.textContent = 'Google ilə Giriş';
+    if (lobbyUserName) lobbyUserName.textContent = t ? t.topLogin : 'Google ilə Giriş';
     if (lobbyUserAvatar) lobbyUserAvatar.textContent = '🌐';
     if (headerUserName) headerUserName.textContent = 'Qonaq';
     if (headerUserAvatar) headerUserAvatar.textContent = '🍿';
     if (inputAvatarPreview) inputAvatarPreview.textContent = '👤';
 
+    // Lobby yuxarı profil/giriş düymələrini dəyişdir
+    if (btnOpenAuthLobby) btnOpenAuthLobby.classList.remove('hidden');
+    if (lobbyUserProfileMenu) lobbyUserProfileMenu.classList.add('hidden');
+
     if (hostLockStatusBadge) {
-      hostLockStatusBadge.textContent = '🔒 Google Tələb Olunur';
+      hostLockStatusBadge.textContent = t ? t.hostLockRequired : '🔒 Google Tələb Olunur';
       hostLockStatusBadge.className = 'action-badge lock-badge';
     }
 
