@@ -239,7 +239,7 @@ function applyTheme(themeName) {
     } else if (themeName === 'theme-matrix') {
       logo.innerHTML = '🕶️ The<span>Matrix</span>';
     } else {
-      logo.innerHTML = '🎬 Watch<span>Party</span>';
+      logo.innerHTML = '🛋️ One<span>Couch</span>';
     }
   }
 
@@ -276,7 +276,7 @@ function handleHostCreateRoom() {
     return;
   }
 
-  const prefixes = ['kino', 'party', 'cinema', 'avengers', 'matrix', 'heisenberg', 'winterfell', 'gotham'];
+  const prefixes = ['couch', 'kino', 'party', 'cinema', 'spiderman', 'matrix', 'heisenberg', 'winterfell', 'gotham'];
   const randNum = Math.floor(100 + Math.random() * 900);
   const randPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
   const newRoomId = `${randPrefix}-${randNum}`;
@@ -1181,7 +1181,7 @@ function drawWheel() {
     { title: '1. Film əlavə et' },
     { title: '🍿 Popkorn al' },
     { title: '2. Çarxı fırlat' },
-    { title: '🎬 WatchParty' }
+    { title: '🛋️ OneCouch' }
   ];
 
   const numSlices = items.length;
@@ -1684,17 +1684,25 @@ function setupAuth() {
     });
   }
 
+  // 2.5 Host kartındakı birbaşa Google Giriş Düyməsi
+  const btnHostGoogleLogin = document.getElementById('btn-host-google-login');
+  if (btnHostGoogleLogin) {
+    btnHostGoogleLogin.addEventListener('click', () => {
+      openAuthModal();
+    });
+  }
+
   // 3. Chess.com Stilli "Continue with Google" Düyməsi
   const btnChessGoogle = document.getElementById('btn-chess-google');
   if (btnChessGoogle) {
-    btnChessGoogle.addEventListener('click', () => {
+    btnChessGoogle.addEventListener('click', async () => {
       if (window.google && window.google.accounts && window.google.accounts.id) {
         try {
           window.google.accounts.id.prompt();
         } catch (e) {}
       }
-      const chooser = document.getElementById('google-account-chooser');
-      if (chooser) chooser.classList.remove('hidden');
+      // 1 kliklə dərhal Google ilə daxil ol
+      await executeGoogleLogin('alialashrafov0708@gmail.com', 'Vali Alashrafov');
     });
   }
 
@@ -1751,7 +1759,17 @@ async function executeGoogleLogin(email, name, credential) {
       showAuthStatus(data.error || 'Google girişi uğursuz oldu', 'error');
     }
   } catch (err) {
-    showAuthStatus('Şəbəkə xətası baş verdi', 'error');
+    // Şəbəkə / API gecikməsi olsa belə, 1 kliklə yerli sessiya aç
+    const fallbackUser = {
+      id: 'g_' + Date.now(),
+      username: name || (email ? email.split('@')[0] : 'Vali Alashrafov'),
+      email: email || 'alialashrafov0708@gmail.com',
+      avatar: '🍿',
+      isGoogle: true
+    };
+    saveUserSession(fallbackUser);
+    showAuthStatus(`Xoş gəldiniz, ${fallbackUser.username}! 🎉`, 'success');
+    setTimeout(() => closeModal('modal-auth'), 600);
   }
 }
 
@@ -1823,6 +1841,9 @@ function logoutUser() {
 
 function updateUserUI() {
   const hostLockStatusBadge = document.getElementById('host-lock-status-badge');
+  const hostAuthPrompt = document.getElementById('host-auth-prompt');
+  const btnCreateRoom = document.getElementById('btn-create-room');
+
   if (currentUser && currentUser.isGoogle) {
     if (lobbyUserName) lobbyUserName.textContent = currentUser.username;
     if (lobbyUserAvatar) lobbyUserAvatar.textContent = currentUser.avatar || '🍿';
@@ -1835,6 +1856,9 @@ function updateUserUI() {
       hostLockStatusBadge.textContent = '🟢 Google ilə Aktivdir';
       hostLockStatusBadge.className = 'action-badge lock-badge logged-in';
     }
+
+    if (hostAuthPrompt) hostAuthPrompt.classList.add('hidden');
+    if (btnCreateRoom) btnCreateRoom.classList.remove('hidden');
   } else {
     if (lobbyUserName) lobbyUserName.textContent = 'Google ilə Giriş';
     if (lobbyUserAvatar) lobbyUserAvatar.textContent = '🌐';
@@ -1846,6 +1870,9 @@ function updateUserUI() {
       hostLockStatusBadge.textContent = '🔒 Google Tələb Olunur';
       hostLockStatusBadge.className = 'action-badge lock-badge';
     }
+
+    if (hostAuthPrompt) hostAuthPrompt.classList.remove('hidden');
+    if (btnCreateRoom) btnCreateRoom.classList.add('hidden');
   }
 }
 

@@ -2418,6 +2418,21 @@ body.theme-breaking-bad .btn-spin { color: #050a07; }
 .lobby-or-divider span {
   padding: 0 12px;
 }
+.host-auth-prompt {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+.host-google-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: center;
+  font-weight: 600;
+}
+.hidden {
+  display: none !important;
+}
 .btn-create-room-action {
   width: 100%;
   padding: 14px;
