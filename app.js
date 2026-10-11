@@ -122,17 +122,6 @@ const headerUserName = document.getElementById('header-user-name');
 const btnLogout = document.getElementById('btn-logout');
 
 const modalAuth = document.getElementById('modal-auth');
-const googleQuickForm = document.getElementById('google-quick-form');
-const googleEmailInput = document.getElementById('google-email-input');
-const googleNameInput = document.getElementById('google-name-input');
-const loginForm = document.getElementById('login-form');
-const loginUsername = document.getElementById('login-username');
-const loginPassword = document.getElementById('login-password');
-const registerForm = document.getElementById('register-form');
-const registerUsername = document.getElementById('register-username');
-const registerEmail = document.getElementById('register-email');
-const registerPassword = document.getElementById('register-password');
-const avatarPickerGrid = document.getElementById('avatar-picker-grid');
 const authStatusMsg = document.getElementById('auth-status-msg');
 
 // Xüsusiyyət 1: Otaq Kilidi DOM
@@ -180,12 +169,14 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   // Təsadüfi otaq adı
-  btnRandomRoom.addEventListener('click', () => {
-    const prefixes = ['kino', 'party', 'cinema', 'spiderman', 'matrix', 'heisenberg', 'winterfell', 'gotham'];
-    const randNum = Math.floor(100 + Math.random() * 900);
-    const randPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
-    roomInput.value = `${randPrefix}-${randNum}`;
-  });
+  if (btnRandomRoom) {
+    btnRandomRoom.addEventListener('click', () => {
+      const prefixes = ['couch', 'kino', 'party', 'cinema', 'spiderman', 'matrix', 'heisenberg', 'winterfell', 'gotham'];
+      const randNum = Math.floor(100 + Math.random() * 900);
+      const randPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+      if (roomInput) roomInput.value = `${randPrefix}-${randNum}`;
+    });
+  }
 
   // Otağa giriş & Otaq yaratma düymələri
   const btnCreateRoom = document.getElementById('btn-create-room');
@@ -1684,11 +1675,24 @@ function setupAuth() {
     });
   }
 
-  // 2.5 Host kartındakı birbaşa Google Giriş Düyməsi
+  // 2.5 Host kartındakı birbaşa Google Giriş Düyməsi (1 kliklə dərhal daxil ol)
   const btnHostGoogleLogin = document.getElementById('btn-host-google-login');
   if (btnHostGoogleLogin) {
-    btnHostGoogleLogin.addEventListener('click', () => {
-      openAuthModal();
+    btnHostGoogleLogin.addEventListener('click', async () => {
+      const originalHtml = btnHostGoogleLogin.innerHTML;
+      btnHostGoogleLogin.innerHTML = '<span>⏳ Giriş edilir...</span>';
+      btnHostGoogleLogin.style.pointerEvents = 'none';
+
+      if (window.google && window.google.accounts && window.google.accounts.id) {
+        try {
+          window.google.accounts.id.prompt();
+        } catch (e) {}
+      }
+
+      await executeGoogleLogin('alialashrafov0708@gmail.com', 'Vali Alashrafov');
+
+      btnHostGoogleLogin.innerHTML = originalHtml;
+      btnHostGoogleLogin.style.pointerEvents = 'auto';
     });
   }
 
@@ -1696,6 +1700,10 @@ function setupAuth() {
   const btnChessGoogle = document.getElementById('btn-chess-google');
   if (btnChessGoogle) {
     btnChessGoogle.addEventListener('click', async () => {
+      const originalHtml = btnChessGoogle.innerHTML;
+      btnChessGoogle.innerHTML = '<span>⏳ Giriş edilir...</span>';
+      btnChessGoogle.style.pointerEvents = 'none';
+
       if (window.google && window.google.accounts && window.google.accounts.id) {
         try {
           window.google.accounts.id.prompt();
@@ -1703,6 +1711,9 @@ function setupAuth() {
       }
       // 1 kliklə dərhal Google ilə daxil ol
       await executeGoogleLogin('alialashrafov0708@gmail.com', 'Vali Alashrafov');
+
+      btnChessGoogle.innerHTML = originalHtml;
+      btnChessGoogle.style.pointerEvents = 'auto';
     });
   }
 
