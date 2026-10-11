@@ -161,10 +161,41 @@ const I18N = {
     heroBadge: 'İKİ EKRAN. TƏK DİVAN.',
     heroSlogan: 'Two screens. One couch.',
     heroDesc: 'İstənilən film saytından, Netflix və YouTube-dan dostlarınızla sanki eyni divanda yanaşı oturmuş kimi birlikdə izləyin və canlı danışın.',
+    cineMainTitle: 'SƏHNƏ SƏNİNDİR',
+    cineSubSlogan: 'Two screens. One couch.',
     btnHeroRoom: '🛋️ İndi Otaq Aç',
     btnHeroExplore: '🎭 Xarakterləri Kəşf Et',
+    sectionTagArchetypes: '🎭 KİNO ARXETİPLƏRİ',
     archetypeTitle: 'Kult Qəhrəmanlar və Rollar',
     archetypeSub: 'Dünya kino tarixinin ən unudulmaz simvolları və xarakterləri.',
+    charCyberBadge: 'SCI-FI',
+    charCyberName: 'KİBER DÖYÜŞÇÜ',
+    charCyberSub: 'Gələcək və Neon',
+    charGodfatherBadge: 'AİLƏ & GÜC',
+    charGodfatherName: 'XAÇ ATASI',
+    charGodfatherSub: 'Don Vito Corleone',
+    charHeisenbergRibbon: '⭐ KULT SİMA',
+    charHeisenbergBadge: 'ZƏKA OYUNÇUSU',
+    charHeisenbergName: 'HEİSENBERG',
+    charHeisenbergSub: 'Walter White (Breaking Bad)',
+    charBatmanBadge: 'QƏHRƏMAN',
+    charBatmanName: 'QARANLIQ CƏNGAVƏR',
+    charBatmanSub: 'The Dark Knight (Gotham)',
+    charDetectiveBadge: 'NOİR DEDEKTİV',
+    charDetectiveName: 'SİRR VƏ KÖLGƏ',
+    charDetectiveSub: 'Klassik Kino Noiri',
+    archCatHeisenberg: 'BREAKING BAD • ZƏKA',
+    archTitleHeisenberg: 'Walter White — Heisenberg',
+    archDescHeisenberg: 'Zəka, kimya və sonsuz strateji düşüncənin simvolu. Qazanmaq üçün hər həddi aşan dahi.',
+    archCatBatman: 'DC CINEMA • ƏDALƏT',
+    archTitleBatman: 'Batman — Qaranlıq Cəngavər',
+    archDescBatman: 'Gecənin kölgəsində təkbaşına ədalət axtaran, sarsılmaz iradə və gücün tərənnümü.',
+    archCatGodfather: 'KLASSİK KİNO • NÜFUZ',
+    archTitleGodfather: 'Don Vito Corleone — Xaç Atası',
+    archDescGodfather: 'Ailəyə sədaqət, intizam, sakitlik və sözün çəkisini bilən əfsanəvi lider obrazı.',
+    archCatCyber: 'SCI-FI • KİBERPANK',
+    archTitleCyber: 'Cyber Warrior — Kiber Döyüşçü',
+    archDescCyber: 'Süni intellekt, neon işıqlar və rəqəmsal dünyanın gələcək döyüşçü cəngavəri.',
     hostBadge: '👑 Otaq Sahibi',
     hostLockRequired: '🔒 Google Tələb Olunur',
     hostLockActive: '🟢 Google ilə Aktivdir',
@@ -209,10 +240,41 @@ const I18N = {
     heroBadge: 'İKİ EKRAN. TEK KOLTUK.',
     heroSlogan: 'Two screens. One couch.',
     heroDesc: 'Tüm film sitelerinden, Netflix ve YouTube\'dan arkadaşlarınızla sanki aynı koltukta oturuyormuş gibi birlikte izleyin ve sesli sohbet edin.',
+    cineMainTitle: 'SAHNE SENİNDİR',
+    cineSubSlogan: 'Two screens. One couch.',
     btnHeroRoom: '🛋️ Şimdi Oda Aç',
     btnHeroExplore: '🎭 Karakterleri Keşfet',
+    sectionTagArchetypes: '🎭 SİNEMA ARKETİPLERİ',
     archetypeTitle: 'Kült Kahramanlar ve Roller',
     archetypeSub: 'Dünya sinema tarihinin en unutulmaz ikonları ve karakterleri.',
+    charCyberBadge: 'BİLİM KURGU',
+    charCyberName: 'SİBER SAVAŞÇI',
+    charCyberSub: 'Gelecek ve Neon',
+    charGodfatherBadge: 'AİLE VE GÜÇ',
+    charGodfatherName: 'BABA',
+    charGodfatherSub: 'Don Vito Corleone',
+    charHeisenbergRibbon: '⭐ KÜLT İKON',
+    charHeisenbergBadge: 'ZEKA OYUNCUSU',
+    charHeisenbergName: 'HEİSENBERG',
+    charHeisenbergSub: 'Walter White (Breaking Bad)',
+    charBatmanBadge: 'KAHRAMAN',
+    charBatmanName: 'KARA ŞÖVALYE',
+    charBatmanSub: 'The Dark Knight (Gotham)',
+    charDetectiveBadge: 'NOİR DEDEKTİF',
+    charDetectiveName: 'GİZEM VE GÖLGE',
+    charDetectiveSub: 'Klasik Sinema Noiri',
+    archCatHeisenberg: 'BREAKING BAD • ZEKA',
+    archTitleHeisenberg: 'Walter White — Heisenberg',
+    archDescHeisenberg: 'Zeka, kimya ve stratejik düşüncenin simgesi. Kazanmak için sınır tanımayan deha.',
+    archCatBatman: 'DC CINEMA • ADALET',
+    archTitleBatman: 'Batman — Kara Şövalye',
+    archDescBatman: 'Gecenin gölgesinde adalet arayan, sarsılmaz irade ve gücün timsali.',
+    archCatGodfather: 'KLASİK SİNEMA • NÜFUZ',
+    archTitleGodfather: 'Don Vito Corleone — Baba',
+    archDescGodfather: 'Aileye sadakat, disiplin ve sözünün ağırlığını bilen efsanevi lider.',
+    archCatCyber: 'BİLİM KURGU • SİBERPANK',
+    archTitleCyber: 'Cyber Warrior — Siber Savaşçı',
+    archDescCyber: 'Yapay zeka, neon ışıklar ve dijital dünyanın gelecekteki savaşçısı.',
     hostBadge: '👑 Oda Sahibi',
     hostLockRequired: '🔒 Google Gerekli',
     hostLockActive: '🟢 Google ile Aktif',
@@ -257,10 +319,41 @@ const I18N = {
     heroBadge: 'TWO SCREENS. ONE COUCH.',
     heroSlogan: 'Two screens. One couch.',
     heroDesc: 'Watch movies together from any streaming site, Netflix & YouTube, and voice chat with friends like you are sitting on the same couch.',
+    cineMainTitle: 'THE STAGE IS YOURS',
+    cineSubSlogan: 'Two screens. One couch.',
     btnHeroRoom: '🛋️ Start Watch Party',
     btnHeroExplore: '🎭 Explore Characters',
+    sectionTagArchetypes: '🎭 CINEMA ARCHETYPES',
     archetypeTitle: 'Cult Heroes & Icons',
     archetypeSub: 'The most unforgettable characters in cinematic history.',
+    charCyberBadge: 'SCI-FI',
+    charCyberName: 'CYBER WARRIOR',
+    charCyberSub: 'Future & Neon',
+    charGodfatherBadge: 'FAMILY & POWER',
+    charGodfatherName: 'THE GODFATHER',
+    charGodfatherSub: 'Don Vito Corleone',
+    charHeisenbergRibbon: '⭐ CULT ICON',
+    charHeisenbergBadge: 'MASTERMIND',
+    charHeisenbergName: 'HEISENBERG',
+    charHeisenbergSub: 'Walter White (Breaking Bad)',
+    charBatmanBadge: 'VIGILANTE',
+    charBatmanName: 'THE DARK KNIGHT',
+    charBatmanSub: 'Batman (Gotham City)',
+    charDetectiveBadge: 'NOIR DETECTIVE',
+    charDetectiveName: 'MYSTERY & SHADOW',
+    charDetectiveSub: 'Classic Film Noir',
+    archCatHeisenberg: 'BREAKING BAD • GENIUS',
+    archTitleHeisenberg: 'Walter White — Heisenberg',
+    archDescHeisenberg: 'The ultimate symbol of intellect, chemistry, and strategy. A mastermind crossing every line to win.',
+    archCatBatman: 'DC CINEMA • JUSTICE',
+    archTitleBatman: 'Batman — The Dark Knight',
+    archDescBatman: 'Standing alone in the shadows of the night, the embodiment of iron will and justice.',
+    archCatGodfather: 'CLASSIC CINEMA • POWER',
+    archTitleGodfather: 'Don Vito Corleone — The Godfather',
+    archDescGodfather: 'Loyalty to family, quiet discipline, and the weight of an offer you cannot refuse.',
+    archCatCyber: 'SCI-FI • CYBERPUNK',
+    archTitleCyber: 'Cyber Warrior — Sci-Fi Samurai',
+    archDescCyber: 'Artificial intelligence, neon streets, and the cybernetic frontier of the digital age.',
     hostBadge: '👑 Room Host',
     hostLockRequired: '🔒 Google Required',
     hostLockActive: '🟢 Google Active',
@@ -305,10 +398,41 @@ const I18N = {
     heroBadge: 'ДВА ЭКРАНА. ОДИН ДИВАН.',
     heroSlogan: 'Two screens. One couch.',
     heroDesc: 'Смотрите фильмы с любых сайтов, Netflix и YouTube вместе с друзьями и общайтесь голосом, будто сидите на одном диване.',
+    cineMainTitle: 'СЦЕНА ЗА ТОБОЙ',
+    cineSubSlogan: 'Two screens. One couch.',
     btnHeroRoom: '🛋️ Создать Комнату',
     btnHeroExplore: '🎭 Исследовать',
+    sectionTagArchetypes: '🎭 КИНОАРХЕТИПЫ',
     archetypeTitle: 'Культовые Персонажи',
     archetypeSub: 'Самые незабываемые образы мирового кинематографа.',
+    charCyberBadge: 'НАУЧ. ФАНТ.',
+    charCyberName: 'КИБЕР-ВОИН',
+    charCyberSub: 'Будущее и Неон',
+    charGodfatherBadge: 'СЕМЬЯ И ВЛАСТЬ',
+    charGodfatherName: 'КРЁСТНЫЙ ОТЕЦ',
+    charGodfatherSub: 'Дон Вито Корлеоне',
+    charHeisenbergRibbon: '⭐ КУЛЬТОВЫЙ ОБРАЗ',
+    charHeisenbergBadge: 'ГЕНИЙ РАСЧЁТА',
+    charHeisenbergName: 'ХАЙЗЕНБЕРГ',
+    charHeisenbergSub: 'Уолтер Уайт (Во все тяжкие)',
+    charBatmanBadge: 'ТЁМНЫЙ СТРАЖ',
+    charBatmanName: 'ТЁМНЫЙ РЫЦАРЬ',
+    charBatmanSub: 'Бэтмен (Готэм-Сити)',
+    charDetectiveBadge: 'НУАР ДЕТЕКТИВ',
+    charDetectiveName: 'ТАЙНА И ТЕНЬ',
+    charDetectiveSub: 'Классический Нуар',
+    archCatHeisenberg: 'BREAKING BAD • ИНТЕЛЛЕКТ',
+    archTitleHeisenberg: 'Уолтер Уайт — Хайзенберг',
+    archDescHeisenberg: 'Символ интеллекта, химии и стратегии. Гений, переступающий любые грани ради победы.',
+    archCatBatman: 'DC CINEMA • ПРАВОСУДИЕ',
+    archTitleBatman: 'Бэтмен — Тёмный Рыцарь',
+    archDescBatman: 'Одинокий защитник в тени ночи, воплощение несгибаемой воли и справедливости.',
+    archCatGodfather: 'КЛАССИКА • ВЛИЯНИЕ',
+    archTitleGodfather: 'Дон Вито Корлеоне — Крёстный Отец',
+    archDescGodfather: 'Преданность семье, железная выдержка и непререкаемый авторитет легендарного лидера.',
+    archCatCyber: 'НАУЧ. ФАНТ • КИБЕРПАНК',
+    archTitleCyber: 'Cyber Warrior — Кибер-Воин',
+    archDescCyber: 'Искусственный интеллект, неоновые огни и цифровой воин будущего.',
     hostBadge: '👑 Создатель',
     hostLockRequired: '🔒 Требуется Google',
     hostLockActive: '🟢 Google Активен',
@@ -360,6 +484,9 @@ function setLanguage(lang) {
   if (el('nav-link-rooms')) el('nav-link-rooms').textContent = t.navRooms;
   if (el('lobby-hero-badge')) el('lobby-hero-badge').textContent = t.heroBadge;
   if (el('lobby-hero-desc')) el('lobby-hero-desc').textContent = t.heroDesc;
+  if (el('cine-main-title')) el('cine-main-title').textContent = t.cineMainTitle;
+  if (el('cine-sub-slogan')) el('cine-sub-slogan').textContent = t.cineSubSlogan;
+
   if (el('btn-hero-cta-room')) {
     const span = el('btn-hero-cta-room').querySelector('span');
     if (span) span.textContent = t.btnHeroRoom;
@@ -368,8 +495,50 @@ function setLanguage(lang) {
     const span = el('btn-hero-cta-explore').querySelector('span');
     if (span) span.textContent = t.btnHeroExplore;
   }
+
+  // 3D Fanned Cards
+  if (el('char-badge-cyberpunk')) el('char-badge-cyberpunk').textContent = t.charCyberBadge;
+  if (el('char-name-cyberpunk')) el('char-name-cyberpunk').textContent = t.charCyberName;
+  if (el('char-sub-cyberpunk')) el('char-sub-cyberpunk').textContent = t.charCyberSub;
+
+  if (el('char-badge-godfather')) el('char-badge-godfather').textContent = t.charGodfatherBadge;
+  if (el('char-name-godfather')) el('char-name-godfather').textContent = t.charGodfatherName;
+  if (el('char-sub-godfather')) el('char-sub-godfather').textContent = t.charGodfatherSub;
+
+  if (el('char-ribbon-heisenberg')) el('char-ribbon-heisenberg').textContent = t.charHeisenbergRibbon;
+  if (el('char-badge-heisenberg')) el('char-badge-heisenberg').textContent = t.charHeisenbergBadge;
+  if (el('char-name-heisenberg')) el('char-name-heisenberg').textContent = t.charHeisenbergName;
+  if (el('char-sub-heisenberg')) el('char-sub-heisenberg').textContent = t.charHeisenbergSub;
+
+  if (el('char-badge-batman')) el('char-badge-batman').textContent = t.charBatmanBadge;
+  if (el('char-name-batman')) el('char-name-batman').textContent = t.charBatmanName;
+  if (el('char-sub-batman')) el('char-sub-batman').textContent = t.charBatmanSub;
+
+  if (el('char-badge-detective')) el('char-badge-detective').textContent = t.charDetectiveBadge;
+  if (el('char-name-detective')) el('char-name-detective').textContent = t.charDetectiveName;
+  if (el('char-sub-detective')) el('char-sub-detective').textContent = t.charDetectiveSub;
+
+  // Section 1.5 Archetypes
+  if (el('section-tag-archetypes')) el('section-tag-archetypes').textContent = t.sectionTagArchetypes;
   if (el('archetypes-title-text')) el('archetypes-title-text').textContent = t.archetypeTitle;
   if (el('archetypes-sub-text')) el('archetypes-sub-text').textContent = t.archetypeSub;
+
+  if (el('arch-cat-heisenberg')) el('arch-cat-heisenberg').textContent = t.archCatHeisenberg;
+  if (el('arch-title-heisenberg')) el('arch-title-heisenberg').textContent = t.archTitleHeisenberg;
+  if (el('arch-desc-heisenberg')) el('arch-desc-heisenberg').textContent = t.archDescHeisenberg;
+
+  if (el('arch-cat-batman')) el('arch-cat-batman').textContent = t.archCatBatman;
+  if (el('arch-title-batman')) el('arch-title-batman').textContent = t.archTitleBatman;
+  if (el('arch-desc-batman')) el('arch-desc-batman').textContent = t.archDescBatman;
+
+  if (el('arch-cat-godfather')) el('arch-cat-godfather').textContent = t.archCatGodfather;
+  if (el('arch-title-godfather')) el('arch-title-godfather').textContent = t.archTitleGodfather;
+  if (el('arch-desc-godfather')) el('arch-desc-godfather').textContent = t.archDescGodfather;
+
+  if (el('arch-cat-cyberpunk')) el('arch-cat-cyberpunk').textContent = t.archCatCyber;
+  if (el('arch-title-cyberpunk')) el('arch-title-cyberpunk').textContent = t.archTitleCyber;
+  if (el('arch-desc-cyberpunk')) el('arch-desc-cyberpunk').textContent = t.archDescCyber;
+
   if (el('host-badge-text')) el('host-badge-text').textContent = t.hostBadge;
   if (el('host-title-text')) el('host-title-text').textContent = t.hostTitle;
   if (el('host-desc-text')) el('host-desc-text').textContent = t.hostDesc;
@@ -434,19 +603,43 @@ function setupLanguageSwitcher() {
 }
 
 function setupMiniMovieFigures() {
-  const charDetails = {
-    cyberpunk: { emoji: '⚡', title: 'Kiber Döyüşçü (Sci-Fi)' },
-    godfather: { emoji: '🌹', title: 'Don Vito Corleone (Xaç Atası)' },
-    heisenberg: { emoji: '🧪', title: 'Walter White (Heisenberg)' },
-    batman: { emoji: '🦇', title: 'Batman (The Dark Knight)' },
-    detective: { emoji: '🕶️', title: 'Noir Dedektiv (Classic)' }
+  const charDetailsByLang = {
+    az: {
+      cyberpunk: { emoji: '⚡', title: 'Kiber Döyüşçü (Sci-Fi)' },
+      godfather: { emoji: '🌹', title: 'Don Vito Corleone (Xaç Atası)' },
+      heisenberg: { emoji: '🧪', title: 'Walter White (Heisenberg)' },
+      batman: { emoji: '🦇', title: 'Batman (Qaranlıq Cəngavər)' },
+      detective: { emoji: '🕶️', title: 'Noir Dedektiv (Klassik)' }
+    },
+    tr: {
+      cyberpunk: { emoji: '⚡', title: 'Siber Savaşçı (Bilim Kurgu)' },
+      godfather: { emoji: '🌹', title: 'Don Vito Corleone (Baba)' },
+      heisenberg: { emoji: '🧪', title: 'Walter White (Heisenberg)' },
+      batman: { emoji: '🦇', title: 'Batman (Kara Şövalye)' },
+      detective: { emoji: '🕶️', title: 'Noir Dedektif (Klasik)' }
+    },
+    en: {
+      cyberpunk: { emoji: '⚡', title: 'Cyber Warrior (Sci-Fi)' },
+      godfather: { emoji: '🌹', title: 'Don Vito Corleone (The Godfather)' },
+      heisenberg: { emoji: '🧪', title: 'Walter White (Heisenberg)' },
+      batman: { emoji: '🦇', title: 'Batman (The Dark Knight)' },
+      detective: { emoji: '🕶️', title: 'Noir Detective (Classic)' }
+    },
+    ru: {
+      cyberpunk: { emoji: '⚡', title: 'Кибер-Воин (Науч. Фант.)' },
+      godfather: { emoji: '🌹', title: 'Дон Вито Корлеоне (Крёстный Отец)' },
+      heisenberg: { emoji: '🧪', title: 'Уолтер Уайт (Хайзенберг)' },
+      batman: { emoji: '🦇', title: 'Бэтмен (Тёмный Рыцарь)' },
+      detective: { emoji: '🕶️', title: 'Нуар Детектив (Классика)' }
+    }
   };
 
   // 1. 3D Fanned Character Cards
   document.querySelectorAll('.cine-char-card').forEach(card => {
     card.addEventListener('click', () => {
       const charKey = card.getAttribute('data-char');
-      const info = charDetails[charKey] || { emoji: '🍿', title: 'Kino Qəhrəmanı' };
+      const langDict = charDetailsByLang[currentLang] || charDetailsByLang.az;
+      const info = langDict[charKey] || { emoji: '🍿', title: 'Hero' };
       
       if (typeof selectedAvatarChoice !== 'undefined') {
         selectedAvatarChoice = info.emoji;
@@ -464,7 +657,14 @@ function setupMiniMovieFigures() {
         spawnFloatingEmoji('⭐');
       }
 
-      showNotice(`🎭 ${info.title} seçildi!`);
+      const selectedWord = {
+        az: 'seçildi!',
+        tr: 'seçildi!',
+        en: 'selected!',
+        ru: 'выбран!'
+      }[currentLang] || 'seçildi!';
+
+      showNotice(`🎭 ${info.title} ${selectedWord}`);
     });
   });
 
@@ -481,7 +681,44 @@ function setupMiniMovieFigures() {
   });
 }
 
+function fixImageSources() {
+  const tryRepair = (img) => {
+    const attempts = parseInt(img.dataset.imgRetry || '0', 10);
+    if (attempts >= 3) return;
+    img.dataset.imgRetry = (attempts + 1).toString();
+
+    const currentSrc = img.getAttribute('src') || '';
+    if (!currentSrc || currentSrc.startsWith('data:')) return;
+
+    if (attempts === 0) {
+      if (currentSrc.startsWith('/assets/')) {
+        img.src = currentSrc.substring(1);
+      } else if (currentSrc.startsWith('assets/')) {
+        img.src = '/' + currentSrc;
+      } else {
+        img.src = 'assets/' + currentSrc.replace(/^(\.\/|\/)/, '');
+      }
+    } else if (attempts === 1) {
+      const cleanPath = currentSrc.replace(/^.*assets\//, 'assets/');
+      img.src = './' + cleanPath;
+    } else if (attempts === 2) {
+      const cleanPath = currentSrc.replace(/^.*assets\//, 'public/assets/');
+      img.src = '/' + cleanPath;
+    }
+  };
+
+  document.querySelectorAll('img').forEach(img => {
+    if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) {
+      tryRepair(img);
+    }
+    img.addEventListener('error', function() {
+      tryRepair(this);
+    });
+  });
+}
+
 window.addEventListener('DOMContentLoaded', () => {
+  fixImageSources();
   const urlParams = new URLSearchParams(window.location.search);
   const roomParam = urlParams.get('room');
   if (roomParam) {
