@@ -19,7 +19,10 @@ let currentVideoState = { type: 'empty', url: '', isPlaying: false, time: 0 };
 
 // WebRTC Tab Yayımı
 let localScreenStream = null;
-let screenPeerConnection = null;
+const screenBroadcasterPeers = {};
+const screenBroadcasterIceQueues = {};
+let screenViewerPeer = null;
+let screenViewerIceQueue = [];
 
 // WebRTC Səsli Zəng (Mikrofon & Audio Engine)
 let localVoiceStream = null;
@@ -937,10 +940,16 @@ function leaveRoomAndReturnToLobby() {
     try { localScreenStream.getTracks().forEach(t => t.stop()); } catch (e) {}
     localScreenStream = null;
   }
-  if (screenPeerConnection) {
-    try { screenPeerConnection.close(); } catch (e) {}
-    screenPeerConnection = null;
+  Object.values(screenBroadcasterPeers).forEach(pc => {
+    try { pc.close(); } catch (e) {}
+  });
+  for (const k in screenBroadcasterPeers) delete screenBroadcasterPeers[k];
+  for (const k in screenBroadcasterIceQueues) delete screenBroadcasterIceQueues[k];
+  if (screenViewerPeer) {
+    try { screenViewerPeer.close(); } catch (e) {}
+    screenViewerPeer = null;
   }
+  screenViewerIceQueue = [];
   if (localVoiceStream) {
     try { localVoiceStream.getTracks().forEach(t => t.stop()); } catch (e) {}
     localVoiceStream = null;
@@ -1125,6 +1134,11 @@ function initSocket() {
     if (data.users) currentRoomUsers = data.users;
     updateUsersList(data.users || currentRoomUsers);
     showNotice(`👋 ${data.username} otaqdan ayrıldı`);
+    if (screenBroadcasterPeers[data.socketId]) {
+      try { screenBroadcasterPeers[data.socketId].close(); } catch (e) {}
+      delete screenBroadcasterPeers[data.socketId];
+    }
+    delete screenBroadcasterIceQueues[data.socketId];
     cleanupVoicePeer(data.socketId);
   });
 
@@ -1178,16 +1192,43 @@ function initSocket() {
   });
 
   socket.on('webrtc-answer', async ({ sender, sdp }) => {
-    if (screenPeerConnection) {
-      await screenPeerConnection.setRemoteDescription(new RTCSessionDescription(sdp));
+    const pc = screenBroadcasterPeers[sender];
+    if (pc) {
+      try {
+        await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+        if (screenBroadcasterIceQueues[sender]) {
+          for (const cand of screenBroadcasterIceQueues[sender]) {
+            try { await pc.addIceCandidate(new RTCIceCandidate(cand)); } catch (e) {}
+          }
+          delete screenBroadcasterIceQueues[sender];
+        }
+      } catch (err) {
+        console.warn('Broadcaster setRemoteDescription error:', err);
+      }
     }
   });
 
   socket.on('webrtc-ice', async ({ sender, candidate }) => {
-    if (screenPeerConnection && candidate) {
-      try {
-        await screenPeerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-      } catch (e) {}
+    if (!candidate) return;
+    // 1. Əgər biz ekran paylaşan tərəfik (Broadcaster)
+    if (localScreenStream && screenBroadcasterPeers[sender]) {
+      const pc = screenBroadcasterPeers[sender];
+      if (pc.remoteDescription && pc.remoteDescription.type) {
+        try { await pc.addIceCandidate(new RTCIceCandidate(candidate)); } catch (e) {}
+      } else {
+        if (!screenBroadcasterIceQueues[sender]) screenBroadcasterIceQueues[sender] = [];
+        screenBroadcasterIceQueues[sender].push(candidate);
+      }
+      return;
+    }
+
+    // 2. Əgər biz ekran izləyən tərəfik (Viewer)
+    if (screenViewerPeer) {
+      if (screenViewerPeer.remoteDescription && screenViewerPeer.remoteDescription.type) {
+        try { await screenViewerPeer.addIceCandidate(new RTCIceCandidate(candidate)); } catch (e) {}
+      } else {
+        screenViewerIceQueue.push(candidate);
+      }
     }
   });
 
@@ -1627,7 +1668,9 @@ async function startScreenCapture() {
     localScreenStream = await navigator.mediaDevices.getDisplayMedia({
       video: {
         displaySurface: 'browser',
-        frameRate: { ideal: 60 }
+        frameRate: { ideal: 30, max: 30 }, // Film üçün 30 FPS standart (60 FPS donmalarını və şəbəkə tıxacını aradan qaldırır)
+        width: { max: 1920, ideal: 1280 },
+        height: { max: 1080, ideal: 720 }
       },
       audio: {
         echoCancellation: false,
@@ -1637,9 +1680,16 @@ async function startScreenCapture() {
       }
     });
 
+    const videoTrack = localScreenStream.getVideoTracks()[0];
+    if (videoTrack) {
+      videoTrack.contentHint = 'motion'; // GPU Hardware video hərəkət rejimi (donmaları tam bloklayır)
+    }
+
     const audioTracks = localScreenStream.getAudioTracks();
     if (audioTracks.length === 0) {
       alert("⚠️ DİQQƏT: Filmin səsi qoşulmadı!\n\nChrome pəncərəsi açılanda aşağıdakı 'Also share tab audio' (Səsi paylaş) qutusunu mütləq işarələyin və 'Pəncərə' yox, 'Chrome Tab' (və ya Bütöv Ekran) seçin.");
+    } else {
+      audioTracks[0].contentHint = 'music'; // Film və musiqi üçün təmiz stereo səs rejimi
     }
 
     streamPlayer.srcObject = localScreenStream;
@@ -1668,10 +1718,17 @@ function stopScreenStream() {
     localScreenStream.getTracks().forEach(track => track.stop());
     localScreenStream = null;
   }
-  if (screenPeerConnection) {
-    screenPeerConnection.close();
-    screenPeerConnection = null;
+  Object.values(screenBroadcasterPeers).forEach(pc => {
+    try { pc.close(); } catch (e) {}
+  });
+  for (const k in screenBroadcasterPeers) delete screenBroadcasterPeers[k];
+  for (const k in screenBroadcasterIceQueues) delete screenBroadcasterIceQueues[k];
+
+  if (screenViewerPeer) {
+    try { screenViewerPeer.close(); } catch (e) {}
+    screenViewerPeer = null;
   }
+  screenViewerIceQueue = [];
 
   streamPlayer.srcObject = null;
   streamPlayer.classList.add('hidden');
@@ -1686,32 +1743,61 @@ function stopScreenStream() {
 }
 
 async function initiateScreenPeer(targetSocketId) {
-  if (!localScreenStream) return;
-  if (screenPeerConnection) screenPeerConnection.close();
+  if (!localScreenStream || !targetSocketId || targetSocketId === socket.id) return;
 
-  screenPeerConnection = new RTCPeerConnection(rtcConfig);
+  if (screenBroadcasterPeers[targetSocketId]) {
+    try { screenBroadcasterPeers[targetSocketId].close(); } catch (e) {}
+    delete screenBroadcasterPeers[targetSocketId];
+  }
+  delete screenBroadcasterIceQueues[targetSocketId];
+
+  const pc = new RTCPeerConnection(rtcConfig);
+  screenBroadcasterPeers[targetSocketId] = pc;
 
   localScreenStream.getTracks().forEach(track => {
-    screenPeerConnection.addTrack(track, localScreenStream);
+    pc.addTrack(track, localScreenStream);
   });
 
-  screenPeerConnection.onicecandidate = (event) => {
-    if (event.candidate) {
+  // WebRTC Video Bitreyt Nəzarəti və Donmanın qarşısının alınması (Film üçün 3 Mbps hədd və kadr saxlanması)
+  const videoSender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
+  if (videoSender) {
+    try {
+      const params = videoSender.getParameters();
+      if (!params.encodings || params.encodings.length === 0) params.encodings = [{}];
+      params.encodings[0].maxBitrate = 3000000; // 3.0 Mbps max (sürətli, dalğalanmasız, kəsintisiz video axını)
+      params.degradationPreference = 'maintain-framerate'; // Heç vaxt kadr itməsin və donmasın!
+      await videoSender.setParameters(params);
+    } catch (e) {
+      console.warn('Bitrate parameters error:', e);
+    }
+  }
+
+  pc.onicecandidate = (event) => {
+    if (event.candidate && socket) {
       socket.emit('webrtc-ice', { target: targetSocketId, candidate: event.candidate });
     }
   };
 
-  const offer = await screenPeerConnection.createOffer();
-  await screenPeerConnection.setLocalDescription(offer);
-  socket.emit('webrtc-offer', { target: targetSocketId, sdp: offer });
+  try {
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    socket.emit('webrtc-offer', { target: targetSocketId, sdp: offer });
+  } catch (err) {
+    console.error('initiateScreenPeer error:', err);
+  }
 }
 
 async function handleScreenOffer(senderSocketId, sdp) {
-  if (screenPeerConnection) screenPeerConnection.close();
+  if (!senderSocketId || !sdp) return;
+  if (screenViewerPeer) {
+    try { screenViewerPeer.close(); } catch (e) {}
+    screenViewerPeer = null;
+  }
+  screenViewerIceQueue = [];
 
-  screenPeerConnection = new RTCPeerConnection(rtcConfig);
+  screenViewerPeer = new RTCPeerConnection(rtcConfig);
 
-  screenPeerConnection.ontrack = (event) => {
+  screenViewerPeer.ontrack = (event) => {
     streamPlayer.srcObject = event.streams[0];
     streamPlayer.muted = false;
     streamPlayer.volume = 1.0;
@@ -1727,16 +1813,26 @@ async function handleScreenOffer(senderSocketId, sdp) {
     }
   };
 
-  screenPeerConnection.onicecandidate = (event) => {
-    if (event.candidate) {
+  screenViewerPeer.onicecandidate = (event) => {
+    if (event.candidate && socket) {
       socket.emit('webrtc-ice', { target: senderSocketId, candidate: event.candidate });
     }
   };
 
-  await screenPeerConnection.setRemoteDescription(new RTCSessionDescription(sdp));
-  const answer = await screenPeerConnection.createAnswer();
-  await screenPeerConnection.setLocalDescription(answer);
-  socket.emit('webrtc-answer', { target: senderSocketId, sdp: answer });
+  try {
+    await screenViewerPeer.setRemoteDescription(new RTCSessionDescription(sdp));
+    // Növbədə gözləyən ICE namizədlərini dərhal əlaqəyə tətbiq et
+    for (const cand of screenViewerIceQueue) {
+      try { await screenViewerPeer.addIceCandidate(new RTCIceCandidate(cand)); } catch (e) {}
+    }
+    screenViewerIceQueue = [];
+
+    const answer = await screenViewerPeer.createAnswer();
+    await screenViewerPeer.setLocalDescription(answer);
+    socket.emit('webrtc-answer', { target: senderSocketId, sdp: answer });
+  } catch (err) {
+    console.error('handleScreenOffer error:', err);
+  }
 }
 
 if (btnUnmuteOverlay) {
@@ -1782,7 +1878,8 @@ function getPlaybackContext() {
   if (!audioPlaybackContext) {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (AudioCtx) {
-      audioPlaybackContext = new AudioCtx({ sampleRate: 24000 });
+      // Təbii sistem tezliyi (48000Hz). Heç vaxt 24kHz-ə məcbur etmirik ki, film və YouTube səsi zərrə qədər də keyfiyyətini itirməsin!
+      audioPlaybackContext = new AudioCtx();
     }
   }
   if (audioPlaybackContext && audioPlaybackContext.state === 'suspended') {
@@ -1803,6 +1900,7 @@ function handleIncomingVoiceChunk(senderId, username, arrayBuffer) {
       float32[i] = int16[i] / 32767.0;
     }
 
+    // 24kHz PCM buferi - Web Audio API bunu arxa planda təmiz şəkildə sistemin 48kHz çıxışına upsample edir
     const audioBuffer = ctx.createBuffer(1, float32.length, 24000);
     audioBuffer.copyToChannel(float32, 0);
 
@@ -1834,14 +1932,18 @@ function startAudioChunkCapture(stream) {
   try {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) return;
-    voiceCaptureContext = new AudioCtx({ sampleRate: 24000 });
+    // Təbii sistem tezliyi ilə açırıq - Windows səs kartını dəyişmirik
+    voiceCaptureContext = new AudioCtx();
     if (voiceCaptureContext.state === 'suspended') {
       voiceCaptureContext.resume().catch(() => {});
     }
 
     voiceCaptureSource = voiceCaptureContext.createMediaStreamSource(stream);
-    // 2048 samples at 24000Hz = ~85 milliseconds
-    voiceCaptureProcessor = voiceCaptureContext.createScriptProcessor(2048, 1, 1);
+    const nativeRate = voiceCaptureContext.sampleRate || 48000;
+    const downsampleStep = nativeRate / 24000;
+    // ~85ms bufer ölçüsü: 48000Hz-də 4096 nümunə
+    const bufferSize = nativeRate >= 44100 ? 4096 : 2048;
+    voiceCaptureProcessor = voiceCaptureContext.createScriptProcessor(bufferSize, 1, 1);
 
     let silenceCount = 0;
     let isSpeakingState = false;
@@ -1876,11 +1978,13 @@ function startAudioChunkCapture(stream) {
         }
       }
 
-      // Əgər danışırsa və ya sükut buferindədirsə, səs paketini serverə göndər
+      // Əgər danışırsa və ya sükut buferindədirsə, səs paketini 24kHz-ə çevirib serverə göndər
       if (silenceCount < 5) {
-        const int16 = new Int16Array(input.length);
-        for (let i = 0; i < input.length; i++) {
-          int16[i] = Math.max(-32768, Math.min(32767, Math.floor(input[i] * 32767)));
+        const outLen = Math.floor(input.length / downsampleStep);
+        const int16 = new Int16Array(outLen);
+        for (let i = 0; i < outLen; i++) {
+          const sample = input[Math.floor(i * downsampleStep)];
+          int16[i] = Math.max(-32768, Math.min(32767, Math.floor(sample * 32767)));
         }
         if (socket) {
           socket.emit('voice-chunk', int16.buffer);
@@ -1922,9 +2026,8 @@ async function startVoiceChat() {
       audio: {
         echoCancellation: true,
         noiseSuppression: true,
-        autoGainControl: true,
-        channelCount: 1,
-        sampleRate: 24000
+        autoGainControl: false, // OFF: Filmin və videonun səsinin boğulmasının və qəribələşməsinin qarşısını alır
+        channelCount: 1
       },
       video: false
     });
@@ -1944,16 +2047,6 @@ async function startVoiceChat() {
 
     if (socket) {
       socket.emit('voice-user-state', { isVoiceActive: true });
-      socket.emit('voice-peer-ready');
-    }
-
-    // Otaqdakı bütün digər istifadəçilərə canlı səs axını göndər
-    if (currentRoomUsers && socket) {
-      Object.keys(currentRoomUsers).forEach(peerId => {
-        if (peerId !== socket.id) {
-          callVoicePeer(peerId);
-        }
-      });
     }
 
   } catch (err) {
