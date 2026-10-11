@@ -323,7 +323,6 @@ function setLanguage(lang) {
   const t = I18N[lang];
   const el = (id) => document.getElementById(id);
 
-  if (el('current-lang-flag')) el('current-lang-flag').textContent = t.langFlag;
   if (el('current-lang-label')) el('current-lang-label').textContent = t.langLabel;
   if (el('top-login-label')) el('top-login-label').textContent = t.topLogin;
   if (el('dropdown-status-text')) el('dropdown-status-text').textContent = t.dropdownStatus;
@@ -393,6 +392,32 @@ function setupLanguageSwitcher() {
   });
 }
 
+function setupMiniMovieFigures() {
+  const figureEmojis = {
+    'Spider-Man': '🕷️',
+    'Batman': '🦇',
+    'Harry Potter': '⚡',
+    'Star Wars': '⚔️',
+    'Joker': '🃏',
+    'Breaking Bad': '🧪',
+    'The Matrix': '🕶️',
+    'Interstellar': '🪐',
+    'Lord of the Rings': '💍',
+    'Cinema Classics': '🍿'
+  };
+
+  document.querySelectorAll('.mini-movie-figure').forEach(fig => {
+    fig.addEventListener('click', () => {
+      const title = fig.getAttribute('data-title');
+      const emoji = figureEmojis[title] || '🍿';
+      if (typeof spawnFloatingEmoji === 'function') {
+        spawnFloatingEmoji(emoji);
+        spawnFloatingEmoji('✨');
+      }
+    });
+  });
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
   const roomParam = urlParams.get('room');
@@ -445,6 +470,9 @@ window.addEventListener('DOMContentLoaded', () => {
   setupLanguageSwitcher();
   const savedLang = localStorage.getItem('onecouch_lang') || 'az';
   setLanguage(savedLang);
+
+  // Balaca Kino Fiqurları İnteraktivliyi
+  setupMiniMovieFigures();
 
   setupTabs();
   setupDirectPlayerEvents();
