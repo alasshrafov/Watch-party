@@ -220,8 +220,12 @@ io.on('connection', (socket) => {
     socket.to(rId).emit('user-joined', {
       socketId: socket.id,
       username: currentUsername,
-      avatar: currentUserAvatar
+      avatar: currentUserAvatar,
+      users: rooms[rId].users
     });
+
+    // Bütün otağa ən son iştirakçı siyahısını göndər (Hər kəsin ekranında siyahı dərhal yenilənsin)
+    io.to(rId).emit('update-users', rooms[rId].users);
 
     console.log(`[+] ${currentUsername} (${currentUserAvatar}) joined: ${rId} (Host: ${isHost})`);
   });
@@ -399,6 +403,7 @@ io.on('connection', (socket) => {
     if (!currentRoom || !rooms[currentRoom] || !rooms[currentRoom].users[socket.id]) return;
     rooms[currentRoom].users[socket.id].isVoiceActive = !!isVoiceActive;
     io.to(currentRoom).emit('voice-users-updated', rooms[currentRoom].users);
+    io.to(currentRoom).emit('update-users', rooms[currentRoom].users);
   });
 
   socket.on('voice-peer-ready', () => {
@@ -411,6 +416,7 @@ io.on('connection', (socket) => {
     if (rooms[currentRoom] && rooms[currentRoom].users[socket.id]) {
       rooms[currentRoom].users[socket.id].isVoiceActive = false;
       io.to(currentRoom).emit('voice-users-updated', rooms[currentRoom].users);
+      io.to(currentRoom).emit('update-users', rooms[currentRoom].users);
     }
     socket.to(currentRoom).emit('voice-peer-left', { peerId: socket.id, username: currentUsername });
   });
@@ -452,6 +458,7 @@ io.on('connection', (socket) => {
           username: currentUsername,
           users: rooms[currentRoom].users
         });
+        io.to(currentRoom).emit('update-users', rooms[currentRoom].users);
         console.log(`[-] ${currentUsername} left room: ${currentRoom}`);
       }
     }

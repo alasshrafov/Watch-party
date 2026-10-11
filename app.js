@@ -45,11 +45,15 @@ const triviaList = [
 ];
 let currentTriviaIndex = 0;
 
-// STUN Serverləri
+// STUN Serverləri (Global & Güclü NAT keçidi)
 const rtcConfig = {
   iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' }
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:stun2.l.google.com:19302' },
+    { urls: 'stun:stun3.l.google.com:19302' },
+    { urls: 'stun:stun.cloudflare.com:3478' },
+    { urls: 'stun:global.stun.twilio.com:3478' }
   ]
 };
 
@@ -1066,11 +1070,13 @@ function initSocket() {
   socket.on('peer-speaking', ({ socketId, isSpeaking }) => {
     const peerPill = document.getElementById(`user-pill-${socketId}`);
     if (peerPill) {
-      if (isSpeaking) {
-        peerPill.classList.add('speaking-halo');
-      } else {
-        peerPill.classList.remove('speaking-halo');
-      }
+      if (isSpeaking) peerPill.classList.add('speaking-halo');
+      else peerPill.classList.remove('speaking-halo');
+    }
+    const peerCard = document.getElementById(`participant-item-${socketId}`);
+    if (peerCard) {
+      if (isSpeaking) peerCard.classList.add('speaking');
+      else peerCard.classList.remove('speaking');
     }
   });
 
@@ -1090,8 +1096,8 @@ function initSocket() {
     if (localScreenStream) {
       initiateScreenPeer(data.socketId);
     }
-    // Əgər mikrofon aktivdirsə, otağa yeni girən iştirakçını da səsli zəngə qoş
-    if (isVoiceActive && localVoiceStream) {
+    // Otağa yeni girən iştirakçı ilə səsli zəng bağlantısını sinxronlaşdır (Glare-siz)
+    if (socket && data.socketId && socket.id < data.socketId) {
       callVoicePeer(data.socketId);
     }
   });
@@ -1168,7 +1174,10 @@ function initSocket() {
 
   // WebRTC Səsli Zəng Siqnalları
   socket.on('voice-peer-ready', async ({ sender }) => {
-    await callVoicePeer(sender);
+    // Yalnız socket.id < sender olan tərəf zəngi başladır (Dual-offer toqquşmasını tam aradan qaldırır)
+    if (socket && sender && socket.id < sender) {
+      await callVoicePeer(sender);
+    }
   });
 
   socket.on('voice-peer-left', ({ peerId }) => {
@@ -1212,20 +1221,78 @@ function initSocket() {
 
 function updateUsersList(users) {
   if (users) currentRoomUsers = users;
-  usersList.innerHTML = '';
-  Object.entries(users || {}).forEach(([sockId, u]) => {
-    const pill = document.createElement('div');
-    pill.className = 'user-pill';
-    pill.id = `user-pill-${sockId}`;
-    pill.dataset.socketId = sockId;
-    pill.innerHTML = `
-      <span class="user-avatar-tag">${u.avatar || '🍿'}</span>
-      <span class="status-dot"></span>
-      <span>${escapeHtml(u.username)} ${u.isHost ? '👑' : ''}</span>
-      ${u.isVoiceActive ? '<span class="mic-status-tag" title="Mikrofon Aktivdir">🎙️</span>' : ''}
-    `;
-    usersList.appendChild(pill);
-  });
+  const userEntries = Object.entries(users || {});
+  const userCount = userEntries.length;
+
+  // 1. Sayğac (Count Badge)
+  const countBadge = document.getElementById('participants-count-badge');
+  if (countBadge) {
+    countBadge.textContent = userCount;
+  }
+
+  // 2. Üst Header Pills (Başlıqdakı pill-lər)
+  if (usersList) {
+    usersList.innerHTML = '';
+    userEntries.forEach(([sockId, u]) => {
+      const isMe = socket && (sockId === socket.id);
+      const isAvatarImg = u.avatar && (u.avatar.startsWith('http') || u.avatar.includes('/') || u.avatar.includes('.jpg') || u.avatar.includes('.png'));
+
+      const pill = document.createElement('div');
+      pill.className = 'user-pill';
+      pill.id = `user-pill-${sockId}`;
+      pill.dataset.socketId = sockId;
+      pill.innerHTML = `
+        <span class="user-avatar-tag">
+          ${isAvatarImg ? `<img src="${u.avatar}" alt="Avatar" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;">` : (u.avatar || '🍿')}
+        </span>
+        <span class="status-dot ${u.isVoiceActive ? 'voice-on' : ''}"></span>
+        <span>${escapeHtml(u.username)} ${u.isHost ? '👑' : ''} ${isMe ? '(Sən)' : ''}</span>
+        ${u.isVoiceActive ? '<span class="mic-status-tag" title="Mikrofon Aktivdir">🎙️</span>' : ''}
+      `;
+      usersList.appendChild(pill);
+    });
+  }
+
+  // 3. Sağ Panel: Siyahı Şəklində İştirakçılar (Sidebar Participant List)
+  const sidebarList = document.getElementById('sidebar-users-list');
+  if (sidebarList) {
+    sidebarList.innerHTML = '';
+    userEntries.forEach(([sockId, u]) => {
+      const isMe = socket && (sockId === socket.id);
+      const isAvatarImg = u.avatar && (u.avatar.startsWith('http') || u.avatar.includes('/') || u.avatar.includes('.jpg') || u.avatar.includes('.png'));
+
+      const card = document.createElement('div');
+      card.className = 'participant-card';
+      card.id = `participant-item-${sockId}`;
+      card.dataset.socketId = sockId;
+
+      card.innerHTML = `
+        <div class="participant-avatar-wrap">
+          ${isAvatarImg ?
+            `<img src="${u.avatar}" alt="Avatar" class="participant-avatar-img">` :
+            `<span class="participant-avatar-txt">${u.avatar || '🍿'}</span>`
+          }
+          <span class="participant-status-dot ${u.isVoiceActive ? 'voice-on' : ''}"></span>
+        </div>
+        <div class="participant-info">
+          <div class="participant-name-row">
+            <span class="participant-name">${escapeHtml(u.username)}</span>
+            ${isMe ? '<span class="participant-you-tag">Sən</span>' : ''}
+            ${u.isHost ? '<span class="participant-crown" title="Otaq Rəhbəri">👑</span>' : ''}
+          </div>
+          <div class="participant-role-sub">
+            <span>${u.isHost ? 'Otaq Rəhbəri' : 'Qonaq'}</span>
+            <span>•</span>
+            ${u.isVoiceActive ?
+              '<span class="voice-badge active">🎙️ Səs Aktivdir</span>' :
+              '<span class="voice-badge muted">🔇 Səssiz</span>'
+            }
+          </div>
+        </div>
+      `;
+      sidebarList.appendChild(card);
+    });
+  }
 }
 
 // ==========================================
@@ -1617,19 +1684,28 @@ async function startVoiceChat() {
     // Audio Ducking Aktiv Et
     setupAudioDucking(localVoiceStream);
 
-    // Otaqdakı bütün digər istifadəçilərə zəng göndər
-    if (currentRoomUsers && socket) {
-      Object.keys(currentRoomUsers).forEach(peerId => {
-        if (peerId !== socket.id) {
-          callVoicePeer(peerId);
+    // Əvvəldən mövcud peer bağlantılarına yerli mikrofon trekini dərhal əlavə et
+    Object.entries(voicePeerConnections).forEach(([peerId, pc]) => {
+      try {
+        if (pc && pc.connectionState !== 'closed') {
+          const senders = pc.getSenders();
+          const audioSender = senders.find(s => s.track && s.track.kind === 'audio');
+          if (audioSender && localVoiceStream.getAudioTracks().length > 0) {
+            audioSender.replaceTrack(localVoiceStream.getAudioTracks()[0]);
+          } else if (localVoiceStream.getAudioTracks().length > 0) {
+            localVoiceStream.getAudioTracks().forEach(t => pc.addTrack(t, localVoiceStream));
+          }
         }
-      });
-    }
+      } catch (e) {}
+    });
 
     if (socket) {
       socket.emit('voice-peer-ready');
       socket.emit('voice-user-state', { isVoiceActive: true });
     }
+
+    // Otaqdakı digər istifadəçilərlə zəngi sinxronlaşdır (Yalnız socket.id < peerId olanlar zəng başladır)
+    syncVoiceConnectionsWithPeers();
   } catch (err) {
     console.error('Mikrofon xətası:', err);
     alert('Mikrofon icazəsi verilmədi! Brauzerinizin parametrlərindən mikrofonu aktivləşdirin.');
@@ -1703,11 +1779,13 @@ function setSelfSpeakingHalo(speaking) {
   if (!socket) return;
   const selfPill = document.getElementById(`user-pill-${socket.id}`);
   if (selfPill) {
-    if (speaking) {
-      selfPill.classList.add('speaking-halo');
-    } else {
-      selfPill.classList.remove('speaking-halo');
-    }
+    if (speaking) selfPill.classList.add('speaking-halo');
+    else selfPill.classList.remove('speaking-halo');
+  }
+  const selfCard = document.getElementById(`participant-item-${socket.id}`);
+  if (selfCard) {
+    if (speaking) selfCard.classList.add('speaking');
+    else selfCard.classList.remove('speaking');
   }
 }
 
@@ -1779,8 +1857,23 @@ function applyDuckingVolume(duck) {
   if (ytPlayer && ytPlayer.setVolume) ytPlayer.setVolume(ytVol);
 }
 
+function syncVoiceConnectionsWithPeers() {
+  if (!socket || !currentRoomUsers) return;
+  Object.keys(currentRoomUsers).forEach(peerId => {
+    if (peerId !== socket.id) {
+      // Deterministic initiator: yalnız socket.id < peerId olan tərəf zəngi başladır
+      // Bu, WebRTC toqquşmasını (glare/race condition) 100% aradan qaldırır!
+      if (socket.id < peerId) {
+        callVoicePeer(peerId);
+      }
+    }
+  });
+}
+
 async function callVoicePeer(targetSocketId) {
-  if (!targetSocketId) return;
+  if (!targetSocketId || !socket) return;
+  console.log(`[WebRTC Voice] Initiating voice call to ${targetSocketId}`);
+
   if (voicePeerConnections[targetSocketId]) {
     try { voicePeerConnections[targetSocketId].close(); } catch (e) {}
     delete voicePeerConnections[targetSocketId];
@@ -1798,6 +1891,7 @@ async function callVoicePeer(targetSocketId) {
   }
 
   pc.ontrack = (event) => {
+    console.log(`[WebRTC Voice] Received audio track from ${targetSocketId}:`, event.track);
     const stream = (event.streams && event.streams[0]) ? event.streams[0] : new MediaStream([event.track]);
     playRemoteVoice(stream, targetSocketId);
   };
@@ -1805,6 +1899,13 @@ async function callVoicePeer(targetSocketId) {
   pc.onicecandidate = (event) => {
     if (event.candidate && socket) {
       socket.emit('voice-ice', { target: targetSocketId, candidate: event.candidate });
+    }
+  };
+
+  pc.onconnectionstatechange = () => {
+    console.log(`[WebRTC Voice ${targetSocketId}] State: ${pc.connectionState}`);
+    if (pc.connectionState === 'connected') {
+      showNotice('🎙️ Səsli zəng bağlantısı quruldu!');
     }
   };
 
@@ -1820,7 +1921,9 @@ async function callVoicePeer(targetSocketId) {
 }
 
 async function handleVoiceOffer(senderSocketId, sdp) {
-  if (!senderSocketId || !sdp) return;
+  if (!senderSocketId || !sdp || !socket) return;
+  console.log(`[WebRTC Voice] Received voice offer from ${senderSocketId}`);
+
   if (voicePeerConnections[senderSocketId]) {
     try { voicePeerConnections[senderSocketId].close(); } catch (e) {}
     delete voicePeerConnections[senderSocketId];
@@ -1838,6 +1941,7 @@ async function handleVoiceOffer(senderSocketId, sdp) {
   }
 
   pc.ontrack = (event) => {
+    console.log(`[WebRTC Voice] Received audio track from ${senderSocketId}:`, event.track);
     const stream = (event.streams && event.streams[0]) ? event.streams[0] : new MediaStream([event.track]);
     playRemoteVoice(stream, senderSocketId);
   };
@@ -1845,6 +1949,13 @@ async function handleVoiceOffer(senderSocketId, sdp) {
   pc.onicecandidate = (event) => {
     if (event.candidate && socket) {
       socket.emit('voice-ice', { target: senderSocketId, candidate: event.candidate });
+    }
+  };
+
+  pc.onconnectionstatechange = () => {
+    console.log(`[WebRTC Voice ${senderSocketId}] State: ${pc.connectionState}`);
+    if (pc.connectionState === 'connected') {
+      showNotice('🎙️ Səsli zəng bağlantısı quruldu!');
     }
   };
 
@@ -1878,12 +1989,16 @@ function playRemoteVoice(stream, peerId) {
     audioEl.id = `remote-voice-audio-${peerId}`;
     audioEl.autoplay = true;
     audioEl.playsInline = true;
-    audioEl.style.display = 'none';
+    // display:none etmirik ki, brauzer arxa planda səs çıxışını dondurmasın
+    audioEl.style.position = 'fixed';
+    audioEl.style.top = '-9999px';
+    audioEl.style.left = '-9999px';
+    audioEl.style.width = '1px';
+    audioEl.style.height = '1px';
+    audioEl.style.opacity = '0.01';
     document.body.appendChild(audioEl);
   }
-  if (audioEl.srcObject !== stream) {
-    audioEl.srcObject = stream;
-  }
+  audioEl.srcObject = stream;
   audioEl.muted = false;
   audioEl.volume = 1.0;
 
@@ -1894,15 +2009,26 @@ function playRemoteVoice(stream, peerId) {
       const unlockAudio = () => {
         audioEl.play().catch(() => {});
         document.removeEventListener('click', unlockAudio);
+        document.removeEventListener('touchstart', unlockAudio);
         document.removeEventListener('keydown', unlockAudio);
       };
       document.addEventListener('click', unlockAudio, { once: true });
+      document.addEventListener('touchstart', unlockAudio, { once: true });
       document.addEventListener('keydown', unlockAudio, { once: true });
     });
   }
 
-  showNotice('💖 Canlı səsli danışıq qoşuldu!');
+  showNotice('🔊 Canlı səsli danışıq qoşuldu!');
 }
+
+// Bütün pleyer və səs kilidlərini istifadəçi kliklədikdə dərhal aç
+function unlockAllRemoteAudios() {
+  document.querySelectorAll('audio[id^="remote-voice-audio-"]').forEach(el => {
+    if (el.paused) el.play().catch(() => {});
+  });
+}
+document.addEventListener('click', unlockAllRemoteAudios);
+document.addEventListener('touchstart', unlockAllRemoteAudios);
 
 function getThemeName(theme) {
   const map = {
