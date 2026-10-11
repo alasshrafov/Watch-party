@@ -14,6 +14,13 @@
   <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body class="theme-netflix">
+  <!-- Kult Filmlərə Aid Qıraq Animasiyaları və İllüstrasiyaları -->
+  <div id="theme-ambient-container" class="theme-ambient-container">
+    <canvas id="ambient-canvas"></canvas>
+    <div class="ambient-decor ambient-left" id="ambient-decor-left"></div>
+    <div class="ambient-decor ambient-right" id="ambient-decor-right"></div>
+  </div>
+
   <!-- Uçan Emojilər Konteyneri -->
   <div id="floating-emojis-container"></div>
 
@@ -289,29 +296,36 @@
     </main>
   </div>
 
-  <!-- 3. MODAL: NƏYƏ BAXAQ? (RULETKA) -->
+  <!-- 3. MODAL: NƏYƏ BAXAQ? (ÇARXIFƏLƏK RULETKASI) -->
   <div id="modal-watchlist" class="modal-backdrop hidden">
-    <div class="modal-card">
+    <div class="modal-card modal-wheel-card">
       <div class="modal-header">
-        <h2>🎲 Nəyə Baxaq? (Püşkatma)</h2>
+        <h2>🎡 Nəyə Baxaq? (Çarxıfələk)</h2>
         <button class="modal-close" onclick="closeModal('modal-watchlist')">✕</button>
       </div>
-      <p class="modal-desc">Hər kəs istədiyi filmləri yazsın, ruletka təsadüfi birini seçsin!</p>
+      <p class="modal-desc">Baxmaq istədiyiniz filmləri yazın və çarxı fırladın!</p>
 
       <form id="watchlist-form" class="modal-input-row">
-        <input type="text" id="input-watchlist-movie" placeholder="Film adı yazın (məs: Interstellar)" required>
-        <button type="submit" class="btn-primary" style="width:auto; padding:12px 20px;">Əlavə Et</button>
+        <input type="text" id="input-watchlist-movie" placeholder="Film adı daxil edin (məs: Breaking Bad)" required>
+        <button type="submit" class="btn-primary" style="width:auto; padding:12px 20px;">+ Əlavə Et</button>
       </form>
 
-      <div class="watchlist-items" id="watchlist-container">
-        <!-- Dinamik siyahı -->
+      <!-- Çarxıfələk Sahəsi -->
+      <div class="wheel-stage-wrapper">
+        <div class="wheel-pointer-arrow">▼</div>
+        <canvas id="wheel-canvas" width="340" height="340"></canvas>
       </div>
 
       <div class="roulette-action-box">
         <button id="btn-spin-roulette" class="btn-spin">
-          <span>🎯 Ruletkanı Fırlat və Seç!</span>
+          <span>🎯 ÇARXI FIRLAT!</span>
         </button>
         <div id="roulette-winner-box" class="winner-announcement hidden"></div>
+      </div>
+
+      <div class="watchlist-section-title">Əlavə olunmuş filmlər:</div>
+      <div class="watchlist-items" id="watchlist-container">
+        <!-- Dinamik siyahı -->
       </div>
     </div>
   </div>

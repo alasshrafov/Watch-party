@@ -1199,6 +1199,49 @@ body.theme-oled .btn-chat-send {
   font-size: 1.1rem;
 }
 
+.modal-wheel-card {
+  max-width: 540px;
+  text-align: center;
+}
+
+.wheel-stage-wrapper {
+  position: relative;
+  width: 340px;
+  height: 340px;
+  margin: 15px auto 20px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wheel-pointer-arrow {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2.2rem;
+  color: var(--accent-gold);
+  z-index: 20;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.9));
+}
+
+#wheel-canvas {
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.9), 0 0 15px var(--primary-glow);
+  background: #111;
+}
+
+.watchlist-section-title {
+  text-align: left;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin: 15px 0 8px 0;
+}
+
 .btn-spin {
   width: 100%;
   background: linear-gradient(135deg, var(--primary) 0%, var(--accent-gold) 100%);
@@ -1210,6 +1253,7 @@ body.theme-oled .btn-chat-send {
   font-weight: 800;
   cursor: pointer;
   transition: transform 0.2s;
+  box-shadow: 0 6px 20px var(--primary-glow);
 }
 
 .btn-spin:hover {
@@ -1231,6 +1275,78 @@ body.theme-oled .btn-chat-send {
 @keyframes popIn {
   from { transform: scale(0.9); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+
+/* ==========================================
+   KULT KİNO AMBİENT ANİMASİYALARI & QIRAQLAR
+   ========================================== */
+.theme-ambient-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+#ambient-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.ambient-decor {
+  position: absolute;
+  top: 70px;
+  bottom: 20px;
+  width: 120px;
+  pointer-events: none;
+  opacity: 0.25;
+  transition: opacity 0.4s ease;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.ambient-left {
+  left: 8px;
+}
+
+.ambient-right {
+  right: 8px;
+}
+
+/* Breaking Bad Qıraq Vizualları */
+body.theme-breaking-bad .theme-ambient-container {
+  box-shadow: inset 0 0 100px rgba(0, 255, 102, 0.08);
+}
+body.theme-breaking-bad .ambient-left {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%2300ff66"><path d="M20,60 L80,60 L75,50 L65,48 L65,30 L35,30 L35,48 L25,50 Z"/><rect x="10" y="60" width="80" height="6" rx="3"/><circle cx="35" cy="75" r="10"/><circle cx="65" cy="75" r="10"/></svg>');
+  opacity: 0.28;
+}
+body.theme-breaking-bad .ambient-right {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" stroke="%2300ff66" stroke-width="4" fill="none"><path d="M40,20 L40,45 L20,85 L80,85 L60,45 L60,20 Z"/><line x1="35" y1="20" x2="65" y2="20"/><circle cx="45" cy="70" r="4" fill="%2300ff66"/><circle cx="55" cy="65" r="5" fill="%2300ff66"/></svg>');
+  opacity: 0.28;
+}
+
+/* Game of Thrones Qıraq Vizualları */
+body.theme-got .theme-ambient-container {
+  box-shadow: inset 0 0 140px rgba(56, 189, 248, 0.16);
+}
+body.theme-got .ambient-left {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%2338bdf8"><path d="M50,15 L65,40 L90,45 L70,65 L75,90 L50,75 L25,90 L30,65 L10,45 L35,40 Z"/></svg>');
+  opacity: 0.22;
+}
+body.theme-got .ambient-right {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" stroke="%2338bdf8" stroke-width="4" fill="none"><line x1="50" y1="10" x2="50" y2="90"/><line x1="30" y1="35" x2="70" y2="35"/><circle cx="50" cy="92" r="4" fill="%2338bdf8"/></svg>');
+  opacity: 0.25;
+}
+
+/* Batman Qıraq Vizualları */
+body.theme-batman .ambient-right {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 60" fill="%23eab308"><path d="M50,15 Q60,5 75,5 Q70,25 95,20 Q85,45 65,55 Q50,45 50,45 Q50,45 35,55 Q15,45 5,20 Q30,25 25,5 Q40,5 50,15 Z"/></svg>');
+  opacity: 0.3;
 }
 
 /* History Form & List */

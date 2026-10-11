@@ -170,6 +170,10 @@ function applyTheme(themeName) {
       logo.innerHTML = '🎬 Watch<span>Party</span>';
     }
   }
+
+  if (typeof drawWheel === 'function') {
+    drawWheel();
+  }
 }
 
 function enterRoom() {
@@ -218,7 +222,11 @@ function initSocket() {
     if (data.videoState && data.videoState.type !== 'empty') {
       applyVideoState(data.videoState, false);
     }
-    if (data.watchlist) renderWatchlist(data.watchlist);
+    if (data.watchlist) {
+      currentWatchlist = data.watchlist;
+      renderWatchlist(data.watchlist);
+      drawWheel();
+    }
     if (data.history) renderHistory(data.history);
     showNotice(isHost ? '👑 Otaq rəhbərisiniz. Xoş gəldiniz!' : '🍿 Otağa qoşuldunuz!');
   });
@@ -254,11 +262,16 @@ function initSocket() {
 
   // Watchlist & History Hadisələri
   socket.on('watchlist-updated', (list) => {
+    currentWatchlist = list;
     renderWatchlist(list);
+    drawWheel();
   });
 
   socket.on('watchlist-winner', ({ winner, spinner }) => {
-    showWinnerAnnouncement(winner, spinner);
+    openModal('modal-watchlist');
+    spinWheelAnimation(winner, () => {
+      showWinnerAnnouncement(winner, spinner);
+    });
   });
 
   socket.on('history-updated', (list) => {
@@ -877,11 +890,23 @@ function playRemoteVoice(stream) {
 }
 
 // ==========================================
-// 8. WATCHLIST & XATİRƏ ARXİVİ MODALLARI
+// 8. WATCHLIST, ÇARXIFƏLƏK & XATİRƏ ARXİVİ
 // ==========================================
 
+let currentWatchlist = [];
+let wheelAngle = 0;
+let isWheelSpinning = false;
+const wheelColors = [
+  '#f43f5e', '#8b5cf6', '#06b6d4', '#10b981', 
+  '#f59e0b', '#ec4899', '#3b82f6', '#14b8a6', 
+  '#6366f1', '#e11d48'
+];
+
 function setupModalsAndFeatures() {
-  btnOpenWatchlist.addEventListener('click', () => openModal('modal-watchlist'));
+  btnOpenWatchlist.addEventListener('click', () => {
+    openModal('modal-watchlist');
+    drawWheel();
+  });
   btnOpenHistory.addEventListener('click', () => openModal('modal-history'));
 
   // Watchlist Əlavə Et
@@ -893,16 +918,16 @@ function setupModalsAndFeatures() {
     inputWatchlistMovie.value = '';
   });
 
-  // Ruletkanı Fırlat
+  // Çarxıfələyi Fırlat
   btnSpinRoulette.addEventListener('click', () => {
-    if (!socket) return;
-    btnSpinRoulette.textContent = '🎲 Fırlanır...';
+    if (!socket || isWheelSpinning) return;
+    if (currentWatchlist.length === 0) {
+      alert('Zəhmət olmasa əvvəlcə ən azı 1 film əlavə edin!');
+      return;
+    }
+    btnSpinRoulette.textContent = '🎡 Çarx Fırlanır...';
     btnSpinRoulette.disabled = true;
     socket.emit('watchlist-spin');
-    setTimeout(() => {
-      btnSpinRoulette.innerHTML = '<span>🎯 Ruletkanı Fırlat və Seç!</span>';
-      btnSpinRoulette.disabled = false;
-    }, 2000);
   });
 
   // Tarixçə Əlavə Et
@@ -918,15 +943,147 @@ function setupModalsAndFeatures() {
     document.getElementById('input-history-note').value = '';
     showNotice('📜 Film xatirələr siyahısına əlavə olundu!');
   });
+
+  // İlkin olaraq çarxı və fon animasiyasını çək
+  drawWheel();
+  setupAmbientAnimations();
+}
+
+// ÇARXIFƏLƏK CANVAS ÇƏKİLMƏSİ
+function drawWheel() {
+  const canvas = document.getElementById('wheel-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const width = canvas.width;
+  const height = canvas.height;
+  const cx = width / 2;
+  const cy = height / 2;
+  const radius = cx - 14;
+
+  ctx.clearRect(0, 0, width, height);
+
+  const items = currentWatchlist.length > 0 ? currentWatchlist : [
+    { title: '1. Film əlavə et' },
+    { title: '🍿 Popkorn al' },
+    { title: '2. Çarxı fırlat' },
+    { title: '🎬 WatchParty' }
+  ];
+
+  const numSlices = items.length;
+  const sliceAngle = (2 * Math.PI) / numSlices;
+
+  for (let i = 0; i < numSlices; i++) {
+    const startAngle = wheelAngle + i * sliceAngle;
+    const endAngle = startAngle + sliceAngle;
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, radius, startAngle, endAngle);
+    ctx.closePath();
+    ctx.fillStyle = wheelColors[i % wheelColors.length];
+    ctx.fill();
+
+    ctx.strokeStyle = '#181920';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Mətn
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(startAngle + sliceAngle / 2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 13px "Plus Jakarta Sans", sans-serif';
+    ctx.shadowColor = 'rgba(0,0,0,0.8)';
+    ctx.shadowBlur = 4;
+
+    let text = items[i].title;
+    if (text.length > 15) text = text.substr(0, 13) + '..';
+    ctx.fillText(text, radius - 18, 5);
+    ctx.restore();
+  }
+
+  // Xarici Qızılı Çərçivə
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+  ctx.lineWidth = 6;
+  ctx.strokeStyle = '#ffb830';
+  ctx.stroke();
+
+  // Mərkəzi Dairə (Hub)
+  ctx.beginPath();
+  ctx.arc(cx, cy, 26, 0, 2 * Math.PI);
+  ctx.fillStyle = '#181920';
+  ctx.fill();
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = '#ffb830';
+  ctx.stroke();
+
+  ctx.font = '16px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🎬', cx, cy);
+}
+
+// ÇARXIN CANLI FİZİKA İLƏ FIRLANMASI
+function spinWheelAnimation(winnerItem, onComplete) {
+  if (isWheelSpinning) {
+    if (onComplete) onComplete();
+    return;
+  }
+  isWheelSpinning = true;
+
+  const items = currentWatchlist;
+  let winnerIndex = items.findIndex(it => it.id === winnerItem.id || it.title === winnerItem.title);
+  if (winnerIndex === -1) winnerIndex = 0;
+
+  const numSlices = items.length;
+  const sliceAngle = (2 * Math.PI) / numSlices;
+
+  // Ox yuxarıdadır: angle = 3 * PI / 2
+  const pointerAngle = 3 * Math.PI / 2;
+  const targetSliceMid = winnerIndex * sliceAngle + sliceAngle / 2;
+  const fullSpins = 6 * 2 * Math.PI;
+  const currentMod = wheelAngle % (2 * Math.PI);
+  const targetAngle = wheelAngle + fullSpins + ((pointerAngle - targetSliceMid - currentMod + 4 * Math.PI) % (2 * Math.PI));
+
+  const startAngle = wheelAngle;
+  const change = targetAngle - startAngle;
+  const duration = 4200;
+  let startTime = null;
+
+  function animate(timestamp) {
+    if (!startTime) startTime = timestamp;
+    const elapsed = timestamp - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+
+    // Quartic Ease-Out əyləclənməsi
+    const easeOut = 1 - Math.pow(1 - progress, 4);
+    wheelAngle = startAngle + change * easeOut;
+    drawWheel();
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      isWheelSpinning = false;
+      btnSpinRoulette.innerHTML = '<span>🎯 ÇARXI FIRLAT!</span>';
+      btnSpinRoulette.disabled = false;
+      if (onComplete) onComplete();
+    }
+  }
+
+  requestAnimationFrame(animate);
 }
 
 function renderWatchlist(list) {
+  currentWatchlist = list || [];
   watchlistContainer.innerHTML = '';
-  if (!list || list.length === 0) {
+  if (!currentWatchlist || currentWatchlist.length === 0) {
     watchlistContainer.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:10px;">Hələ heç bir film əlavə edilməyib.</div>';
+    drawWheel();
     return;
   }
-  list.forEach(item => {
+  currentWatchlist.forEach(item => {
     const div = document.createElement('div');
     div.className = 'watchlist-item';
     div.innerHTML = `
@@ -935,6 +1092,7 @@ function renderWatchlist(list) {
     `;
     watchlistContainer.appendChild(div);
   });
+  drawWheel();
 }
 
 window.deleteWatchlistItem = function(id) {
@@ -944,10 +1102,121 @@ window.deleteWatchlistItem = function(id) {
 function showWinnerAnnouncement(winner, spinner) {
   rouletteWinnerBox.classList.remove('hidden');
   rouletteWinnerBox.innerHTML = `
-    🎉 <strong>${escapeHtml(spinner)}</strong> ruletkanı fırlatdı!<br>
-    🍿 Bu gecənin qalib filmi: <strong style="color:var(--primary); font-size:1.3rem;">${escapeHtml(winner.title)}</strong>!
+    🎉 <strong>${escapeHtml(spinner)}</strong> çarxıfələyi fırlatdı!<br>
+    🍿 Bu seansın qalib filmi: <strong style="color:var(--primary); font-size:1.35rem; display:block; margin-top:6px;">${escapeHtml(winner.title)}</strong>!
   `;
+  // Konfetti emojiləri
+  spawnFloatingEmoji('🎉');
+  spawnFloatingEmoji('🍿');
+  spawnFloatingEmoji('✨');
   showNotice(`🎯 Qalib seçildi: ${winner.title}`);
+}
+
+// ==========================================
+// 8.1 KULT KİNO AMBİENT FON ANİMASİYALARI
+// ==========================================
+
+function setupAmbientAnimations() {
+  const canvas = document.getElementById('ambient-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // Partikullar
+  const snowFlakes = Array.from({ length: 65 }, () => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: Math.random() * 3 + 1,
+    speedY: Math.random() * 1.5 + 0.5,
+    speedX: Math.random() * 0.8 - 0.4
+  }));
+
+  const matrixColumns = Math.floor(window.innerWidth / 20);
+  const matrixDrops = Array.from({ length: matrixColumns }, () => Math.random() * -50);
+  const matrixChars = "0101XYZ9823#$*+-=";
+
+  const bubbles = Array.from({ length: 25 }, () => ({
+    x: Math.random() * 160 + (Math.random() < 0.5 ? 0 : window.innerWidth - 160),
+    y: window.innerHeight + Math.random() * 100,
+    r: Math.random() * 6 + 3,
+    speedY: Math.random() * 1.5 + 0.8,
+    alpha: Math.random() * 0.4 + 0.2
+  }));
+
+  const stars = Array.from({ length: 80 }, () => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: Math.random() * 1.8 + 0.5,
+    alpha: Math.random(),
+    speed: Math.random() * 0.02 + 0.005
+  }));
+
+  function render() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const theme = document.body.className;
+
+    if (theme.includes('theme-got')) {
+      // Game of Thrones: Şaxtalı qar dənəcikləri
+      ctx.fillStyle = 'rgba(224, 242, 254, 0.7)';
+      snowFlakes.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, 2 * Math.PI);
+        ctx.fill();
+        p.y += p.speedY;
+        p.x += p.speedX;
+        if (p.y > canvas.height) { p.y = -5; p.x = Math.random() * canvas.width; }
+      });
+    } else if (theme.includes('theme-matrix')) {
+      // The Matrix: Rəqəmsal kod yağışı (Yalnız sol və sağ kənarlarda)
+      ctx.fillStyle = 'rgba(34, 197, 94, 0.85)';
+      ctx.font = '14px monospace';
+      for (let i = 0; i < matrixDrops.length; i++) {
+        const x = i * 20;
+        if (x < 160 || x > canvas.width - 160) {
+          const char = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+          const y = matrixDrops[i] * 18;
+          ctx.fillText(char, x, y);
+          if (y > canvas.height && Math.random() > 0.975) {
+            matrixDrops[i] = 0;
+          }
+          matrixDrops[i]++;
+        }
+      }
+    } else if (theme.includes('theme-breaking-bad')) {
+      // Breaking Bad: Qalxan kimyəvi tüstü qabarcıqları (yanlarda)
+      bubbles.forEach(b => {
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgba(0, 255, 102, ${b.alpha})`;
+        ctx.fill();
+        b.y -= b.speedY;
+        if (b.y < -10) {
+          b.y = canvas.height + 20;
+          b.x = Math.random() * 160 + (Math.random() < 0.5 ? 0 : canvas.width - 160);
+        }
+      });
+    } else if (theme.includes('theme-interstellar')) {
+      // Interstellar: Sayrışan kosmik ulduzlar
+      stars.forEach(s => {
+        s.alpha += s.speed;
+        const a = (Math.sin(s.alpha) + 1) / 2 * 0.8 + 0.2;
+        ctx.fillStyle = `rgba(249, 115, 22, ${a * 0.7})`;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, 2 * Math.PI);
+        ctx.fill();
+      });
+    }
+
+    requestAnimationFrame(render);
+  }
+
+  render();
 }
 
 function renderHistory(list) {
