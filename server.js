@@ -449,6 +449,17 @@ io.on('connection', (socket) => {
     io.to(target).emit('voice-ice', { sender: socket.id, candidate });
   });
 
+  // Server-Relayed Canlı HD Səs Axını (100% Zəmanətli WebSocket Relay - Heç bir NAT/Firewall bloku olmur)
+  socket.on('voice-chunk', (audioBuffer) => {
+    if (!currentRoom) return;
+    socket.to(currentRoom).emit('voice-chunk-receive', {
+      sender: socket.id,
+      username: currentUsername,
+      audio: audioBuffer
+    });
+  });
+
+
   // Əlaqə kəsildikdə
   socket.on('disconnect', () => {
     if (currentRoom && rooms[currentRoom]) {

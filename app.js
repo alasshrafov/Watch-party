@@ -1214,7 +1214,12 @@ function initSocket() {
     await handleVoiceIceCandidate(sender, candidate);
   });
 
+  // Server-Relayed Canlı HD Səs Qəbulu (100% Zəmanətli Səs)
+  socket.on('voice-chunk-receive', ({ sender, username, audio }) => {
+    handleIncomingVoiceChunk(sender, username, audio);
+  });
 }
+
 
 function updateUsersList(users) {
   if (users) currentRoomUsers = users;
@@ -1766,28 +1771,176 @@ function setupVoiceChat() {
   }
 }
 
-async function startVoiceChat() {
+let voiceCaptureContext = null;
+let voiceCaptureProcessor = null;
+let voiceCaptureSource = null;
+let audioPlaybackContext = null;
+let scheduledPlayTime = 0;
+const speakerTimeouts = {};
+
+function getPlaybackContext() {
+  if (!audioPlaybackContext) {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (AudioCtx) {
+      audioPlaybackContext = new AudioCtx({ sampleRate: 24000 });
+    }
+  }
+  if (audioPlaybackContext && audioPlaybackContext.state === 'suspended') {
+    audioPlaybackContext.resume().catch(() => {});
+  }
+  return audioPlaybackContext;
+}
+
+function handleIncomingVoiceChunk(senderId, username, arrayBuffer) {
+  if (!arrayBuffer || (socket && senderId === socket.id)) return;
+  const ctx = getPlaybackContext();
+  if (!ctx) return;
+
   try {
-    if (!localVoiceStream || !localVoiceStream.active) {
-      localVoiceStream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-          channelCount: 1,
-          sampleRate: 48000
-        },
-        video: false
-      });
+    const int16 = new Int16Array(arrayBuffer);
+    const float32 = new Float32Array(int16.length);
+    for (let i = 0; i < int16.length; i++) {
+      float32[i] = int16[i] / 32767.0;
     }
 
-    localVoiceStream.getAudioTracks().forEach(t => { t.enabled = true; });
+    const audioBuffer = ctx.createBuffer(1, float32.length, 24000);
+    audioBuffer.copyToChannel(float32, 0);
+
+    const source = ctx.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(ctx.destination);
+
+    const now = ctx.currentTime;
+    if (scheduledPlayTime < now) {
+      scheduledPlayTime = now + 0.025; // 25ms jitter buffer
+    }
+
+    source.start(scheduledPlayTime);
+    scheduledPlayTime += audioBuffer.duration;
+
+    // Discord Səs Haləsi (Qarşı tərəf danışanda dərhal yaşıl yanır)
+    updateSpeakingVisual(senderId, true);
+    clearTimeout(speakerTimeouts[senderId]);
+    speakerTimeouts[senderId] = setTimeout(() => {
+      updateSpeakingVisual(senderId, false);
+    }, 300);
+  } catch (err) {
+    console.warn('[Voice Engine] Playback chunk error:', err);
+  }
+}
+
+function startAudioChunkCapture(stream) {
+  stopAudioChunkCapture();
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    voiceCaptureContext = new AudioCtx({ sampleRate: 24000 });
+    if (voiceCaptureContext.state === 'suspended') {
+      voiceCaptureContext.resume().catch(() => {});
+    }
+
+    voiceCaptureSource = voiceCaptureContext.createMediaStreamSource(stream);
+    // 2048 samples at 24000Hz = ~85 milliseconds
+    voiceCaptureProcessor = voiceCaptureContext.createScriptProcessor(2048, 1, 1);
+
+    let silenceCount = 0;
+    let isSpeakingState = false;
+
+    voiceCaptureProcessor.onaudioprocess = (e) => {
+      if (!isVoiceActive) return;
+      const input = e.inputBuffer.getChannelData(0);
+
+      // RMS səs səviyyəsi hesabla
+      let sum = 0;
+      for (let i = 0; i < input.length; i++) {
+        sum += input[i] * input[i];
+      }
+      const rms = Math.sqrt(sum / input.length);
+      const isVoice = rms > 0.012; // Danışıq həddi
+
+      if (isVoice) {
+        silenceCount = 0;
+        if (!isSpeakingState) {
+          isSpeakingState = true;
+          updateSpeakingVisual(socket ? socket.id : null, true);
+          if (socket) socket.emit('user-speaking', { isSpeaking: true });
+        }
+      } else {
+        silenceCount++;
+        if (silenceCount > 4) { // ~340ms sükut
+          if (isSpeakingState) {
+            isSpeakingState = false;
+            updateSpeakingVisual(socket ? socket.id : null, false);
+            if (socket) socket.emit('user-speaking', { isSpeaking: false });
+          }
+        }
+      }
+
+      // Əgər danışırsa və ya sükut buferindədirsə, səs paketini serverə göndər
+      if (silenceCount < 5) {
+        const int16 = new Int16Array(input.length);
+        for (let i = 0; i < input.length; i++) {
+          int16[i] = Math.max(-32768, Math.min(32767, Math.floor(input[i] * 32767)));
+        }
+        if (socket) {
+          socket.emit('voice-chunk', int16.buffer);
+        }
+      }
+    };
+
+    // İstifadəçinin öz səsinin özünə əks-səda verməməsi üçün muteNode ilə destination-a bağla
+    const muteNode = voiceCaptureContext.createGain();
+    muteNode.gain.value = 0;
+
+    voiceCaptureSource.connect(voiceCaptureProcessor);
+    voiceCaptureProcessor.connect(muteNode);
+    muteNode.connect(voiceCaptureContext.destination);
+
+  } catch (err) {
+    console.warn('[Voice Engine] Capture setup error:', err);
+  }
+}
+
+function stopAudioChunkCapture() {
+  if (voiceCaptureProcessor) {
+    try { voiceCaptureProcessor.disconnect(); } catch (e) {}
+    voiceCaptureProcessor = null;
+  }
+  if (voiceCaptureSource) {
+    try { voiceCaptureSource.disconnect(); } catch (e) {}
+    voiceCaptureSource = null;
+  }
+  if (voiceCaptureContext) {
+    try { voiceCaptureContext.close(); } catch (e) {}
+    voiceCaptureContext = null;
+  }
+}
+
+async function startVoiceChat() {
+  try {
+    localVoiceStream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+        channelCount: 1,
+        sampleRate: 24000
+      },
+      video: false
+    });
+
     isVoiceActive = true;
     updateVoiceUI(true);
-    showNotice('🎙️ Mikrofon aktivdir! Canlı danışa bilərsiniz.');
+    showNotice('🎙️ Səsli danışıq aktivdir! Canlı danışa bilərsiniz.');
 
-    // Real vaxt səs dalğası izləyicisi (Discord Voice Halo)
-    startLocalSpeakingDetection(localVoiceStream);
+    // Səs oxutma sistemini aç
+    const pCtx = getPlaybackContext();
+    if (pCtx && pCtx.state === 'suspended') {
+      pCtx.resume().catch(() => {});
+    }
+
+    // 100% Zəmanətli Server-Relayed Canlı Audio Capturer-i işə sal
+    startAudioChunkCapture(localVoiceStream);
 
     if (socket) {
       socket.emit('voice-user-state', { isVoiceActive: true });
@@ -1810,12 +1963,13 @@ async function startVoiceChat() {
 }
 
 function stopVoiceChat() {
-  stopLocalSpeakingDetection();
+  stopAudioChunkCapture();
 
   if (localVoiceStream) {
-    localVoiceStream.getAudioTracks().forEach(track => {
-      track.enabled = false;
+    localVoiceStream.getTracks().forEach(track => {
+      track.stop();
     });
+    localVoiceStream = null;
   }
   isVoiceActive = false;
   updateVoiceUI(false);
@@ -1824,9 +1978,10 @@ function stopVoiceChat() {
     socket.emit('voice-user-state', { isVoiceActive: false });
     socket.emit('user-speaking', { isSpeaking: false });
   }
-  updateSpeakingVisual(socket.id, false);
+  updateSpeakingVisual(socket ? socket.id : null, false);
   showNotice('🎙️ Mikrofon bağlandı');
 }
+
 
 function updateVoiceUI(active) {
   if (btnVoiceToggle) {
@@ -2157,6 +2312,9 @@ function unlockAllRemoteAudios() {
   document.querySelectorAll('audio[id^="remote-voice-audio-"]').forEach(el => {
     if (el.paused) el.play().catch(() => {});
   });
+  if (audioPlaybackContext && audioPlaybackContext.state === 'suspended') {
+    audioPlaybackContext.resume().catch(() => {});
+  }
   if (vadAudioContext && vadAudioContext.state === 'suspended') {
     vadAudioContext.resume().catch(() => {});
   }
