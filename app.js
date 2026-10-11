@@ -46,6 +46,7 @@ const emptyPlayer = document.getElementById('empty-player');
 const ytPlayerFrame = document.getElementById('youtube-player');
 const directPlayer = document.getElementById('direct-player');
 const streamPlayer = document.getElementById('stream-player');
+const btnUnmuteOverlay = document.getElementById('btn-unmute-overlay');
 const syncNotice = document.getElementById('sync-notice');
 const syncNoticeText = document.getElementById('sync-notice-text');
 const playbackStatus = document.getElementById('playback-status');
@@ -198,6 +199,16 @@ function initSocket() {
   });
 
   // WebRTC Tab Yayımı Siqnalları
+  socket.on('stream-ready', ({ broadcaster }) => {
+    socket.emit('request-stream', { target: broadcaster });
+  });
+
+  socket.on('request-stream', ({ requester }) => {
+    if (localScreenStream) {
+      initiateScreenPeer(requester);
+    }
+  });
+
   socket.on('webrtc-offer', async ({ sender, sdp }) => {
     await handleScreenOffer(sender, sdp);
   });
@@ -444,25 +455,37 @@ btnStartStream.addEventListener('click', async () => {
         displaySurface: 'browser',
         frameRate: { ideal: 60 }
       },
-      audio: true
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
+        suppressLocalAudioPlayback: false
+      }
     });
 
-    // Öz pleyerimizdə göstər (səsi susdururuq ki, özümüzdə əks-səda verməsin)
+    const audioTracks = localScreenStream.getAudioTracks();
+    if (audioTracks.length === 0) {
+      alert("⚠️ DİQQƏT: Filmin səsi qoşulmadı!\n\nChrome pəncərəsi açılanda aşağıdakı 'Also share tab audio' (Səsi paylaş) qutusunu mütləq işarələyin və 'Pəncərə' yox, 'Chrome Tab' (və ya Bütöv Ekran) seçin.");
+    }
+
+    // Öz pleyerimizdə göstər (özümüz üçün muted edirik ki, əks-səda verməsin)
     streamPlayer.srcObject = localScreenStream;
     streamPlayer.muted = true;
     streamPlayer.classList.remove('hidden');
     emptyPlayer.classList.add('hidden');
+    if (btnUnmuteOverlay) btnUnmuteOverlay.classList.add('hidden');
 
     btnStartStream.classList.add('hidden');
     btnStopStream.classList.remove('hidden');
 
     // Serverə xəbər ver ki, canlı yayım başladı
     socket.emit('change-video', { type: 'stream', url: 'live-tab' });
+    socket.emit('stream-ready');
 
     // İstifadəçi brauzerdən "Stop sharing" basanda
     localScreenStream.getVideoTracks()[0].onended = stopScreenStream;
 
-    showNotice('🎥 Film tabı yayımlanır! Sevgiliniz canlı izləyir.');
+    showNotice('🎥 Film tabı yayımlanır! Səs aktivdir.');
   } catch (err) {
     console.error('Ekran yayımı xətası:', err);
     alert('Yayımı başlatmaq üçün pəncərəni və ya tabı seçməlisiniz.');
@@ -484,6 +507,7 @@ function stopScreenStream() {
   streamPlayer.srcObject = null;
   streamPlayer.classList.add('hidden');
   emptyPlayer.classList.remove('hidden');
+  if (btnUnmuteOverlay) btnUnmuteOverlay.classList.add('hidden');
 
   btnStartStream.classList.remove('hidden');
   btnStopStream.classList.add('hidden');
@@ -496,6 +520,9 @@ function stopScreenStream() {
 async function initiateScreenPeer(targetSocketId) {
   if (!localScreenStream) return;
 
+  if (screenPeerConnection) {
+    screenPeerConnection.close();
+  }
   screenPeerConnection = new RTCPeerConnection(rtcConfig);
 
   localScreenStream.getTracks().forEach(track => {
@@ -516,12 +543,26 @@ async function initiateScreenPeer(targetSocketId) {
 
 // İzləyicinin təklifi qəbul etməsi
 async function handleScreenOffer(senderSocketId, sdp) {
+  if (screenPeerConnection) {
+    screenPeerConnection.close();
+  }
   screenPeerConnection = new RTCPeerConnection(rtcConfig);
 
   screenPeerConnection.ontrack = (event) => {
+    console.log('[WebRTC] Stream track alındı:', event.track.kind);
     streamPlayer.srcObject = event.streams[0];
-    streamPlayer.muted = false; // İzləyici səsi eşitsin
-    streamPlayer.play().catch(() => {});
+    streamPlayer.muted = false; // İzləyici mütləq səsi eşitsin
+    streamPlayer.volume = 1.0;
+
+    const playPromise = streamPlayer.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        if (btnUnmuteOverlay) btnUnmuteOverlay.classList.add('hidden');
+      }).catch(err => {
+        console.warn('[WebRTC] Autoplay audio bloklandı (istifadəçi klikləməlidir):', err);
+        if (btnUnmuteOverlay) btnUnmuteOverlay.classList.remove('hidden');
+      });
+    }
   };
 
   screenPeerConnection.onicecandidate = (event) => {
@@ -535,6 +576,17 @@ async function handleScreenOffer(senderSocketId, sdp) {
   await screenPeerConnection.setLocalDescription(answer);
 
   socket.emit('webrtc-answer', { target: senderSocketId, sdp: answer });
+}
+
+// Səsi açmaq üçün düyməyə basıldıqda
+if (btnUnmuteOverlay) {
+  btnUnmuteOverlay.addEventListener('click', () => {
+    streamPlayer.muted = false;
+    streamPlayer.volume = 1.0;
+    streamPlayer.play().catch(() => {});
+    btnUnmuteOverlay.classList.add('hidden');
+    showNotice('🔊 Səs açıldı!');
+  });
 }
 
 // ==========================================

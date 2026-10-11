@@ -144,6 +144,15 @@ io.on('connection', (socket) => {
   });
 
   // WebRTC Siqnalları (Tab / Ekran Paylaşımı üçün)
+  socket.on('stream-ready', () => {
+    if (!currentRoom) return;
+    socket.to(currentRoom).emit('stream-ready', { broadcaster: socket.id });
+  });
+
+  socket.on('request-stream', ({ target }) => {
+    io.to(target).emit('request-stream', { requester: socket.id });
+  });
+
   socket.on('webrtc-offer', ({ target, sdp }) => {
     io.to(target).emit('webrtc-offer', {
       sender: socket.id,

@@ -108,7 +108,12 @@
           <video id="direct-player" class="player-frame hidden" controls playsinline></video>
 
           <!-- WebRTC Canlı Ekran / Film Tabı Yayımlayıcı -->
-          <video id="stream-player" class="player-frame hidden" autoplay playsinline></video>
+          <video id="stream-player" class="player-frame hidden" autoplay playsinline controls></video>
+
+          <!-- Səsi Açmaq Üçün Təcili Düymə (Brauzer səsi bloklayanda) -->
+          <button id="btn-unmute-overlay" class="unmute-overlay hidden">
+            <span>🔊 Filmin Səsini Aç (Klikləyin)</span>
+          </button>
 
           <!-- Boş vəziyyət (Hələ video seçilməyibsə) -->
           <div id="empty-player" class="empty-player-state">

@@ -403,6 +403,37 @@ body {
   100% { opacity: 0; transform: translate(-50%, -10px); }
 }
 
+/* Səsi Açmaq Üçün Böyük Düymə */
+.unmute-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, #ff3b69, #d81b60);
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  padding: 16px 32px;
+  border-radius: 50px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 70;
+  box-shadow: 0 10px 40px rgba(255, 59, 105, 0.6);
+  animation: pulseButton 2s infinite ease-in-out;
+  backdrop-filter: blur(8px);
+  transition: transform 0.2s;
+}
+
+.unmute-overlay:hover {
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+@keyframes pulseButton {
+  0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 59, 105, 0.7); }
+  70% { transform: translate(-50%, -50%) scale(1.05); box-shadow: 0 0 0 16px rgba(255, 59, 105, 0); }
+  100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 59, 105, 0); }
+}
+
 /* Boş Vəziyyət */
 .empty-player-state {
   display: flex;
