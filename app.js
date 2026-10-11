@@ -178,6 +178,12 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // 0. Loqoya basdıqda otaqdan çıxıb əsas ekrana (Lobby) qayıtmaq və URL-i təmizləmək
+  const brandLogo = document.getElementById('brand-logo-text');
+  if (brandLogo) {
+    brandLogo.addEventListener('click', leaveRoomAndReturnToLobby);
+  }
+
   // Otağa giriş & Otaq yaratma düymələri
   const btnCreateRoom = document.getElementById('btn-create-room');
   if (btnCreateRoom) {
@@ -326,6 +332,72 @@ btnCopyLink.addEventListener('click', () => {
     showNotice('📋 Dəvət linki kopyalandı! Dostlarınızla paylaşın.');
   });
 });
+
+function leaveRoomAndReturnToLobby() {
+  if (roomScreen && roomScreen.classList.contains('active')) {
+    const confirmLeave = confirm('Kino otağından çıxıb əsas ekrana (Lobby) qayıtmaq istəyirsiniz?');
+    if (!confirmLeave) return;
+  } else {
+    return;
+  }
+
+  // 1. WebRTC və ekran/səs yayımlarını dayandır
+  if (localScreenStream) {
+    try { localScreenStream.getTracks().forEach(t => t.stop()); } catch (e) {}
+    localScreenStream = null;
+  }
+  if (screenPeerConnection) {
+    try { screenPeerConnection.close(); } catch (e) {}
+    screenPeerConnection = null;
+  }
+  if (localVoiceStream) {
+    try { localVoiceStream.getTracks().forEach(t => t.stop()); } catch (e) {}
+    localVoiceStream = null;
+  }
+  if (typeof voicePeerConnections === 'object') {
+    Object.values(voicePeerConnections).forEach(pc => {
+      try { pc.close(); } catch (e) {}
+    });
+  }
+
+  // 2. Videoları dayandır
+  if (directPlayer) {
+    try {
+      directPlayer.pause();
+      directPlayer.removeAttribute('src');
+      directPlayer.load();
+    } catch (e) {}
+  }
+  if (ytPlayer && ytPlayer.stopVideo) {
+    try { ytPlayer.stopVideo(); } catch (e) {}
+  }
+
+  // 3. Socket əlaqəsini bağla
+  if (socket) {
+    try {
+      socket.emit('leave-room');
+      socket.disconnect();
+    } catch (e) {}
+    socket = null;
+  }
+
+  // 4. URL-i tam təmizlə: ?room=cinema-129 və s. silinir, yalnız ana səhifə qalır
+  const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+  window.history.pushState({ path: cleanUrl }, '', cleanUrl);
+
+  // 5. Otaq dəyişənlərini sıfırla
+  currentRoom = null;
+  isHost = false;
+  if (roomInput) roomInput.value = '';
+
+  // 6. Ekranları dəyişdir
+  roomScreen.classList.remove('active');
+  lobbyScreen.classList.add('active');
+
+  // 7. UI-ı yenilə
+  updateUserUI();
+  showNotice('🛋️ Əsas ekrana qayıtdınız');
+}
 
 // ==========================================
 // 2. SOCKET.IO SİSTEMİ
@@ -1675,45 +1747,34 @@ function setupAuth() {
     });
   }
 
-  // 2.5 Host kartındakı birbaşa Google Giriş Düyməsi (1 kliklə dərhal daxil ol)
+  // 2.5 Host kartındakı birbaşa Google Giriş Düyməsi (Google prompt + Hesab seçimi modalını açır)
   const btnHostGoogleLogin = document.getElementById('btn-host-google-login');
   if (btnHostGoogleLogin) {
-    btnHostGoogleLogin.addEventListener('click', async () => {
-      const originalHtml = btnHostGoogleLogin.innerHTML;
-      btnHostGoogleLogin.innerHTML = '<span>⏳ Giriş edilir...</span>';
-      btnHostGoogleLogin.style.pointerEvents = 'none';
-
+    btnHostGoogleLogin.addEventListener('click', () => {
+      // 1. Google One-Tap pəncərəsini aç
       if (window.google && window.google.accounts && window.google.accounts.id) {
         try {
           window.google.accounts.id.prompt();
         } catch (e) {}
       }
-
-      await executeGoogleLogin('alialashrafov0708@gmail.com', 'Vali Alashrafov');
-
-      btnHostGoogleLogin.innerHTML = originalHtml;
-      btnHostGoogleLogin.style.pointerEvents = 'auto';
+      // 2. Hesab seçimi modalını aç (istifadəçi oradan da hesabını seçə bilər)
+      openAuthModal();
     });
   }
 
-  // 3. Chess.com Stilli "Continue with Google" Düyməsi
+  // 3. Chess.com Stilli "Continue with Google" Düyməsi (Modal daxilində)
   const btnChessGoogle = document.getElementById('btn-chess-google');
   if (btnChessGoogle) {
-    btnChessGoogle.addEventListener('click', async () => {
-      const originalHtml = btnChessGoogle.innerHTML;
-      btnChessGoogle.innerHTML = '<span>⏳ Giriş edilir...</span>';
-      btnChessGoogle.style.pointerEvents = 'none';
-
+    btnChessGoogle.addEventListener('click', () => {
       if (window.google && window.google.accounts && window.google.accounts.id) {
         try {
           window.google.accounts.id.prompt();
         } catch (e) {}
       }
-      // 1 kliklə dərhal Google ilə daxil ol
-      await executeGoogleLogin('alialashrafov0708@gmail.com', 'Vali Alashrafov');
-
-      btnChessGoogle.innerHTML = originalHtml;
-      btnChessGoogle.style.pointerEvents = 'auto';
+      const chooser = document.getElementById('google-account-chooser');
+      if (chooser) {
+        chooser.scrollIntoView({ behavior: 'smooth' });
+      }
     });
   }
 
@@ -1808,24 +1869,59 @@ function initGoogleAuth() {
   }
 }
 
+function parseJwt(token) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    return null;
+  }
+}
+
 async function handleGoogleCredentialResponse(response) {
   try {
     showAuthStatus('Google ilə daxil olunur...', 'info');
+    let email = '';
+    let name = '';
+    let picture = '🍿';
+    let sub = '';
+
+    if (response && response.credential) {
+      const payload = parseJwt(response.credential);
+      if (payload) {
+        email = payload.email || '';
+        name = payload.name || '';
+        picture = payload.picture || '🍿';
+        sub = payload.sub || '';
+      }
+    }
+
     const res = await fetch('/api/auth/google', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ credential: response.credential, avatar: selectedAvatarChoice })
+      body: JSON.stringify({ 
+        credential: response.credential, 
+        email, 
+        name, 
+        picture,
+        sub 
+      })
     });
     const data = await res.json();
     if (data.success && data.user) {
       saveUserSession(data.user);
-      showAuthStatus('Google ilə giriş tamamlandı! 🎉', 'success');
+      showAuthStatus(`Google ilə daxil olundu: ${data.user.username}! 🎉`, 'success');
       setTimeout(() => closeModal('modal-auth'), 600);
     } else {
       showAuthStatus(data.error || 'Google girişi uğursuz oldu', 'error');
     }
   } catch (err) {
-    showAuthStatus('Google xətası', 'error');
+    console.error('Google One-Tap error:', err);
+    showAuthStatus('Google xətası baş verdi', 'error');
   }
 }
 

@@ -616,6 +616,19 @@ body.theme-spiderman .spidey-hanging-mascot {
   font-weight: 900;
   letter-spacing: -0.02em;
   white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.brand-logo:hover {
+  transform: scale(1.04);
+  opacity: 0.92;
+}
+.brand-logo:active {
+  transform: scale(0.97);
 }
 .brand-logo span {
   color: var(--primary);

@@ -56,7 +56,24 @@ app.get('/api/rooms/check/:roomId', (req, res) => {
 
 // 1.3 Google Hesabı ilə Daxil Ol (Google GIS OAuth)
 app.post('/api/auth/google', (req, res) => {
-  const { email, name, picture, sub } = req.body;
+  let { email, name, picture, sub, credential } = req.body;
+
+  // Əgər credential (JWT) göndərilibsə amma email/name yoxdursa, JWT payload-dan çıxar
+  if (credential && (!email || !name)) {
+    try {
+      const parts = credential.split('.');
+      if (parts.length === 3) {
+        const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
+        if (payload.email) email = payload.email;
+        if (payload.name) name = payload.name;
+        if (payload.picture) picture = payload.picture;
+        if (payload.sub) sub = payload.sub;
+      }
+    } catch (e) {
+      console.warn('JWT oxunma xətası:', e);
+    }
+  }
+
   if (!email && !name) {
     return res.status(400).json({ error: 'Google hesab məlumatları tələb olunur.' });
   }
