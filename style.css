@@ -2101,3 +2101,423 @@ body.theme-breaking-bad .btn-spin { color: #050a07; }
     display: none;
   }
 }
+
+/* ----------------------------------------------------------
+   14. QEYDİYYAT & PROFİL SİSTEMİ (AUTH & USER PROFILE)
+   ---------------------------------------------------------- */
+.btn-profile-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--text-main);
+  padding: 6px 14px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+.btn-profile-pill:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+.user-avatar-tag {
+  font-size: 1.1rem;
+}
+
+.header-user-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  padding: 4px 10px 4px 6px;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.header-user-profile:hover {
+  border-color: var(--primary);
+}
+.header-avatar-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+.header-user-name {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.btn-logout-small {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+.btn-logout-small:hover {
+  color: #ef4444;
+}
+
+/* Auth Modalı */
+.modal-auth-card {
+  max-width: 440px;
+  width: 95%;
+}
+.auth-tabs {
+  display: flex;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+.auth-tab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.auth-tab-btn:hover {
+  color: var(--text-main);
+}
+.auth-tab-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(229, 9, 20, 0.35);
+}
+
+.auth-pane {
+  display: none;
+}
+.auth-pane.active {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.google-auth-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  text-align: center;
+}
+.google-badge-hero {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+  padding: 6px 0;
+}
+.google-btn-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  min-height: 42px;
+}
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  margin: 6px 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--border-color);
+}
+.auth-divider span {
+  padding: 0 10px;
+}
+
+.auth-form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+.auth-form-column input {
+  padding: 10px 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+.auth-form-column input:focus {
+  border-color: var(--primary);
+}
+
+.btn-google-submit {
+  background: #4285f4;
+  border-color: #4285f4;
+  color: #ffffff;
+}
+.btn-google-submit:hover {
+  background: #3367d6;
+}
+
+.avatar-picker-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.avatar-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.avatar-option {
+  font-size: 1.6rem;
+  background: var(--bg-input);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.avatar-option:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+.avatar-option.selected {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.15);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+  transform: scale(1.08);
+}
+
+.auth-status-msg {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 6px;
+}
+.auth-status-msg.success {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid #22c55e;
+  color: #22c55e;
+}
+.auth-status-msg.error {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid #ef4444;
+  color: #ef4444;
+}
+
+/* ----------------------------------------------------------
+   15. XÜSUSİYYƏT 1: OTAĞIN KİLİDİ (ROOM LOCK)
+   ---------------------------------------------------------- */
+.btn-lock {
+  border-color: rgba(255, 255, 255, 0.15);
+  transition: all 0.25s ease;
+}
+.btn-lock.locked {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border-color: #ef4444 !important;
+  color: #ef4444 !important;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+  animation: lockPulse 2.5s ease-in-out infinite;
+}
+@keyframes lockPulse {
+  0% { box-shadow: 0 0 8px rgba(239, 68, 68, 0.3); }
+  50% { box-shadow: 0 0 16px rgba(239, 68, 68, 0.7); }
+  100% { box-shadow: 0 0 8px rgba(239, 68, 68, 0.3); }
+}
+
+/* ----------------------------------------------------------
+   16. XÜSUSİYYƏT 2: DİSCORD SƏS HALƏSİ (VOICE SPEAKING HALO)
+   ---------------------------------------------------------- */
+.user-pill {
+  position: relative;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 50px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.user-pill .user-avatar-tag {
+  font-size: 1rem;
+}
+.speaking-halo,
+.user-pill.speaking-halo {
+  box-shadow: 0 0 0 2px #22c55e, 0 0 16px rgba(34, 197, 94, 0.85) !important;
+  border-color: #22c55e !important;
+  animation: speakingAuraPulse 0.9s ease-in-out infinite alternate !important;
+}
+@keyframes speakingAuraPulse {
+  0% {
+    box-shadow: 0 0 0 2px #22c55e, 0 0 8px rgba(34, 197, 94, 0.5);
+    transform: scale(1);
+  }
+  100% {
+    box-shadow: 0 0 0 3.5px #22c55e, 0 0 20px rgba(34, 197, 94, 0.95);
+    transform: scale(1.05);
+  }
+}
+
+/* ----------------------------------------------------------
+   17. XÜSUSİYYƏT 3: SEANS SONU QİYMƏTLƏNDİRMƏ (MOVIE REVIEW)
+   ---------------------------------------------------------- */
+.modal-review-card {
+  max-width: 480px;
+  width: 95%;
+}
+.review-form-box {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.review-movie-title-box label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 6px;
+}
+.review-movie-title-box input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.92rem;
+  outline: none;
+}
+.review-movie-title-box input:focus {
+  border-color: var(--primary);
+}
+.star-rating-box {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.star-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+#star-rating-num {
+  color: #f59e0b;
+  font-size: 1.25rem;
+}
+.stars-row {
+  display: flex;
+  gap: 6px;
+  user-select: none;
+}
+.star-item {
+  font-size: 1.9rem;
+  color: #475569;
+  cursor: pointer;
+  transition: transform 0.15s ease, color 0.15s ease, text-shadow 0.15s ease;
+  line-height: 1;
+}
+.star-item:hover {
+  transform: scale(1.22);
+}
+.star-item.active {
+  color: #f59e0b;
+  text-shadow: 0 0 12px rgba(245, 158, 11, 0.7);
+}
+.review-form-box textarea {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.88rem;
+  resize: vertical;
+  outline: none;
+}
+.review-form-box textarea:focus {
+  border-color: var(--primary);
+}
+
+/* ----------------------------------------------------------
+   18. XÜSUSİYYƏT 4: İŞIQLARI SÖNDÜR (CINEMA LIGHTS DIMMER)
+   ---------------------------------------------------------- */
+body.lights-dimmed .room-header,
+body.lights-dimmed .theme-hero-wing,
+body.lights-dimmed .sidebar-section,
+body.lights-dimmed .spidey-hanging-mascot,
+body.lights-dimmed .bb-flask-decoration {
+  opacity: 0.08 !important;
+  filter: brightness(0.2) blur(1px) !important;
+  transition: opacity 0.5s ease, filter 0.5s ease;
+  pointer-events: none;
+}
+body.lights-dimmed .room-header:hover,
+body.lights-dimmed .sidebar-section:hover {
+  opacity: 0.95 !important;
+  filter: none !important;
+  pointer-events: auto;
+}
+body.lights-dimmed .player-section {
+  box-shadow: 0 0 80px rgba(0, 0, 0, 0.98), 0 0 30px rgba(229, 9, 20, 0.2);
+  z-index: 100;
+  transition: all 0.5s ease;
+}
+.btn-dim.active {
+  background: #f59e0b !important;
+  color: #111827 !important;
+  border-color: #f59e0b !important;
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.6);
+}
+

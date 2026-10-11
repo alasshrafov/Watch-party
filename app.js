@@ -6,6 +6,10 @@ let socket = null;
 let currentRoom = null;
 let currentUsername = 'İstifadəçi';
 let isHost = false;
+let currentUser = null;
+let isSelfSpeaking = false;
+let isRoomLocked = false;
+let currentMovieRating = 10;
 
 // Media & Pleyer vəziyyətləri
 let ytPlayer = null;
@@ -107,6 +111,48 @@ const rouletteWinnerBox = document.getElementById('roulette-winner-box');
 const historyForm = document.getElementById('history-form');
 const historyContainer = document.getElementById('history-container');
 
+// Auth & Profil DOM elementləri
+const btnOpenAuthLobby = document.getElementById('btn-open-auth-lobby');
+const lobbyUserAvatar = document.getElementById('lobby-user-avatar');
+const lobbyUserName = document.getElementById('lobby-user-name');
+const inputAvatarPreview = document.getElementById('input-avatar-preview');
+const headerUserProfile = document.getElementById('header-user-profile');
+const headerUserAvatar = document.getElementById('header-user-avatar');
+const headerUserName = document.getElementById('header-user-name');
+const btnLogout = document.getElementById('btn-logout');
+
+const modalAuth = document.getElementById('modal-auth');
+const googleQuickForm = document.getElementById('google-quick-form');
+const googleEmailInput = document.getElementById('google-email-input');
+const googleNameInput = document.getElementById('google-name-input');
+const loginForm = document.getElementById('login-form');
+const loginUsername = document.getElementById('login-username');
+const loginPassword = document.getElementById('login-password');
+const registerForm = document.getElementById('register-form');
+const registerUsername = document.getElementById('register-username');
+const registerEmail = document.getElementById('register-email');
+const registerPassword = document.getElementById('register-password');
+const avatarPickerGrid = document.getElementById('avatar-picker-grid');
+const authStatusMsg = document.getElementById('auth-status-msg');
+
+// Xüsusiyyət 1: Otaq Kilidi DOM
+const btnLockRoom = document.getElementById('btn-lock-room');
+const lockIcon = document.getElementById('lock-icon');
+const lockText = document.getElementById('lock-text');
+
+// Xüsusiyyət 3: Seans Sonu Qiymətləndirmə DOM
+const btnOpenReview = document.getElementById('btn-open-review');
+const modalReview = document.getElementById('modal-review');
+const movieReviewForm = document.getElementById('movie-review-form');
+const reviewMovieTitle = document.getElementById('review-movie-title');
+const reviewMovieNote = document.getElementById('review-movie-note');
+const starRatingNum = document.getElementById('star-rating-num');
+const starsRow = document.getElementById('stars-row');
+
+// Xüsusiyyət 4: İşıqları Söndür DOM
+const btnDimLights = document.getElementById('btn-dim-lights');
+
+
 // ==========================================
 // 1. İLKİN YÜKLƏNMƏ VƏ TEMA SİSTEMİ
 // ==========================================
@@ -151,6 +197,10 @@ window.addEventListener('DOMContentLoaded', () => {
   setupChatAndReactions();
   setupVoiceChat();
   setupModalsAndFeatures();
+  setupAuth();
+  setupRoomLock();
+  setupMovieReview();
+  setupLightsDimmer();
 });
 
 function applyTheme(themeName) {
@@ -210,7 +260,7 @@ function updateWheelThemeColors(themeName) {
 }
 
 function enterRoom() {
-  const username = usernameInput.value.trim() || 'İstifadəçi';
+  const username = usernameInput.value.trim() || (currentUser ? currentUser.username : 'İstifadəçi');
   let roomId = roomInput.value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
 
   if (!roomId) {
@@ -246,12 +296,18 @@ function initSocket() {
 
   socket.emit('join-room', {
     roomId: currentRoom,
-    username: currentUsername
+    username: currentUsername,
+    avatar: currentUser ? currentUser.avatar : '🍿',
+    authUserId: currentUser ? currentUser.id : null
   });
 
   socket.on('room-joined', (data) => {
     isHost = data.isHost;
     updateUsersList(data.users);
+    if (data.isLocked !== undefined) {
+      isRoomLocked = data.isLocked;
+      updateRoomLockUI(data.isLocked);
+    }
     if (data.videoState && data.videoState.type !== 'empty') {
       applyVideoState(data.videoState, false);
     }
@@ -262,6 +318,42 @@ function initSocket() {
     }
     if (data.history) renderHistory(data.history);
     showNotice(isHost ? '👑 Otaq rəhbərisiniz. Xoş gəldiniz!' : '🍿 Otağa qoşuldunuz!');
+  });
+
+  socket.on('room-locked-denied', (data) => {
+    alert(`⛔ ${data.message || 'Bu otaq hal-hazırda kilidlənib! Host yalnız dəvətli üzvlərə icazə verir.'}`);
+    roomScreen.classList.remove('active');
+    lobbyScreen.classList.add('active');
+    if (socket) {
+      socket.disconnect();
+      socket = null;
+    }
+  });
+
+  socket.on('room-lock-status', ({ isLocked, lockedBy }) => {
+    isRoomLocked = isLocked;
+    updateRoomLockUI(isLocked);
+    showNotice(isLocked ? `🔒 Otaq ${lockedBy || 'Host'} tərəfindən kilidləndi!` : `🔓 Otaq kilidi açıldı!`);
+  });
+
+  socket.on('peer-speaking', ({ socketId, isSpeaking }) => {
+    const peerPill = document.getElementById(`user-pill-${socketId}`);
+    if (peerPill) {
+      if (isSpeaking) {
+        peerPill.classList.add('speaking-halo');
+      } else {
+        peerPill.classList.remove('speaking-halo');
+      }
+    }
+  });
+
+  socket.on('movie-review-celebrated', (record) => {
+    showNotice(`🎉 ${record.author} "${record.title}" filminə ⭐ ${record.rating}/10 bal verdi!`);
+    for (let i = 0; i < 7; i++) {
+      setTimeout(() => {
+        spawnFloatingEmoji(['⭐', '🌟', '🎉', '🍿', '🎬', '👏', '💖'][i % 7]);
+      }, i * 180);
+    }
   });
 
   socket.on('user-joined', (data) => {
@@ -373,12 +465,15 @@ function initSocket() {
 
 function updateUsersList(users) {
   usersList.innerHTML = '';
-  Object.values(users).forEach(u => {
+  Object.entries(users).forEach(([sockId, u]) => {
     const pill = document.createElement('div');
     pill.className = 'user-pill';
+    pill.id = `user-pill-${sockId}`;
+    pill.dataset.socketId = sockId;
     pill.innerHTML = `
+      <span class="user-avatar-tag">${u.avatar || '🍿'}</span>
       <span class="status-dot"></span>
-      <span>${u.username} ${u.isHost ? '👑' : ''}</span>
+      <span>${escapeHtml(u.username)} ${u.isHost ? '👑' : ''}</span>
     `;
     usersList.appendChild(pill);
   });
@@ -785,6 +880,11 @@ function stopVoiceChat() {
     localVoiceStream = null;
   }
   isVoiceActive = false;
+  if (isSelfSpeaking) {
+    isSelfSpeaking = false;
+    setSelfSpeakingHalo(false);
+    if (socket) socket.emit('user-speaking', { isSpeaking: false });
+  }
   btnVoiceToggle.classList.remove('active');
   btnVoiceToggle.querySelector('.mic-text').textContent = 'Səsli Zəng: Qoşul';
 
@@ -795,6 +895,18 @@ function stopVoiceChat() {
 
   socket.emit('voice-peer-left');
   showNotice('🎙️ Mikrofon bağlandı');
+}
+
+function setSelfSpeakingHalo(speaking) {
+  if (!socket) return;
+  const selfPill = document.getElementById(`user-pill-${socket.id}`);
+  if (selfPill) {
+    if (speaking) {
+      selfPill.classList.add('speaking-halo');
+    } else {
+      selfPill.classList.remove('speaking-halo');
+    }
+  }
 }
 
 // Audio Ducking: Danışanda filmin səsini 30%-ə salır, susanda 100%-ə qaldırır
@@ -818,19 +930,29 @@ function setupAudioDucking(stream) {
       let avg = sum / dataArray.length;
 
       if (avg > 16) {
+        if (!isSelfSpeaking) {
+          isSelfSpeaking = true;
+          setSelfSpeakingHalo(true);
+          if (socket) socket.emit('user-speaking', { isSpeaking: true });
+        }
         if (!isDucked) {
           isDucked = true;
           applyDuckingVolume(true);
           if (duckingBadge) duckingBadge.classList.add('ducking-active');
         }
       } else {
+        if (isSelfSpeaking) {
+          isSelfSpeaking = false;
+          setSelfSpeakingHalo(false);
+          if (socket) socket.emit('user-speaking', { isSpeaking: false });
+        }
         if (isDucked) {
           isDucked = false;
           applyDuckingVolume(false);
           if (duckingBadge) duckingBadge.classList.remove('ducking-active');
         }
       }
-    }, 200);
+    }, 180);
   } catch (err) {
     console.warn('Audio Ducking işə düşmədi:', err);
   }
@@ -1463,3 +1585,391 @@ function escapeHtml(text) {
   div.textContent = text;
   return div.innerHTML;
 }
+
+// ==========================================
+// 11. QEYDİYYAT & PROFİL & GOOGLE GİRİŞ SİSTEMİ
+// ==========================================
+
+let selectedAvatarChoice = '🍿';
+
+function setupAuth() {
+  // 1. LocalStorage-dən yadda saxlanılan istifadəçini bərpa et
+  try {
+    const savedUserStr = localStorage.getItem('watchparty_user');
+    if (savedUserStr) {
+      currentUser = JSON.parse(savedUserStr);
+      updateUserUI();
+    }
+  } catch (e) {
+    console.error('Yadda saxlanılan istifadəçi oxuna bilmədi:', e);
+  }
+
+  // 2. Modalı açan düymələr
+  if (btnOpenAuthLobby) {
+    btnOpenAuthLobby.addEventListener('click', () => openAuthModal());
+  }
+  if (headerUserProfile) {
+    headerUserProfile.addEventListener('click', (e) => {
+      if (btnLogout && (e.target === btnLogout || btnLogout.contains(e.target))) {
+        return; // Çıxış düyməsinə basılıbsa modalı açma
+      }
+      openAuthModal();
+    });
+  }
+  if (btnLogout) {
+    btnLogout.addEventListener('click', (e) => {
+      e.stopPropagation();
+      logoutUser();
+    });
+  }
+
+  // 3. Auth tab keçidləri
+  const authTabBtns = document.querySelectorAll('.auth-tab-btn');
+  authTabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      authTabBtns.forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.auth-pane').forEach(p => p.classList.remove('active'));
+
+      btn.classList.add('active');
+      const tabName = btn.getAttribute('data-authtab');
+      const targetPane = document.getElementById(`pane-auth-${tabName}`);
+      if (targetPane) targetPane.classList.add('active');
+      clearAuthStatus();
+    });
+  });
+
+  // 4. Avatar seçimi qridi
+  if (avatarPickerGrid) {
+    const avatarOptions = avatarPickerGrid.querySelectorAll('.avatar-option');
+    avatarOptions.forEach(opt => {
+      opt.addEventListener('click', () => {
+        avatarOptions.forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        selectedAvatarChoice = opt.getAttribute('data-avatar') || '🍿';
+      });
+    });
+  }
+
+  // 5. Google Sign-In (SDK & Sürətli Giriş)
+  initGoogleAuth();
+
+  if (googleQuickForm) {
+    googleQuickForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = googleEmailInput.value.trim();
+      const name = googleNameInput.value.trim();
+      if (!email) return;
+
+      try {
+        showAuthStatus('Google ilə qoşulur...', 'info');
+        const res = await fetch('/api/auth/google', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, name, avatar: selectedAvatarChoice })
+        });
+        const data = await res.json();
+        if (data.success && data.user) {
+          saveUserSession(data.user);
+          showAuthStatus('Xoş gəldiniz! Giriş uğurla tamamlandı 🎉', 'success');
+          setTimeout(() => closeModal('modal-auth'), 800);
+        } else {
+          showAuthStatus(data.error || 'Giriş uğursuz oldu', 'error');
+        }
+      } catch (err) {
+        showAuthStatus('Şəbəkə xətası baş verdi', 'error');
+      }
+    });
+  }
+
+  // 6. Login formu
+  if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = loginUsername.value.trim();
+      const password = loginPassword.value;
+      if (!username || !password) return;
+
+      try {
+        showAuthStatus('Giriş edilir...', 'info');
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (data.success && data.user) {
+          saveUserSession(data.user);
+          showAuthStatus('Xoş gəldiniz! 🎉', 'success');
+          setTimeout(() => closeModal('modal-auth'), 800);
+        } else {
+          showAuthStatus(data.error || 'İstifadəçi adı və ya şifrə yanlışdır', 'error');
+        }
+      } catch (err) {
+        showAuthStatus('Şəbəkə xətası baş verdi', 'error');
+      }
+    });
+  }
+
+  // 7. Qeydiyyat formu
+  if (registerForm) {
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = registerUsername.value.trim();
+      const email = registerEmail.value.trim();
+      const password = registerPassword.value;
+      if (!username || !password) return;
+
+      try {
+        showAuthStatus('Qeydiyyat aparılır...', 'info');
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username,
+            email,
+            password,
+            avatar: selectedAvatarChoice
+          })
+        });
+        const data = await res.json();
+        if (data.success && data.user) {
+          saveUserSession(data.user);
+          showAuthStatus('Hesab uğurla yaradıldı! Xoş gəldiniz 🎉', 'success');
+          setTimeout(() => closeModal('modal-auth'), 800);
+        } else {
+          showAuthStatus(data.error || 'Qeydiyyat uğursuz oldu', 'error');
+        }
+      } catch (err) {
+        showAuthStatus('Şəbəkə xətası baş verdi', 'error');
+      }
+    });
+  }
+}
+
+function initGoogleAuth() {
+  const container = document.getElementById('google-signin-btn-container');
+  if (!container) return;
+
+  if (window.google && window.google.accounts && window.google.accounts.id) {
+    try {
+      window.google.accounts.id.initialize({
+        client_id: '928475938475-mockgoogleclientid.apps.googleusercontent.com',
+        callback: handleGoogleCredentialResponse,
+        auto_select: false
+      });
+      window.google.accounts.id.renderButton(container, {
+        theme: 'filled_blue',
+        size: 'large',
+        text: 'continue_with',
+        shape: 'pill',
+        width: 280
+      });
+    } catch (e) {
+      console.warn('Google One-Tap düymə render xətası:', e);
+    }
+  }
+}
+
+async function handleGoogleCredentialResponse(response) {
+  try {
+    showAuthStatus('Google ilə daxil olunur...', 'info');
+    const res = await fetch('/api/auth/google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential: response.credential, avatar: selectedAvatarChoice })
+    });
+    const data = await res.json();
+    if (data.success && data.user) {
+      saveUserSession(data.user);
+      showAuthStatus('Google ilə giriş tamamlandı! 🎉', 'success');
+      setTimeout(() => closeModal('modal-auth'), 800);
+    } else {
+      showAuthStatus(data.error || 'Google girişi uğursuz oldu', 'error');
+    }
+  } catch (err) {
+    showAuthStatus('Google xətası', 'error');
+  }
+}
+
+function saveUserSession(user) {
+  currentUser = user;
+  currentUsername = user.username;
+  try {
+    localStorage.setItem('watchparty_user', JSON.stringify(user));
+  } catch (e) {}
+  updateUserUI();
+  showNotice(`👤 Xoş gəldiniz, ${user.username}!`);
+}
+
+function logoutUser() {
+  currentUser = null;
+  currentUsername = 'İstifadəçi';
+  try {
+    localStorage.removeItem('watchparty_user');
+  } catch (e) {}
+  updateUserUI();
+  showNotice('👋 Hesabdan çıxış edildi');
+}
+
+function updateUserUI() {
+  if (currentUser) {
+    if (lobbyUserName) lobbyUserName.textContent = currentUser.username;
+    if (lobbyUserAvatar) lobbyUserAvatar.textContent = currentUser.avatar || '🍿';
+    if (headerUserName) headerUserName.textContent = currentUser.username;
+    if (headerUserAvatar) headerUserAvatar.textContent = currentUser.avatar || '🍿';
+    if (inputAvatarPreview) inputAvatarPreview.textContent = currentUser.avatar || '🍿';
+    if (usernameInput) usernameInput.value = currentUser.username;
+  } else {
+    if (lobbyUserName) lobbyUserName.textContent = 'Giriş / Qeydiyyat';
+    if (lobbyUserAvatar) lobbyUserAvatar.textContent = '👤';
+    if (headerUserName) headerUserName.textContent = 'Qonaq';
+    if (headerUserAvatar) headerUserAvatar.textContent = '🍿';
+    if (inputAvatarPreview) inputAvatarPreview.textContent = '👤';
+  }
+}
+
+function openAuthModal() {
+  clearAuthStatus();
+  openModal('modal-auth');
+}
+
+function showAuthStatus(msg, type) {
+  if (!authStatusMsg) return;
+  authStatusMsg.textContent = msg;
+  authStatusMsg.className = `auth-status-msg ${type}`;
+  authStatusMsg.classList.remove('hidden');
+}
+
+function clearAuthStatus() {
+  if (!authStatusMsg) return;
+  authStatusMsg.textContent = '';
+  authStatusMsg.className = 'auth-status-msg hidden';
+}
+
+// ==========================================
+// 12. XÜSUSİYYƏT 1: OTAQ KİLİDİ (ROOM LOCK)
+// ==========================================
+
+function setupRoomLock() {
+  if (!btnLockRoom) return;
+  btnLockRoom.addEventListener('click', () => {
+    if (!socket) return;
+    if (!isHost) {
+      showNotice('⚠️ Yalnız otaq rəhbəri (Host) otağı kilidləyə bilər!');
+      return;
+    }
+    socket.emit('toggle-room-lock');
+  });
+}
+
+function updateRoomLockUI(locked) {
+  if (!btnLockRoom) return;
+  if (locked) {
+    btnLockRoom.classList.add('locked');
+    if (lockIcon) lockIcon.textContent = '🔒';
+    if (lockText) lockText.textContent = 'Kilidli';
+    btnLockRoom.title = 'Otaq kilidlidir (Yeni qoşulmalar dayandırılıb)';
+  } else {
+    btnLockRoom.classList.remove('locked');
+    if (lockIcon) lockIcon.textContent = '🔓';
+    if (lockText) lockText.textContent = 'Açıqdır';
+    btnLockRoom.title = 'Otaq açıqdır (Klikləyərək kilidləyin)';
+  }
+}
+
+// ==========================================
+// 13. XÜSUSİYYƏT 3: SEANS SONU QİYMƏTLƏNDİRMƏ (MOVIE REVIEW)
+// ==========================================
+
+function setupMovieReview() {
+  if (btnOpenReview) {
+    btnOpenReview.addEventListener('click', () => {
+      if (reviewMovieTitle && !reviewMovieTitle.value) {
+        if (currentVideoState && currentVideoState.type === 'direct') {
+          reviewMovieTitle.value = 'İzlədiyimiz Film';
+        } else if (currentVideoState && currentVideoState.type === 'youtube') {
+          reviewMovieTitle.value = 'YouTube Seansı';
+        }
+      }
+      openModal('modal-review');
+    });
+  }
+
+  // Ulduz seçimi (1-10)
+  if (starsRow) {
+    const stars = starsRow.querySelectorAll('.star-item');
+    stars.forEach(star => {
+      star.addEventListener('click', () => {
+        const val = parseInt(star.getAttribute('data-val'), 10) || 10;
+        currentMovieRating = val;
+        if (starRatingNum) starRatingNum.textContent = val;
+        renderStars(val);
+      });
+
+      star.addEventListener('mouseenter', () => {
+        const val = parseInt(star.getAttribute('data-val'), 10) || 10;
+        renderStars(val);
+      });
+    });
+
+    starsRow.addEventListener('mouseleave', () => {
+      renderStars(currentMovieRating);
+    });
+  }
+
+  function renderStars(activeCount) {
+    const stars = starsRow.querySelectorAll('.star-item');
+    stars.forEach(s => {
+      const v = parseInt(s.getAttribute('data-val'), 10) || 1;
+      if (v <= activeCount) {
+        s.classList.add('active');
+      } else {
+        s.classList.remove('active');
+      }
+    });
+  }
+
+  // Rəy və qiymətləndirmə formasının göndərilməsi
+  if (movieReviewForm) {
+    movieReviewForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = reviewMovieTitle.value.trim();
+      const note = reviewMovieNote.value.trim();
+      if (!title || !socket) return;
+
+      socket.emit('submit-movie-review', {
+        title,
+        rating: currentMovieRating,
+        note
+      });
+
+      closeModal('modal-review');
+      showNotice('🌟 Qiymətiniz göndərildi və qeyd edildi!');
+      reviewMovieTitle.value = '';
+      reviewMovieNote.value = '';
+    });
+  }
+}
+
+// ==========================================
+// 14. XÜSUSİYYƏT 4: İŞIQLARI SÖNDÜR (CINEMA LIGHTS DIMMER)
+// ==========================================
+
+function setupLightsDimmer() {
+  if (!btnDimLights) return;
+  btnDimLights.addEventListener('click', () => {
+    const isDimmed = document.body.classList.toggle('lights-dimmed');
+    btnDimLights.classList.toggle('active', isDimmed);
+    const textSpan = btnDimLights.querySelector('span');
+    if (isDimmed) {
+      if (textSpan) textSpan.textContent = '💡 İşıqlar Söndü';
+      btnDimLights.title = 'İşıqları yandır (Normal rejimə qayıt)';
+      showNotice('🎬 Kinoteatr rejimi: Ətraf işıqlar söndürüldü!');
+    } else {
+      if (textSpan) textSpan.textContent = '💡 İşıqlar';
+      btnDimLights.title = 'Kinoteatr zalı rejimi: İşıqları söndür';
+      showNotice('💡 İşıqlar yandırıldı');
+    }
+  });
+}
+

@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Cinzel:wght@600;700;900&family=Fira+Code:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Google Identity Services (Google ilə 1 Kliklə Giriş) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <!-- Socket.io Client -->
   <script src="/socket.io/socket.io.js"></script>
   <!-- YouTube Iframe API -->
@@ -33,34 +35,26 @@
           <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#ffffff" flood-opacity="1"/>
         </filter>
       </defs>
-      <!-- Tavandan düşən ipək Hörümçək Toru -->
       <line x1="80" y1="0" x2="80" y2="105" stroke="#ffffff" stroke-width="2.2" filter="url(#webGlowLine)"/>
       <circle cx="80" cy="105" r="4" fill="#ffffff"/>
-      <!-- Tutan Qırmızı Əllər -->
       <ellipse cx="74" cy="106" rx="5" ry="4" fill="#d3222a"/>
       <ellipse cx="86" cy="106" rx="5" ry="4" fill="#d3222a"/>
-      <!-- Qollar -->
       <path d="M74,107 L64,138 L75,142 L82,116 Z" fill="#d3222a"/>
       <path d="M86,107 L96,138 L85,142 L78,116 Z" fill="#d3222a"/>
-      <!-- Tərs Bükülmüş Ayaqlar (Akrobatik Duruş) -->
       <path d="M62,150 C45,132 36,112 48,102 C60,94 72,116 70,140 Z" fill="#141a2e"/>
       <path d="M98,150 C115,132 124,112 112,102 C100,94 88,116 90,140 Z" fill="#141a2e"/>
       <path d="M48,102 C52,120 58,135 58,145 L44,140 C42,125 43,112 48,102 Z" fill="#d3222a"/>
       <path d="M112,102 C108,120 102,135 102,145 L116,140 C118,125 117,112 112,102 Z" fill="#d3222a"/>
-      <!-- Gövdə və Sinə -->
       <path d="M62,140 C60,165 65,190 80,202 C95,190 100,165 98,140 Z" fill="#d3222a"/>
       <path d="M62,150 C68,165 72,180 75,195 C68,185 64,170 62,150 Z" fill="#141a2e"/>
       <path d="M98,150 C92,165 88,180 85,195 C92,185 96,170 98,150 Z" fill="#141a2e"/>
-      <!-- Qara Sinə Hörümçəyi -->
       <ellipse cx="80" cy="170" rx="3.5" ry="5.5" fill="#0b0e14"/>
       <path d="M80,168 Q72,162 68,166 M80,172 Q70,172 66,178 M80,168 Q88,162 92,166 M80,172 Q90,172 94,178" stroke="#0b0e14" stroke-width="1.3" fill="none"/>
-      <!-- Tərs Baş və Mask -->
       <ellipse cx="80" cy="230" rx="20" ry="24" fill="#e2232a"/>
       <line x1="80" y1="206" x2="80" y2="254" stroke="#0b0e14" stroke-width="1.2"/>
       <line x1="60" y1="230" x2="100" y2="230" stroke="#0b0e14" stroke-width="1.2"/>
       <path d="M70,220 Q80,224 90,220" stroke="#0b0e14" stroke-width="1.2" fill="none"/>
       <path d="M70,240 Q80,236 90,240" stroke="#0b0e14" stroke-width="1.2" fill="none"/>
-      <!-- Parlaq Ağ Gözlər (Squint/Blink Animasiyası) -->
       <polygon class="spidey-eye-swing" points="71,226 60,222 66,238 73,233" fill="#ffffff" stroke="#0b0e14" stroke-width="2.5" filter="url(#spideyHangingEyeGlow)"/>
       <polygon class="spidey-eye-swing" points="89,226 100,222 94,238 87,233" fill="#ffffff" stroke="#0b0e14" stroke-width="2.5" filter="url(#spideyHangingEyeGlow)"/>
     </svg>
@@ -75,6 +69,13 @@
         <span class="live-dot"></span>
         <span>CINEMA SYNC 2.0</span>
       </div>
+
+      <!-- Giriş & Profil Düyməsi -->
+      <button id="btn-open-auth-lobby" class="btn-profile-pill" title="Profilə daxil ol və ya qeydiyyatdan keç">
+        <span id="lobby-user-avatar" class="user-avatar-tag">👤</span>
+        <span id="lobby-user-name">Giriş / Qeydiyyat</span>
+      </button>
+
       <div class="lobby-theme-box">
         <span class="lobby-theme-label">Tema:</span>
         <select id="lobby-theme-select" class="theme-select-inline" title="Mövzunu seçin">
@@ -99,7 +100,7 @@
       <div class="input-group">
         <label for="username-input">Adınız / Ləqəbiniz:</label>
         <div class="input-icon-wrap">
-          <span class="input-glyph">👤</span>
+          <span class="input-glyph" id="input-avatar-preview">👤</span>
           <input type="text" id="username-input" placeholder="Məsələn: Əli" maxlength="20">
         </div>
       </div>
@@ -159,9 +160,25 @@
           <span class="copy-hint" id="copy-hint-text">📋 Kopyala</span>
         </div>
 
+        <!-- 1. Otağı Kilidlə / Aç (Private Lock) -->
+        <button id="btn-lock-room" class="btn-tool btn-lock" title="Otağı kilidlə (kənar şəxslərin girişini blokla)">
+          <span id="lock-icon">🔓</span>
+          <span id="lock-text">Açıqdır</span>
+        </button>
+
+        <!-- 4. İşıqları Söndür (Cinema Lights Dimmer) -->
+        <button id="btn-dim-lights" class="btn-tool btn-dim" title="Kinoteatr zalı rejimi: İşıqları söndür">
+          <span>💡 İşıqlar</span>
+        </button>
+
+        <!-- 3. Seans Sonu Qiymətləndirmə -->
+        <button id="btn-open-review" class="btn-tool" title="Bu filmi qiymətləndir">
+          <span>⭐ Qiymətləndir</span>
+        </button>
+
         <!-- Əlavə Alətlər: Ruletka & Tarixçə -->
         <button id="btn-open-watchlist" class="btn-tool" title="Nəyə baxaq? Çarxıfələk Ruletkası">
-          <span>🎡 Nəyə Baxaq?</span>
+          <span>🎡 Ruletka</span>
         </button>
         <button id="btn-open-history" class="btn-tool" title="Birlikdə baxdığımız filmlər arxivi">
           <span>📜 Filmlərimiz</span>
@@ -191,7 +208,7 @@
           </select>
         </div>
 
-        <!-- İştirakçılar -->
+        <!-- İştirakçılar və Səs Halələri -->
         <div class="active-users-bar" id="users-list"></div>
 
         <!-- Mikrofon Canlı Səsli Danışıq Düyməsi -->
@@ -199,6 +216,13 @@
           <span class="mic-icon">🎙️</span>
           <span class="mic-text">Səsli Zəng: Qoşul</span>
         </button>
+
+        <!-- İstifadəçi Profil Kartı & Çıxış -->
+        <div id="header-user-profile" class="header-user-profile" title="Cari profiliniz">
+          <span id="header-user-avatar" class="header-avatar-circle">🍿</span>
+          <span id="header-user-name" class="header-user-name">Qonaq</span>
+          <button id="btn-logout" class="btn-logout-small" title="Hesabdan çıx">✕</button>
+        </div>
 
         <!-- Çatı Göstər/Gizlə (Mobil üçün) -->
         <button id="btn-toggle-chat" class="btn-icon btn-chat-toggle" title="Çat">
@@ -211,7 +235,7 @@
     <main class="room-content">
 
       <!-- ====================================================
-           1. SOL QƏHRƏMAN PANELİ (THEMATIC HERO WING) - HƏR TEMAYA AİD XÜSUSİ SƏNƏT
+           1. SOL QƏHRƏMAN PANELİ (THEMATIC HERO WING)
            ==================================================== -->
       <aside class="theme-hero-wing" id="theme-hero-wing">
 
@@ -227,14 +251,11 @@
             </div>
             <div class="ironman-visual-box">
               <svg viewBox="0 0 160 120" class="ironman-helmet-svg">
-                <!-- Dəbilqə Qırmızı & Qızılı -->
                 <path d="M40,20 C40,5 60,0 80,0 C100,0 120,5 120,20 L124,55 C124,75 105,95 80,95 C55,95 36,75 36,55 Z" fill="#b91c1c" stroke="#dc2626" stroke-width="2"/>
                 <path d="M54,28 C54,20 66,16 80,16 C94,16 106,20 106,28 L104,65 C100,75 90,82 80,82 C70,82 60,75 56,65 Z" fill="#f59e0b" stroke="#d97706" stroke-width="1.5"/>
-                <!-- İşıqlı Cyan LED Gözlər -->
                 <polygon points="60,42 72,44 68,48 60,45" fill="#00e5ff" filter="drop-shadow(0 0 6px #00e5ff)"/>
                 <polygon points="100,42 88,44 92,48 100,45" fill="#00e5ff" filter="drop-shadow(0 0 6px #00e5ff)"/>
               </svg>
-              <!-- Döyünən Mavi Arc Reactor -->
               <div class="arc-reactor-core" title="Stark Arc Reactor Core">
                 <div class="arc-ring-outer"></div>
                 <div class="arc-ring-inner"></div>
@@ -286,22 +307,18 @@
                 </radialGradient>
               </defs>
               <circle cx="100" cy="95" r="75" fill="url(#methAuraGlow)"/>
-              <!-- Fedora Şlyapa -->
               <path d="M45,50 C45,26 65,18 100,18 C135,18 155,26 155,50 Z" fill="#14171a"/>
               <path d="M60,30 Q100,38 140,30" stroke="#060a08" stroke-width="3" fill="none"/>
               <rect x="46" y="44" width="108" height="8" fill="#090b0d"/>
               <ellipse cx="100" cy="52" rx="65" ry="10" fill="#20242a"/>
-              <!-- Üz və Eynək -->
               <path d="M62,54 L62,95 C62,130 80,154 100,156 C120,154 138,130 138,95 L138,54 Z" fill="#e2c4a8" opacity="0.9"/>
               <rect x="62" y="78" width="32" height="20" rx="3" fill="#090a0d"/>
               <rect x="106" y="78" width="32" height="20" rx="3" fill="#090a0d"/>
               <line x1="94" y1="86" x2="106" y2="86" stroke="#090a0d" stroke-width="4"/>
               <line x1="66" y1="82" x2="82" y2="94" stroke="rgba(255,255,255,0.45)" stroke-width="2"/>
               <line x1="110" y1="82" x2="126" y2="94" stroke="rgba(255,255,255,0.45)" stroke-width="2"/>
-              <!-- Bığ və Keçi Saqqalı -->
               <path d="M78,118 Q100,114 122,118 Q100,128 78,118 Z" fill="#181a1e"/>
               <path d="M84,132 Q100,130 116,132 L112,154 Q100,160 88,154 Z" fill="#181a1e"/>
-              <!-- Pencək -->
               <path d="M25,185 L65,145 L90,174 L110,174 L135,145 L175,185 L180,240 L20,240 Z" fill="#12161a"/>
             </svg>
             <div class="heisenberg-quote">"I AM THE ONE WHO KNOCKS"</div>
@@ -325,7 +342,7 @@
             </div>
           </div>
 
-          <!-- Qaynayan Kimyəvi Kolba & Mavi Kristal Dumanı -->
+          <!-- Qaynayan Kimyəvi Kolba -->
           <div class="bb-flask-card">
             <div class="flask-icon-wrap">🧪</div>
             <div class="flask-info">
@@ -349,15 +366,11 @@
                 </radialGradient>
               </defs>
               <circle cx="90" cy="85" r="70" fill="url(#iceHaloGlow)"/>
-              <!-- Qurd Kürk Xələti -->
               <path d="M20,110 Q60,75 90,78 Q120,75 160,110 Q140,135 120,130 Q90,146 60,130 Q40,135 20,110 Z" fill="#1e2633" stroke="#334155" stroke-width="1.8"/>
-              <!-- Saçlar & Üz -->
               <path d="M72,70 Q62,50 80,42 Q90,38 100,42 Q118,50 108,70 Q118,85 106,96 Q90,100 74,96 Q64,85 72,70 Z" fill="#0a0d13"/>
               <path d="M80,68 C80,88 84,95 90,95 C96,95 100,88 100,68 Z" fill="#d9beaa"/>
               <path d="M82,88 Q90,92 98,88 L96,98 Q90,101 84,98 Z" fill="#0d1117"/>
-              <!-- Qara Zireh -->
               <path d="M40,130 L70,126 L90,145 L110,126 L140,130 L150,220 L30,220 Z" fill="#111622"/>
-              <!-- Longclaw: Ağ Qurd Pommel & Qırmızı Gözlər -->
               <circle cx="90" cy="145" r="7.5" fill="#e2e8f0" stroke="#0a0d13" stroke-width="1.2"/>
               <circle cx="87.5" cy="144" r="1.5" fill="#ef4444"/>
               <circle cx="92.5" cy="144" r="1.5" fill="#ef4444"/>
@@ -423,7 +436,7 @@
           <div class="cinema-stats-card">
             <div class="stat-row"><span>Audio Mesh:</span> <strong>WebRTC HD</strong></div>
             <div class="stat-row"><span>Audio Ducking:</span> <strong>Aktiv</strong></div>
-            <div class="stat-row"><span>Latency:</span> <strong>&lt; 50ms</strong></div>
+            <div class="stat-row"><span>Otaq Təhlükəsizliyi:</span> <strong>🔒 Kilid Aktiv</strong></div>
           </div>
         </div>
 
@@ -439,7 +452,7 @@
             <span id="sync-notice-text">Video sinxronlaşdırıldı</span>
           </div>
 
-          <!-- Fasilə Viktorinası / Trivia Kartı (Video Pause olanda) -->
+          <!-- Fasilə Viktorinası / Trivia Kartı -->
           <div id="pause-trivia-overlay" class="pause-trivia-overlay hidden">
             <div class="trivia-card">
               <div class="trivia-header">
@@ -464,12 +477,12 @@
           <!-- WebRTC Canlı Ekran / Film Tabı Yayımlayıcı -->
           <video id="stream-player" class="player-frame hidden" autoplay playsinline controls></video>
 
-          <!-- Səsi Açmaq Üçün Düymə (Brauzer autoplay səsi bloklayanda) -->
+          <!-- Səsi Açmaq Üçün Düymə -->
           <button id="btn-unmute-overlay" class="unmute-overlay hidden">
             <span>🔊 Filmin Səsini Aç (Klikləyin)</span>
           </button>
 
-          <!-- Boş vəziyyət (Minimalist və Qəşəng Dizayn) -->
+          <!-- Boş vəziyyət -->
           <div id="empty-player" class="empty-player-state">
             <div class="empty-hero-visual">
               <div class="empty-film-projector">🎬</div>
@@ -680,6 +693,120 @@
       <div class="history-list" id="history-container">
         <!-- Tarixçə kartları -->
       </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       5. MODAL: GİRİŞ & QEYDİYYAT & GOOGLE İLƏ GİRİŞ
+       ======================================================== -->
+  <div id="modal-auth" class="modal-backdrop hidden">
+    <div class="modal-card modal-auth-card">
+      <div class="modal-header">
+        <h2>🍿 Profil & Giriş</h2>
+        <button class="modal-close" onclick="closeModal('modal-auth')">✕</button>
+      </div>
+      <p class="modal-desc">Kino tarixçənizi, avatarlarınızı və otaqlarınızı yadda saxlamaq üçün daxil olun.</p>
+
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" data-authtab="google">🌐 Google ilə</button>
+        <button class="auth-tab-btn" data-authtab="login">🔑 Daxil Ol</button>
+        <button class="auth-tab-btn" data-authtab="register">✨ Qeydiyyat</button>
+      </div>
+
+      <!-- Tab 1: Google ilə Daxil Ol -->
+      <div class="auth-pane active" id="pane-auth-google">
+        <div class="google-auth-box">
+          <div class="google-badge-hero">
+            <svg width="24" height="24" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+            <span>Google Hesabı ilə 1 Kliklə Qoşul</span>
+          </div>
+
+          <!-- Rəsmi Google GIS Düyməsi Konteyneri -->
+          <div id="google-signin-btn-container" class="google-btn-wrapper"></div>
+
+          <div class="auth-divider"><span>və ya e-poçtunuzla</span></div>
+          <form id="google-quick-form" class="auth-form-column">
+            <input type="email" id="google-email-input" placeholder="Google / Gmail ünvanınız (məs: ad@gmail.com)" required>
+            <input type="text" id="google-name-input" placeholder="Adınız / Ləqəbiniz (istəyə görə)">
+            <button type="submit" class="btn-primary btn-google-submit">
+              <span>Google ilə Sürətli Giriş</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Tab 2: Daxili Giriş (Login) -->
+      <div class="auth-pane" id="pane-auth-login">
+        <form id="login-form" class="auth-form-column">
+          <input type="text" id="login-username" placeholder="İstifadəçi adı və ya e-poçt" required>
+          <input type="password" id="login-password" placeholder="Şifrəniz" required>
+          <button type="submit" class="btn-primary">Daxil Ol</button>
+        </form>
+      </div>
+
+      <!-- Tab 3: Yeni Qeydiyyat (Register) -->
+      <div class="auth-pane" id="pane-auth-register">
+        <form id="register-form" class="auth-form-column">
+          <input type="text" id="register-username" placeholder="İstifadəçi adı (məs: Əli)" required maxlength="20">
+          <input type="email" id="register-email" placeholder="E-poçt ünvanı (istəyə görə)">
+          <input type="password" id="register-password" placeholder="Şifrə təyin edin" required minlength="4">
+
+          <div class="avatar-picker-label">Sevimli Kult Avatarını Seç:</div>
+          <div class="avatar-picker-grid" id="avatar-picker-grid">
+            <div class="avatar-option selected" data-avatar="🍿" title="Popcorn">🍿</div>
+            <div class="avatar-option" data-avatar="🦾" title="Iron Man">🦾</div>
+            <div class="avatar-option" data-avatar="🕷️" title="Spider-Man">🕷️</div>
+            <div class="avatar-option" data-avatar="🧪" title="Heisenberg">🧪</div>
+            <div class="avatar-option" data-avatar="🐺" title="Jon Snow">🐺</div>
+            <div class="avatar-option" data-avatar="🦇" title="Batman">🦇</div>
+            <div class="avatar-option" data-avatar="🚀" title="Interstellar">🚀</div>
+            <div class="avatar-option" data-avatar="🕶️" title="Matrix">🕶️</div>
+          </div>
+
+          <button type="submit" class="btn-primary">Hesab Yarat</button>
+        </form>
+      </div>
+
+      <div id="auth-status-msg" class="auth-status-msg hidden"></div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       6. MODAL: SEANS SONU FİLMİ QİYMƏTLƏNDİR (MOVIE REVIEW)
+       ======================================================== -->
+  <div id="modal-review" class="modal-backdrop hidden">
+    <div class="modal-card modal-review-card">
+      <div class="modal-header">
+        <h2>⭐ Seans Bitdi! Filmi Qiymətləndirin</h2>
+        <button class="modal-close" onclick="closeModal('modal-review')">✕</button>
+      </div>
+      <p class="modal-desc">Birlikdə baxdığınız filmə qiymət verin və xatirələr arxivinə qeyd edin.</p>
+
+      <form id="movie-review-form" class="review-form-box">
+        <div class="review-movie-title-box">
+          <label>Film / Video Adı:</label>
+          <input type="text" id="review-movie-title" placeholder="Film adı..." required>
+        </div>
+
+        <div class="star-rating-box">
+          <div class="star-label">Qiymətiniz: <strong id="star-rating-num">10</strong> / 10 ⭐</div>
+          <div class="stars-row" id="stars-row">
+            <span class="star-item active" data-val="1">★</span>
+            <span class="star-item active" data-val="2">★</span>
+            <span class="star-item active" data-val="3">★</span>
+            <span class="star-item active" data-val="4">★</span>
+            <span class="star-item active" data-val="5">★</span>
+            <span class="star-item active" data-val="6">★</span>
+            <span class="star-item active" data-val="7">★</span>
+            <span class="star-item active" data-val="8">★</span>
+            <span class="star-item active" data-val="9">★</span>
+            <span class="star-item active" data-val="10">★</span>
+          </div>
+        </div>
+
+        <textarea id="review-movie-note" rows="3" placeholder="Fikirləriniz, ən sevdiyiniz an və ya xatirəniz..."></textarea>
+        <button type="submit" class="btn-primary">🌟 Arxivə Əlavə Et</button>
+      </form>
     </div>
   </div>
 
