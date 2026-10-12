@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OneCouch 🛋️🍿 — Two screens. One couch.</title>
   <link rel="icon" type="image/png" href="assets/logo.png">
-  <link rel="stylesheet" href="style.css?v=5.0">
+  <link rel="stylesheet" href="style.css?v=6.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Cinzel:wght@600;700;900&family=Fira+Code:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Cinzel:wght@600;700&family=Fira+Code:wght@500;700&display=swap" rel="stylesheet">
   <!-- Google Identity Services (Google ilə 1 Kliklə Giriş) -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <!-- Socket.io Client -->
@@ -29,244 +29,299 @@
        1. GİRİŞ & OTAQ SEÇİMİ (LOBBY - CINEVERSE 4K REALISTIC UI)
        ======================================================== -->
   <div id="lobby-screen" class="screen active">
-    <!-- 1.1 YUXARI NAVİQASİYA (TOP NAVBAR) -->
-    <header class="lobby-navbar">
-      <div class="lobby-nav-brand">
-        <img src="assets/logo.png" alt="OneCouch Logo" class="brand-logo-img">
-        <span class="brand-sub-badge">CINEMA</span>
-      </div>
+    <!-- 1.1 YUXARI HİSSƏ: SOL YUXARI KÜNC BÖYÜK LOQO VƏ SAĞ TƏRƏF NAVİQASİYA TABI -->
+    <div class="lobby-top-header-row">
+      <!-- SOL YUXARI KÜNC: BÖYÜK ONECOUCH LOQOSU (SƏRBƏST KİNEMATOQRAFİK DİZAYN, TABSIZ) -->
+      <a href="#lobby-screen" class="lobby-corner-brand" id="lobby-corner-brand" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="OneCouch Ana Səhifə">
+        <span class="brand-ambient-glow"></span>
+        <img src="assets/logo.png" alt="OneCouch Logo" class="corner-brand-logo-img">
+      </a>
 
-      <nav class="lobby-nav-links" aria-label="Naviqasiya menyusu">
-        <a href="#section-characters" class="nav-menu-link" id="nav-link-characters">Xarakterlər</a>
-        <a href="#section-archetypes" class="nav-menu-link" id="nav-link-archetypes">Arxetiplər</a>
-        <a href="#action-console" class="nav-menu-link nav-highlight" id="nav-link-rooms">Kino Otağı</a>
-      </nav>
+      <header class="lobby-navbar">
+        <nav class="lobby-nav-links" aria-label="Naviqasiya menyusu">
+          <a href="#how-it-works" class="nav-menu-link" id="nav-link-how">Necə İşləyir?</a>
+          <button type="button" class="nav-menu-link btn-nav-plain" id="nav-link-characters">Xarakterlər</button>
+          <a href="#action-console" class="nav-menu-link nav-highlight" id="nav-link-rooms">Kino Otağı</a>
+        </nav>
 
-      <div class="lobby-nav-actions">
-        <!-- 🌍 DİL SEÇİMİ (AZ, TR, EN, RU) -->
-        <div class="lang-selector-wrapper" id="lang-selector-wrapper">
-          <button id="btn-lang-toggle" class="btn-lang-pill" type="button" title="Dili dəyiş / Change Language">
-            <span class="lang-globe-icon">🌐</span>
-            <span id="current-lang-label">AZ</span>
-            <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.5" d="M6 9l6 6 6-6"/></svg>
-          </button>
-          <div id="lang-menu-dropdown" class="lang-menu-dropdown hidden">
-            <button class="lang-option" data-lang="az"><span>🇦🇿</span> <span>Azərbaycan</span></button>
-            <button class="lang-option" data-lang="tr"><span>🇹🇷</span> <span>Türkçe</span></button>
-            <button class="lang-option" data-lang="en"><span>🇬🇧</span> <span>English</span></button>
-            <button class="lang-option" data-lang="ru"><span>🇷🇺</span> <span>Русский</span></button>
-          </div>
-        </div>
-
-        <!-- 👤 İSTİFADƏÇİ PROFİLİ VƏ ÇIXIŞ (USER PROFILE & LOGOUT) -->
-        <div class="profile-area-wrapper">
-          <button id="btn-open-auth-lobby" class="btn-lobby-login" type="button">
-            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-            <span id="top-login-label">Google ilə Giriş</span>
+        <div class="lobby-nav-actions">
+          <!-- 🌓 GÜNDÜZ / GECƏ REJİMİ SEÇİCİ (LIGHT / DARK MODE TOGGLE) -->
+          <button id="btn-mode-toggle" class="btn-mode-pill" type="button" title="Gündüz / Gecə rejimini dəyiş">
+            <span class="mode-icon mode-icon-sun">☀️</span>
+            <span class="mode-icon mode-icon-moon hidden">🌙</span>
+            <span id="mode-label-text">Dark</span>
           </button>
 
-          <div id="lobby-user-profile-menu" class="lobby-user-profile-menu hidden">
-            <button id="btn-profile-trigger" class="btn-profile-pill" type="button">
-              <span id="lobby-user-avatar" class="user-avatar-tag">🍿</span>
-              <span id="lobby-user-name" class="user-name-tag">Vali Alashrafov</span>
+          <!-- 🌍 DİL SEÇİMİ (AZ, TR, EN, RU) -->
+          <div class="lang-selector-wrapper" id="lang-selector-wrapper">
+            <button id="btn-lang-toggle" class="btn-lang-pill" type="button" title="Dili dəyiş / Change Language">
+              <span class="lang-globe-icon">🌐</span>
+              <span id="current-lang-label">AZ</span>
               <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.5" d="M6 9l6 6 6-6"/></svg>
             </button>
-            <div id="profile-dropdown-card" class="profile-dropdown-card hidden">
-              <div class="dropdown-user-header">
-                <div class="dropdown-avatar-circle" id="dropdown-avatar-circle">VA</div>
-                <div class="dropdown-user-details">
-                  <strong id="dropdown-full-name">Vali Alashrafov</strong>
-                  <span id="dropdown-email-text">alialashrafov0708@gmail.com</span>
+            <div id="lang-menu-dropdown" class="lang-menu-dropdown hidden">
+              <button class="lang-option" data-lang="az"><span>🇦🇿</span> <span>Azərbaycan</span></button>
+              <button class="lang-option" data-lang="tr"><span>🇹🇷</span> <span>Türkçe</span></button>
+              <button class="lang-option" data-lang="en"><span>🇬🇧</span> <span>English</span></button>
+              <button class="lang-option" data-lang="ru"><span>🇷🇺</span> <span>Русский</span></button>
+            </div>
+          </div>
+
+          <!-- 👤 İSTİFADƏÇİ PROFİLİ VƏ ÇIXIŞ (USER PROFILE & LOGOUT) -->
+          <div class="profile-area-wrapper">
+            <button id="btn-open-auth-lobby" class="btn-lobby-login" type="button">
+              <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+              <span id="top-login-label">Google ilə Giriş</span>
+            </button>
+
+            <div id="lobby-user-profile-menu" class="lobby-user-profile-menu hidden">
+              <button id="btn-profile-trigger" class="btn-profile-pill" type="button">
+                <span id="lobby-user-avatar" class="user-avatar-tag">🍿</span>
+                <span id="lobby-user-name" class="user-name-tag">Hesabım</span>
+                <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.5" d="M6 9l6 6 6-6"/></svg>
+              </button>
+              <div id="profile-dropdown-card" class="profile-dropdown-card hidden">
+                <div class="dropdown-user-header">
+                  <div class="dropdown-avatar-circle" id="dropdown-avatar-circle">👤</div>
+                  <div class="dropdown-user-details">
+                    <strong id="dropdown-full-name">İstifadəçi</strong>
+                    <span id="dropdown-email-text">hesab@gmail.com</span>
+                  </div>
                 </div>
+                <div class="dropdown-status-pill">
+                  <span class="status-dot"></span>
+                  <span id="dropdown-status-text">Google Hesabı Aktivdir</span>
+                </div>
+                <div class="dropdown-divider"></div>
+                <button id="btn-lobby-logout" class="dropdown-logout-btn" type="button">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+                  <span id="dropdown-logout-label">Hesabdan Çıx</span>
+                </button>
               </div>
-              <div class="dropdown-status-pill">
-                <span class="status-dot"></span>
-                <span id="dropdown-status-text">Google Hesabı Aktivdir</span>
-              </div>
-              <div class="dropdown-divider"></div>
-              <button id="btn-lobby-logout" class="dropdown-logout-btn" type="button">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-                <span id="dropdown-logout-label">Hesabdan Çıx</span>
+            </div>
+          </div>
+        </div>
+      </header>
+    </div>
+
+    <!-- 1.3 MODERN CINEMA HERO (FLANKED BY CULT CHARACTERS) -->
+    <section class="cine-hero-showcase" id="section-hero">
+      <div class="cine-stage-flanked">
+        <!-- SOL FLANK: KİNO ƏFSANƏLƏRİ (LEFT CHARACTER WING) -->
+        <aside class="hero-flank-column flank-left" aria-label="Kino Xarakterləri Sol">
+          <!-- 1. Don Vito Corleone (The Godfather) -->
+          <div class="cine-char-card card-flank-item" data-char="godfather" title="Xaç Atası • Don Vito Corleone">
+            <div class="char-image-wrap">
+              <img src="assets/characters/godfather.jpg" alt="The Godfather Don Corleone" loading="lazy">
+              <div class="char-card-overlay"></div>
+            </div>
+            <div class="char-card-info">
+              <span class="char-badge crimson" id="char-badge-godfather">AİLƏ & GÜC</span>
+              <h4 class="char-name" id="char-name-godfather">XAÇ ATASI</h4>
+              <span class="char-sub" id="char-sub-godfather">Don Vito Corleone</span>
+            </div>
+          </div>
+
+          <!-- 2. Walter White / Heisenberg (Breaking Bad) -->
+          <div class="cine-char-card card-flank-item" data-char="heisenberg" title="Walter White • Heisenberg">
+            <div class="center-star-ribbon" id="char-ribbon-heisenberg">⭐ KULT SİMA</div>
+            <div class="char-image-wrap">
+              <img src="assets/characters/heisenberg.jpg" alt="Walter White Heisenberg" loading="lazy">
+              <div class="char-card-overlay"></div>
+            </div>
+            <div class="char-card-info">
+              <span class="char-badge emerald" id="char-badge-heisenberg">ZƏKA OYUNÇUSU</span>
+              <h4 class="char-name" id="char-name-heisenberg">HEİSENBERG</h4>
+              <span class="char-sub" id="char-sub-heisenberg">Breaking Bad</span>
+            </div>
+          </div>
+        </aside>
+
+        <!-- MƏRKƏZ: HERO CONTENT & MOCKUP -->
+        <div class="cine-hero-grid">
+          <!-- SOL: MƏTN VƏ CTA -->
+          <div class="cine-hero-content">
+            <div class="hero-mini-pill">
+              <span class="pill-dot"></span>
+              <span id="lobby-hero-badge">İKİ EKRAN. TƏK DİVAN.</span>
+            </div>
+            <h1 class="cine-main-title" id="cine-main-title">
+              Birlikdə İzləyin.<br>
+              <span class="accent-text">Məsafələri Unudun.</span>
+            </h1>
+            <p class="cine-sub-slogan" id="cine-sub-slogan">Two screens. One couch.</p>
+            <p class="lobby-hero-subtitle" id="lobby-hero-desc">
+              Netflix, YouTube və istənilən veb-saytdan dostlarınızla real vaxtda sinxron video və kristal təmiz səsli əlaqə.
+            </p>
+            <div class="cine-hero-cta-group">
+              <a href="#action-console" class="btn-cine-cta primary" id="btn-hero-cta-room">
+                <span>İndi Otaq Aç</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+              <button type="button" class="btn-cine-cta secondary" id="btn-hero-cta-explore">
+                <span>🎭 Xarakterləri Kəşf Et</span>
               </button>
             </div>
           </div>
-        </div>
-      </div>
-    </header>
 
-    <!-- 1.2 KİNOTİK 35MM FİLM LENTİ (BACKGROUND CINEMA REEL RIBBON) -->
-    <div class="ambient-filmstrip-ribbon" aria-hidden="true">
-      <div class="filmstrip-track">
-        <span class="film-frame"><span class="film-icon">🎬</span> The Godfather</span>
-        <span class="film-frame"><span class="film-icon">🦇</span> The Dark Knight</span>
-        <span class="film-frame"><span class="film-icon">🧪</span> Breaking Bad</span>
-        <span class="film-frame"><span class="film-icon">🌌</span> Interstellar</span>
-        <span class="film-frame"><span class="film-icon">🕶️</span> The Matrix</span>
-        <span class="film-frame"><span class="film-icon">⚔️</span> Gladiator</span>
-        <span class="film-frame"><span class="film-icon">☕</span> Pulp Fiction</span>
-        <span class="film-frame"><span class="film-icon">🏙️</span> Fight Club</span>
-        <span class="film-frame"><span class="film-icon">⚡</span> Inception</span>
-        <span class="film-frame"><span class="film-icon">💍</span> Lord of the Rings</span>
-        <!-- Dövr üçün təkrarlanan hissə -->
-        <span class="film-frame"><span class="film-icon">🎬</span> The Godfather</span>
-        <span class="film-frame"><span class="film-icon">🦇</span> The Dark Knight</span>
-        <span class="film-frame"><span class="film-icon">🧪</span> Breaking Bad</span>
-        <span class="film-frame"><span class="film-icon">🌌</span> Interstellar</span>
-        <span class="film-frame"><span class="film-icon">🕶️</span> The Matrix</span>
-        <span class="film-frame"><span class="film-icon">⚔️</span> Gladiator</span>
-      </div>
-    </div>
-
-    <!-- 1.3 CINEVERSE HERO SHOWCASE (3D FAN KARTLARI VƏ ƏSAS ŞÜAR) -->
-    <section class="cine-hero-showcase" id="section-characters">
-      <div class="hero-atmosphere-glow"></div>
-      
-      <!-- HERO BAŞLIQ VƏ ŞÜAR -->
-      <div class="cine-hero-content">
-        <div class="hero-logo-banner">
-          <img src="assets/logo.png" alt="OneCouch Logo" class="hero-brand-logo-img">
-        </div>
-        <div class="hero-mini-pill">
-          <span class="pulse-sparkle">✨</span>
-          <span id="lobby-hero-badge">İKİ EKRAN. TƏK DİVAN.</span>
-        </div>
-        <h1 class="cine-main-title" id="cine-main-title">SƏHNƏ SƏNİNDİR</h1>
-        <p class="cine-sub-slogan" id="cine-sub-slogan">Two screens. One couch.</p>
-        <p class="lobby-hero-subtitle" id="lobby-hero-desc">
-          İstənilən film saytından, Netflix və YouTube-dan dostlarınızla sanki eyni divanda yanaşı oturmuş kimi birlikdə izləyin və canlı danışın.
-        </p>
-        <div class="cine-hero-cta-group">
-          <a href="#action-console" class="btn-cine-cta primary" id="btn-hero-cta-room">
-            <span>🛋️ İndi Otaq Aç</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
-          <a href="#section-archetypes" class="btn-cine-cta secondary" id="btn-hero-cta-explore">
-            <span>🎭 Xarakterləri Kəşf Et</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- 3D FAN CHARACTERS SHOWCASE (5 REALİSTİK 8K FOTO KART) -->
-      <div class="cine-characters-fan">
-        <!-- 1. Cyber Warrior -->
-        <div class="cine-char-card card-fan-1" data-char="cyberpunk">
-          <div class="char-image-wrap">
-            <img src="assets/characters/cyberpunk.jpg" alt="Cyber Warrior" loading="lazy">
-            <div class="char-card-overlay"></div>
-          </div>
-          <div class="char-card-info">
-            <span class="char-badge cyan" id="char-badge-cyberpunk">SCI-FI</span>
-            <h4 class="char-name" id="char-name-cyberpunk">KİBER DÖYÜŞÇÜ</h4>
-            <span class="char-sub" id="char-sub-cyberpunk">Gələcək və Neon</span>
+          <!-- SAĞ: REAL-TIME CINEMA SYNC MOCKUP (İNTERAKTİV OTAQ AÇMA DÜYMƏSİ) -->
+          <div class="cine-hero-mockup-wrapper">
+            <div class="cinema-mockup-card" id="hero-mockup-card" role="button" tabindex="0" title="Kino otağına keçmək üçün klikləyin" aria-label="Kino otağına keç və izlə">
+              <div class="mockup-top-bar">
+                <div class="mockup-dots">
+                  <span></span><span></span><span></span>
+                </div>
+                <div class="mockup-sync-status">
+                  <span class="pulse-live-dot"></span>
+                  <span>1080p WebRTC Sync • 0ms</span>
+                </div>
+                <div class="mockup-cta-chip">
+                  <span id="mockup-cta-text">Otaq Aç ▶</span>
+                </div>
+              </div>
+              <div class="mockup-screen-body">
+                <div class="mockup-video-canvas">
+                  <div class="mockup-play-indicator" id="mockup-play-indicator">
+                    <div class="play-pulse-ring"></div>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+                  </div>
+                  <!-- Hover overlay hint -->
+                  <div class="mockup-canvas-hint">
+                    <span class="hint-text" id="mockup-hint-text">🎬 İndi Otaq Aç & İzlə</span>
+                  </div>
+                  <!-- Equalizer / Waveform -->
+                  <div class="mockup-audio-wave">
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                  </div>
+                </div>
+                <!-- Alt idarəetmə simulyasiyası -->
+                <div class="mockup-bottom-bar">
+                  <div class="mockup-timeline">
+                    <div class="mockup-progress"></div>
+                  </div>
+                  <div class="mockup-participants">
+                    <div class="mockup-avatar active-voice">
+                      <span id="mockup-host-label">Otaq Sahibi</span>
+                      <span class="voice-wave-dot"></span>
+                    </div>
+                    <div class="mockup-avatar">
+                      <span id="mockup-guest-label">Qonaq</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Platformalar zolağı -->
+              <div class="mockup-platforms-strip">
+                <span>NETFLIX</span>
+                <span>•</span>
+                <span>YOUTUBE</span>
+                <span>•</span>
+                <span>PRIME VIDEO</span>
+                <span>•</span>
+                <span id="mockup-strip-live-tab">1080p CANLI TAB</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- 2. Don Vito Corleone -->
-        <div class="cine-char-card card-fan-2" data-char="godfather">
-          <div class="char-image-wrap">
-            <img src="assets/characters/godfather.jpg" alt="The Godfather Don Corleone" loading="lazy">
-            <div class="char-card-overlay"></div>
+        <!-- SAĞ FLANK: KİNO ƏFSANƏLƏRİ (RIGHT CHARACTER WING) -->
+        <aside class="hero-flank-column flank-right" aria-label="Kino Xarakterləri Sağ">
+          <!-- 3. The Dark Knight (Batman) -->
+          <div class="cine-char-card card-flank-item" data-char="batman" title="The Dark Knight • Batman">
+            <div class="char-image-wrap">
+              <img src="assets/characters/batman.jpg" alt="The Dark Knight Batman" loading="lazy">
+              <div class="char-card-overlay"></div>
+            </div>
+            <div class="char-card-info">
+              <span class="char-badge gold" id="char-badge-batman">QƏHRƏMAN</span>
+              <h4 class="char-name" id="char-name-batman">QARANLIQ CƏNGAVƏR</h4>
+              <span class="char-sub" id="char-sub-batman">The Dark Knight (Gotham)</span>
+            </div>
           </div>
-          <div class="char-card-info">
-            <span class="char-badge crimson" id="char-badge-godfather">AİLƏ & GÜC</span>
-            <h4 class="char-name" id="char-name-godfather">XAÇ ATASI</h4>
-            <span class="char-sub" id="char-sub-godfather">Don Vito Corleone</span>
-          </div>
-        </div>
 
-        <!-- 3. Walter White / Heisenberg (Center Featured) -->
-        <div class="cine-char-card card-fan-center" data-char="heisenberg">
-          <div class="center-star-ribbon" id="char-ribbon-heisenberg">⭐ KULT SİMA</div>
-          <div class="char-image-wrap">
-            <img src="assets/characters/heisenberg.jpg" alt="Walter White Heisenberg" loading="lazy">
-            <div class="char-card-overlay"></div>
+          <!-- 4. Cyber Warrior (Matrix / Sci-Fi) -->
+          <div class="cine-char-card card-flank-item" data-char="cyberpunk" title="Kiber Döyüşçü • Cyberpunk">
+            <div class="char-image-wrap">
+              <img src="assets/characters/cyberpunk.jpg" alt="Cyber Warrior" loading="lazy">
+              <div class="char-card-overlay"></div>
+            </div>
+            <div class="char-card-info">
+              <span class="char-badge cyan" id="char-badge-cyberpunk">SCI-FI</span>
+              <h4 class="char-name" id="char-name-cyberpunk">KİBER DÖYÜŞÇÜ</h4>
+              <span class="char-sub" id="char-sub-cyberpunk">The Matrix Terminal</span>
+            </div>
           </div>
-          <div class="char-card-info">
-            <span class="char-badge emerald" id="char-badge-heisenberg">ZƏKA OYUNÇUSU</span>
-            <h4 class="char-name" id="char-name-heisenberg">HEİSENBERG</h4>
-            <span class="char-sub" id="char-sub-heisenberg">Walter White (Breaking Bad)</span>
-          </div>
-        </div>
-
-        <!-- 4. The Dark Knight -->
-        <div class="cine-char-card card-fan-4" data-char="batman">
-          <div class="char-image-wrap">
-            <img src="assets/characters/batman.jpg" alt="The Dark Knight Batman" loading="lazy">
-            <div class="char-card-overlay"></div>
-          </div>
-          <div class="char-card-info">
-            <span class="char-badge gold" id="char-badge-batman">QƏHRƏMAN</span>
-            <h4 class="char-name" id="char-name-batman">QARANLIQ CƏNGAVƏR</h4>
-            <span class="char-sub" id="char-sub-batman">The Dark Knight (Gotham)</span>
-          </div>
-        </div>
-
-        <!-- 5. Noir Detective -->
-        <div class="cine-char-card card-fan-5" data-char="detective">
-          <div class="char-image-wrap">
-            <img src="assets/characters/detective.jpg" alt="Noir Detective" loading="lazy">
-            <div class="char-card-overlay"></div>
-          </div>
-          <div class="char-card-info">
-            <span class="char-badge amber" id="char-badge-detective">NOİR DEDEKTİV</span>
-            <h4 class="char-name" id="char-name-detective">SİRR VƏ KÖLGƏ</h4>
-            <span class="char-sub" id="char-sub-detective">Klassik Kino Noiri</span>
-          </div>
-        </div>
+        </aside>
       </div>
     </section>
 
-    <!-- 1.4 İNTERAKTİV KİNO KONSOLU (HOST & GUEST FLOW DECK) -->
+    <!-- 1.4 İNTERAKTİV KİNO KONSOLU (HOST & GUEST DUAL DECK) -->
     <main class="lobby-action-console" id="action-console">
       <div class="console-glass-panel">
         <div class="lobby-flow-container">
-          <!-- 1. YENİ OTAQ YARAT (HOST - YALNIZ GOOGLE İLƏ) -->
+          <!-- 1. YENİ OTAQ YARAT (HOST) -->
           <div class="lobby-action-box host-box">
             <div class="action-header">
               <div class="action-badge-row">
-                <span class="action-badge host-badge" id="host-badge-text">👑 Otaq Sahibi</span>
-                <span id="host-lock-status-badge" class="action-badge lock-badge">🔒 Google Tələb Olunur</span>
+                <span class="action-badge host-badge" id="host-badge-text">Otaq Sahibi</span>
+                <span id="host-lock-status-badge" class="action-badge lock-badge">Google Girişi</span>
               </div>
               <h3 id="host-title-text">Yeni Kino Otağı Yarat</h3>
-              <p id="host-desc-text">Öz kinoteatr zalınızı başladın, filmi idarə edin və dostlarınıza link göndərin.</p>
+              <p id="host-desc-text">Kinoteatr zalınızı başladın, filmi idarə edin və dostlarınıza link göndərin.</p>
             </div>
 
-            <!-- Qonaq olduqda birbaşa Google ilə giriş düyməsi -->
+            <!-- Host Xüsusiyyətləri Zolağı -->
+            <div class="host-perks-list">
+              <div class="perk-item">
+                <span class="perk-icon">⚡</span>
+                <span class="perk-text" id="host-perk-1-text">1080p 60FPS HD WebRTC Axını</span>
+              </div>
+              <div class="perk-item">
+                <span class="perk-icon">🎙️</span>
+                <span class="perk-text" id="host-perk-2-text">İkitərəfli Kristal Səsli Əlaqə</span>
+              </div>
+              <div class="perk-item">
+                <span class="perk-icon">🎡</span>
+                <span class="perk-text" id="host-perk-3-text">Kult Temalar & Əyləncəli Çarxıfələk</span>
+              </div>
+            </div>
+
+            <!-- Qonaq olduqda Google ilə giriş düyməsi -->
             <div id="host-auth-prompt" class="host-auth-prompt">
               <button id="btn-host-google-login" class="btn-chess-google" type="button">
-                <svg class="google-logo-svg" width="22" height="22" viewBox="0 0 24 24">
+                <svg class="google-logo-svg" width="20" height="20" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                   <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                 </svg>
-                <span id="btn-host-google-text">Continue with Google</span>
+                <span id="btn-host-google-text">Google ilə Başla</span>
               </button>
-              <span class="host-google-hint" id="host-hint-text">⚡ 1 kliklə daxil olub dərhal otaq başladın</span>
+              <span class="host-google-hint" id="host-hint-text">1 kliklə daxil olub dərhal otaq başladın</span>
             </div>
 
             <!-- Google ilə daxil olduqda aktiv olan Otaq Yarat düyməsi -->
             <button id="btn-create-room" class="btn-primary btn-create-room-action hidden">
-              <span id="btn-create-room-text">🛋️ Yeni Otaq Yarat</span>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              <span id="btn-create-room-text">Yeni Otaq Yarat</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </button>
           </div>
 
           <div class="lobby-or-divider"><span id="divider-or-text">VƏ YA</span></div>
 
-          <!-- 2. MÖVCUD OTAĞA QOŞUL (QONAQLAR ÜÇÜN - QEYDİYYATSIZ DA OLAR) -->
+          <!-- 2. MÖVCUD OTAĞA QOŞUL (GUEST) -->
           <div class="lobby-action-box guest-box">
             <div class="action-header">
-              <span class="action-badge guest-badge" id="guest-badge-text">🚪 Qonaq və ya İştirakçı</span>
+              <span class="action-badge guest-badge" id="guest-badge-text">Qonaq Girişi</span>
               <h3 id="guest-title-text">Mövcud Otağa Qoşul</h3>
               <p id="guest-desc-text">Dostunuzun otaq kodunu və ya dəvət linkini daxil edərək birbaşa qoşulun.</p>
             </div>
 
             <div class="input-group">
               <label for="username-input" id="label-nickname-text">Adınız / Ləqəbiniz:</label>
-              <div class="input-icon-wrap">
-                <span class="input-glyph" id="input-avatar-preview">👤</span>
-                <input type="text" id="username-input" placeholder="Məsələn: Əli" maxlength="20">
+              <div class="input-icon-wrap user-input-with-avatar">
+                <span id="input-avatar-preview" class="input-avatar-badge" title="Kino Avatarınız (Xarakter seçmək üçün klikləyin)">🍿</span>
+                <input type="text" id="username-input" placeholder="Ləqəbiniz (məs: KinoSevər)" maxlength="20">
               </div>
             </div>
 
@@ -274,7 +329,6 @@
               <label for="room-input" id="label-room-text">Otaq Kodu və ya Link:</label>
               <div class="room-input-wrapper">
                 <div class="input-icon-wrap">
-                  <span class="input-glyph">🔑</span>
                   <input type="text" id="room-input" placeholder="Məs: kino-101">
                 </div>
               </div>
@@ -287,25 +341,33 @@
           </div>
         </div>
 
-        <!-- XÜSUSİYYƏTLƏR XƏTTİ (BOTTOM HIGHLIGHTS) -->
+        <!-- XÜSUSİYYƏTLƏR ZOLAĞI (MINIMAL 4-PILL STRIP) -->
         <div class="lobby-features">
           <div class="feature-item">
-            <div class="feature-icon-badge">🖥️</div>
+            <div class="feature-icon-badge">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            </div>
             <span class="feature-name" id="feat-1-title">Bütün Saytlar</span>
-            <span class="feature-sub" id="feat-1-sub">WebRTC HD Səs</span>
+            <span class="feature-sub" id="feat-1-sub">1080p WebRTC HD</span>
           </div>
           <div class="feature-item">
-            <div class="feature-icon-badge">🎙️</div>
+            <div class="feature-icon-badge">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
+            </div>
             <span class="feature-name" id="feat-2-title">Səsli Zəng</span>
             <span class="feature-sub" id="feat-2-sub">İkitərəfli Canlı</span>
           </div>
           <div class="feature-item">
-            <div class="feature-icon-badge">🎧</div>
+            <div class="feature-icon-badge">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+            </div>
             <span class="feature-name" id="feat-3-title">Səs Balansı</span>
             <span class="feature-sub" id="feat-3-sub">Auto Ducking</span>
           </div>
           <div class="feature-item">
-            <div class="feature-icon-badge">🎡</div>
+            <div class="feature-icon-badge">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24M14.83 14.83l4.24 4.24M14.83 9.17l4.24-4.24M4.93 19.07l4.24-4.24"/></svg>
+            </div>
             <span class="feature-name" id="feat-4-title">Çarxıfələk</span>
             <span class="feature-sub" id="feat-4-sub">Püşkatma Ruletkası</span>
           </div>
@@ -313,70 +375,29 @@
       </div>
     </main>
 
-    <!-- 1.5 XARAKTER ARXETİPLƏRİ (HIGH DEFINITION CINEMATIC ARCHETYPES SECTION) -->
-    <section class="cine-archetypes-section" id="section-archetypes">
-      <div class="archetypes-header">
-        <span class="section-tag-pill" id="section-tag-archetypes">🎭 KİNO ARXETİPLƏRİ</span>
-        <h2 class="archetypes-title" id="archetypes-title-text">Kult Qəhrəmanlar və Rollar</h2>
-        <p class="archetypes-sub" id="archetypes-sub-text">Dünya kino tarixinin ən unudulmaz simvolları və xarakterləri.</p>
+    <!-- 1.5 NECƏ İŞLƏYİR? (HOW IT WORKS - CLEAN 3-STEP SECTION) -->
+    <section class="cine-how-it-works-section" id="how-it-works">
+      <div class="how-section-header">
+        <span class="section-tag-pill" id="how-tag-pill">Sadə və Sürətli</span>
+        <h2 class="how-section-title" id="how-section-title">Necə İşləyir?</h2>
+        <p class="how-section-sub" id="how-section-sub">Üç addımda fərqli məkanlarda eyni kinoteatr hissi.</p>
       </div>
-
-      <div class="archetypes-grid">
-        <!-- 1. Zəka Oyunçusu (Walter White) -->
-        <article class="archetype-card">
-          <div class="arch-media-wrap">
-            <img src="assets/characters/heisenberg.jpg" alt="Walter White Heisenberg" loading="lazy">
-            <div class="arch-vignette"></div>
-          </div>
-          <div class="arch-body">
-            <span class="arch-category emerald" id="arch-cat-heisenberg">BREAKING BAD • ZƏKA</span>
-            <h3 class="arch-title" id="arch-title-heisenberg">Walter White — Heisenberg</h3>
-            <blockquote class="arch-quote">"I am the one who knocks."</blockquote>
-            <p class="arch-desc" id="arch-desc-heisenberg">Zəka, kimya və sonsuz strateji düşüncənin simvolu. Qazanmaq üçün hər həddi aşan dahi.</p>
-          </div>
-        </article>
-
-        <!-- 2. Qotham Qaranlığı (Batman) -->
-        <article class="archetype-card">
-          <div class="arch-media-wrap">
-            <img src="assets/characters/batman.jpg" alt="The Dark Knight Batman" loading="lazy">
-            <div class="arch-vignette"></div>
-          </div>
-          <div class="arch-body">
-            <span class="arch-category gold" id="arch-cat-batman">DC CINEMA • ƏDALƏT</span>
-            <h3 class="arch-title" id="arch-title-batman">Batman — Qaranlıq Cəngavər</h3>
-            <blockquote class="arch-quote">"It's not who I am underneath, but what I do that defines me."</blockquote>
-            <p class="arch-desc" id="arch-desc-batman">Gecənin kölgəsində təkbaşına ədalət axtaran, sarsılmaz iradə və gücün tərənnümü.</p>
-          </div>
-        </article>
-
-        <!-- 3. Ailə və Güc (Don Vito Corleone) -->
-        <article class="archetype-card">
-          <div class="arch-media-wrap">
-            <img src="assets/characters/godfather.jpg" alt="The Godfather Don Corleone" loading="lazy">
-            <div class="arch-vignette"></div>
-          </div>
-          <div class="arch-body">
-            <span class="arch-category crimson" id="arch-cat-godfather">KLASSİK KİNO • NÜFUZ</span>
-            <h3 class="arch-title" id="arch-title-godfather">Don Vito Corleone — Xaç Atası</h3>
-            <blockquote class="arch-quote">"I'm gonna make him an offer he can't refuse."</blockquote>
-            <p class="arch-desc" id="arch-desc-godfather">Ailəyə sədaqət, intizam, sakitlik və sözün çəkisini bilən əfsanəvi lider obrazı.</p>
-          </div>
-        </article>
-
-        <!-- 4. Gələcəyin Qəhrəmanı (Cyber Samurai) -->
-        <article class="archetype-card">
-          <div class="arch-media-wrap">
-            <img src="assets/characters/cyberpunk.jpg" alt="Cyber Warrior" loading="lazy">
-            <div class="arch-vignette"></div>
-          </div>
-          <div class="arch-body">
-            <span class="arch-category cyan" id="arch-cat-cyberpunk">SCI-FI • KİBERPANK</span>
-            <h3 class="arch-title" id="arch-title-cyberpunk">Cyber Warrior — Kiber Döyüşçü</h3>
-            <blockquote class="arch-quote">"The future belongs to the connected minds."</blockquote>
-            <p class="arch-desc" id="arch-desc-cyberpunk">Süni intellekt, neon işıqlar və rəqəmsal dünyanın gələcək döyüşçü cəngavəri.</p>
-          </div>
-        </article>
+      <div class="how-steps-grid">
+        <div class="how-step-card">
+          <div class="step-num">01</div>
+          <h4 class="step-title" id="step-1-title">Otaq Yaradın</h4>
+          <p class="step-desc" id="step-1-desc">1 kliklə Google hesabınızla xüsusi kino otağınızı başladın və dostlarınıza dəvət linkini göndərin.</p>
+        </div>
+        <div class="how-step-card">
+          <div class="step-num">02</div>
+          <h4 class="step-title" id="step-2-title">Tabı Yayımlayın</h4>
+          <p class="step-desc" id="step-2-desc">Netflix, YouTube və ya istənilən film saytını açın və 1080p kristal təmiz WebRTC axını ilə paylaşın.</p>
+        </div>
+        <div class="how-step-card">
+          <div class="step-num">03</div>
+          <h4 class="step-title" id="step-3-title">Sinxron Zövq Alın</h4>
+          <p class="step-desc" id="step-3-desc">Kəsintisiz canlı səsli söhbət və avtomatik dayandırma/başlatma sinxronizasiyası ilə birlikdə izləyin.</p>
+        </div>
       </div>
     </section>
   </div>
@@ -444,15 +465,13 @@
         <div class="theme-select-wrapper">
           <span class="theme-icon">🎨</span>
           <select id="theme-select" title="Kult film/serial mövzusunu seçin">
-            <option value="theme-netflix">🎬 Netflix</option>
-            <option value="theme-spiderman">🕷️ Marvel MCU</option>
-            <option value="theme-breaking-bad">🧪 Breaking Bad</option>
-            <option value="theme-got">⚔️ Game of Thrones</option>
-            <option value="theme-batman">🦇 The Dark Knight</option>
-            <option value="theme-interstellar">🌌 Interstellar</option>
-            <option value="theme-matrix">🕶️ The Matrix</option>
-            <option value="theme-discord">👾 Discord Dark</option>
-            <option value="theme-oled">🖤 OLED Minimal</option>
+            <option value="theme-netflix">🎬 Cinema Premier (Netflix)</option>
+            <option value="theme-batman">🦇 The Dark Knight (Gotham)</option>
+            <option value="theme-interstellar">🌌 Interstellar (Gargantua)</option>
+            <option value="theme-matrix">🕶️ The Matrix (Cyber Terminal)</option>
+            <option value="theme-breaking-bad">🧪 Breaking Bad (Heisenberg)</option>
+            <option value="theme-got">❄️ Winterfell (Game of Thrones)</option>
+            <option value="theme-spiderman">🕷️ Marvel MCU (Stark Tech)</option>
           </select>
         </div>
 
@@ -466,16 +485,6 @@
         <button id="btn-audio-mode" class="btn-audio-mode-toggle" title="Qulaqlıq Rejimi: Video səsi 100% təmiz qalır (Boğulma olmur). Dinamik üçün toxunun.">
           <span id="audio-mode-icon">🎧</span>
           <span id="audio-mode-text">Qulaqlıq</span>
-        </button>
-
-        <!-- MİKROFON SEÇİMİ (Bluetooth telefon rejiminə düşməmək və kino səsini qorumaq üçün) -->
-        <select id="select-mic-device" class="select-mic-device" title="Mikrofon: Kinonun səsinin boğulmaması üçün noutbukun daxili mikrofonu seçilir">
-          <option value="">💻 Daxili Mikrofon (Tövsiyə)</option>
-        </select>
-
-        <!-- BAS-DANIŞ DÜYMƏSİ (Spacebar) -->
-        <button id="btn-ptt-toggle" class="btn-ptt-toggle" title="Bas-Danış (Space): Boşluq düyməsini sıxıb saxlayanda danışırsınız, buraxanda bağlanır">
-          🎙️ Bas-Danış (Space)
         </button>
 
         <!-- İştirakçılar və Səs Halələri (Yeganə iştirakçı siyahısı, dublikat yoxdur) -->
@@ -702,6 +711,50 @@
           </div>
         </div>
 
+        <!-- 1.6 INTERSTELLAR QANADI (GARGANTUA, EVENT HORIZON, GRAVITATIONAL LENS) -->
+        <div class="wing-character wing-interstellar">
+          <div class="wing-universe-badge badge-interstellar">INTERSTELLAR • GARGANTUA</div>
+          <div class="interstellar-visual-card">
+            <div class="gargantua-singularity-wrap">
+              <div class="singularity-disk-glow"></div>
+              <div class="singularity-core-shadow"></div>
+              <div class="singularity-light-ring"></div>
+            </div>
+            <div class="interstellar-card-info">
+              <span class="hero-name" style="color: #f97316;">GARGANTUA</span>
+              <span class="hero-tech" style="color: #fb923c;">SUPERMASSIVE BLACK HOLE</span>
+            </div>
+          </div>
+          <div class="interstellar-telemetry-card">
+            <div class="stat-row"><span>Relativistik Zaman:</span> <strong style="color: #f97316;">1 Saat = 7 İl Yer</strong></div>
+            <div class="stat-row"><span>Qravitasiya Dalğası:</span> <strong style="color: #fb923c;">Stabil</strong></div>
+            <div class="stat-row"><span>Endurance Statusu:</span> <strong>Orbitdədir</strong></div>
+          </div>
+          <blockquote class="wing-quote" style="border-left-color: #f97316; color: #fdba74;">"Do not go gentle into that good night."</blockquote>
+        </div>
+
+        <!-- 1.7 THE MATRIX QANADI (CYBER TERMINAL, CODE STREAM, NEO) -->
+        <div class="wing-character wing-matrix">
+          <div class="wing-universe-badge badge-matrix">THE MATRIX • CYBER REALITY</div>
+          <div class="matrix-terminal-card">
+            <div class="terminal-bar">
+              <span class="terminal-dot"></span>
+              <span class="terminal-label">operator@neb:~$ status</span>
+            </div>
+            <div class="terminal-console">
+              <p class="matrix-line">> WAKE UP, NEO...</p>
+              <p class="matrix-line">> THE MATRIX HAS YOU.</p>
+              <p class="matrix-line">> FOLLOW THE WHITE RABBIT.<span class="matrix-cursor">_</span></p>
+            </div>
+          </div>
+          <div class="matrix-telemetry-card">
+            <div class="stat-row"><span>Simulyasiya:</span> <strong style="color: #22c55e;">V2.4 AKTİV</strong></div>
+            <div class="stat-row"><span>Şifrələmə:</span> <strong style="color: #22c55e;">256-bit Quantum</strong></div>
+            <div class="stat-row"><span>Zion Əlaqəsi:</span> <strong style="color: #22c55e;">Təhlükəsiz</strong></div>
+          </div>
+          <blockquote class="wing-quote" style="border-left-color: #22c55e; color: #86efac;">"There is no spoon."</blockquote>
+        </div>
+
       </aside>
 
       <!-- ====================================================
@@ -795,6 +848,16 @@
                 <p>2. Aşağıdakı düyməyə basaraq açılan pəncərədə <strong>"Chrome Tab"</strong> bölməsindən həmin saytı seçin.</p>
                 <p>3. Pəncərənin altındakı <strong>"Also share tab audio" (Səsi paylaş)</strong> qutusunu mütləq işarələyin!</p>
               </div>
+              <div class="stream-quality-row">
+                <label for="stream-quality-select" class="stream-quality-label">
+                  <span>⚙️ Yayım Keyfiyyəti:</span>
+                </label>
+                <select id="stream-quality-select" class="stream-quality-select">
+                  <option value="1080p-high" selected>🌟 1080p Full HD — Kristal Təmiz (Kino Rejimi • 8.5 Mbps)</option>
+                  <option value="1080p-balanced">⚡ 1080p Balans — Stabil & Axıcı (5.0 Mbps)</option>
+                  <option value="720p-smooth">🚀 720p HD — Zəif İnternet üçün (3.0 Mbps)</option>
+                </select>
+              </div>
               <div class="stream-actions">
                 <button id="btn-start-stream" class="btn-primary">
                   <span>🎥 Film Tabını Yayımla (Səslə)</span>
@@ -814,6 +877,16 @@
                 <p>Netflix qorunması səbəbilə qara ekran olmasın deyə brauzerdə bir dəfəlik:</p>
                 <p><strong>Parametrlər ➡️ Sistem (System) ➡️ "Use graphics acceleration when available"</strong> seçimini <em>söndürün (OFF)</em> və brauzeri yenidən başladın.</p>
                 <p>Sonra Netflix-də filmi açıb aşağıdakı düymə ilə tabı yayımlayın:</p>
+              </div>
+              <div class="stream-quality-row" style="margin-bottom: 12px;">
+                <label for="netflix-quality-select" class="stream-quality-label">
+                  <span>⚙️ Yayım Keyfiyyəti:</span>
+                </label>
+                <select id="netflix-quality-select" class="stream-quality-select">
+                  <option value="1080p-high" selected>🌟 1080p Full HD — Kristal Təmiz (8.5 Mbps)</option>
+                  <option value="1080p-balanced">⚡ 1080p Balans — Stabil (5.0 Mbps)</option>
+                  <option value="720p-smooth">🚀 720p HD — Zəif İnternet (3.0 Mbps)</option>
+                </select>
               </div>
               <button id="btn-start-netflix-stream" class="btn-primary netflix-red-btn">
                 <span>🎬 Netflix Tabını Yayımla (Səslə)</span>
@@ -920,6 +993,244 @@
   </div>
 
   <!-- ========================================================
+       MODAL: KULT KİNO XARAKTERLƏRİ & AVATAR QALEREYASI
+       ======================================================== -->
+  <div id="modal-characters" class="modal-backdrop hidden">
+    <div class="modal-card modal-characters-card">
+      
+      <!-- 1. ƏSAS GÖRÜNÜŞ: KULT KİNO QALEREYASI -->
+      <div id="char-modal-gallery-view" class="char-modal-view">
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <span class="modal-icon-badge">🎭</span>
+            <div>
+              <h2 id="modal-char-title">Kult Kino Xarakterləri & Avatar Qalereyası</h2>
+              <span class="modal-char-sub" id="modal-char-sub">Personajınızı seçin: səsi, sitatları və VIP kino biletini kəşf edin!</span>
+            </div>
+          </div>
+          <div class="modal-header-actions">
+            <button type="button" class="btn-char-quiz-pill" id="btn-open-char-quiz">
+              <span>🎯 Hansı Qəhrəmansan? (Test)</span>
+            </button>
+            <button class="modal-close" onclick="closeModal('modal-characters')">✕</button>
+          </div>
+        </div>
+
+        <div class="characters-gallery-grid">
+          <!-- 1. Walter White / Heisenberg -->
+          <div class="char-gallery-card" data-char="heisenberg" data-nickname="Heisenberg" data-theme="theme-breaking-bad" data-emoji="🧪">
+            <div class="char-gallery-img-wrap">
+              <img src="assets/characters/heisenberg.jpg" alt="Walter White Heisenberg" loading="lazy">
+              <span class="char-badge emerald">ZƏKA OYUNÇUSU</span>
+              <div class="char-gallery-emoji-tag">🧪</div>
+            </div>
+            <div class="char-gallery-body">
+              <h4 class="char-card-name">Walter White • Heisenberg</h4>
+              <span class="char-card-source">Breaking Bad • Albuquerque</span>
+              <p class="char-card-quote">"I am the one who knocks."</p>
+              <button type="button" class="btn-select-character">
+                <span>🧪 Heisenberg Ol & Kəşf Et</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. The Dark Knight / Batman -->
+          <div class="char-gallery-card" data-char="batman" data-nickname="Batman" data-theme="theme-batman" data-emoji="🦇">
+            <div class="char-gallery-img-wrap">
+              <img src="assets/characters/batman.jpg" alt="The Dark Knight Batman" loading="lazy">
+              <span class="char-badge gold">QƏHRƏMAN</span>
+              <div class="char-gallery-emoji-tag">🦇</div>
+            </div>
+            <div class="char-gallery-body">
+              <h4 class="char-card-name">Bruce Wayne • Batman</h4>
+              <span class="char-card-source">The Dark Knight • Gotham</span>
+              <p class="char-card-quote">"It's not who I am underneath, but what I do that defines me."</p>
+              <button type="button" class="btn-select-character">
+                <span>🦇 Batman Ol & Kəşf Et</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. The Godfather / Vito Corleone -->
+          <div class="char-gallery-card" data-char="godfather" data-nickname="Don Corleone" data-theme="theme-netflix" data-emoji="🌹">
+            <div class="char-gallery-img-wrap">
+              <img src="assets/characters/godfather.jpg" alt="Don Vito Corleone" loading="lazy">
+              <span class="char-badge crimson">AİLƏ & GÜC</span>
+              <div class="char-gallery-emoji-tag">🌹</div>
+            </div>
+            <div class="char-gallery-body">
+              <h4 class="char-card-name">Don Vito Corleone</h4>
+              <span class="char-card-source">The Godfather • Siciliya</span>
+              <p class="char-card-quote">"I'm gonna make him an offer he can't refuse."</p>
+              <button type="button" class="btn-select-character">
+                <span>🌹 Don Corleone Ol & Kəşf Et</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 4. Cyber Warrior / Neo -->
+          <div class="char-gallery-card" data-char="cyberpunk" data-nickname="Neo" data-theme="theme-matrix" data-emoji="⚡">
+            <div class="char-gallery-img-wrap">
+              <img src="assets/characters/cyberpunk.jpg" alt="Neo Cyber Warrior" loading="lazy">
+              <span class="char-badge cyan">SCI-FI MATRIX</span>
+              <div class="char-gallery-emoji-tag">⚡</div>
+            </div>
+            <div class="char-gallery-body">
+              <h4 class="char-card-name">Neo • Matrix Terminal</h4>
+              <span class="char-card-source">The Matrix • Gələcək</span>
+              <p class="char-card-quote">"There is no spoon. Free your mind."</p>
+              <button type="button" class="btn-select-character">
+                <span>⚡ Neo Ol & Kəşf Et</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 5. Sirli Detektiv / Rust Cohle -->
+          <div class="char-gallery-card" data-char="detective" data-nickname="Rust Cohle" data-theme="theme-matrix" data-emoji="🕶️">
+            <div class="char-gallery-img-wrap">
+              <img src="assets/characters/detective.jpg" alt="Rust Cohle Detective" loading="lazy">
+              <span class="char-badge violet">NOIR DETEKTİV</span>
+              <div class="char-gallery-emoji-tag">🕶️</div>
+            </div>
+            <div class="char-gallery-body">
+              <h4 class="char-card-name">Rust Cohle</h4>
+              <span class="char-card-source">True Detective • Qaranlıq</span>
+              <p class="char-card-quote">"Time is a flat circle."</p>
+              <button type="button" class="btn-select-character">
+                <span>🕶️ Rust Cohle Ol & Kəşf Et</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alt Tez Keçid Zolağı -->
+        <div class="modal-char-footer">
+          <button type="button" class="btn-char-random" id="btn-char-pick-random">
+            <span>🎲 Təsadüfi Xarakter Seç</span>
+          </button>
+          <button type="button" class="btn-char-skip-join" id="btn-char-skip-join">
+            <span>🔑 Yalnız Koda ilə Otağa Qoşul</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. TEATRAL XARAKTERƏ ÇEVRİLMƏ & VIP KİNO BİLETİ (SHOWCASE & DOSYE) -->
+      <div id="char-modal-showcase-view" class="char-modal-view hidden">
+        <div class="showcase-top-bar">
+          <button type="button" class="btn-showcase-back" id="btn-showcase-back">
+            <span>◀ Bütün Xarakterlər</span>
+          </button>
+          <div class="showcase-nav-arrows">
+            <button type="button" class="btn-showcase-nav" id="btn-showcase-prev" title="Əvvəlki Xarakter">◀</button>
+            <span class="showcase-counter" id="showcase-counter">3 / 5</span>
+            <button type="button" class="btn-showcase-nav" id="btn-showcase-next" title="Növbəti Xarakter">▶</button>
+          </div>
+          <button class="modal-close" onclick="closeModal('modal-characters')">✕</button>
+        </div>
+
+        <div class="showcase-main-layout">
+          <!-- Sol: Afişa, Canlı Aura & Səs Replikasiyası -->
+          <div class="showcase-poster-box">
+            <div class="showcase-image-wrapper" id="showcase-img-wrap">
+              <img id="showcase-char-img" src="assets/characters/godfather.jpg" alt="Kino Qəhrəmanı">
+              <div class="showcase-ambient-aura" id="showcase-ambient-aura"></div>
+              <span class="char-badge" id="showcase-badge">AİLƏ & GÜC</span>
+              <div class="showcase-emoji-stamp" id="showcase-emoji-stamp">🌹</div>
+            </div>
+
+            <!-- Canlı Replikasiya Səs Pleyeri -->
+            <button type="button" class="btn-showcase-voice-play" id="btn-showcase-voice-play">
+              <span class="voice-icon-play">▶️</span>
+              <span class="voice-label" id="showcase-voice-label">Replikasiyanı Dinlə</span>
+              <div class="voice-bars-animation" id="showcase-voice-bars">
+                <span></span><span></span><span></span><span></span>
+              </div>
+            </button>
+          </div>
+
+          <!-- Sağ: Xarakter Dosyesi, VIP Kinoteatr Bileti & Fəaliyyətlər -->
+          <div class="showcase-details-box">
+            <div class="showcase-title-row">
+              <span class="showcase-meta-tag" id="showcase-meta-tag">Klassik Kino İkonu</span>
+              <h2 class="showcase-char-name" id="showcase-char-name">Don Vito Corleone</h2>
+              <span class="showcase-source-title" id="showcase-source-title">The Godfather • Mario Puzo</span>
+            </div>
+
+            <!-- Kult Replika / Sitat -->
+            <div class="showcase-quote-card">
+              <span class="quote-symbol">“</span>
+              <p class="showcase-quote-p" id="showcase-quote-p">
+                "I'm gonna make him an offer he can't refuse."
+              </p>
+            </div>
+
+            <!-- VIP Kinoteatr Bileti Kartı -->
+            <div class="showcase-ticket-card" id="showcase-ticket-card">
+              <div class="ticket-cutout left"></div>
+              <div class="ticket-cutout right"></div>
+              <div class="ticket-header">
+                <span class="ticket-brand">🍿 ONECOUCH CINEMA PASS</span>
+                <span class="ticket-status-pill">VIP STATUS</span>
+              </div>
+              <div class="ticket-body">
+                <div class="ticket-col">
+                  <span class="ticket-label">Təyin Edilən Titul:</span>
+                  <strong class="ticket-value" id="ticket-role-name">Ailə Başçısı (Don)</strong>
+                </div>
+                <div class="ticket-col">
+                  <span class="ticket-label">Xüsusi Otaq Bacarığı:</span>
+                  <strong class="ticket-value accent" id="ticket-perk-name">İmtina Edilməz Təklif</strong>
+                </div>
+              </div>
+              <div class="ticket-footer">
+                <span class="ticket-subtext" id="ticket-subtext">1080p 60FPS WebRTC HD • Sinxron İzləmə</span>
+              </div>
+            </div>
+
+            <!-- Fəaliyyət Düymələri -->
+            <div class="showcase-action-group">
+              <button type="button" class="btn-showcase-action primary" id="btn-showcase-create-room">
+                <span>👑 Bu Xarakterlə Otaq Başlat</span>
+              </button>
+              <button type="button" class="btn-showcase-action secondary" id="btn-showcase-join-room">
+                <span>🎟️ Bu Ləqəblə Otağa Daxil Ol</span>
+              </button>
+              <button type="button" class="btn-showcase-action ghost" id="btn-showcase-copy-pass" title="Kinoteatr biletini kopyala">
+                <span>📋 Bilet Mətnini Kopyala</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. "HANSI KİNO QƏHRƏMANISAN?" 3-SANİYƏLİK MİNİ VİKTORİNA -->
+      <div id="char-modal-quiz-view" class="char-modal-view hidden">
+        <div class="showcase-top-bar">
+          <button type="button" class="btn-showcase-back" id="btn-quiz-back">
+            <span>◀ Qalereyaya Qayıt</span>
+          </button>
+          <span class="quiz-step-title" id="quiz-step-title">Sual 1 / 3</span>
+          <button class="modal-close" onclick="closeModal('modal-characters')">✕</button>
+        </div>
+
+        <div class="quiz-container">
+          <div class="quiz-progress-track">
+            <div class="quiz-progress-fill" id="quiz-progress-fill" style="width: 33%"></div>
+          </div>
+          
+          <h3 class="quiz-q-title" id="quiz-q-title">Dostlarınla kinoya baxanda ən çox hansı ab-havanı sevirsən?</h3>
+          
+          <div class="quiz-answers-grid" id="quiz-answers-grid">
+            <!-- Dinamik Variantlar JavaScript-lə doldurulur -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================
        3. MODAL: NƏYƏ BAXAQ? (ÇARXIFƏLƏK RULETKASI)
        ======================================================== -->
   <div id="modal-watchlist" class="modal-backdrop hidden">
@@ -997,55 +1308,33 @@
       <p class="modal-desc">Yeni kino otağı yaratmaq üçün Google hesabı tələb olunur. Qeydiyyatsız yalnız mövcud otaqlara qoşula bilərsiniz.</p>
 
       <div class="google-auth-content">
-        <!-- Chess.com Stilli Tək Google Düyməsi -->
-        <button id="btn-chess-google" class="btn-chess-google" type="button">
-          <svg class="google-logo-svg" width="22" height="22" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-          </svg>
-          <span>Continue with Google</span>
-        </button>
-
-        <!-- Rəsmi Google GIS SDK Düyməsi (Əgər brauzerdə GIS aktivdirsə) -->
+        <!-- Rəsmi Google One-Tap / GIS SDK Düyməsi -->
         <div id="google-signin-btn-container" class="google-btn-wrapper"></div>
 
-        <!-- Google Hesab Seçici Bölməsi (Chess.com / Google Account Chooser nümayişi) -->
-        <div id="google-account-chooser" class="google-account-chooser">
-          <div class="chooser-prompt-label">Bir hesab seçin:</div>
-          <div class="google-accounts-list">
-            <div class="google-user-tile" data-email="alialashrafov0708@gmail.com" data-name="Vali Alashrafov">
-              <div class="google-tile-avatar">VA</div>
-              <div class="google-tile-text">
-                <span class="google-tile-name">Vali Alashrafov</span>
-                <span class="google-tile-email">alialashrafov0708@gmail.com</span>
-              </div>
-            </div>
-
-            <div class="google-user-tile" data-email="valialashrafov60@gmail.com" data-name="Vali Alashrafov">
-              <div class="google-tile-avatar">V</div>
-              <div class="google-tile-text">
-                <span class="google-tile-name">Vali Alashrafov</span>
-                <span class="google-tile-email">valialashrafov60@gmail.com</span>
-              </div>
-            </div>
-
-            <div class="google-user-tile custom-tile" id="tile-custom-google">
-              <div class="google-tile-avatar add-icon">➕</div>
-              <div class="google-tile-text">
-                <span class="google-tile-name">Başqa bir hesab istifadə et</span>
-                <span class="google-tile-email">Google / Gmail daxil et</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Başqa hesab üçün birbaşa e-poçt daxil etmə (şifrə tələb olunmur!) -->
-          <form id="form-custom-google" class="custom-google-box hidden">
-            <input type="email" id="custom-google-email" placeholder="Gmail ünvanı (məs: ad@gmail.com)" required>
-            <button type="submit" class="btn-primary btn-sm">Daxil Ol</button>
-          </form>
+        <div class="auth-divider-line">
+          <span>və ya Google Hesabınızı Daxil Edin</span>
         </div>
+
+        <!-- Google Hesabı ilə Daxil Ol Formu (Hər istifadəçi öz məlumatlarını daxil edir) -->
+        <form id="form-google-direct-auth" class="google-direct-auth-form">
+          <div class="auth-input-group">
+            <label for="google-login-name">Adınız / Ləqəbiniz:</label>
+            <input type="text" id="google-login-name" placeholder="Məsələn: Əli Məmmədov" required autocomplete="name">
+          </div>
+          <div class="auth-input-group">
+            <label for="google-login-email">Google Gmail Ünvanınız:</label>
+            <input type="email" id="google-login-email" placeholder="adiniz@gmail.com" required autocomplete="email">
+          </div>
+          <button type="submit" class="btn-chess-google btn-submit-google">
+            <svg class="google-logo-svg" width="20" height="20" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <span>Google ilə Davam Et</span>
+          </button>
+        </form>
 
         <div id="auth-status-msg" class="auth-status-msg hidden"></div>
       </div>

@@ -1,0 +1,35 @@
+[
+  {
+    "id": "u_1791731487498",
+    "username": "TestHero",
+    "email": "testhero@mail.com",
+    "salt": "d1077cde38e1d49c1d94929b515a8c58",
+    "passwordHash": "46fafd1dc9bf716b350648f14bc0b0eb7e85dacf2a6423463b77628b899b5d122d9c0d2b681730376df758296652867bf06fa4ec01207e5635896faf22d44c99",
+    "avatar": "???",
+    "createdAt": "2026-10-11T15:11:27.499Z"
+  },
+  {
+    "id": "g_1791731514458",
+    "username": "GoogleUser",
+    "email": "googleuser@gmail.com",
+    "googleId": "g_1791731514458",
+    "avatar": "🍿",
+    "createdAt": "2026-10-11T15:11:54.458Z"
+  },
+  {
+    "id": "g_1791732792708",
+    "username": "Vali Alashrafov",
+    "email": "alialashrafov0708@gmail.com",
+    "googleId": "g_1791732792709",
+    "avatar": "🍿",
+    "createdAt": "2026-10-11T15:33:12.709Z"
+  },
+  {
+    "id": "g_1791737596471",
+    "username": "Ali",
+    "email": "ali@example.com",
+    "googleId": "g_1791737596472",
+    "avatar": "🍿",
+    "createdAt": "2026-10-11T16:53:16.472Z"
+  }
+]
