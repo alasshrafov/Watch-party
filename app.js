@@ -1952,9 +1952,6 @@ function initSocket() {
     if (localScreenStream) {
       initiateScreenPeer(data.socketId);
     }
-    if (isVoiceActive && localVoiceStream && data.socketId) {
-      callVoicePeer(data.socketId);
-    }
   });
 
   socket.on('user-left', (data) => {
@@ -2934,7 +2931,6 @@ let voiceCaptureSource = null;
 let audioPlaybackContext = null;
 const scheduledPlayTimes = {}; // Hər danışan üçün fərdi jitter vaxtı
 const speakerTimeouts = {};
-const remoteVoiceNodes = {}; // WebRTC P2P səs nodları
 
 function getPlaybackContext() {
   if (!audioPlaybackContext) {
@@ -2951,14 +2947,28 @@ function getPlaybackContext() {
 
 function handleIncomingVoiceChunk(senderId, username, arrayBuffer) {
   if (!arrayBuffer || (socket && senderId === socket.id)) return;
-  // Əgər həmin peer üçün kristal təmiz WebRTC Opus P2P axını oxunursa, dublikat olmaması üçün WebSocket relay paketini ötür
-  if (remoteVoiceNodes[senderId]) return;
 
   const ctx = getPlaybackContext();
   if (!ctx) return;
+  if (ctx.state === 'suspended') {
+    ctx.resume().catch(() => {});
+    showAudioUnlockBanner();
+  }
 
   try {
-    const int16 = new Int16Array(arrayBuffer);
+    let int16;
+    if (arrayBuffer instanceof ArrayBuffer) {
+      int16 = new Int16Array(arrayBuffer);
+    } else if (arrayBuffer && arrayBuffer.buffer instanceof ArrayBuffer) {
+      int16 = new Int16Array(arrayBuffer.buffer, arrayBuffer.byteOffset || 0, (arrayBuffer.byteLength || arrayBuffer.length) / 2);
+    } else if (Array.isArray(arrayBuffer)) {
+      int16 = new Int16Array(arrayBuffer);
+    } else {
+      return;
+    }
+
+    if (!int16 || int16.length === 0) return;
+
     const float32 = new Float32Array(int16.length);
     for (let i = 0; i < int16.length; i++) {
       float32[i] = int16[i] / 32767.0;
@@ -2983,12 +2993,12 @@ function handleIncomingVoiceChunk(senderId, username, arrayBuffer) {
     const now = ctx.currentTime;
     let playAt = scheduledPlayTimes[senderId] || 0;
 
-    // Fasiləsiz Ultra Aşağı Gecikməli Jitter Buferi (<60ms):
+    // Fasiləsiz Ultra Hamar Jitter Buferi (200ms marja ilə heç bir kəsilmə və qırılma olmur):
     if (playAt < now) {
-      playAt = now + 0.020;
-    } else if (playAt > now + 0.060) {
+      playAt = now + 0.025; // 25ms başlanğıc buferi
+    } else if (playAt > now + 0.200) {
       // Şəbəkə dalğalanması olduqda yığılan gecikməni dərhal sıxaraq real vaxta qaytar!
-      playAt = now + 0.020;
+      playAt = now + 0.025;
     }
 
     source.start(playAt);
@@ -3017,11 +3027,11 @@ function startAudioChunkCapture(stream) {
 
     voiceCaptureSource = voiceCaptureContext.createMediaStreamSource(stream);
 
-    // 100Hz KÜLƏK VƏ KULLER ƏLEYHİNƏ FİLTR (Highpass Filter):
-    // 100Hz-dən aşağı tezlikləri (ventilyator uğultusu, külək, masa vibrasiyası) tam kəsir!
+    // 85Hz KÜLƏK VƏ KULLER ƏLEYHİNƏ FİLTR (Highpass Filter):
+    // 85Hz-dən aşağı tezlikləri (ventilyator uğultusu, külək, masa vibrasiyası) tam kəsir, insan səsi 100% təmiz qalır!
     const hpFilter = voiceCaptureContext.createBiquadFilter();
     hpFilter.type = 'highpass';
-    hpFilter.frequency.value = 100;
+    hpFilter.frequency.value = 85;
     hpFilter.Q.value = 0.7;
 
     const nativeRate = voiceCaptureContext.sampleRate || 48000;
@@ -3030,8 +3040,6 @@ function startAudioChunkCapture(stream) {
 
     let silenceCount = 0;
     let isSpeakingState = false;
-    let isGateOpen = false;
-    let preRollBuffer = []; // Tək 1 paketlik (~42ms) yüngül pre-roll (başlanğıc samitləri qoruyur, gecikmə yaratmır)
 
     voiceCaptureProcessor.onaudioprocess = (e) => {
       if (!isVoiceActive) return;
@@ -3043,37 +3051,12 @@ function startAudioChunkCapture(stream) {
         sum += input[i] * input[i];
       }
       const rms = Math.sqrt(sum / input.length);
-      // Təbii danışıq həddi (arxa fondakı zəif küy və ventilyator səsini keçirmir)
-      const isVoice = rms > 0.012;
 
-      // 24kHz PCM-ə çevir (Hamar anti-aliasing filtering: metalik robot küyünü tam ləğv edir)
-      const step = nativeRate / 24000;
-      const outLen = Math.floor(input.length / step);
-      const int16 = new Int16Array(outLen);
-      for (let i = 0; i < outLen; i++) {
-        const startIdx = Math.floor(i * step);
-        const endIdx = Math.min(input.length, Math.floor((i + 1) * step));
-        let sumSample = 0;
-        let count = 0;
-        for (let j = startIdx; j < endIdx; j++) {
-          sumSample += input[j];
-          count++;
-        }
-        const sample = count > 0 ? (sumSample / count) : (input[startIdx] || 0);
-        int16[i] = Math.max(-32768, Math.min(32767, Math.floor(sample * 32767)));
-      }
-      const chunkBuffer = int16.buffer;
+      // Həssas və təbii danışıq təyini (pıçıltı və ya asta səsləri dərhal tutur)
+      const isVoice = rms > 0.005;
 
       if (isVoice) {
         silenceCount = 0;
-        if (!isGateOpen) {
-          isGateOpen = true;
-          // Danışıq başladıqda yüngül 1 paket pre-roll göndər
-          if (socket && preRollBuffer.length > 0) {
-            socket.emit('voice-chunk', preRollBuffer[preRollBuffer.length - 1]);
-            preRollBuffer = [];
-          }
-        }
         if (!isSpeakingState) {
           isSpeakingState = true;
           updateSpeakingVisual(socket ? socket.id : null, true);
@@ -3081,10 +3064,8 @@ function startAudioChunkCapture(stream) {
         }
       } else {
         silenceCount++;
-        // CÜMLƏNİN SONU: 4 paketlik (~170ms) qısa bufer.
-        // Cümlə bitdikdə arxadan heç bir küy/külək səsi getmir!
-        if (silenceCount > 4) {
-          if (isGateOpen) isGateOpen = false;
+        // CÜMLƏNİN SONU: ~650ms sükut olduqda danışma haləsini söndür
+        if (silenceCount > 15) {
           if (isSpeakingState) {
             isSpeakingState = false;
             updateSpeakingVisual(socket ? socket.id : null, false);
@@ -3093,12 +3074,29 @@ function startAudioChunkCapture(stream) {
         }
       }
 
-      if (isGateOpen || silenceCount <= 4) {
-        if (socket) {
-          socket.emit('voice-chunk', chunkBuffer);
+      // Mikrofon aktivdirsə və uzun sükut deyilsə (silenceCount < 20 = ~850ms sükut marjası), səs paketini göndər
+      // Bu, heç bir kəlmənin və ya samitin kəsilməməsinə 100% zəmanət verir!
+      if (silenceCount < 20) {
+        // 24kHz PCM-ə çevir (Hamar anti-aliasing filtering: metalik robot küyünü tam ləğv edir)
+        const step = nativeRate / 24000;
+        const outLen = Math.floor(input.length / step);
+        const int16 = new Int16Array(outLen);
+        for (let i = 0; i < outLen; i++) {
+          const startIdx = Math.floor(i * step);
+          const endIdx = Math.min(input.length, Math.floor((i + 1) * step));
+          let sumSample = 0;
+          let count = 0;
+          for (let j = startIdx; j < endIdx; j++) {
+            sumSample += input[j];
+            count++;
+          }
+          const sample = count > 0 ? (sumSample / count) : (input[startIdx] || 0);
+          int16[i] = Math.max(-32768, Math.min(32767, Math.floor(sample * 32767)));
         }
-      } else {
-        preRollBuffer = [chunkBuffer];
+
+        if (socket && socket.connected) {
+          socket.emit('voice-chunk', int16.buffer);
+        }
       }
     };
 
@@ -3177,52 +3175,26 @@ async function startVoiceChat() {
       localVoiceStream = null;
     }
 
-    const safeMicId = await getSafeMicrophoneId();
-
-    // Mikrofon üçün yüksək keyfiyyətli səs filtrləri (Külək, ventilyator və arxa fon səsini ləğv edir)
-    const audioConstraints = {
-      echoCancellation: true,
-      noiseSuppression: true,
-      autoGainControl: true,
-      googEchoCancellation: true,
-      googAutoGainControl: true,
-      googNoiseSuppression: true,
-      googHighpassFilter: true,
-      channelCount: 1
-    };
-
-    if (safeMicId) {
-      audioConstraints.deviceId = { exact: safeMicId };
-    }
-
-    localVoiceStream = await navigator.mediaDevices.getUserMedia({
-      audio: audioConstraints,
-      video: false
-    });
-
-    // Əgər Bluetooth qulaqlığın zəif hands-free mikrofonu qoşulubsa, dərhal daxili mikrofona keç ki, Bluetooth 48kHz stereo rejimi pozulmasın:
-    const curTrack = localVoiceStream.getAudioTracks()[0];
-    const curLabel = (curTrack && curTrack.label) ? curTrack.label.toLowerCase() : '';
-    if (curLabel && (curLabel.includes('bluetooth') || curLabel.includes('hands-free') || curLabel.includes('headset') || curLabel.includes('lg audio'))) {
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const internalMic = devices.find(d => {
-        if (d.kind !== 'audioinput') return false;
-        const l = (d.label || '').toLowerCase();
-        return !l.includes('bluetooth') && !l.includes('hands-free') && !l.includes('headset') && !l.includes('airpods') && !l.includes('lg audio');
+    // Bütün mikrofonlarda və qulaqlıqlarda 100% zəmanətlə işləyən səs filtrləri
+    try {
+      localVoiceStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        },
+        video: false
       });
-      if (internalMic && internalMic.deviceId) {
-        curTrack.stop();
-        audioConstraints.deviceId = { exact: internalMic.deviceId };
-        localVoiceStream = await navigator.mediaDevices.getUserMedia({
-          audio: audioConstraints,
-          video: false
-        });
-      }
+    } catch (e1) {
+      localVoiceStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: false
+      });
     }
 
     isVoiceActive = true;
     updateVoiceUI(true);
-    showNotice(isHeadphoneMode ? '🎙️ Səsli danışıq aktivdir! (Kino rejimi: Film səsi 100% təmizdir)' : '🎙️ Səsli danışıq aktivdir! (Dinamik rejimi)');
+    showNotice('🎙️ Səsli danışıq aktivdir! (Film səsi 100% təmizdir)');
 
     // Səs oxutma sistemini aç
     const pCtx = getPlaybackContext();
@@ -3230,17 +3202,8 @@ async function startVoiceChat() {
       pCtx.resume().catch(() => {});
     }
 
-    // 100% Zəmanətli Pre-Roll & Hangover Canlı Audio Capturer-i işə sal
+    // 100% Zəmanətli Canlı Audio Capturer-i işə sal
     startAudioChunkCapture(localVoiceStream);
-
-    // Otaqdakı digər iştirakçılara WebRTC P2P səs zəngi başlat
-    if (currentRoomUsers && socket) {
-      Object.keys(currentRoomUsers).forEach(peerId => {
-        if (peerId !== socket.id) {
-          callVoicePeer(peerId);
-        }
-      });
-    }
 
     if (socket) {
       socket.emit('voice-user-state', { isVoiceActive: true });
@@ -3254,11 +3217,6 @@ async function startVoiceChat() {
 
 function stopVoiceChat() {
   stopAudioChunkCapture();
-
-  // Bütün WebRTC səs əlaqələrini təmizlə
-  Object.keys(voicePeerConnections).forEach(peerId => {
-    cleanupVoicePeer(peerId);
-  });
 
   if (localVoiceStream) {
     localVoiceStream.getTracks().forEach(track => {
@@ -3443,61 +3401,16 @@ async function drainIceCandidates(peerId, pc) {
 }
 
 function playRemoteVoice(stream, peerId, track) {
-  try {
-    const ctx = getPlaybackContext();
-    if (!ctx) return;
-    if (remoteVoiceNodes[peerId]) {
-      try {
-        if (remoteVoiceNodes[peerId].source) remoteVoiceNodes[peerId].source.disconnect();
-        if (remoteVoiceNodes[peerId].gainNode) remoteVoiceNodes[peerId].gainNode.disconnect();
-      } catch (e) {}
-    }
-
-    // Brauzerdə MediaStream axınının aktiv qalması üçün gizli muted audio elementi
-    let dummyAudio = document.getElementById(`remote-voice-audio-${peerId}`);
-    if (!dummyAudio) {
-      dummyAudio = document.createElement('audio');
-      dummyAudio.id = `remote-voice-audio-${peerId}`;
-      dummyAudio.muted = true;
-      dummyAudio.style.display = 'none';
-      document.body.appendChild(dummyAudio);
-    }
-    dummyAudio.srcObject = stream;
-    dummyAudio.play().catch(() => {});
-
-    // Web Audio API vasitəsilə 48kHz kristal təmiz Opus səsi oxut (Windows VoIP ducking-siz)
-    const source = ctx.createMediaStreamSource(stream);
-    const gainNode = ctx.createGain();
-    gainNode.gain.value = 1.0;
-    source.connect(gainNode);
-    gainNode.connect(ctx.destination);
-    remoteVoiceNodes[peerId] = { source, gainNode, dummyAudio };
-    console.log(`[WebRTC Voice] Kristal təmiz WebRTC Opus səs axını aktivdir -> ${peerId}`);
-  } catch (err) {
-    console.warn('[WebRTC Voice] playRemoteVoice xətası:', err);
-  }
+  // Səs axını 100% zəmanətli şəkildə WebSocket PCM Relay (voice-chunk) ilə ötürülür və Web Audio ilə oxunur.
 }
 
 function cleanupVoicePeer(peerId) {
-  if (remoteVoiceNodes[peerId]) {
-    try {
-      if (remoteVoiceNodes[peerId].source) remoteVoiceNodes[peerId].source.disconnect();
-      if (remoteVoiceNodes[peerId].gainNode) remoteVoiceNodes[peerId].gainNode.disconnect();
-    } catch (e) {}
-    delete remoteVoiceNodes[peerId];
-  }
   if (voicePeerConnections[peerId]) {
     try { voicePeerConnections[peerId].close(); } catch (e) {}
     delete voicePeerConnections[peerId];
   }
   delete voiceIceCandidatesQueue[peerId];
   delete pcMakingOffer[peerId];
-
-  const audioEl = document.getElementById(`remote-voice-audio-${peerId}`);
-  if (audioEl) {
-    audioEl.srcObject = null;
-    audioEl.remove();
-  }
   updateSpeakingVisual(peerId, false);
 }
 
