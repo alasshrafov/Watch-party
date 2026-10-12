@@ -6494,5 +6494,862 @@ body.theme-netflix .tab-btn.active {
   flex-shrink: 0;
 }
 
+/* ==========================================================
+   21. SOL ÜST (☰) YAN MENYU (SLIDE-OUT LEFT DRAWER) & APK MODAL
+   ========================================================== */
+.lobby-top-left-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-hamburger-menu {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  padding: 0;
+  flex-shrink: 0;
+  backdrop-filter: blur(12px);
+}
+.btn-hamburger-menu:hover {
+  background: rgba(229, 9, 20, 0.18);
+  border-color: rgba(229, 9, 20, 0.5);
+  transform: scale(1.04);
+}
+.btn-hamburger-menu .ham-line {
+  width: 20px;
+  height: 2.2px;
+  background: #ffffff;
+  border-radius: 2px;
+  transition: all 0.25s ease;
+}
+[data-mode="light"] .btn-hamburger-menu {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+}
+[data-mode="light"] .btn-hamburger-menu .ham-line {
+  background: #0f172a;
+}
+
+.room-ham-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+}
+
+/* Mobil Üst APK Düyməsi (Susmaya görə gizli, mobildə görünür) */
+.btn-install-apk-pill {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #e50914, #ff334b);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(229, 9, 20, 0.45);
+  transition: all 0.22s ease;
+  white-space: nowrap;
+}
+.btn-install-apk-pill:active {
+  transform: scale(0.96);
+}
+
+.btn-install-desktop-pill {
+  background: linear-gradient(135deg, rgba(229, 9, 20, 0.18), rgba(255, 51, 75, 0.12)) !important;
+  border-color: rgba(229, 9, 20, 0.4) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+/* Slide-Out Left Drawer */
+.left-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 6, 12, 0.72);
+  backdrop-filter: blur(6px);
+  z-index: 9998;
+  transition: opacity 0.28s ease;
+}
+.left-drawer-backdrop.hidden {
+  display: none !important;
+}
+
+.left-side-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 310px;
+  max-width: 86vw;
+  background: linear-gradient(180deg, #0d0f17 0%, #090a10 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 20px 0 60px rgba(0, 0, 0, 0.85);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-105%);
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.left-side-drawer.open {
+  transform: translateX(0);
+}
+[data-mode="light"] .left-side-drawer {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border-right-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+[data-mode="light"] .drawer-header {
+  border-bottom-color: #e2e8f0;
+}
+.drawer-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.drawer-logo-img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+.drawer-brand-titles {
+  display: flex;
+  flex-direction: column;
+}
+.drawer-brand-titles strong {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.1;
+}
+[data-mode="light"] .drawer-brand-titles strong {
+  color: #0f172a;
+}
+.drawer-brand-titles span {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+.drawer-close-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+[data-mode="light"] .drawer-close-btn {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.drawer-scroll-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.drawer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.drawer-section-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.drawer-auth-btn {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  font-weight: 700;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.drawer-user-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+[data-mode="light"] .drawer-user-card {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+.drawer-user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.drawer-avatar {
+  font-size: 1.5rem;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(229, 9, 20, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.drawer-user-meta {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.drawer-user-meta strong {
+  font-size: 0.9rem;
+  color: #ffffff;
+}
+[data-mode="light"] .drawer-user-meta strong {
+  color: #0f172a;
+}
+.drawer-user-meta span {
+  font-size: 0.72rem;
+  color: #10b981;
+}
+.drawer-logout-btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.14);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Drawer Install APK Card */
+.drawer-install-apk-card {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(229, 9, 20, 0.22), rgba(255, 51, 75, 0.08));
+  border: 1px solid rgba(229, 9, 20, 0.45);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  text-align: left;
+  color: #ffffff;
+  transition: all 0.2s ease;
+}
+[data-mode="light"] .drawer-install-apk-card {
+  background: linear-gradient(135deg, #fff1f2, #ffe4e6);
+  color: #0f172a;
+}
+.drawer-apk-badge {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+.drawer-apk-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+.drawer-apk-text strong {
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+.drawer-apk-text span {
+  font-size: 0.7rem;
+  color: #cbd5e1;
+}
+[data-mode="light"] .drawer-apk-text span {
+  color: #475569;
+}
+.drawer-apk-arrow {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #e50914;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 0.85rem;
+}
+
+/* Drawer Nav List */
+.drawer-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.drawer-nav-item {
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.18s ease;
+}
+.drawer-nav-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(229, 9, 20, 0.4);
+}
+[data-mode="light"] .drawer-nav-item {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+.dn-icon {
+  font-size: 1.1rem;
+}
+.dn-text {
+  flex: 1;
+}
+.dn-chevron {
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+/* Drawer Settings */
+.drawer-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.drawer-setting-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ds-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #94a3b8;
+}
+[data-mode="light"] .ds-label {
+  color: #475569;
+}
+.drawer-mode-switch {
+  padding: 7px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+[data-mode="light"] .drawer-mode-switch {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+.drawer-theme-select {
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+[data-mode="light"] .drawer-theme-select {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+.drawer-lang-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.drawer-lang-btn {
+  padding: 8px 4px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.drawer-lang-btn.active {
+  background: rgba(229, 9, 20, 0.22);
+  border-color: #e50914;
+  color: #ffffff;
+}
+[data-mode="light"] .drawer-lang-btn {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+/* APK Install Modal */
+.modal-install-card {
+  max-width: 480px;
+}
+.install-modal-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.install-modal-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.install-modal-sub {
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+.install-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 12px;
+}
+.install-perks-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.install-perk {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.74rem;
+}
+.btn-install-primary-action {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #e50914, #ff334b);
+  border: none;
+  color: #ffffff;
+  font-size: 0.96rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(229, 9, 20, 0.45);
+  transition: all 0.2s ease;
+}
+.btn-install-primary-action:hover {
+  transform: translateY(-2px);
+}
+.install-guides-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.install-guide-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.install-guide-card h4 {
+  margin: 0 0 8px;
+  font-size: 0.86rem;
+  color: #ffffff;
+}
+.install-guide-card ol {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.8rem;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+.how-modal-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+.how-modal-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px;
+}
+.hms-num {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: #e50914;
+  font-family: 'JetBrains Mono', monospace;
+}
+.how-modal-step h4 {
+  margin: 0 0 4px;
+  font-size: 0.92rem;
+}
+.how-modal-step p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+/* ==========================================================
+   22. MOBİL SƏSLİ DANIŞIQ DOCK-U & XÜSUSİ TELEFON DİZAYNI
+   ========================================================== */
+.mobile-voice-dock {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* 1. TELEFONDA İLK AÇILAN SƏHİFƏ (LOBBY): YALNIZ ƏSAS ŞEYLƏR! */
+  #lobby-screen .lobby-navbar,
+  #lobby-screen .hero-flank-column,
+  #lobby-screen .cine-hero-mockup-wrapper,
+  #lobby-screen .cine-hero-cta-group,
+  #lobby-screen .lobby-features,
+  #lobby-screen #how-it-works,
+  #lobby-screen .host-perks-list {
+    display: none !important;
+  }
+
+  #lobby-screen .lobby-top-header-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 10px 14px !important;
+    margin-bottom: 4px !important;
+  }
+
+  #lobby-screen .corner-brand-logo-img {
+    height: 40px !important;
+    width: auto !important;
+  }
+
+  .btn-install-apk-pill {
+    display: inline-flex !important;
+  }
+
+  #lobby-screen .cine-hero-showcase {
+    padding: 6px 14px 10px !important;
+    margin: 0 !important;
+    min-height: auto !important;
+  }
+
+  #lobby-screen .cine-hero-content {
+    text-align: center !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+
+  #lobby-screen .cine-main-title {
+    font-size: 1.55rem !important;
+    line-height: 1.18 !important;
+    margin: 0 !important;
+  }
+
+  #lobby-screen .cine-sub-slogan {
+    font-size: 0.78rem !important;
+    margin: 0 !important;
+  }
+
+  #lobby-screen .lobby-hero-subtitle {
+    font-size: 0.8rem !important;
+    line-height: 1.35 !important;
+    margin: 0 !important;
+    max-width: 95% !important;
+  }
+
+  #lobby-screen .lobby-action-console {
+    padding: 4px 12px 24px !important;
+    margin-top: 4px !important;
+  }
+
+  #lobby-screen .console-glass-panel {
+    padding: 14px !important;
+    border-radius: 18px !important;
+  }
+
+  #lobby-screen .lobby-flow-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  /* Mobildə Otağa Qoşul və Yeni Otaq Yarat qutuları yığcam və barmaq üçün rahat */
+  #lobby-screen .lobby-action-box {
+    padding: 16px 14px !important;
+    border-radius: 14px !important;
+  }
+
+  #lobby-screen .lobby-action-box h3 {
+    font-size: 1.08rem !important;
+    margin: 4px 0 !important;
+  }
+
+  #lobby-screen .lobby-action-box p {
+    font-size: 0.78rem !important;
+    margin-bottom: 10px !important;
+  }
+
+  #lobby-screen .lobby-or-divider {
+    margin: 2px 0 !important;
+    height: auto !important;
+  }
+
+  /* 2. TELEFONDA KİNO OTAĞI VƏ ƏSAS SƏSLİ DANIŞIQ PANELİ */
+  #room-screen .theme-hero-wing {
+    display: none !important;
+  }
+
+  #room-screen .room-header {
+    padding: 8px 10px !important;
+    gap: 6px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  #room-screen .room-brand-logo-img {
+    height: 30px !important;
+  }
+
+  #room-screen .header-right .theme-select-wrapper,
+  #room-screen .header-right #btn-voice-toggle,
+  #room-screen .header-right #btn-audio-mode,
+  #room-screen .header-right #users-list,
+  #room-screen .header-right #btn-toggle-chat {
+    display: none !important;
+  }
+
+  /* Mobil Səsli Danışıq Dock-u (Videonun düz altında, həmişə görünən əsas funksiya!) */
+  .mobile-voice-dock {
+    display: flex !important;
+    flex-direction: column;
+    gap: 8px;
+    background: linear-gradient(135deg, rgba(16, 19, 28, 0.96), rgba(10, 12, 18, 0.98));
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    padding: 10px 12px;
+    margin: 6px 0;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  }
+
+  .mobile-voice-main-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-voice-mobile-hero {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(229, 9, 20, 0.22), rgba(229, 9, 20, 0.08));
+    border: 1.5px solid rgba(229, 9, 20, 0.55);
+    color: #ffffff;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.22s ease;
+  }
+
+  .btn-voice-mobile-hero.voice-active {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.28), rgba(5, 150, 105, 0.14));
+    border-color: #10b981;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
+  }
+
+  .mv-mic-icon-wrap {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(229, 9, 20, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+  }
+
+  .btn-voice-mobile-hero.voice-active .mv-mic-icon-wrap {
+    background: #10b981;
+  }
+
+  .mv-live-ring {
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+  }
+
+  .btn-voice-mobile-hero.voice-active .mv-live-ring {
+    border-color: #34d399;
+    animation: pulsePlayRing 1.5s infinite;
+  }
+
+  .mv-text-col {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .mv-text-col strong {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mv-text-col small {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mv-wave-bars {
+    display: none;
+    align-items: flex-end;
+    gap: 2.5px;
+    height: 16px;
+  }
+
+  .btn-voice-mobile-hero.voice-active .mv-wave-bars {
+    display: flex;
+  }
+
+  .mv-wave-bars span {
+    width: 3px;
+    background: #34d399;
+    border-radius: 2px;
+    animation: waveBar 0.7s ease-in-out infinite alternate;
+  }
+  .mv-wave-bars span:nth-child(1) { height: 6px; animation-delay: 0.1s; }
+  .mv-wave-bars span:nth-child(2) { height: 14px; animation-delay: 0.25s; }
+  .mv-wave-bars span:nth-child(3) { height: 10px; animation-delay: 0.4s; }
+  .mv-wave-bars span:nth-child(4) { height: 16px; animation-delay: 0.15s; }
+
+  .btn-mobile-audio-mode {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    font-size: 0.7rem;
+    font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .mobile-voice-peers-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    overflow-x: auto;
+  }
+
+  .mv-peers-label {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    white-space: nowrap;
+  }
+
+  .mobile-peers-avatars {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+  }
+
+  .mobile-peer-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+
+  .mobile-peer-chip.speaking {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.2);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.45);
+    color: #ffffff;
+  }
+}
+
+
 
 

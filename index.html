@@ -2,10 +2,17 @@
 <html lang="az">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#090a0f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="OneCouch">
+  <meta name="mobile-web-app-capable" content="yes">
   <title>OneCouch 🛋️🍿 — Two screens. One couch.</title>
   <link rel="icon" type="image/png" href="assets/logo.png">
-  <link rel="stylesheet" href="style.css?v=6.0">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="style.css?v=7.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Cinzel:wght@600;700&family=Fira+Code:wght@500;700&display=swap" rel="stylesheet">
@@ -29,13 +36,28 @@
        1. GİRİŞ & OTAQ SEÇİMİ (LOBBY - CINEVERSE 4K REALISTIC UI)
        ======================================================== -->
   <div id="lobby-screen" class="screen active">
-    <!-- 1.1 YUXARI HİSSƏ: SOL YUXARI KÜNC BÖYÜK LOQO VƏ SAĞ TƏRƏF NAVİQASİYA TABI -->
+    <!-- 1.1 YUXARI HİSSƏ: SOL YUXARI KÜNC ☰ MENYU + LOQO VƏ SAĞ TƏRƏF NAVİQASİYA TABI -->
     <div class="lobby-top-header-row">
-      <!-- SOL YUXARI KÜNC: BÖYÜK ONECOUCH LOQOSU (SƏRBƏST KİNEMATOQRAFİK DİZAYN, TABSIZ) -->
-      <a href="#lobby-screen" class="lobby-corner-brand" id="lobby-corner-brand" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="OneCouch Ana Səhifə">
-        <span class="brand-ambient-glow"></span>
-        <img src="assets/logo.png" alt="OneCouch Logo" class="corner-brand-logo-img">
-      </a>
+      <div class="lobby-top-left-group">
+        <!-- ☰ SOL ÜST ÜÇ XƏTT MENYU DÜYMƏSİ (HAMBURGER DRAWER TRIGGER) -->
+        <button type="button" id="btn-open-left-drawer" class="btn-hamburger-menu" aria-label="Menyunu aç" title="Menyu və Tənzimləmələr">
+          <span class="ham-line"></span>
+          <span class="ham-line"></span>
+          <span class="ham-line"></span>
+        </button>
+
+        <!-- SOL YUXARI KÜNC: BÖYÜK ONECOUCH LOQOSU -->
+        <a href="#lobby-screen" class="lobby-corner-brand" id="lobby-corner-brand" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="OneCouch Ana Səhifə">
+          <span class="brand-ambient-glow"></span>
+          <img src="assets/logo.png" alt="OneCouch Logo" class="corner-brand-logo-img">
+        </a>
+      </div>
+
+      <!-- MOBİL ÜÇÜN SÜRƏTLİ "📲 TƏTBİQİ YÜKLƏ (APK)" DÜYMƏSİ -->
+      <button type="button" id="btn-install-app-mobile-top" class="btn-install-apk-pill" title="Telefon Tətbiqini Yüklə (APK / iOS)">
+        <span class="apk-icon">📲</span>
+        <span id="top-apk-btn-text">Tətbiqi Yüklə (APK)</span>
+      </button>
 
       <header class="lobby-navbar">
         <nav class="lobby-nav-links" aria-label="Naviqasiya menyusu">
@@ -45,6 +67,11 @@
         </nav>
 
         <div class="lobby-nav-actions">
+          <!-- 📲 DESKTOP ÜÇÜN DƏ TƏTBİQİ YÜKLƏ DÜYMƏSİ -->
+          <button type="button" id="btn-install-app-desktop" class="btn-mode-pill btn-install-desktop-pill" title="Telefon və ya Kompüter üçün Tətbiqi Yüklə">
+            <span>📲</span>
+            <span>APK / App</span>
+          </button>
           <!-- 🌓 GÜNDÜZ / GECƏ REJİMİ SEÇİCİ (LIGHT / DARK MODE TOGGLE) -->
           <button id="btn-mode-toggle" class="btn-mode-pill" type="button" title="Gündüz / Gecə rejimini dəyiş">
             <span class="mode-icon mode-icon-sun">☀️</span>
@@ -415,6 +442,11 @@
     <!-- Üst Başlıq (Header) -->
     <header class="room-header">
       <div class="header-left">
+        <button type="button" id="btn-open-drawer-room" class="btn-hamburger-menu room-ham-btn" aria-label="Menyunu aç" title="Menyu və Tənzimləmələr">
+          <span class="ham-line"></span>
+          <span class="ham-line"></span>
+          <span class="ham-line"></span>
+        </button>
         <div class="brand-logo" id="brand-logo-text" title="Əsas ekrana (Lobby) qayıtmaq üçün klikləyin">
           <img src="assets/logo.png" alt="OneCouch Logo" class="room-brand-logo-img">
         </div>
@@ -864,6 +896,35 @@
                 <div class="card-desc">Online video linki və ya kompüterdən fayl</div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- 🎙️ MOBİL ÜÇÜN ƏSAS SƏSLİ DANIŞIQ PANELİ (MOBILE VOICE DOCK) -->
+        <div class="mobile-voice-dock" id="mobile-voice-dock">
+          <div class="mobile-voice-main-row">
+            <button type="button" id="btn-voice-mobile-dock" class="btn-voice-mobile-hero">
+              <span class="mv-mic-icon-wrap">
+                <span class="mv-mic-icon">🎙️</span>
+                <span class="mv-live-ring"></span>
+              </span>
+              <span class="mv-text-col">
+                <strong class="mic-text" id="mobile-dock-mic-title">Səsli Danışığa Qoşul</strong>
+                <small id="mobile-dock-mic-sub">Toxun və otaqdakılarla canlı danış</small>
+              </span>
+              <span class="mv-wave-bars">
+                <span></span><span></span><span></span><span></span>
+              </span>
+            </button>
+
+            <button type="button" id="btn-audio-mode-mobile" class="btn-mobile-audio-mode" title="Səs Rejimi: Qulaqlıq və ya Dinamik">
+              <span id="mobile-audio-mode-icon">🎧</span>
+              <span id="mobile-audio-mode-text">Qulaqlıq</span>
+            </button>
+          </div>
+
+          <div class="mobile-voice-peers-row">
+            <span class="mv-peers-label">👥 Otaqda (<strong id="mobile-peers-count">1</strong>):</span>
+            <div class="mobile-peers-avatars" id="mobile-dock-users"></div>
           </div>
         </div>
 
@@ -1419,10 +1480,214 @@
     </div>
   </div>
 
+  <!-- ========================================================
+       7. SOL ÜST (☰) AÇILAN YAN MENYU (SLIDE-OUT LEFT DRAWER)
+       ======================================================== -->
+  <div id="left-drawer-backdrop" class="left-drawer-backdrop hidden"></div>
+  <aside id="left-side-drawer" class="left-side-drawer" aria-label="Yan Menyu">
+    <div class="drawer-header">
+      <div class="drawer-brand-group">
+        <img src="assets/logo.png" alt="OneCouch" class="drawer-logo-img">
+        <div class="drawer-brand-titles">
+          <strong>OneCouch</strong>
+          <span>Two screens. One couch.</span>
+        </div>
+      </div>
+      <button type="button" id="btn-close-left-drawer" class="drawer-close-btn" aria-label="Menyunu bağla">✕</button>
+    </div>
+
+    <div class="drawer-scroll-body">
+      <!-- 1. İSTİFADƏÇİ PROFİLİ VƏ GOOGLE GİRİŞİ -->
+      <div class="drawer-section">
+        <div class="drawer-section-label">👤 HESABIM</div>
+        <button type="button" id="drawer-btn-google-login" class="drawer-auth-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          <span>Google ilə Daxil Ol</span>
+        </button>
+
+        <div id="drawer-user-card" class="drawer-user-card hidden">
+          <div class="drawer-user-info">
+            <span id="drawer-user-avatar" class="drawer-avatar">🍿</span>
+            <div class="drawer-user-meta">
+              <strong id="drawer-user-name">İstifadəçi</strong>
+              <span id="drawer-user-email">Google Hesabı Aktivdir</span>
+            </div>
+          </div>
+          <button type="button" id="drawer-btn-logout" class="drawer-logout-btn">Hesabdan Çıx</button>
+        </div>
+      </div>
+
+      <!-- 2. MOBİL TƏTBİQİ YÜKLƏ (APK / iOS) -->
+      <div class="drawer-section">
+        <div class="drawer-section-label">📱 MOBİL TƏTBİQ (APK & iOS)</div>
+        <button type="button" id="drawer-btn-install-app" class="drawer-install-apk-card">
+          <span class="drawer-apk-badge">📲</span>
+          <div class="drawer-apk-text">
+            <strong>Tətbiqi Telefona Yüklə (APK)</strong>
+            <span>Tam ekran, sürətli və kəsintisiz səsli danışıq</span>
+          </div>
+          <span class="drawer-apk-arrow">⬇</span>
+        </button>
+      </div>
+
+      <!-- 3. BÖLMƏLƏR VƏ ƏYLƏNCƏ -->
+      <div class="drawer-section">
+        <div class="drawer-section-label">🎬 KİNOTEATR BÖLMƏLƏRİ</div>
+        <nav class="drawer-nav-list">
+          <button type="button" class="drawer-nav-item" id="drawer-link-characters">
+            <span class="dn-icon">🎭</span>
+            <span class="dn-text">Kino Xarakterləri & Avatarlar</span>
+            <span class="dn-chevron">›</span>
+          </button>
+          <button type="button" class="drawer-nav-item" id="drawer-link-watchlist">
+            <span class="dn-icon">🎡</span>
+            <span class="dn-text">Nəyə Baxaq? (Çarxıfələk)</span>
+            <span class="dn-chevron">›</span>
+          </button>
+          <button type="button" class="drawer-nav-item" id="drawer-link-history">
+            <span class="dn-icon">📜</span>
+            <span class="dn-text">Baxılmış Filmlər Arxivi</span>
+            <span class="dn-chevron">›</span>
+          </button>
+          <button type="button" class="drawer-nav-item" id="drawer-link-how">
+            <span class="dn-icon">❓</span>
+            <span class="dn-text">Necə İşləyir? (3 Addım)</span>
+            <span class="dn-chevron">›</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- 4. GÖRÜNÜŞ, TEMA VƏ DİL TƏNZİMLƏMƏLƏRİ -->
+      <div class="drawer-section">
+        <div class="drawer-section-label">⚙️ TƏNZİMLƏMƏLƏR</div>
+
+        <!-- Gecə / Gündüz Rejimi -->
+        <div class="drawer-setting-row">
+          <span class="ds-label">🌓 Görünüş Rejimi:</span>
+          <button type="button" id="drawer-btn-mode-toggle" class="drawer-mode-switch">
+            <span id="drawer-mode-icon">☀️</span>
+            <span id="drawer-mode-text">Dark Rejim</span>
+          </button>
+        </div>
+
+        <!-- Kinoteatr Teması -->
+        <div class="drawer-setting-col">
+          <span class="ds-label">🎨 Kinoteatr Mövzusu (Tema):</span>
+          <select id="drawer-theme-select" class="drawer-theme-select">
+            <option value="theme-netflix">🎬 Cinema Premier (Netflix)</option>
+            <option value="theme-batman">🦇 The Dark Knight (Gotham)</option>
+            <option value="theme-interstellar">🌌 Interstellar (Gargantua)</option>
+            <option value="theme-matrix">🕶️ The Matrix (Cyber Terminal)</option>
+            <option value="theme-breaking-bad">🧪 Breaking Bad (Heisenberg)</option>
+            <option value="theme-got">❄️ Winterfell (Game of Thrones)</option>
+            <option value="theme-spiderman">🕷️ Marvel MCU (Stark Tech)</option>
+          </select>
+        </div>
+
+        <!-- Dil Seçimi -->
+        <div class="drawer-setting-col">
+          <span class="ds-label">🌐 Dil Seçimi (Language):</span>
+          <div class="drawer-lang-grid">
+            <button type="button" class="drawer-lang-btn" data-lang="az">🇦🇿 AZ</button>
+            <button type="button" class="drawer-lang-btn" data-lang="tr">🇹🇷 TR</button>
+            <button type="button" class="drawer-lang-btn" data-lang="en">🇬🇧 EN</button>
+            <button type="button" class="drawer-lang-btn" data-lang="ru">🇷🇺 RU</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========================================================
+       8. MODAL: MOBİL TƏTBİQİ YÜKLƏ (APK & iOS INSTALLER)
+       ======================================================== -->
+  <div id="modal-app-install" class="modal-backdrop hidden">
+    <div class="modal-card modal-install-card">
+      <div class="modal-header">
+        <div class="install-modal-brand">
+          <img src="assets/icon-192.png" alt="OneCouch App" class="install-modal-icon">
+          <div>
+            <h2>📲 OneCouch Mobil Tətbiqi</h2>
+            <span class="install-modal-sub">Android (.APK) & iPhone (iOS) üçün rəsmi tətbiq</span>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-app-install')">✕</button>
+      </div>
+
+      <div class="install-modal-body">
+        <div class="install-perks-grid">
+          <div class="install-perk"><span>🎙️</span> <strong>Kəsintisiz Səsli Danışıq</strong></div>
+          <div class="install-perk"><span>🎬</span> <strong>Tam Ekran Kino Rejimi</strong></div>
+          <div class="install-perk"><span>⚡</span> <strong>0ms Anında Açılış</strong></div>
+        </div>
+
+        <!-- Birbaşa Quraşdır Düyməsi (Android / Chrome WebAPK) -->
+        <button type="button" id="btn-trigger-native-install" class="btn-install-primary-action">
+          <span>📥 Tətbiqi İndi Quraşdır (APK)</span>
+        </button>
+
+        <div class="install-guides-box">
+          <div class="install-guide-card">
+            <h4>🤖 Android Telefonlarda (Chrome / Samsung):</h4>
+            <ol>
+              <li>Yuxarıdakı <strong>"Tətbiqi İndi Quraşdır (APK)"</strong> düyməsinə toxunun.</li>
+              <li>Və ya brauzerin sağ üst küncündəki <strong>⋮ (Üç nöqtə)</strong> menyusunu açın.</li>
+              <li><strong>"Tətbiqi quraşdır" (Install app / Ana ekrana əlavə et)</strong> seçiminə toxunun — tətbiq birbaşa telefonunuza APK kimi quraşdırılacaq!</li>
+            </ol>
+          </div>
+
+          <div class="install-guide-card">
+            <h4>🍏 iPhone / iPad (Safari):</h4>
+            <ol>
+              <li>Safari-nin aşağısındakı <strong>Paylaş (Share ⬆️)</strong> düyməsinə toxunun.</li>
+              <li>Siyahıdan <strong>"Ana Ekrana Əlavə Et" (Add to Home Screen ➕)</strong> seçin.</li>
+              <li>Sağ üstdə <strong>"Əlavə et" (Add)</strong> basın — OneCouch tətbiqi ana ekranınıza düşəcək!</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       9. MODAL: NECƏ İŞLƏYİR? (MOBİL MENYU ÜÇÜN)
+       ======================================================== -->
+  <div id="modal-how-it-works" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>❓ OneCouch Necə İşləyir?</h2>
+        <button class="modal-close" onclick="closeModal('modal-how-it-works')">✕</button>
+      </div>
+      <div class="how-modal-steps">
+        <div class="how-modal-step">
+          <span class="hms-num">01</span>
+          <div>
+            <h4>Otaq Yaradın və ya Qoşulun</h4>
+            <p>Yeni otaq yaradın və ya dostunuzun göndərdiyi otaq kodunu daxil edib dərhal zala keçin.</p>
+          </div>
+        </div>
+        <div class="how-modal-step">
+          <span class="hms-num">02</span>
+          <div>
+            <h4>Səsli Danışığı Aktivləşdirin 🎙️</h4>
+            <p>Otaqda <strong>"Səsli Danışığa Qoşul"</strong> düyməsinə toxunun — filmin səsi boğulmadan dostlarınızla canlı danışın.</p>
+          </div>
+        </div>
+        <div class="how-modal-step">
+          <span class="hms-num">03</span>
+          <div>
+            <h4>Birlikdə Sinxron İzləyin 🍿</h4>
+            <p>YouTube, birbaşa film linki və ya ekran paylaşımı ilə eyni saniyədə birlikdə izləyin və çatda yazışın.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Səsli Zəng üçün Audio Element -->
   <audio id="remote-voice-audio" autoplay playsinline></audio>
 
   <!-- Əsas Tətbiq Skripti -->
-  <script src="app.js?v=5.0"></script>
+  <script src="app.js?v=7.0"></script>
 </body>
 </html>

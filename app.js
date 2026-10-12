@@ -2178,6 +2178,33 @@ function updateUsersList(users) {
       });
     });
   }
+
+  // 4. Mobil Səs Paneli: İştirakçı Çipləri (Mobile Voice Dock Peers)
+  const mobilePeersCount = document.getElementById('mobile-peers-count');
+  if (mobilePeersCount) {
+    mobilePeersCount.textContent = userCount;
+  }
+  const mobileDockUsers = document.getElementById('mobile-dock-users');
+  if (mobileDockUsers) {
+    mobileDockUsers.innerHTML = '';
+    userEntries.forEach(([sockId, u]) => {
+      const isMe = socket && (sockId === socket.id);
+      const isAvatarImg = u.avatar && (u.avatar.startsWith('http') || u.avatar.includes('/') || u.avatar.includes('.jpg') || u.avatar.includes('.png'));
+
+      const chip = document.createElement('div');
+      chip.className = `mobile-peer-chip ${u.isVoiceActive ? 'mic-active' : ''}`;
+      chip.id = `mobile-peer-${sockId}`;
+      chip.dataset.socketId = sockId;
+      chip.innerHTML = `
+        <span class="mobile-peer-avatar">
+          ${isAvatarImg ? `<img src="${u.avatar}" alt="Avatar">` : (u.avatar || '🍿')}
+        </span>
+        <span class="mobile-peer-name">${escapeHtml(u.username)}${isMe ? ' (Sən)' : ''}${u.isHost ? ' 👑' : ''}</span>
+        <span class="mobile-peer-mic">${u.isVoiceActive ? '🎙️' : '🔇'}</span>
+      `;
+      mobileDockUsers.appendChild(chip);
+    });
+  }
 }
 
 // ==========================================
@@ -2886,24 +2913,34 @@ function setupVoiceChat() {
   if (btnVoiceSidebar) {
     btnVoiceSidebar.addEventListener('click', toggleHandler);
   }
+  const btnVoiceMobileDock = document.getElementById('btn-voice-mobile-dock');
+  if (btnVoiceMobileDock) {
+    btnVoiceMobileDock.addEventListener('click', toggleHandler);
+  }
   setupAudioModeToggle();
 }
 
 let isHeadphoneMode = true; // Susmaya görə: Qulaqlıq Rejimi (Kino səsi 100% təmiz qalır, heç bir boğulma olmur)
 
 function setupAudioModeToggle() {
+  const modeToggleHandler = async () => {
+    isHeadphoneMode = !isHeadphoneMode;
+    updateAudioModeUI();
+    if (isVoiceActive) {
+      showNotice(isHeadphoneMode ? '🎧 Qulaqlıq Rejimi: Video səsi 100% təmizdir' : '🔊 Dinamik Rejimi: Əks-səda filtri aktivdir');
+      await startVoiceChat();
+    } else {
+      showNotice(isHeadphoneMode ? '🎧 Rejim: Qulaqlıq seçildi (Kino səsi təmiz)' : '🔊 Rejim: Dinamik seçildi (Əks-səda filtri)');
+    }
+  };
+
   const btnMode = document.getElementById('btn-audio-mode');
   if (btnMode) {
-    btnMode.addEventListener('click', async () => {
-      isHeadphoneMode = !isHeadphoneMode;
-      updateAudioModeUI();
-      if (isVoiceActive) {
-        showNotice(isHeadphoneMode ? '🎧 Qulaqlıq Rejimi: Video səsi 100% təmizdir' : '🔊 Dinamik Rejimi: Əks-səda filtri aktivdir');
-        await startVoiceChat();
-      } else {
-        showNotice(isHeadphoneMode ? '🎧 Rejim: Qulaqlıq seçildi (Kino səsi təmiz)' : '🔊 Rejim: Dinamik seçildi (Əks-səda filtri)');
-      }
-    });
+    btnMode.addEventListener('click', modeToggleHandler);
+  }
+  const btnModeMobile = document.getElementById('btn-audio-mode-mobile');
+  if (btnModeMobile) {
+    btnModeMobile.addEventListener('click', modeToggleHandler);
   }
   updateAudioModeUI();
 }
@@ -2921,6 +2958,17 @@ function updateAudioModeUI() {
       icon.textContent = '🔊';
       txt.textContent = 'Dinamik';
       if (btn) btn.title = 'Dinamik Rejimi: Əks-səda əleyhinə filtr aktivdir. Qulaqlıq üçün toxunun.';
+    }
+  }
+  const mobIcon = document.getElementById('mobile-audio-mode-icon');
+  const mobTxt = document.getElementById('mobile-audio-mode-text');
+  if (mobIcon && mobTxt) {
+    if (isHeadphoneMode) {
+      mobIcon.textContent = '🎧';
+      mobTxt.textContent = 'Qulaqlıq';
+    } else {
+      mobIcon.textContent = '🔊';
+      mobTxt.textContent = 'Dinamik';
     }
   }
 }
@@ -3258,6 +3306,20 @@ function updateVoiceUI(active) {
       if (micText) micText.textContent = 'Səsli Zəng';
     }
   }
+  const btnVoiceMobileDock = document.getElementById('btn-voice-mobile-dock');
+  const mobMicTitle = document.getElementById('mobile-dock-mic-title');
+  const mobMicSub = document.getElementById('mobile-dock-mic-sub');
+  if (btnVoiceMobileDock) {
+    if (active) {
+      btnVoiceMobileDock.classList.add('voice-active');
+      if (mobMicTitle) mobMicTitle.textContent = 'Mikrofon Açıq 🟢';
+      if (mobMicSub) mobMicSub.textContent = 'Canlı səs gedir — bağlamaq üçün toxun';
+    } else {
+      btnVoiceMobileDock.classList.remove('voice-active');
+      if (mobMicTitle) mobMicTitle.textContent = 'Səsli Danışığı Aç';
+      if (mobMicSub) mobMicSub.textContent = 'Toxun və otaqdakılarla danış';
+    }
+  }
 }
 
 async function callVoicePeer(peerId) {
@@ -3504,6 +3566,12 @@ function updateSpeakingVisual(sockId, isSpeaking) {
   if (card) {
     if (isSpeaking) card.classList.add('speaking');
     else card.classList.remove('speaking');
+  }
+  // 3. Mobil səs panelindəki iştirakçı çipi
+  const mobChip = document.getElementById(`mobile-peer-${sockId}`);
+  if (mobChip) {
+    if (isSpeaking) mobChip.classList.add('speaking');
+    else mobChip.classList.remove('speaking');
   }
 }
 
@@ -4768,4 +4836,264 @@ function setupLightsDimmer() {
     btnFloatingRestoreLights.addEventListener('click', toggleRoomLights);
   }
 }
+
+// ==========================================
+// 15. MOBİL TƏTBİQ (APK / PWA), SOL ÜST MENYU (DRAWER) & MOBİL SƏS QORUYUCUSU
+// ==========================================
+
+let deferredInstallPrompt = null;
+let mobileWakeLock = null;
+
+function setupMobileAppAndDrawer() {
+  // 1. Service Worker qeydiyyatı (APK / WebAPK quraşdırılması üçün)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    });
+  }
+
+  // 2. Native Android WebAPK / PWA quraşdırma hadisəsini tut
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    const nativeWrap = document.getElementById('native-install-action-wrap');
+    if (nativeWrap) nativeWrap.classList.remove('hidden');
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredInstallPrompt = null;
+    closeModal('modal-app-install');
+    showNotice('🎉 CineParty Tətbiqi telefonunuza uğurla quraşdırıldı!');
+  });
+
+  // Quraşdırma düyməsi funksiyası
+  const handleInstallAppClick = async () => {
+    closeLeftDrawer();
+    if (deferredInstallPrompt) {
+      try {
+        deferredInstallPrompt.prompt();
+        const { outcome } = await deferredInstallPrompt.userChoice;
+        if (outcome === 'accepted') {
+          deferredInstallPrompt = null;
+          return;
+        }
+      } catch (err) {}
+    }
+    const installModal = document.getElementById('modal-app-install');
+    if (installModal) installModal.classList.remove('hidden');
+  };
+
+  const btnInstallMobTop = document.getElementById('btn-install-app-mobile-top');
+  const btnInstallDesktop = document.getElementById('btn-install-app-desktop');
+  const btnInstallDrawer = document.getElementById('drawer-btn-install-app');
+  const btnTriggerNative = document.getElementById('btn-trigger-native-install');
+  const btnCloseInstallModal = document.getElementById('btn-close-install-modal');
+
+  if (btnInstallMobTop) btnInstallMobTop.addEventListener('click', handleInstallAppClick);
+  if (btnInstallDesktop) btnInstallDesktop.addEventListener('click', handleInstallAppClick);
+  if (btnInstallDrawer) btnInstallDrawer.addEventListener('click', handleInstallAppClick);
+  if (btnTriggerNative) {
+    btnTriggerNative.addEventListener('click', async () => {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+        closeModal('modal-app-install');
+      }
+    });
+  }
+  if (btnCloseInstallModal) {
+    btnCloseInstallModal.addEventListener('click', () => closeModal('modal-app-install'));
+  }
+
+  // 3. Sol Üst Menyu (Slide-Out Drawer) İdarəetməsi
+  const drawer = document.getElementById('left-side-drawer');
+  const backdrop = document.getElementById('left-drawer-backdrop');
+  const btnOpenLobby = document.getElementById('btn-open-left-drawer');
+  const btnOpenRoom = document.getElementById('btn-open-drawer-room');
+  const btnCloseDrawer = document.getElementById('btn-close-left-drawer');
+
+  function openLeftDrawer() {
+    syncDrawerUIWithMain();
+    if (drawer) drawer.classList.remove('hidden');
+    if (backdrop) backdrop.classList.remove('hidden');
+  }
+
+  function closeLeftDrawer() {
+    if (drawer) drawer.classList.add('hidden');
+    if (backdrop) backdrop.classList.add('hidden');
+  }
+
+  if (btnOpenLobby) btnOpenLobby.addEventListener('click', openLeftDrawer);
+  if (btnOpenRoom) btnOpenRoom.addEventListener('click', openLeftDrawer);
+  if (btnCloseDrawer) btnCloseDrawer.addEventListener('click', closeLeftDrawer);
+  if (backdrop) backdrop.addEventListener('click', closeLeftDrawer);
+
+  // 4. Menyudakı Bölmə Keçidləri
+  const linkCharacters = document.getElementById('drawer-link-characters');
+  const linkWatchlist = document.getElementById('drawer-link-watchlist');
+  const linkHistory = document.getElementById('drawer-link-history');
+  const linkHow = document.getElementById('drawer-link-how');
+  const btnCloseHowModal = document.getElementById('btn-close-how-modal');
+
+  function navigateToLobbySection(sectionSelector) {
+    closeLeftDrawer();
+    const roomScr = document.getElementById('room-screen');
+    if (roomScr && !roomScr.classList.contains('hidden')) {
+      showNotice('📌 Bu bölmə ana səhifədədir. Otaqdan çıxdıqda görə bilərsiniz.');
+      return;
+    }
+    const el = document.querySelector(sectionSelector);
+    if (el) {
+      el.classList.add('mobile-section-visible');
+      setTimeout(() => {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 80);
+    }
+  }
+
+  if (linkCharacters) {
+    linkCharacters.addEventListener('click', () => navigateToLobbySection('.characters-showcase-section'));
+  }
+  if (linkWatchlist) {
+    linkWatchlist.addEventListener('click', () => navigateToLobbySection('.watchlist-roulette-section'));
+  }
+  if (linkHistory) {
+    linkHistory.addEventListener('click', () => navigateToLobbySection('#history-section'));
+  }
+  if (linkHow) {
+    linkHow.addEventListener('click', () => {
+      closeLeftDrawer();
+      const howModal = document.getElementById('modal-how-it-works');
+      if (howModal) howModal.classList.remove('hidden');
+    });
+  }
+  if (btnCloseHowModal) {
+    btnCloseHowModal.addEventListener('click', () => closeModal('modal-how-it-works'));
+  }
+
+  // 5. Menyudakı Profil / Google Giriş, Tema, İşıq və Dil düymələrinin sinxronizasiyası
+  const drawerBtnGoogle = document.getElementById('drawer-btn-google-login');
+  const drawerBtnLogout = document.getElementById('drawer-btn-logout');
+  const drawerBtnMode = document.getElementById('drawer-btn-mode-toggle');
+  const drawerThemeSelect = document.getElementById('drawer-theme-select');
+
+  if (drawerBtnGoogle) {
+    drawerBtnGoogle.addEventListener('click', () => {
+      closeLeftDrawer();
+      const mainGoogleBtn = document.getElementById('btn-google-login');
+      if (mainGoogleBtn) mainGoogleBtn.click();
+    });
+  }
+  if (drawerBtnLogout) {
+    drawerBtnLogout.addEventListener('click', () => {
+      closeLeftDrawer();
+      const mainLogoutBtn = document.getElementById('btn-logout');
+      if (mainLogoutBtn) mainLogoutBtn.click();
+    });
+  }
+  if (drawerBtnMode) {
+    drawerBtnMode.addEventListener('click', () => {
+      const mainModeBtn = document.getElementById('btn-mode-toggle');
+      if (mainModeBtn) mainModeBtn.click();
+      syncDrawerUIWithMain();
+    });
+  }
+  if (drawerThemeSelect) {
+    drawerThemeSelect.addEventListener('change', (e) => {
+      const mainThemeSelect = document.getElementById('lobby-theme-select');
+      if (mainThemeSelect) {
+        mainThemeSelect.value = e.target.value;
+        mainThemeSelect.dispatchEvent(new Event('change'));
+      }
+    });
+  }
+  document.querySelectorAll('.drawer-lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.getAttribute('data-lang');
+      const mainLangBtn = document.querySelector(`.lobby-top-header-row .lang-btn[data-lang="${lang}"]`);
+      if (mainLangBtn) mainLangBtn.click();
+      document.querySelectorAll('.drawer-lang-btn').forEach(b => b.classList.toggle('active', b === btn));
+    });
+  });
+
+  function syncDrawerUIWithMain() {
+    // Google User / Guest vəziyyəti
+    const mainUserBadge = document.getElementById('user-profile-badge');
+    const drawerUserBadge = document.getElementById('drawer-user-badge');
+    const mainGoogleBtn = document.getElementById('btn-google-login');
+    const isLogged = mainUserBadge && !mainUserBadge.classList.contains('hidden');
+
+    if (drawerBtnGoogle && drawerUserBadge) {
+      if (isLogged) {
+        drawerBtnGoogle.classList.add('hidden');
+        drawerUserBadge.classList.remove('hidden');
+        const mainAvatar = document.getElementById('user-avatar-img');
+        const mainName = document.getElementById('user-display-name');
+        const dAvatar = document.getElementById('drawer-user-avatar');
+        const dName = document.getElementById('drawer-user-name');
+        if (dAvatar && mainAvatar) dAvatar.src = mainAvatar.src;
+        if (dName && mainName) dName.textContent = mainName.textContent;
+      } else {
+        drawerBtnGoogle.classList.remove('hidden');
+        drawerUserBadge.classList.add('hidden');
+      }
+    }
+    // Tema və İşıq rejimi
+    const mainThemeSelect = document.getElementById('lobby-theme-select');
+    if (drawerThemeSelect && mainThemeSelect) {
+      drawerThemeSelect.value = mainThemeSelect.value;
+    }
+    const isLight = document.body.classList.contains('light-mode');
+    if (drawerBtnMode) {
+      drawerBtnMode.textContent = isLight ? '🌙 Tünd Rejim' : '☀️ İşıqlı Rejim';
+    }
+  }
+
+  // 6. Mobil Ekran Yuxu Kilidi (Wake Lock) & Mobil Səs Qoruyucusu (Audio Watchdog)
+  async function requestMobileWakeLock() {
+    if ('wakeLock' in navigator) {
+      try {
+        if (!mobileWakeLock) {
+          mobileWakeLock = await navigator.wakeLock.request('screen');
+          mobileWakeLock.addEventListener('release', () => {
+            mobileWakeLock = null;
+          });
+        }
+      } catch (e) {}
+    }
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      if (currentRoomId || isVoiceActive) {
+        requestMobileWakeLock();
+      }
+      unlockAllRemoteAudios();
+    }
+  });
+
+  // Hər 1.5 saniyədə bir mobil səs mühərriklərini yoxla ki, telefonda səs heç vaxt kəsilməsin
+  setInterval(() => {
+    if (currentRoomId) {
+      if (!mobileWakeLock && document.visibilityState === 'visible') {
+        requestMobileWakeLock();
+      }
+      if (audioPlaybackContext && audioPlaybackContext.state === 'suspended') {
+        audioPlaybackContext.resume().catch(() => {});
+      }
+      if (isVoiceActive && voiceCaptureContext && voiceCaptureContext.state === 'suspended') {
+        voiceCaptureContext.resume().catch(() => {});
+      }
+    }
+  }, 1500);
+}
+
+// Başlanğıcda Mobil Tətbiq və Menyunu işə sal
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', setupMobileAppAndDrawer);
+} else {
+  setupMobileAppAndDrawer();
+}
+
 
