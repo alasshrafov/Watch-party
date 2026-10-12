@@ -361,38 +361,67 @@ body.theme-spiderman .spidey-hanging-mascot {
   margin: 0;
 }
 
-/* Sol Yuxarı Kənar: Böyük Loqo */
+/* Sol Yuxarı Kənar: Təbii Kinematoqrafik Loqo (Tab içində deyil, sərbəst üzən brend) */
 .lobby-corner-brand {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 22px;
-  background: rgba(14, 17, 26, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  position: relative;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   cursor: pointer;
   text-decoration: none;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   flex-shrink: 0;
 }
 
+.brand-ambient-glow {
+  position: absolute;
+  inset: -14px -22px;
+  background: radial-gradient(ellipse at 50% 50%, rgba(229, 9, 20, 0.3) 0%, rgba(249, 115, 22, 0.18) 40%, transparent 72%);
+  filter: blur(24px);
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  animation: logoAuraPulse 4s ease-in-out infinite alternate;
+}
+
+@keyframes logoAuraPulse {
+  0% { opacity: 0.42; transform: scale(0.95); }
+  100% { opacity: 0.85; transform: scale(1.1); }
+}
+
 .lobby-corner-brand:hover {
-  transform: translateY(-2px) scale(1.02);
-  border-color: rgba(229, 9, 20, 0.35);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(229, 9, 20, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px) scale(1.05);
+}
+
+.lobby-corner-brand:hover .brand-ambient-glow {
+  opacity: 1;
+  transform: scale(1.22);
+  filter: blur(28px);
+  background: radial-gradient(ellipse at 50% 50%, rgba(229, 9, 20, 0.5) 0%, rgba(249, 115, 22, 0.32) 45%, transparent 72%);
 }
 
 .corner-brand-logo-img {
-  height: 76px;
+  height: 72px;
   width: auto;
   object-fit: contain;
   display: block;
-  border-radius: 12px;
-  transition: transform 0.3s ease;
-  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.5));
+  position: relative;
+  z-index: 1;
+  border-radius: 0;
+  transition: filter 0.35s ease, transform 0.35s ease;
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 18px rgba(229, 9, 20, 0.25));
+}
+
+.lobby-corner-brand:hover .corner-brand-logo-img {
+  filter: drop-shadow(0 8px 28px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 28px rgba(229, 9, 20, 0.5));
 }
 
 @media (max-width: 900px) {
@@ -405,7 +434,7 @@ body.theme-spiderman .spidey-hanging-mascot {
     align-self: center;
   }
   .corner-brand-logo-img {
-    height: 56px;
+    height: 54px;
   }
 }
 
@@ -4367,6 +4396,8 @@ body.lights-dimmed .player-section {
   backdrop-filter: blur(24px);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.3s ease;
   position: relative;
+  cursor: pointer;
+  user-select: none;
 }
 .cinema-mockup-card::before {
   content: '';
@@ -4378,9 +4409,82 @@ body.lights-dimmed .player-section {
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
 }
 .cinema-mockup-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(229, 9, 20, 0.35);
-  box-shadow: 0 35px 85px rgba(0, 0, 0, 0.9), 0 0 55px rgba(229, 9, 20, 0.25);
+  transform: translateY(-6px) scale(1.02);
+  border-color: rgba(229, 9, 20, 0.5);
+  box-shadow: 0 35px 85px rgba(0, 0, 0, 0.95), 0 0 55px rgba(229, 9, 20, 0.35);
+}
+.cinema-mockup-card:active {
+  transform: translateY(-2px) scale(0.99);
+}
+
+.mockup-cta-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #e50914, #ff334b);
+  padding: 3px 10px;
+  border-radius: 999px;
+  box-shadow: 0 2px 10px rgba(229, 9, 20, 0.45);
+  letter-spacing: 0.02em;
+  transition: all 0.25s ease;
+}
+.cinema-mockup-card:hover .mockup-cta-chip {
+  background: linear-gradient(135deg, #ff1a27, #ff5266);
+  transform: scale(1.08);
+  box-shadow: 0 4px 14px rgba(229, 9, 20, 0.7);
+}
+
+.mockup-canvas-hint {
+  position: absolute;
+  top: 14px;
+  opacity: 0;
+  transform: translateY(-6px);
+  background: rgba(0, 0, 0, 0.84);
+  border: 1px solid rgba(229, 9, 20, 0.45);
+  padding: 4px 12px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  z-index: 5;
+}
+.mockup-canvas-hint .hint-text {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+}
+.cinema-mockup-card:hover .mockup-canvas-hint {
+  opacity: 1;
+  transform: translateY(0);
+}
+.cinema-mockup-card:hover .mockup-play-indicator {
+  transform: scale(1.15);
+  box-shadow: 0 0 35px rgba(229, 9, 20, 0.95);
+  background: #ff1a27;
+}
+
+/* Action Console Spotlight Pulse Effect */
+@keyframes hostBoxSpotlight {
+  0% {
+    box-shadow: 0 0 0 0 rgba(229, 9, 20, 0.8), 0 20px 50px rgba(0, 0, 0, 0.8);
+    border-color: rgba(229, 9, 20, 0.9);
+    transform: scale(1.02);
+  }
+  50% {
+    box-shadow: 0 0 40px 8px rgba(229, 9, 20, 0.6), 0 20px 50px rgba(0, 0, 0, 0.8);
+    border-color: rgba(229, 9, 20, 0.9);
+    transform: scale(1.02);
+  }
+  100% {
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    transform: scale(1);
+  }
+}
+.host-box.console-spotlight-pulse {
+  animation: hostBoxSpotlight 2.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .mockup-top-bar {
@@ -4661,14 +4765,23 @@ body.lights-dimmed .player-section {
 }
 
 /* 1. Navbar & Corner Brand in Light Mode */
-[data-mode="light"] #lobby-screen .lobby-navbar,
-[data-mode="light"] #lobby-screen .lobby-corner-brand {
+[data-mode="light"] #lobby-screen .lobby-navbar {
   background: rgba(255, 255, 255, 0.88) !important;
   border: 1px solid rgba(15, 23, 42, 0.08) !important;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
 }
+[data-mode="light"] #lobby-screen .lobby-corner-brand {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+[data-mode="light"] #lobby-screen .brand-ambient-glow {
+  background: radial-gradient(ellipse at 50% 50%, rgba(229, 9, 20, 0.15) 0%, rgba(249, 115, 22, 0.08) 40%, transparent 70%) !important;
+  opacity: 0.5 !important;
+}
 [data-mode="light"] #lobby-screen .corner-brand-logo-img {
-  filter: drop-shadow(0 4px 12px rgba(15, 23, 42, 0.08));
+  filter: drop-shadow(0 2px 8px rgba(15, 23, 42, 0.25)) drop-shadow(0 1px 2px rgba(15, 23, 42, 0.4)) !important;
 }
 [data-mode="light"] #lobby-screen .lobby-nav-links {
   background: #f1f5f9 !important;

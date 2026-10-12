@@ -1111,6 +1111,31 @@ function setupMiniMovieFigures() {
     });
   }
 
+  // 1.1 Hero Real-Time Cinema Mockup -> Action Console-a yönləndirir və Host qutusunu işıqlandırır
+  const heroMockupCard = document.getElementById('hero-mockup-card');
+  if (heroMockupCard) {
+    const handleMockupClick = (e) => {
+      e.preventDefault();
+      const actionConsole = document.getElementById('action-console');
+      if (actionConsole) {
+        actionConsole.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const hostBox = document.querySelector('.host-box');
+        if (hostBox) {
+          hostBox.classList.remove('console-spotlight-pulse');
+          void hostBox.offsetWidth; // trigger reflow
+          hostBox.classList.add('console-spotlight-pulse');
+          setTimeout(() => hostBox.classList.remove('console-spotlight-pulse'), 2500);
+        }
+      }
+    };
+    heroMockupCard.addEventListener('click', handleMockupClick);
+    heroMockupCard.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        handleMockupClick(e);
+      }
+    });
+  }
+
   // 2. Üst naviqasiya "Xarakterlər" linki -> Modalı Açır
   const navLinkChars = document.getElementById('nav-link-characters');
   if (navLinkChars) {
