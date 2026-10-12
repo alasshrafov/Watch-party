@@ -640,108 +640,493 @@ function setupLanguageSwitcher() {
   });
 }
 
+const CULT_CHARACTERS = {
+  heisenberg: {
+    key: 'heisenberg',
+    name: 'Walter White • Heisenberg',
+    source: 'Breaking Bad • Albuquerque',
+    badge: 'ZƏKA OYUNÇUSU',
+    badgeClass: 'emerald',
+    emoji: '🧪',
+    img: 'assets/characters/heisenberg.jpg',
+    meta: 'Zəka & Kimya Dahisi',
+    quote: '"I am not in danger, Skyler. I AM the danger. A guy opens his door and gets shot, and you think that of me? No. I am the one who knocks!"',
+    speech: 'I am the one who knocks.',
+    role: 'Baş Kimyaçı & Zəka Lideri',
+    perk: 'Met-Lab Ultra HD WebRTC Sinxronizasiyası',
+    theme: 'theme-breaking-bad',
+    roomSuggestion: 'heisenberg-lab'
+  },
+  batman: {
+    key: 'batman',
+    name: 'Bruce Wayne • Batman',
+    source: 'The Dark Knight • Gotham City',
+    badge: 'QƏHRƏMAN',
+    badgeClass: 'gold',
+    emoji: '🦇',
+    img: 'assets/characters/batman.jpg',
+    meta: 'Qaranlıq Cəngavər & Ədalət',
+    quote: '"It\'s not who I am underneath, but what I do that defines me. I\'m whatever Gotham needs me to be."',
+    speech: "It's not who I am underneath, but what I do that defines me.",
+    role: 'Qotham Qoruyucusu',
+    perk: 'Bat-Radar — Kristal Səs & Auto Ducking',
+    theme: 'theme-batman',
+    roomSuggestion: 'gotham-cinema'
+  },
+  godfather: {
+    key: 'godfather',
+    name: 'Don Vito Corleone',
+    source: 'The Godfather • Siciliya & Nyu York',
+    badge: 'AİLƏ & GÜC',
+    badgeClass: 'crimson',
+    emoji: '🌹',
+    img: 'assets/characters/godfather.jpg',
+    meta: 'Nüfuz & Klassik Lider',
+    quote: '"A man who doesn\'t spend time with his family can never be a real man. I\'m gonna make him an offer he can\'t refuse."',
+    speech: "I'm gonna make him an offer he can't refuse.",
+    role: 'Ailə Başçısı (Don)',
+    perk: 'İmtina Edilməz Təklif — Sinxron Otaq İdarəetməsi',
+    theme: 'theme-netflix',
+    roomSuggestion: 'corleone-lounge'
+  },
+  cyberpunk: {
+    key: 'cyberpunk',
+    name: 'Neo • Matrix Terminal',
+    source: 'The Matrix • Sion & Gələcək',
+    badge: 'SCI-FI',
+    badgeClass: 'cyan',
+    emoji: '⚡',
+    img: 'assets/characters/cyberpunk.jpg',
+    meta: 'Seçilmiş Şəxs & Kiberpank',
+    quote: '"There is no spoon. Free your mind. I\'m going to show them a world without rules."',
+    speech: 'There is no spoon. Free your mind.',
+    role: 'Seçilmiş Şəxs (The One)',
+    perk: 'Bullet-Time Video Play/Pause Sinxronizasiyası',
+    theme: 'theme-matrix',
+    roomSuggestion: 'matrix-terminal'
+  },
+  detective: {
+    key: 'detective',
+    name: 'Rust Cohle',
+    source: 'True Detective • Qaranlıq Kölgələr',
+    badge: 'NOIR DETEKTİV',
+    badgeClass: 'violet',
+    emoji: '🕶️',
+    img: 'assets/characters/detective.jpg',
+    meta: 'Dərin Fəlsəfə & Sirr',
+    quote: '"Time is a flat circle. Everything we\'ve ever done or will do, we\'re gonna do over and over and over again."',
+    speech: 'Time is a flat circle.',
+    role: 'Kino Filosofu & Tənqidçi',
+    perk: 'Dərin Analiz — Seans Sonu Film Arxivi',
+    theme: 'theme-matrix',
+    roomSuggestion: 'detective-noir'
+  }
+};
+
+const QUIZ_QUESTIONS = [
+  {
+    title: 'Gecə seansında kinoya baxanda ən çox hansı ab-havanı sevirsən?',
+    options: [
+      { text: 'Dahi zəka, intriqa və strateji oyunlar', char: 'heisenberg', emoji: '🧪' },
+      { text: 'Qaranlıq qəhrəman, ədalət və gərgin döyüşlər', char: 'batman', emoji: '🦇' },
+      { text: 'Ailə dəyərləri, intizam və klassik nüfuz', char: 'godfather', emoji: '🌹' },
+      { text: 'Elmi-fantastika, kiberpank və gələcəyin sirləri', char: 'cyberpunk', emoji: '⚡' },
+      { text: 'Dərin fəlsəfə, sirli cinayətlər və noir atmosferi', char: 'detective', emoji: '🕶️' }
+    ]
+  },
+  {
+    title: 'Otaqda dostlarla film seçərkən sənin rolun nə olur?',
+    options: [
+      { text: 'Hər şeyi dəqiqliklə planlayıram və ən yaxşı filmi tapıram', char: 'heisenberg', emoji: '🧠' },
+      { text: 'Qaydaları qoruyuram, hər kəsin rahat izləməsinə nəzarət edirəm', char: 'batman', emoji: '🛡️' },
+      { text: 'Sözüm qətidir, dediyim filmə birlikdə baxırıq', char: 'godfather', emoji: '👑' },
+      { text: 'Süni intellekt və ya ruletka çarxı ilə şansımızı sınayırıq', char: 'cyberpunk', emoji: '🎡' },
+      { text: 'Ən dərin mənalı, insanı düşündürən şah əsəri seçirəm', char: 'detective', emoji: '📜' }
+    ]
+  },
+  {
+    title: 'Kinoteatrda ən sevimli seans tərzin hansıdır?',
+    options: [
+      { text: 'Dəqiq hazırlanmış qəhvə və təzə popkorn', char: 'heisenberg', emoji: '☕' },
+      { text: 'Gecə yarısı qaranlıq zalda kəsintisiz immersiya', char: 'batman', emoji: '🌙' },
+      { text: 'Klassik içki qədəhi və ev rahatlığında divan', char: 'godfather', emoji: '🍷' },
+      { text: 'İki ekran, neon işıqlar və canlı WebRTC sinxronu', char: 'cyberpunk', emoji: '💻' },
+      { text: 'Təkbaşına dərin düşüncələr və sirli gecə baxışı', char: 'detective', emoji: '🕯️' }
+    ]
+  }
+];
+
 function setupMiniMovieFigures() {
-  const charDetailsByLang = {
-    az: {
-      cyberpunk: { emoji: '⚡', title: 'Neo (Matrix Sci-Fi)' },
-      godfather: { emoji: '🌹', title: 'Don Vito Corleone (Xaç Atası)' },
-      heisenberg: { emoji: '🧪', title: 'Walter White (Heisenberg)' },
-      batman: { emoji: '🦇', title: 'Batman (Qaranlıq Cəngavər)' },
-      detective: { emoji: '🕶️', title: 'Rust Cohle (True Detective)' }
-    },
-    tr: {
-      cyberpunk: { emoji: '⚡', title: 'Neo (Matrix Bilim Kurgu)' },
-      godfather: { emoji: '🌹', title: 'Don Vito Corleone (Baba)' },
-      heisenberg: { emoji: '🧪', title: 'Walter White (Heisenberg)' },
-      batman: { emoji: '🦇', title: 'Batman (Kara Şövalye)' },
-      detective: { emoji: '🕶️', title: 'Rust Cohle (True Detective)' }
-    },
-    en: {
-      cyberpunk: { emoji: '⚡', title: 'Neo (Matrix Sci-Fi)' },
-      godfather: { emoji: '🌹', title: 'Don Vito Corleone (The Godfather)' },
-      heisenberg: { emoji: '🧪', title: 'Walter White (Heisenberg)' },
-      batman: { emoji: '🦇', title: 'Batman (The Dark Knight)' },
-      detective: { emoji: '🕶️', title: 'Rust Cohle (True Detective)' }
-    },
-    ru: {
-      cyberpunk: { emoji: '⚡', title: 'Нео (Матрица)' },
-      godfather: { emoji: '🌹', title: 'Дон Вито Корлеоне (Крёстный Отец)' },
-      heisenberg: { emoji: '🧪', title: 'Уолтер Уайт (Хайзенберг)' },
-      batman: { emoji: '🦇', title: 'Бэтмен (Тёмный Рыцарь)' },
-      detective: { emoji: '🕶️', title: 'Раст Коул (True Detective)' }
+  const charKeysList = ['heisenberg', 'batman', 'godfather', 'cyberpunk', 'detective'];
+  let currentShowcaseIndex = 2; // Default Don Corleone
+  let activeShowcaseChar = 'godfather';
+
+  function playCinematicSound(type) {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const now = ctx.currentTime;
+      
+      if (type === 'godfather') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(130.81, now);
+        osc.frequency.exponentialRampToValueAtTime(65.41, now + 1.2);
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 1.2);
+      } else if (type === 'heisenberg') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.exponentialRampToValueAtTime(45, now + 0.9);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.9);
+      } else if (type === 'batman') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(85, now);
+        osc.frequency.exponentialRampToValueAtTime(32, now + 1.5);
+        gain.gain.setValueAtTime(0.5, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 1.5);
+      } else if (type === 'cyberpunk') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(440, now);
+        osc.frequency.linearRampToValueAtTime(880, now + 0.15);
+        osc.frequency.exponentialRampToValueAtTime(110, now + 0.8);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.8);
+      } else {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(110, now);
+        osc.frequency.exponentialRampToValueAtTime(40, now + 1.4);
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 1.4);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 1.4);
+      }
+    } catch (e) {}
+  }
+
+  function speakCharacterQuote(speechText, charKey) {
+    if (!('speechSynthesis' in window)) return;
+    try {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(speechText);
+      utterance.lang = 'en-US';
+      if (charKey === 'batman') {
+        utterance.pitch = 0.55;
+        utterance.rate = 0.85;
+      } else if (charKey === 'godfather') {
+        utterance.pitch = 0.7;
+        utterance.rate = 0.8;
+      } else if (charKey === 'heisenberg') {
+        utterance.pitch = 0.85;
+        utterance.rate = 0.9;
+      } else if (charKey === 'cyberpunk') {
+        utterance.pitch = 1.0;
+        utterance.rate = 0.95;
+      } else {
+        utterance.pitch = 0.65;
+        utterance.rate = 0.85;
+      }
+      
+      const voiceBtn = document.getElementById('btn-showcase-voice-play');
+      if (voiceBtn) {
+        voiceBtn.classList.add('playing');
+        utterance.onend = () => { voiceBtn.classList.remove('playing'); };
+        utterance.onerror = () => { voiceBtn.classList.remove('playing'); };
+      }
+      window.speechSynthesis.speak(utterance);
+    } catch (e) {}
+  }
+
+  function showGalleryView() {
+    const galleryView = document.getElementById('char-modal-gallery-view');
+    const showcaseView = document.getElementById('char-modal-showcase-view');
+    const quizView = document.getElementById('char-modal-quiz-view');
+    if (galleryView) galleryView.classList.remove('hidden');
+    if (showcaseView) showcaseView.classList.add('hidden');
+    if (quizView) quizView.classList.add('hidden');
+  }
+
+  function openCharacterShowcase(charKey, autoPlaySound = true) {
+    const data = CULT_CHARACTERS[charKey] || CULT_CHARACTERS.godfather;
+    activeShowcaseChar = charKey;
+    currentShowcaseIndex = charKeysList.indexOf(charKey);
+    if (currentShowcaseIndex < 0) currentShowcaseIndex = 0;
+
+    const galleryView = document.getElementById('char-modal-gallery-view');
+    const showcaseView = document.getElementById('char-modal-showcase-view');
+    const quizView = document.getElementById('char-modal-quiz-view');
+    if (galleryView) galleryView.classList.add('hidden');
+    if (quizView) quizView.classList.add('hidden');
+    if (showcaseView) showcaseView.classList.remove('hidden');
+
+    // Məlumatları doldur
+    const imgEl = document.getElementById('showcase-char-img');
+    if (imgEl) imgEl.src = data.img;
+
+    const badgeEl = document.getElementById('showcase-badge');
+    if (badgeEl) {
+      badgeEl.textContent = data.badge;
+      badgeEl.className = `char-badge ${data.badgeClass}`;
     }
-  };
 
-  const characterDefaultNames = {
-    heisenberg: 'Heisenberg',
-    batman: 'Batman',
-    godfather: 'Don Corleone',
-    cyberpunk: 'Neo',
-    detective: 'Rust Cohle'
-  };
+    const emojiStamp = document.getElementById('showcase-emoji-stamp');
+    if (emojiStamp) emojiStamp.textContent = data.emoji;
 
-  const characterThemes = {
-    heisenberg: 'theme-breaking-bad',
-    batman: 'theme-batman',
-    cyberpunk: 'theme-matrix',
-    godfather: 'theme-netflix',
-    detective: 'theme-matrix'
-  };
+    const metaTag = document.getElementById('showcase-meta-tag');
+    if (metaTag) metaTag.textContent = data.meta;
 
-  function selectCharacterProfile(charKey, customNickname = null) {
-    const langDict = charDetailsByLang[currentLang] || charDetailsByLang.az;
-    const info = langDict[charKey] || { emoji: '🍿', title: 'Kino Xarakteri' };
-    const nickToApply = customNickname || characterDefaultNames[charKey] || 'KinoSevər';
+    const nameEl = document.getElementById('showcase-char-name');
+    if (nameEl) nameEl.textContent = data.name;
 
-    if (typeof selectedAvatarChoice !== 'undefined') {
-      selectedAvatarChoice = info.emoji;
-    }
+    const sourceEl = document.getElementById('showcase-source-title');
+    if (sourceEl) sourceEl.textContent = data.source;
 
-    const avatarPreview = document.getElementById('input-avatar-preview');
-    if (avatarPreview) {
-      avatarPreview.textContent = info.emoji;
-      avatarPreview.style.transform = 'scale(1.4)';
-      setTimeout(() => { avatarPreview.style.transform = ''; }, 350);
-    }
+    const quoteP = document.getElementById('showcase-quote-p');
+    if (quoteP) quoteP.textContent = data.quote;
 
-    if (usernameInput) {
-      usernameInput.value = nickToApply;
-    }
+    const roleName = document.getElementById('ticket-role-name');
+    if (roleName) roleName.textContent = data.role;
 
-    const targetTheme = characterThemes[charKey] || 'theme-netflix';
-    localStorage.setItem('watchparty-theme', targetTheme);
-    if (roomScreen && roomScreen.classList.contains('active')) {
-      applyTheme(targetTheme, false);
+    const perkName = document.getElementById('ticket-perk-name');
+    if (perkName) perkName.textContent = data.perk;
+
+    const counterEl = document.getElementById('showcase-counter');
+    if (counterEl) counterEl.textContent = `${currentShowcaseIndex + 1} / ${charKeysList.length}`;
+
+    // Modalı aç
+    openModal('modal-characters');
+
+    // Səs və Teatral Aura
+    if (autoPlaySound) {
+      playCinematicSound(charKey);
+      speakCharacterQuote(data.speech, charKey);
     }
 
     if (typeof spawnFloatingEmoji === 'function') {
-      spawnFloatingEmoji(info.emoji);
+      spawnFloatingEmoji(data.emoji);
       spawnFloatingEmoji('✨');
-      spawnFloatingEmoji('⭐');
     }
+  }
 
-    const selectedWord = {
-      az: 'xarakteri seçildi! Ləqəbiniz təyin olundu.',
-      tr: 'karakteri seçildi! Takma adınız belirlendi.',
-      en: 'character selected! Nickname updated.',
-      ru: 'персонаж выбран! Ник обновлён.'
-    }[currentLang] || 'xarakteri seçildi!';
+  // Voice replay button
+  const voicePlayBtn = document.getElementById('btn-showcase-voice-play');
+  if (voicePlayBtn) {
+    voicePlayBtn.addEventListener('click', () => {
+      const data = CULT_CHARACTERS[activeShowcaseChar] || CULT_CHARACTERS.godfather;
+      playCinematicSound(activeShowcaseChar);
+      speakCharacterQuote(data.speech, activeShowcaseChar);
+    });
+  }
 
-    showNotice(`🎭 ${nickToApply} ${selectedWord}`);
+  // Navigation inside Showcase
+  const btnShowcaseBack = document.getElementById('btn-showcase-back');
+  if (btnShowcaseBack) {
+    btnShowcaseBack.addEventListener('click', showGalleryView);
+  }
 
-    // Modalı bağla
-    closeModal('modal-characters');
+  const btnShowcasePrev = document.getElementById('btn-showcase-prev');
+  if (btnShowcasePrev) {
+    btnShowcasePrev.addEventListener('click', () => {
+      currentShowcaseIndex = (currentShowcaseIndex - 1 + charKeysList.length) % charKeysList.length;
+      openCharacterShowcase(charKeysList[currentShowcaseIndex], true);
+    });
+  }
 
-    // Səliqəli şəkildə konsola sürüşdür və fokuslan
-    const consoleEl = document.getElementById('action-console');
-    if (consoleEl) {
-      consoleEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-    setTimeout(() => {
-      if (roomInput && !roomInput.value) {
-        roomInput.focus();
+  const btnShowcaseNext = document.getElementById('btn-showcase-next');
+  if (btnShowcaseNext) {
+    btnShowcaseNext.addEventListener('click', () => {
+      currentShowcaseIndex = (currentShowcaseIndex + 1) % charKeysList.length;
+      openCharacterShowcase(charKeysList[currentShowcaseIndex], true);
+    });
+  }
+
+  // Fəaliyyət: "Bu Xarakterlə Otaq Başlat"
+  const btnShowcaseCreate = document.getElementById('btn-showcase-create-room');
+  if (btnShowcaseCreate) {
+    btnShowcaseCreate.addEventListener('click', () => {
+      const data = CULT_CHARACTERS[activeShowcaseChar] || CULT_CHARACTERS.godfather;
+      
+      // Avatar & Ləqəb təyin et
+      if (typeof selectedAvatarChoice !== 'undefined') selectedAvatarChoice = data.emoji;
+      const avatarPreview = document.getElementById('input-avatar-preview');
+      if (avatarPreview) avatarPreview.textContent = data.emoji;
+      if (usernameInput) usernameInput.value = data.name.split('•')[0].trim();
+      
+      // Temanı yadda saxla
+      localStorage.setItem('watchparty-theme', data.theme);
+
+      closeModal('modal-characters');
+      showNotice(`👑 ${data.name} mövzusunda otaq başladılır...`);
+
+      // Otaq yaratma sahəsinə yönləndir
+      const hostConsole = document.getElementById('action-console');
+      if (hostConsole) {
+        hostConsole.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-    }, 450);
+
+      setTimeout(() => {
+        if (!currentUser || !currentUser.isGoogle) {
+          openAuthModal();
+        } else {
+          const btnCreateRoom = document.getElementById('btn-create-room');
+          if (btnCreateRoom && !btnCreateRoom.classList.contains('hidden')) {
+            btnCreateRoom.click();
+          }
+        }
+      }, 500);
+    });
+  }
+
+  // Fəaliyyət: "Bu Ləqəblə Otağa Daxil Ol"
+  const btnShowcaseJoin = document.getElementById('btn-showcase-join-room');
+  if (btnShowcaseJoin) {
+    btnShowcaseJoin.addEventListener('click', () => {
+      const data = CULT_CHARACTERS[activeShowcaseChar] || CULT_CHARACTERS.godfather;
+      
+      if (typeof selectedAvatarChoice !== 'undefined') selectedAvatarChoice = data.emoji;
+      const avatarPreview = document.getElementById('input-avatar-preview');
+      if (avatarPreview) {
+        avatarPreview.textContent = data.emoji;
+        avatarPreview.style.transform = 'scale(1.4)';
+        setTimeout(() => { avatarPreview.style.transform = ''; }, 350);
+      }
+      if (usernameInput) usernameInput.value = data.name.split('•')[0].trim();
+      localStorage.setItem('watchparty-theme', data.theme);
+
+      closeModal('modal-characters');
+      showNotice(`🎟️ ${data.name} ləqəbi qəbul olundu. Otaq kodunu daxil edin!`);
+
+      const consoleEl = document.getElementById('action-console');
+      if (consoleEl) {
+        consoleEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      setTimeout(() => {
+        if (roomInput) roomInput.focus();
+      }, 450);
+    });
+  }
+
+  // Fəaliyyət: "Bilet Mətnini Kopyala"
+  const btnShowcaseCopy = document.getElementById('btn-showcase-copy-pass');
+  if (btnShowcaseCopy) {
+    btnShowcaseCopy.addEventListener('click', () => {
+      const data = CULT_CHARACTERS[activeShowcaseChar] || CULT_CHARACTERS.godfather;
+      const passText = 
+`🎬 ONECOUCH KİNOTEATR VIP BİLETİ 🎟️
+━━━━━━━━━━━━━━━━━━━━━━━━
+🎭 Seçilmiş Qəhrəman: ${data.name} ${data.emoji}
+👑 Təyin Edilən Titul: ${data.role}
+⚡ Otaq Bacarığı: ${data.perk}
+🍿 İzləmə Keyfiyyəti: 1080p 60FPS WebRTC Sinxron
+💬 Kult Sitat: ${data.quote}
+🔗 Birgə İzləmə Linki: ${window.location.origin}
+━━━━━━━━━━━━━━━━━━━━━━━━
+İki ekran. Tək divan. Birlikdə izləyirik! 🍿`;
+
+      navigator.clipboard.writeText(passText).then(() => {
+        showNotice('📋 VIP Kinoteatr Bileti kopyalandı! Dostunuza göndərə bilərsiniz.');
+        if (typeof spawnFloatingEmoji === 'function') {
+          spawnFloatingEmoji('🎟️');
+          spawnFloatingEmoji('✨');
+        }
+      });
+    });
+  }
+
+  // Quiz Controller
+  let quizStep = 0;
+  let quizScores = { heisenberg: 0, batman: 0, godfather: 0, cyberpunk: 0, detective: 0 };
+
+  function renderQuizQuestion() {
+    const q = QUIZ_QUESTIONS[quizStep];
+    const trackFill = document.getElementById('quiz-progress-fill');
+    if (trackFill) trackFill.style.width = `${((quizStep + 1) / QUIZ_QUESTIONS.length) * 100}%`;
+
+    const stepTitle = document.getElementById('quiz-step-title');
+    if (stepTitle) stepTitle.textContent = `Sual ${quizStep + 1} / ${QUIZ_QUESTIONS.length}`;
+
+    const qTitle = document.getElementById('quiz-q-title');
+    if (qTitle) qTitle.textContent = q.title;
+
+    const answersGrid = document.getElementById('quiz-answers-grid');
+    if (answersGrid) {
+      answersGrid.innerHTML = '';
+      q.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'quiz-answer-card';
+        btn.innerHTML = `<span class="quiz-ans-emoji">${opt.emoji}</span><span>${opt.text}</span>`;
+        btn.onclick = () => {
+          quizScores[opt.char] = (quizScores[opt.char] || 0) + 1;
+          quizStep++;
+          if (quizStep < QUIZ_QUESTIONS.length) {
+            renderQuizQuestion();
+          } else {
+            // Find winner
+            let topChar = 'godfather';
+            let maxScore = -1;
+            Object.keys(quizScores).forEach(k => {
+              if (quizScores[k] > maxScore) {
+                maxScore = quizScores[k];
+                topChar = k;
+              }
+            });
+            showNotice('🎉 Test tamamlandı! Sənə ən uyğun kino xarakteri təyin olundu.');
+            openCharacterShowcase(topChar, true);
+          }
+        };
+        answersGrid.appendChild(btn);
+      });
+    }
+  }
+
+  const btnOpenQuiz = document.getElementById('btn-open-char-quiz');
+  if (btnOpenQuiz) {
+    btnOpenQuiz.addEventListener('click', () => {
+      quizStep = 0;
+      quizScores = { heisenberg: 0, batman: 0, godfather: 0, cyberpunk: 0, detective: 0 };
+      const galleryView = document.getElementById('char-modal-gallery-view');
+      const showcaseView = document.getElementById('char-modal-showcase-view');
+      const quizView = document.getElementById('char-modal-quiz-view');
+      if (galleryView) galleryView.classList.add('hidden');
+      if (showcaseView) showcaseView.classList.add('hidden');
+      if (quizView) quizView.classList.remove('hidden');
+      renderQuizQuestion();
+    });
+  }
+
+  const btnQuizBack = document.getElementById('btn-quiz-back');
+  if (btnQuizBack) {
+    btnQuizBack.addEventListener('click', showGalleryView);
   }
 
   // 1. Hero "🎭 Xarakterləri Kəşf Et" düyməsi -> Modalı Açır
@@ -749,6 +1134,7 @@ function setupMiniMovieFigures() {
   if (btnExplore) {
     btnExplore.addEventListener('click', (e) => {
       e.preventDefault();
+      showGalleryView();
       openModal('modal-characters');
     });
   }
@@ -758,6 +1144,7 @@ function setupMiniMovieFigures() {
   if (navLinkChars) {
     navLinkChars.addEventListener('click', (e) => {
       e.preventDefault();
+      showGalleryView();
       openModal('modal-characters');
     });
   }
@@ -766,26 +1153,25 @@ function setupMiniMovieFigures() {
   const avatarPreviewBadge = document.getElementById('input-avatar-preview');
   if (avatarPreviewBadge) {
     avatarPreviewBadge.addEventListener('click', () => {
+      showGalleryView();
       openModal('modal-characters');
     });
   }
 
-  // 4. Modal daxilindəki Xarakter Kartları & Düymələri
+  // 4. Modal daxilindəki Xarakter Kartları & Düymələri -> SHOWCASE AÇIR!
   document.querySelectorAll('.char-gallery-card').forEach(card => {
     card.addEventListener('click', () => {
       const charKey = card.getAttribute('data-char');
-      const nick = card.getAttribute('data-nickname');
-      selectCharacterProfile(charKey, nick);
+      openCharacterShowcase(charKey, true);
     });
   });
 
-  // 5. Modal Alt: Təsadüfi Xarakter Seç
+  // 5. Modal Alt: Təsadüfi Xarakter Seç -> SHOWCASE AÇIR!
   const btnPickRandom = document.getElementById('btn-char-pick-random');
   if (btnPickRandom) {
     btnPickRandom.addEventListener('click', () => {
-      const keys = ['heisenberg', 'batman', 'godfather', 'cyberpunk', 'detective'];
-      const randomKey = keys[Math.floor(Math.random() * keys.length)];
-      selectCharacterProfile(randomKey);
+      const randomKey = charKeysList[Math.floor(Math.random() * charKeysList.length)];
+      openCharacterShowcase(randomKey, true);
     });
   }
 
@@ -804,11 +1190,11 @@ function setupMiniMovieFigures() {
     });
   }
 
-  // 7. Hero Sağ və Sol Qanaddakı 3D Flank Kartları
+  // 7. Hero Sağ və Sol Qanaddakı 3D Flank Kartları -> SHOWCASE AÇIR!
   document.querySelectorAll('.cine-char-card').forEach(card => {
     card.addEventListener('click', () => {
       const charKey = card.getAttribute('data-char');
-      selectCharacterProfile(charKey);
+      openCharacterShowcase(charKey, true);
     });
   });
 
