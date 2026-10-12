@@ -17,6 +17,8 @@ const io = new Server(server, {
 
 app.use(cors());
 app.use(express.json());
+// Şəkillər və səslər üçün 7 günlük sürətli brauzer keşi (0ms yüklənmə)
+app.use('/assets', express.static(path.join(__dirname, 'assets'), { maxAge: '7d' }));
 // Əsas qovluq birinci gəlir (GitHub-a birbaşa atılan fayllar dərhal aktiv olsun)
 app.use(express.static(__dirname));
 app.use(express.static(path.join(__dirname, 'public')));
