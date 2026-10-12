@@ -797,6 +797,44 @@
             <span>🔊 Filmin Səsini Aç (Klikləyin)</span>
           </button>
 
+          <!-- Tam Ekran Rejimində Floating Kino Çatı (Cinema Fullscreen Chat) -->
+          <div id="cinema-fullscreen-chat" class="cinema-fullscreen-chat hidden">
+            <div class="fs-chat-header">
+              <div class="fs-chat-title">
+                <span class="fs-chat-dot"></span>
+                <span>💬 Canlı Kino Çatı</span>
+              </div>
+              <div class="fs-chat-header-actions">
+                <button type="button" id="btn-close-fs-chat" class="fs-chat-btn-icon" title="Çatı Gizlət (C)">✕</button>
+              </div>
+            </div>
+            <div class="fs-chat-messages" id="fs-chat-messages">
+              <div class="fs-chat-system-msg">🍿 Kino zalına xoş gəldiniz! Mesajlarınız burada görünəcək.</div>
+            </div>
+            <div class="fs-chat-reactions">
+              <button type="button" class="fs-reaction-btn" onclick="sendReaction('🔥')">🔥</button>
+              <button type="button" class="fs-reaction-btn" onclick="sendReaction('❤️')">❤️</button>
+              <button type="button" class="fs-reaction-btn" onclick="sendReaction('😂')">😂</button>
+              <button type="button" class="fs-reaction-btn" onclick="sendReaction('🍿')">🍿</button>
+              <button type="button" class="fs-reaction-btn" onclick="sendReaction('👏')">👏</button>
+            </div>
+            <form class="fs-chat-input-form" id="fs-chat-form">
+              <input type="text" id="fs-chat-input" placeholder="Zala mesaj yaz... (Enter)" autocomplete="off">
+              <button type="submit" class="fs-chat-send-btn" title="Göndər">➤</button>
+            </form>
+          </div>
+
+          <!-- Tam Ekran Rejimində Çatı Açma Düyməsi (Pill) -->
+          <button type="button" id="btn-fs-chat-pill" class="fs-chat-pill hidden" title="Çatı Göstər / Gizlə (C)">
+            <span class="fs-pill-icon">💬</span>
+            <span class="fs-pill-text">Çat</span>
+          </button>
+
+          <!-- Kino Tam Ekran Düyməsi (Player üzərində) -->
+          <button type="button" id="btn-cinema-fullscreen" class="btn-cinema-fullscreen" title="Kino Tam Ekran (F)">
+            <span class="fs-icon-expand">⛶</span>
+          </button>
+
           <!-- Boş vəziyyət -->
           <div id="empty-player" class="empty-player-state">
             <div class="empty-hero-visual">
@@ -837,6 +875,7 @@
             <button class="tab-btn" data-tab="youtube">▶️ YouTube</button>
             <button class="tab-btn" data-tab="direct">🎬 Birbaşa Video / MP4</button>
             <button class="tab-btn" data-tab="file">📁 Kompüterdən Video</button>
+            <button type="button" class="tab-btn btn-fullscreen-trigger" id="btn-tab-fullscreen" title="Kino Tam Ekran Rejimi (F)" style="margin-left: auto; background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.18);">⛶ Tam Ekran (F)</button>
           </div>
 
           <!-- 1. WebRTC Canlı Film Saytı Tabı Seçimi -->
