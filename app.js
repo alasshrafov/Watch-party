@@ -783,6 +783,9 @@ window.addEventListener('DOMContentLoaded', () => {
   const savedLang = localStorage.getItem('onecouch_lang') || 'az';
   setLanguage(savedLang);
 
+  // 🌓 Gündüz / Gecə Rejimi (Lobby Light/Dark Mode)
+  setupLobbyMode();
+
   // Balaca Kino Fiqurları İnteraktivliyi
   setupMiniMovieFigures();
 
@@ -796,6 +799,51 @@ window.addEventListener('DOMContentLoaded', () => {
   setupMovieReview();
   setupLightsDimmer();
 });
+
+// ==========================================
+// LOBBY LIGHT / DARK MODE CONTROLLER
+// ==========================================
+function applyLobbyMode(mode) {
+  const currentMode = mode === 'light' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-mode', currentMode);
+  try {
+    localStorage.setItem('onecouch_lobby_mode', currentMode);
+  } catch (e) {}
+
+  const toggleBtn = document.getElementById('btn-mode-toggle');
+  if (toggleBtn) {
+    const sunIcon = toggleBtn.querySelector('.mode-icon-sun');
+    const moonIcon = toggleBtn.querySelector('.mode-icon-moon');
+    const label = document.getElementById('mode-label-text');
+
+    if (currentMode === 'light') {
+      if (sunIcon) sunIcon.classList.remove('hidden');
+      if (moonIcon) moonIcon.classList.add('hidden');
+      if (label) label.textContent = 'Light';
+    } else {
+      if (sunIcon) sunIcon.classList.add('hidden');
+      if (moonIcon) moonIcon.classList.remove('hidden');
+      if (label) label.textContent = 'Dark';
+    }
+  }
+}
+
+function setupLobbyMode() {
+  let savedMode = 'dark';
+  try {
+    savedMode = localStorage.getItem('onecouch_lobby_mode') || 'dark';
+  } catch (e) {}
+  applyLobbyMode(savedMode);
+
+  const toggleBtn = document.getElementById('btn-mode-toggle');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-mode') || 'dark';
+      const nextMode = current === 'light' ? 'dark' : 'light';
+      applyLobbyMode(nextMode);
+    });
+  }
+}
 
 function applyTheme(themeName, syncWithRoom = true) {
   document.body.className = themeName;
@@ -2601,15 +2649,13 @@ function hideAudioUnlockBanner() {
 
 function getThemeName(theme) {
   const map = {
-    'theme-netflix': '🎬 Netflix Cinema',
-    'theme-spiderman': '🕷️ Marvel / Avengers (MCU)',
-    'theme-breaking-bad': '🧪 Breaking Bad (Heisenberg)',
-    'theme-got': '⚔️ Game of Thrones (Winterfell)',
+    'theme-netflix': '🎬 Cinema Premier (Netflix)',
     'theme-batman': '🦇 The Dark Knight (Gotham)',
-    'theme-interstellar': '🌌 Interstellar (Cosmos)',
-    'theme-matrix': '🕶️ The Matrix (Cyber)',
-    'theme-discord': '👾 Discord Dark',
-    'theme-oled': '🖤 OLED Minimal'
+    'theme-interstellar': '🌌 Interstellar (Gargantua)',
+    'theme-matrix': '🕶️ The Matrix (Cyber Terminal)',
+    'theme-breaking-bad': '🧪 Breaking Bad (Heisenberg)',
+    'theme-got': '❄️ Winterfell (Game of Thrones)',
+    'theme-spiderman': '🕷️ Marvel MCU (Stark Tech)'
   };
   return map[theme] || theme;
 }
