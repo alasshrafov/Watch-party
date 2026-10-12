@@ -663,15 +663,16 @@ function setupMiniMovieFigures() {
         setTimeout(() => { avatarPreview.style.transform = ''; }, 300);
       }
 
-      // Xarakterə uyğun otaq mövzusunu sinxronlaşdır
-      if (charKey === 'heisenberg') {
-        applyTheme('theme-breaking-bad', false);
-      } else if (charKey === 'batman') {
-        applyTheme('theme-batman', false);
-      } else if (charKey === 'cyberpunk') {
-        applyTheme('theme-matrix', false);
-      } else if (charKey === 'godfather') {
-        applyTheme('theme-netflix', false);
+      // Xarakterə uyğun otaq mövzusunu yadda saxla (Yalnız otaq daxilində tətbiq olunur)
+      let targetTheme = 'theme-netflix';
+      if (charKey === 'heisenberg') targetTheme = 'theme-breaking-bad';
+      else if (charKey === 'batman') targetTheme = 'theme-batman';
+      else if (charKey === 'cyberpunk') targetTheme = 'theme-matrix';
+      else if (charKey === 'godfather') targetTheme = 'theme-netflix';
+
+      localStorage.setItem('watchparty-theme', targetTheme);
+      if (roomScreen && roomScreen.classList.contains('active')) {
+        applyTheme(targetTheme, false);
       }
 
       if (typeof spawnFloatingEmoji === 'function') {
@@ -776,10 +777,14 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Kult Film/Serial Tema Seçicisi (Yalnız Otaq Daxilində)
+  // Kult Film/Serial Tema Seçicisi (Yalnız Otaq Daxilində Aktiv Olur)
   const themeSelect = document.getElementById('theme-select');
   const savedTheme = localStorage.getItem('watchparty-theme') || 'theme-netflix';
-  applyTheme(savedTheme);
+  if (roomScreen && roomScreen.classList.contains('active')) {
+    applyTheme(savedTheme);
+  } else {
+    document.body.className = 'theme-netflix';
+  }
 
   if (themeSelect) {
     themeSelect.value = savedTheme;
@@ -1004,6 +1009,10 @@ function enterRoomWithId(roomId, username, isHostIntent) {
   lobbyScreen.classList.remove('active');
   roomScreen.classList.add('active');
   displayRoomId.textContent = currentRoom;
+
+  // Otağa daxil olduqda seçilmiş kino mövzusunu aktivləşdir
+  const savedTheme = localStorage.getItem('watchparty-theme') || 'theme-netflix';
+  applyTheme(savedTheme, false);
 }
 
 btnCopyLink.addEventListener('click', () => {
@@ -1074,6 +1083,7 @@ function forceLeaveRoomAndReturnToLobby(customNotice) {
   // 6. Ekranları dəyişdir
   if (roomScreen) roomScreen.classList.remove('active');
   if (lobbyScreen) lobbyScreen.classList.add('active');
+  document.body.className = 'theme-netflix';
 
   // 7. UI-ı yenilə
   updateUserUI();
