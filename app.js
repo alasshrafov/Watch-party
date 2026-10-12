@@ -1876,7 +1876,7 @@ function setupVoiceChat() {
   setupPushToTalk();
 }
 
-let isHeadphoneMode = true; // Susmaya görə: Qulaqlıq Rejimi (Kino səsi 100% təmiz qalır, heç bir boğulma olmur)
+let isHeadphoneMode = true; // Susmaya görə: Kino Rejimi (Kino və video səsi 100% təmiz qalır, sıfır boğulma)
 
 function setupAudioModeToggle() {
   const btnMode = document.getElementById('btn-audio-mode');
@@ -1885,10 +1885,10 @@ function setupAudioModeToggle() {
       isHeadphoneMode = !isHeadphoneMode;
       updateAudioModeUI();
       if (isVoiceActive) {
-        showNotice(isHeadphoneMode ? '🎧 Qulaqlıq Rejimi: Video səsi 100% təmizdir' : '🔊 Dinamik Rejimi: Əks-səda filtri aktivdir');
+        showNotice(isHeadphoneMode ? '🎬 Kino Rejimi: Video səsi 100% təmiz və toxunulmazdır' : '🔊 Dinamik Rejimi: Əks-səda filtri aktivdir');
         await startVoiceChat();
       } else {
-        showNotice(isHeadphoneMode ? '🎧 Rejim: Qulaqlıq seçildi (Kino səsi təmiz)' : '🔊 Rejim: Dinamik seçildi (Əks-səda filtri)');
+        showNotice(isHeadphoneMode ? '🎬 Rejim: Kino Rejimi seçildi (Video səsi 100% təmiz)' : '🔊 Rejim: Dinamik seçildi (Əks-səda filtri)');
       }
     });
   }
@@ -1901,13 +1901,13 @@ function updateAudioModeUI() {
   const btn = document.getElementById('btn-audio-mode');
   if (icon && txt) {
     if (isHeadphoneMode) {
-      icon.textContent = '🎧';
-      txt.textContent = 'Qulaqlıq';
-      if (btn) btn.title = 'Qulaqlıq Rejimi: Film səsi 100% təmiz qalır (Boğulma olmur). Dinamik üçün toxunun.';
+      icon.textContent = '🎬';
+      txt.textContent = 'Kino Səsi';
+      if (btn) btn.title = 'Kino Rejimi: Video və film səsi 100% təmiz qalır (Boğulma olmur). Dinamik üçün toxunun.';
     } else {
       icon.textContent = '🔊';
       txt.textContent = 'Dinamik';
-      if (btn) btn.title = 'Dinamik Rejimi: Əks-səda əleyhinə filtr aktivdir. Qulaqlıq üçün toxunun.';
+      if (btn) btn.title = 'Dinamik Rejimi: Əks-səda əleyhinə filtr aktivdir. Kino səsi üçün toxunun.';
     }
   }
 }
@@ -1928,12 +1928,15 @@ async function populateMicDeviceList() {
       const opt = document.createElement('option');
       opt.value = mic.deviceId;
       const label = mic.label || `Mikrofon ${index + 1}`;
-      const isInternal = /array|realtek|internal|built-in|daxili|integrated/i.test(label) &&
-                         !/bluetooth|hands-free|headset|airpods|buds/i.test(label);
+      const lower = label.toLowerCase();
+      const isBluetooth = lower.includes('bluetooth') || lower.includes('hands-free') || lower.includes('headset') || lower.includes('airpods') || lower.includes('buds') || lower.includes('bth') || lower.includes('lg audio');
+      const isInternal = (lower.includes('high definition') || lower.includes('realtek') || lower.includes('array') || lower.includes('internal') || lower.includes('built-in') || lower.includes('daxili') || lower.includes('integrated')) && !isBluetooth;
 
       if (isInternal && !internalFound) {
         internalFound = mic.deviceId;
-        opt.textContent = `💻 ${label} (Tövsiyə - Təmiz Kino)`;
+        opt.textContent = `💻 ${label} (Tövsiyə - Təmiz Stereo)`;
+      } else if (isBluetooth) {
+        opt.textContent = `🎧 ${label} (Bluetooth)`;
       } else {
         opt.textContent = `🎙️ ${label}`;
       }
@@ -1971,17 +1974,35 @@ async function getSafeMicrophoneId() {
       if (match) return match.deviceId;
     }
 
-    // Bluetooth qulaqlığın Hands-Free telefon rejiminə düşməməsi üçün noutbukun daxili mikrofonunu seç
-    const internalMic = mics.find(m => {
+    // Bluetooth qulaqlığın Hands-Free telefon rejiminə düşməməsi üçün noutbukun daxili/kabel mikrofonunu seç
+    const safeMics = mics.filter(m => {
       const name = (m.label || '').toLowerCase();
-      return (name.includes('array') || name.includes('realtek') || name.includes('internal') || name.includes('built-in') || name.includes('daxili') || name.includes('integrated')) &&
-             !name.includes('bluetooth') && !name.includes('hands-free') && !name.includes('headset') && !name.includes('airpods') && !name.includes('buds');
+      return !name.includes('bluetooth') &&
+             !name.includes('hands-free') &&
+             !name.includes('headset') &&
+             !name.includes('airpods') &&
+             !name.includes('buds') &&
+             !name.includes('bth') &&
+             !name.includes('lg audio');
     });
 
-    if (internalMic) {
+    if (safeMics.length > 0) {
+      const internalMic = safeMics.find(m => {
+        const name = (m.label || '').toLowerCase();
+        return name.includes('high definition') ||
+               name.includes('realtek') ||
+               name.includes('array') ||
+               name.includes('internal') ||
+               name.includes('built-in') ||
+               name.includes('daxili') ||
+               name.includes('integrated') ||
+               name.includes('microphone');
+      }) || safeMics[0];
+
       selectedMicDeviceId = internalMic.deviceId;
       return internalMic.deviceId;
     }
+    return mics[0].deviceId;
   } catch (e) {}
   return '';
 }
@@ -2026,30 +2047,39 @@ function setupPushToTalk() {
   }
 }
 
-let voiceCaptureContext = null;
+// ----------------------------------------------------
+// Vahid Master AudioContext (Həm qəbul, həm ötürmə üçün)
+// ----------------------------------------------------
+let masterAudioContext = null;
 let voiceCaptureProcessor = null;
 let voiceCaptureSource = null;
-let audioPlaybackContext = null;
 const scheduledPlayTimes = {}; // Hər danışan üçün fərdi jitter vaxtı
 const speakerTimeouts = {};
 
-function getPlaybackContext() {
-  if (!audioPlaybackContext) {
+function getMasterAudioContext() {
+  if (!masterAudioContext) {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (AudioCtx) {
-      audioPlaybackContext = new AudioCtx();
+      masterAudioContext = new AudioCtx({ latencyHint: 'interactive' });
     }
   }
-  if (audioPlaybackContext && audioPlaybackContext.state === 'suspended') {
-    audioPlaybackContext.resume().catch(() => {});
+  if (masterAudioContext && masterAudioContext.state === 'suspended') {
+    masterAudioContext.resume().catch(() => {});
   }
-  return audioPlaybackContext;
+  return masterAudioContext;
+}
+
+function getPlaybackContext() {
+  return getMasterAudioContext();
 }
 
 function handleIncomingVoiceChunk(senderId, username, arrayBuffer) {
   if (!arrayBuffer || (socket && senderId === socket.id)) return;
-  const ctx = getPlaybackContext();
+  const ctx = getMasterAudioContext();
   if (!ctx) return;
+  if (ctx.state === 'suspended') {
+    ctx.resume().catch(() => {});
+  }
 
   try {
     const int16 = new Int16Array(arrayBuffer);
@@ -2100,18 +2130,14 @@ function handleIncomingVoiceChunk(senderId, username, arrayBuffer) {
 function startAudioChunkCapture(stream) {
   stopAudioChunkCapture();
   try {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return;
-    voiceCaptureContext = new AudioCtx();
-    if (voiceCaptureContext.state === 'suspended') {
-      voiceCaptureContext.resume().catch(() => {});
-    }
+    const ctx = getMasterAudioContext();
+    if (!ctx) return;
 
-    voiceCaptureSource = voiceCaptureContext.createMediaStreamSource(stream);
-    const nativeRate = voiceCaptureContext.sampleRate || 48000;
+    voiceCaptureSource = ctx.createMediaStreamSource(stream);
+    const nativeRate = ctx.sampleRate || 48000;
     const downsampleStep = nativeRate / 24000;
     const bufferSize = nativeRate >= 44100 ? 4096 : 2048;
-    voiceCaptureProcessor = voiceCaptureContext.createScriptProcessor(bufferSize, 1, 1);
+    voiceCaptureProcessor = ctx.createScriptProcessor(bufferSize, 1, 1);
 
     let isSpeakingState = false;
 
@@ -2160,11 +2186,12 @@ function startAudioChunkCapture(stream) {
       }
     };
 
-    // Qeyd: destination-a bağlamırıq ki, səs kartında əlavə çıxış kanalı açılıb videonun səsinə mane olmasın
-    const dummyGain = voiceCaptureContext.createGain();
+    // Qeyd: Web Audio API qrafını işlək və dəqiq sinxron saxlamaq üçün sıfır gain ilə təhlükəsiz qoşulma
+    const dummyGain = ctx.createGain();
     dummyGain.gain.value = 0;
     voiceCaptureSource.connect(voiceCaptureProcessor);
     voiceCaptureProcessor.connect(dummyGain);
+    dummyGain.connect(ctx.destination);
 
   } catch (err) {
     console.warn('[Voice Engine] Capture setup error:', err);
@@ -2180,10 +2207,6 @@ function stopAudioChunkCapture() {
     try { voiceCaptureSource.disconnect(); } catch (e) {}
     voiceCaptureSource = null;
   }
-  if (voiceCaptureContext) {
-    try { voiceCaptureContext.close(); } catch (e) {}
-    voiceCaptureContext = null;
-  }
 }
 
 async function startVoiceChat() {
@@ -2194,10 +2217,20 @@ async function startVoiceChat() {
     }
 
     const safeMicId = await getSafeMicrophoneId();
+    const isPureCinema = isHeadphoneMode; // True olduqda video səsi 100% təmiz qalır
+
+    // Chromium və sistem audio mühərrikində videonun səsini boğan filtrləri blokla:
     const audioConstraints = {
-      echoCancellation: isHeadphoneMode ? false : true,
-      noiseSuppression: isHeadphoneMode ? false : true,
+      echoCancellation: isPureCinema ? false : true,
+      noiseSuppression: isPureCinema ? false : true,
       autoGainControl: false,
+      googEchoCancellation: isPureCinema ? false : true,
+      googAutoGainControl: false,
+      googNoiseSuppression: isPureCinema ? false : true,
+      googHighpassFilter: false,
+      googAudioMirroring: false,
+      googTypingNoiseDetection: false,
+      voiceIsolation: false,
       channelCount: 1
     };
     if (safeMicId) {
@@ -2209,16 +2242,38 @@ async function startVoiceChat() {
       video: false
     });
 
+    // Əgər noutbukda Bluetooth qulaqlığın hands-free mikrofonu aktivləşibsə, dərhal daxili mikrofona keç ki, Bluetooth stereo 48kHz rejimi pozulmasın:
+    const curTrack = localVoiceStream.getAudioTracks()[0];
+    const curLabel = (curTrack && curTrack.label) ? curTrack.label.toLowerCase() : '';
+    if (curLabel && (curLabel.includes('bluetooth') || curLabel.includes('hands-free') || curLabel.includes('headset') || curLabel.includes('lg audio'))) {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const internalMic = devices.find(d => {
+        if (d.kind !== 'audioinput') return false;
+        const l = (d.label || '').toLowerCase();
+        return !l.includes('bluetooth') && !l.includes('hands-free') && !l.includes('headset') && !l.includes('airpods') && !l.includes('lg audio');
+      });
+      if (internalMic && internalMic.deviceId) {
+        console.log('[Voice Engine] Bluetooth Hands-Free aşkar edildi. Stereo audio üçün daxili mikrofona keçilir:', internalMic.label);
+        curTrack.stop();
+        audioConstraints.deviceId = { exact: internalMic.deviceId };
+        localVoiceStream = await navigator.mediaDevices.getUserMedia({
+          audio: audioConstraints,
+          video: false
+        });
+        selectedMicDeviceId = internalMic.deviceId;
+      }
+    }
+
     // İcazə veriləndən sonra mikrofon siyahısını tam adlarla yenilə
     populateMicDeviceList();
 
     isVoiceActive = true;
     updateVoiceUI(true);
-    showNotice(isHeadphoneMode ? '🎙️ Səsli danışıq aktivdir! (Qulaqlıq rejimi: Film səsi 100% təmizdir)' : '🎙️ Səsli danışıq aktivdir! (Dinamik rejimi)');
+    showNotice(isPureCinema ? '🎙️ Səsli danışıq aktivdir! (Kino rejimi: Video səsi 100% təmizdir)' : '🎙️ Səsli danışıq aktivdir! (Dinamik rejimi)');
 
-    const pCtx = getPlaybackContext();
-    if (pCtx && pCtx.state === 'suspended') {
-      pCtx.resume().catch(() => {});
+    const mCtx = getMasterAudioContext();
+    if (mCtx && mCtx.state === 'suspended') {
+      mCtx.resume().catch(() => {});
     }
 
     startAudioChunkCapture(localVoiceStream);
@@ -2253,7 +2308,6 @@ function stopVoiceChat() {
   showNotice('🎙️ Mikrofon bağlandı');
 }
 
-
 function updateVoiceUI(active) {
   if (btnVoiceToggle) {
     const micText = btnVoiceToggle.querySelector('.mic-text');
@@ -2278,242 +2332,10 @@ function updateVoiceUI(active) {
   }
 }
 
-async function callVoicePeer(peerId) {
-  if (!socket || !peerId || peerId === socket.id) return;
-  console.log(`[WebRTC Voice] Zəng göndərilir -> ${peerId}`);
-
-  if (voicePeerConnections[peerId]) {
-    try { voicePeerConnections[peerId].close(); } catch (e) {}
-    delete voicePeerConnections[peerId];
-  }
-
-  const pc = new RTCPeerConnection(rtcConfig);
-  voicePeerConnections[peerId] = pc;
-
-  // Real mikrofon səsini əlaqəyə qoş
-  if (localVoiceStream && localVoiceStream.getAudioTracks().length > 0) {
-    localVoiceStream.getAudioTracks().forEach(track => {
-      try { pc.addTrack(track, localVoiceStream); } catch (e) {}
-    });
-  }
-
-  // Qarşı tərəfdən gələn səs axını
-  pc.ontrack = (event) => {
-    console.log(`[WebRTC Voice] Səs axını qəbul edildi (${peerId}):`, event.track);
-    const stream = (event.streams && event.streams[0]) ? event.streams[0] : new MediaStream([event.track]);
-    playRemoteVoice(stream, peerId, event.track);
-  };
-
-  pc.onicecandidate = (event) => {
-    if (event.candidate && socket) {
-      socket.emit('voice-ice', { target: peerId, candidate: event.candidate });
-    }
-  };
-
-  pc.oniceconnectionstatechange = () => {
-    console.log(`[WebRTC Voice] ICE Vəziyyəti (${peerId}): ${pc.iceConnectionState}`);
-    if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
-      unlockAllRemoteAudios();
-    }
-  };
-
-  try {
-    const offer = await pc.createOffer({ offerToReceiveAudio: true });
-    await pc.setLocalDescription(offer);
-    socket.emit('voice-offer', { target: peerId, sdp: offer });
-  } catch (err) {
-    console.error(`[WebRTC Voice] Təklif yaratma xətası (${peerId}):`, err);
-  }
-}
-
-async function handleVoiceOffer(senderId, sdp) {
-  if (!senderId || !sdp || !socket) return;
-  console.log(`[WebRTC Voice] Səs təklifi qəbul edildi <- ${senderId}`);
-
-  let pc = voicePeerConnections[senderId];
-  if (!pc || pc.signalingState === 'closed') {
-    pc = new RTCPeerConnection(rtcConfig);
-    voicePeerConnections[senderId] = pc;
-  }
-
-  // Əgər bizim də mikrofonumuz aktivdirsə, öz səsimizi də cavaba əlavə et
-  if (localVoiceStream && isVoiceActive && localVoiceStream.getAudioTracks().length > 0) {
-    const senders = pc.getSenders();
-    if (!senders || senders.length === 0) {
-      localVoiceStream.getAudioTracks().forEach(track => {
-        try { pc.addTrack(track, localVoiceStream); } catch (e) {}
-      });
-    }
-  }
-
-  pc.ontrack = (event) => {
-    console.log(`[WebRTC Voice] Səs axını qəbul edildi (${senderId}):`, event.track);
-    const stream = (event.streams && event.streams[0]) ? event.streams[0] : new MediaStream([event.track]);
-    playRemoteVoice(stream, senderId, event.track);
-  };
-
-  pc.onicecandidate = (event) => {
-    if (event.candidate && socket) {
-      socket.emit('voice-ice', { target: senderId, candidate: event.candidate });
-    }
-  };
-
-  pc.oniceconnectionstatechange = () => {
-    if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
-      unlockAllRemoteAudios();
-    }
-  };
-
-  try {
-    await pc.setRemoteDescription(new RTCSessionDescription(sdp));
-    drainIceCandidates(senderId, pc);
-
-    const answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
-    socket.emit('voice-answer', { target: senderId, sdp: answer });
-  } catch (err) {
-    console.error(`[WebRTC Voice] handleVoiceOffer xətası (${senderId}):`, err);
-  }
-}
-
-async function handleVoiceAnswer(senderId, sdp) {
-  if (!senderId || !sdp) return;
-  console.log(`[WebRTC Voice] Səs cavabı qəbul edildi <- ${senderId}`);
-  const pc = voicePeerConnections[senderId];
-  if (!pc) return;
-
-  try {
-    await pc.setRemoteDescription(new RTCSessionDescription(sdp));
-    drainIceCandidates(senderId, pc);
-  } catch (err) {
-    console.error(`[WebRTC Voice] handleVoiceAnswer xətası (${senderId}):`, err);
-  }
-}
-
-async function handleVoiceIceCandidate(senderId, candidate) {
-  if (!candidate) return;
-  const pc = voicePeerConnections[senderId];
-  if (pc && pc.remoteDescription && pc.remoteDescription.type) {
-    try {
-      await pc.addIceCandidate(new RTCIceCandidate(candidate));
-    } catch (e) {
-      console.warn(`[WebRTC Voice] addIceCandidate xətası (${senderId}):`, e);
-    }
-  } else {
-    if (!voiceIceCandidatesQueue[senderId]) voiceIceCandidatesQueue[senderId] = [];
-    voiceIceCandidatesQueue[senderId].push(candidate);
-  }
-}
-
-async function drainIceCandidates(peerId, pc) {
-  if (!voiceIceCandidatesQueue[peerId]) return;
-  const queue = voiceIceCandidatesQueue[peerId];
-  delete voiceIceCandidatesQueue[peerId];
-  for (const cand of queue) {
-    try {
-      await pc.addIceCandidate(new RTCIceCandidate(cand));
-    } catch (e) {
-      console.warn(`[WebRTC Voice] Növbədəki ICE namizədi xətası (${peerId}):`, e);
-    }
-  }
-}
-
-function playRemoteVoice(stream, peerId, track) {
-  // Səs axını 100% zəmanətli şəkildə WebSocket PCM Relay (voice-chunk) ilə ötürülür və Web Audio ilə oxunur.
-  // Burada əlavə <audio> elementi yaradılmır ki, Windows brauzerə "VoIP zəng" rejimi tətbiq edib videonun səsini boğmasın!
-}
-
 function cleanupVoicePeer(peerId) {
-  if (voicePeerConnections[peerId]) {
-    try { voicePeerConnections[peerId].close(); } catch (e) {}
-    delete voicePeerConnections[peerId];
-  }
-  delete voiceIceCandidatesQueue[peerId];
-  delete pcMakingOffer[peerId];
-
-  const audioEl = document.getElementById(`remote-voice-audio-${peerId}`);
-  if (audioEl) {
-    audioEl.srcObject = null;
-    audioEl.remove();
-  }
+  delete scheduledPlayTimes[peerId];
+  delete speakerTimeouts[peerId];
   updateSpeakingVisual(peerId, false);
-}
-
-// ------------------------------------------
-// Real Vaxt Səs Fəallığı və Discord Haləsi (VAD)
-// ------------------------------------------
-function startLocalSpeakingDetection(stream) {
-  stopLocalSpeakingDetection();
-  try {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return;
-    vadAudioContext = new AudioCtx();
-    if (vadAudioContext.state === 'suspended') {
-      vadAudioContext.resume().catch(() => {});
-    }
-
-    const source = vadAudioContext.createMediaStreamSource(stream);
-    const analyser = vadAudioContext.createAnalyser();
-    analyser.fftSize = 256;
-    analyser.smoothingTimeConstant = 0.3;
-    source.connect(analyser); // Dinləyiciyə qoşulmur (əks-səda olmur)
-
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
-    let silenceCounter = 0;
-
-    vadInterval = setInterval(() => {
-      if (!isVoiceActive || !localVoiceStream) {
-        stopLocalSpeakingDetection();
-        return;
-      }
-      analyser.getByteFrequencyData(dataArray);
-      let sum = 0;
-      for (let i = 0; i < bufferLength; i++) {
-        sum += dataArray[i];
-      }
-      const avg = sum / bufferLength;
-      const isVoiceDetected = avg > 14;
-
-      if (isVoiceDetected) {
-        silenceCounter = 0;
-        if (!isSpeakingLocally) {
-          isSpeakingLocally = true;
-          updateSpeakingVisual(socket.id, true);
-          if (socket) socket.emit('user-speaking', { isSpeaking: true });
-        }
-      } else {
-        silenceCounter++;
-        if (silenceCounter > 4) {
-          if (isSpeakingLocally) {
-            isSpeakingLocally = false;
-            updateSpeakingVisual(socket.id, false);
-            if (socket) socket.emit('user-speaking', { isSpeaking: false });
-          }
-        }
-      }
-    }, 100);
-  } catch (err) {
-    console.warn('[WebRTC Voice] VAD inisializasiya xətası:', err);
-  }
-}
-
-function stopLocalSpeakingDetection() {
-  if (vadInterval) {
-    clearInterval(vadInterval);
-    vadInterval = null;
-  }
-  if (vadAudioContext) {
-    try { vadAudioContext.close(); } catch (e) {}
-    vadAudioContext = null;
-  }
-  if (isSpeakingLocally) {
-    isSpeakingLocally = false;
-    if (socket) {
-      updateSpeakingVisual(socket.id, false);
-      socket.emit('user-speaking', { isSpeaking: false });
-    }
-  }
 }
 
 function updateSpeakingVisual(sockId, isSpeaking) {
@@ -2544,11 +2366,9 @@ function unlockAllRemoteAudios() {
   document.querySelectorAll('audio[id^="remote-voice-audio-"]').forEach(el => {
     if (el.paused) el.play().catch(() => {});
   });
-  if (audioPlaybackContext && audioPlaybackContext.state === 'suspended') {
-    audioPlaybackContext.resume().catch(() => {});
-  }
-  if (vadAudioContext && vadAudioContext.state === 'suspended') {
-    vadAudioContext.resume().catch(() => {});
+  const mCtx = getMasterAudioContext();
+  if (mCtx && mCtx.state === 'suspended') {
+    mCtx.resume().catch(() => {});
   }
   hideAudioUnlockBanner();
 }
