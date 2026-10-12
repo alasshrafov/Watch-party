@@ -122,6 +122,7 @@ app.get('/', (req, res) => {
 // 2. OTAQLAR VƏ REAL-VAXT SİXRONİZASİYASI
 // ==========================================
 const rooms = {};
+const roomCleanupTimers = {};
 
 io.on('connection', (socket) => {
   let currentRoom = null;
@@ -131,7 +132,7 @@ io.on('connection', (socket) => {
 
   // Otağın mövcudluğunu yoxla (Socket callback)
   socket.on('check-room', ({ roomId }, callback) => {
-    const rId = (roomId || '').toLowerCase();
+    const rId = (roomId || '').trim().toLowerCase();
     if (typeof callback === 'function') {
       callback({ exists: !!rooms[rId] });
     }
@@ -139,19 +140,17 @@ io.on('connection', (socket) => {
 
   // Otağa qoşulma
   socket.on('join-room', ({ roomId, username, avatar, authUserId, isGoogleAuth, initialTheme }) => {
-    const rId = (roomId || '').toLowerCase();
-    const roomExists = !!rooms[rId];
+    const rId = (roomId || '').trim().toLowerCase();
+    if (!rId) return;
 
-    // Qayda: Qeydiyyatsız istifadəçilər (Google ilə daxil olmayanlar) YENİ OTAQ YARADA BİLMƏZ!
-    // Yalnız mövcud otaqlara qoşula bilərlər.
-    if (!roomExists) {
-      if (!isGoogleAuth && !authUserId) {
-        socket.emit('room-create-denied', {
-          message: 'Yeni kino otağı yaratmaq üçün Google hesabı ilə daxil olmalısınız! Qeydiyyatsız yalnız mövcud otaqlara qoşula bilərsiniz.'
-        });
-        return;
-      }
+    // Əgər bu otaq üçün gözləmədə olan silinmə taymeri varsa, dərhal ləğv et
+    if (roomCleanupTimers[rId]) {
+      clearTimeout(roomCleanupTimers[rId]);
+      delete roomCleanupTimers[rId];
+      console.log(`[Timer Cancelled] Room ${rId} deletion cancelled - user joined.`);
     }
+
+    const roomExists = !!rooms[rId];
 
     // Əgər otaq mövcuddursa və kilidlənibsə, icazə yoxla
     if (roomExists && rooms[rId].isLocked) {
@@ -190,8 +189,11 @@ io.on('connection', (socket) => {
       };
     }
 
-    const isHost = Object.keys(rooms[rId].users).length === 0;
-    if (isHost) rooms[rId].hostSocketId = socket.id;
+    // Əgər otaqda heç kim yoxdursa, ilk daxil olan istifadəçi Host olur
+    const isHost = (rooms[rId].hostSocketId === socket.id) || (Object.keys(rooms[rId].users).length === 0);
+    if (isHost) {
+      rooms[rId].hostSocketId = socket.id;
+    }
 
     // Cari istifadəçini icazəlilərə əlavə et
     if (!rooms[rId].allowedUsers) rooms[rId].allowedUsers = {};
@@ -229,7 +231,7 @@ io.on('connection', (socket) => {
     // Bütün otağa ən son iştirakçı siyahısını göndər (Hər kəsin ekranında siyahı dərhal yenilənsin)
     io.to(rId).emit('update-users', rooms[rId].users);
 
-    console.log(`[+] ${currentUsername} (${currentUserAvatar}) joined: ${rId} (Host: ${isHost})`);
+    console.log(`[+] ${currentUsername} (${currentUserAvatar}) joined: ${rId} (Host: ${isHost}, Total: ${Object.keys(rooms[rId].users).length})`);
   });
 
   // 2.1 Otağın Kilidlənməsi / Açılması (Host üçün)
@@ -527,34 +529,41 @@ io.on('connection', (socket) => {
   // Əlaqə kəsildikdə (Disconnect)
   socket.on('disconnect', () => {
     if (currentRoom && rooms[currentRoom]) {
-      socket.to(currentRoom).emit('voice-peer-left', { peerId: socket.id, username: currentUsername });
-      socket.to(currentRoom).emit('peer-speaking', { socketId: socket.id, isSpeaking: false });
+      const rId = currentRoom;
+      socket.to(rId).emit('voice-peer-left', { peerId: socket.id, username: currentUsername });
+      socket.to(rId).emit('peer-speaking', { socketId: socket.id, isSpeaking: false });
 
-      const isHost = rooms[currentRoom].hostSocketId === socket.id || (rooms[currentRoom].users[socket.id] && rooms[currentRoom].users[socket.id].isHost);
+      delete rooms[rId].users[socket.id];
+      const remainingUsers = Object.keys(rooms[rId].users);
 
-      if (isHost) {
-        // Qayda: Otaq rəhbəri çıxdıqda / əlaqəsi kəsildikdə otaq avtomatik bağlanır!
-        io.to(currentRoom).emit('room-closed', {
-          message: 'Otaq rəhbəri çıxdığı üçün kino zalı avtomatik bağlandı.'
-        });
-        delete rooms[currentRoom];
-        console.log(`[Closed] Host disconnected. Room ${currentRoom} was deleted.`);
+      if (remainingUsers.length === 0) {
+        // Otağı dərhal silmə! 60 saniyəlik qoruma buferi ver ki, istifadəçi səhifəni yeniləyəndə otaq və film sıfırlanmasın!
+        if (roomCleanupTimers[rId]) clearTimeout(roomCleanupTimers[rId]);
+        roomCleanupTimers[rId] = setTimeout(() => {
+          if (rooms[rId] && Object.keys(rooms[rId].users).length === 0) {
+            delete rooms[rId];
+            delete roomCleanupTimers[rId];
+            console.log(`[-] Room ${rId} deleted after 60s inactivity`);
+          }
+        }, 60000);
       } else {
-        delete rooms[currentRoom].users[socket.id];
-        const remainingUsers = Object.keys(rooms[currentRoom].users);
-
-        if (remainingUsers.length === 0) {
-          delete rooms[currentRoom];
-          console.log(`[-] Room ${currentRoom} deleted (empty)`);
-        } else {
-          io.to(currentRoom).emit('user-left', {
-            socketId: socket.id,
-            username: currentUsername,
-            users: rooms[currentRoom].users
-          });
-          io.to(currentRoom).emit('update-users', rooms[currentRoom].users);
-          console.log(`[-] Guest ${currentUsername} disconnected from room: ${currentRoom}`);
+        // Əgər çıxan şəxs Host idisə, növbəti qonağı Host təyin et ki, otaq sahibsiz qalıb bağlanmasın
+        if (rooms[rId].hostSocketId === socket.id) {
+          const nextHostSocketId = remainingUsers[0];
+          rooms[rId].hostSocketId = nextHostSocketId;
+          if (rooms[rId].users[nextHostSocketId]) {
+            rooms[rId].users[nextHostSocketId].isHost = true;
+          }
+          console.log(`[Host Transferred] Room ${rId} new host: ${rooms[rId].users[nextHostSocketId]?.username}`);
         }
+
+        io.to(rId).emit('user-left', {
+          socketId: socket.id,
+          username: currentUsername,
+          users: rooms[rId].users
+        });
+        io.to(rId).emit('update-users', rooms[rId].users);
+        console.log(`[-] ${currentUsername} disconnected from room: ${rId} (Remaining: ${remainingUsers.length})`);
       }
     }
   });

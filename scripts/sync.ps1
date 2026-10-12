@@ -19,13 +19,3 @@ if ($status) {
 } else {
     Write-Output "Heç bir yeni dəyişiklik yoxdur, hər şey aktualdır."
 }
-
-# Render Avtomatik Deploy Tətiyi (Deploy Hook)
-$deployHook = "https://api.render.com/deploy/srv-db5asv7lk1mc739bph2g?key=Gkj1c80cljc"
-try {
-    Write-Output "Render avtomatik deploy tətiklənir..."
-    $res = Invoke-RestMethod -Uri $deployHook -Method Post
-    Write-Output "Render deploy uğurla başladıldı! ID: $($res.deploy.id)"
-} catch {
-    Write-Warning "Render deploy hook xətası: $_"
-}

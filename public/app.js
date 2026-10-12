@@ -1696,12 +1696,13 @@ async function handleGuestEnterRoom() {
 
 function enterRoomWithId(roomId, username, isHostIntent) {
   currentUsername = username || (currentUser ? currentUser.username : 'İstifadəçi');
-  currentRoom = roomId;
+  currentRoom = (roomId || '').trim().toLowerCase();
 
   const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?room=' + currentRoom;
   window.history.pushState({ path: newUrl }, '', newUrl);
 
   initSocket();
+  joinCurrentRoomOnServer();
 
   lobbyScreen.classList.remove('active');
   roomScreen.classList.add('active');
@@ -1806,16 +1807,41 @@ function leaveRoomAndReturnToLobby() {
 // 2. SOCKET.IO SİSTEMİ
 // ==========================================
 
-function initSocket() {
-  socket = io();
-
+function joinCurrentRoomOnServer() {
+  if (!socket || !currentRoom) return;
   socket.emit('join-room', {
-    roomId: currentRoom,
+    roomId: (currentRoom || '').trim().toLowerCase(),
     username: currentUsername,
     avatar: currentUser ? currentUser.avatar : '🍿',
     authUserId: currentUser ? currentUser.id : null,
     isGoogleAuth: !!(currentUser && currentUser.isGoogle),
     initialTheme: localStorage.getItem('watchparty-theme') || 'theme-netflix'
+  });
+}
+
+function initSocket() {
+  if (socket) {
+    if (socket.connected) {
+      joinCurrentRoomOnServer();
+    }
+    return;
+  }
+
+  socket = io();
+
+  // Əlaqə yarandıqda və ya kəsilib bərpa olunduqda (reconnect) otağa dərhal yenidən qoşul
+  socket.on('connect', () => {
+    console.log('[Socket] Serverlə əlaqə quruldu:', socket.id);
+    joinCurrentRoomOnServer();
+  });
+
+  // Hər kəsin ekranında iştirakçı siyahısının dərhal və dəqiq sinxronlaşdırılması
+  socket.on('update-users', (users) => {
+    console.log('[Socket] update-users qəbul edildi:', users);
+    if (users) {
+      currentRoomUsers = users;
+      updateUsersList(users);
+    }
   });
 
   socket.on('room-joined', (data) => {
@@ -1826,7 +1852,6 @@ function initSocket() {
     if (data.users) {
       currentRoomUsers = data.users;
       updateUsersList(data.users);
-      // Səs axını 100% zəmanətli WebSocket PCM Relay ilə ötürülür
     }
     if (data.isLocked !== undefined) {
       isRoomLocked = data.isLocked;
@@ -1927,7 +1952,9 @@ function initSocket() {
     if (localScreenStream) {
       initiateScreenPeer(data.socketId);
     }
-    // Səs axını 100% zəmanətli WebSocket PCM Relay ilə ötürülür
+    if (isVoiceActive && localVoiceStream && data.socketId) {
+      callVoicePeer(data.socketId);
+    }
   });
 
   socket.on('user-left', (data) => {
@@ -2907,6 +2934,7 @@ let voiceCaptureSource = null;
 let audioPlaybackContext = null;
 const scheduledPlayTimes = {}; // Hər danışan üçün fərdi jitter vaxtı
 const speakerTimeouts = {};
+const remoteVoiceNodes = {}; // WebRTC P2P səs nodları
 
 function getPlaybackContext() {
   if (!audioPlaybackContext) {
@@ -2923,6 +2951,9 @@ function getPlaybackContext() {
 
 function handleIncomingVoiceChunk(senderId, username, arrayBuffer) {
   if (!arrayBuffer || (socket && senderId === socket.id)) return;
+  // Əgər həmin peer üçün kristal təmiz WebRTC Opus P2P axını oxunursa, dublikat olmaması üçün WebSocket relay paketini ötür
+  if (remoteVoiceNodes[senderId]) return;
+
   const ctx = getPlaybackContext();
   if (!ctx) return;
 
@@ -2931,6 +2962,14 @@ function handleIncomingVoiceChunk(senderId, username, arrayBuffer) {
     const float32 = new Float32Array(int16.length);
     for (let i = 0; i < int16.length; i++) {
       float32[i] = int16[i] / 32767.0;
+    }
+
+    // Paket kənarlarındakı şaqqıltı və çıqqıltını (clicks/pops) ləğv etmək üçün 16 samplik hamar crossfade
+    const fadeLen = Math.min(16, Math.floor(float32.length / 2));
+    for (let i = 0; i < fadeLen; i++) {
+      const f = i / fadeLen;
+      float32[i] *= f;
+      float32[float32.length - 1 - i] *= f;
     }
 
     // 24kHz PCM buferi - Web Audio API bunu arxa planda təmiz şəkildə sistemin 48kHz çıxışına upsample edir
@@ -2944,10 +2983,10 @@ function handleIncomingVoiceChunk(senderId, username, arrayBuffer) {
     const now = ctx.currentTime;
     let playAt = scheduledPlayTimes[senderId] || 0;
 
-    // Fasiləsiz Ultra Aşağı Gecikməli Jitter Buferi (<80ms):
+    // Fasiləsiz Ultra Aşağı Gecikməli Jitter Buferi (<60ms):
     if (playAt < now) {
       playAt = now + 0.020;
-    } else if (playAt > now + 0.080) {
+    } else if (playAt > now + 0.060) {
       // Şəbəkə dalğalanması olduqda yığılan gecikməni dərhal sıxaraq real vaxta qaytar!
       playAt = now + 0.020;
     }
@@ -2978,15 +3017,14 @@ function startAudioChunkCapture(stream) {
 
     voiceCaptureSource = voiceCaptureContext.createMediaStreamSource(stream);
 
-    // 120Hz KÜLƏK VƏ KULLER ƏLEYHİNƏ FİLTR (Highpass Filter):
-    // 120Hz-dən aşağı tezlikləri (ventilyator uğultusu, külək, masa vibrasiyası) tam kəsir!
+    // 100Hz KÜLƏK VƏ KULLER ƏLEYHİNƏ FİLTR (Highpass Filter):
+    // 100Hz-dən aşağı tezlikləri (ventilyator uğultusu, külək, masa vibrasiyası) tam kəsir!
     const hpFilter = voiceCaptureContext.createBiquadFilter();
     hpFilter.type = 'highpass';
-    hpFilter.frequency.value = 120;
+    hpFilter.frequency.value = 100;
     hpFilter.Q.value = 0.7;
 
     const nativeRate = voiceCaptureContext.sampleRate || 48000;
-    const downsampleStep = nativeRate / 24000;
     const bufferSize = 2048; // ~42.6ms mikro-bufer (gecikməni minimuma endirir)
     voiceCaptureProcessor = voiceCaptureContext.createScriptProcessor(bufferSize, 1, 1);
 
@@ -3008,11 +3046,20 @@ function startAudioChunkCapture(stream) {
       // Təbii danışıq həddi (arxa fondakı zəif küy və ventilyator səsini keçirmir)
       const isVoice = rms > 0.012;
 
-      // 24kHz PCM-ə çevir
-      const outLen = Math.floor(input.length / downsampleStep);
+      // 24kHz PCM-ə çevir (Hamar anti-aliasing filtering: metalik robot küyünü tam ləğv edir)
+      const step = nativeRate / 24000;
+      const outLen = Math.floor(input.length / step);
       const int16 = new Int16Array(outLen);
       for (let i = 0; i < outLen; i++) {
-        const sample = input[Math.floor(i * downsampleStep)];
+        const startIdx = Math.floor(i * step);
+        const endIdx = Math.min(input.length, Math.floor((i + 1) * step));
+        let sumSample = 0;
+        let count = 0;
+        for (let j = startIdx; j < endIdx; j++) {
+          sumSample += input[j];
+          count++;
+        }
+        const sample = count > 0 ? (sumSample / count) : (input[startIdx] || 0);
         int16[i] = Math.max(-32768, Math.min(32767, Math.floor(sample * 32767)));
       }
       const chunkBuffer = int16.buffer;
@@ -3186,6 +3233,15 @@ async function startVoiceChat() {
     // 100% Zəmanətli Pre-Roll & Hangover Canlı Audio Capturer-i işə sal
     startAudioChunkCapture(localVoiceStream);
 
+    // Otaqdakı digər iştirakçılara WebRTC P2P səs zəngi başlat
+    if (currentRoomUsers && socket) {
+      Object.keys(currentRoomUsers).forEach(peerId => {
+        if (peerId !== socket.id) {
+          callVoicePeer(peerId);
+        }
+      });
+    }
+
     if (socket) {
       socket.emit('voice-user-state', { isVoiceActive: true });
     }
@@ -3198,6 +3254,11 @@ async function startVoiceChat() {
 
 function stopVoiceChat() {
   stopAudioChunkCapture();
+
+  // Bütün WebRTC səs əlaqələrini təmizlə
+  Object.keys(voicePeerConnections).forEach(peerId => {
+    cleanupVoicePeer(peerId);
+  });
 
   if (localVoiceStream) {
     localVoiceStream.getTracks().forEach(track => {
@@ -3382,11 +3443,49 @@ async function drainIceCandidates(peerId, pc) {
 }
 
 function playRemoteVoice(stream, peerId, track) {
-  // Səs axını 100% zəmanətli şəkildə WebSocket PCM Relay (voice-chunk) ilə ötürülür və Web Audio ilə oxunur.
-  // Burada əlavə <audio> elementi yaradılmır ki, Windows brauzerə "VoIP zəng" rejimi tətbiq edib videonun səsini boğmasın!
+  try {
+    const ctx = getPlaybackContext();
+    if (!ctx) return;
+    if (remoteVoiceNodes[peerId]) {
+      try {
+        if (remoteVoiceNodes[peerId].source) remoteVoiceNodes[peerId].source.disconnect();
+        if (remoteVoiceNodes[peerId].gainNode) remoteVoiceNodes[peerId].gainNode.disconnect();
+      } catch (e) {}
+    }
+
+    // Brauzerdə MediaStream axınının aktiv qalması üçün gizli muted audio elementi
+    let dummyAudio = document.getElementById(`remote-voice-audio-${peerId}`);
+    if (!dummyAudio) {
+      dummyAudio = document.createElement('audio');
+      dummyAudio.id = `remote-voice-audio-${peerId}`;
+      dummyAudio.muted = true;
+      dummyAudio.style.display = 'none';
+      document.body.appendChild(dummyAudio);
+    }
+    dummyAudio.srcObject = stream;
+    dummyAudio.play().catch(() => {});
+
+    // Web Audio API vasitəsilə 48kHz kristal təmiz Opus səsi oxut (Windows VoIP ducking-siz)
+    const source = ctx.createMediaStreamSource(stream);
+    const gainNode = ctx.createGain();
+    gainNode.gain.value = 1.0;
+    source.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    remoteVoiceNodes[peerId] = { source, gainNode, dummyAudio };
+    console.log(`[WebRTC Voice] Kristal təmiz WebRTC Opus səs axını aktivdir -> ${peerId}`);
+  } catch (err) {
+    console.warn('[WebRTC Voice] playRemoteVoice xətası:', err);
+  }
 }
 
 function cleanupVoicePeer(peerId) {
+  if (remoteVoiceNodes[peerId]) {
+    try {
+      if (remoteVoiceNodes[peerId].source) remoteVoiceNodes[peerId].source.disconnect();
+      if (remoteVoiceNodes[peerId].gainNode) remoteVoiceNodes[peerId].gainNode.disconnect();
+    } catch (e) {}
+    delete remoteVoiceNodes[peerId];
+  }
   if (voicePeerConnections[peerId]) {
     try { voicePeerConnections[peerId].close(); } catch (e) {}
     delete voicePeerConnections[peerId];
