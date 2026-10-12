@@ -785,6 +785,16 @@
                 <p>2. Aşağıdakı düyməyə basaraq açılan pəncərədə <strong>"Chrome Tab"</strong> bölməsindən həmin saytı seçin.</p>
                 <p>3. Pəncərənin altındakı <strong>"Also share tab audio" (Səsi paylaş)</strong> qutusunu mütləq işarələyin!</p>
               </div>
+              <div class="stream-quality-row">
+                <label for="stream-quality-select" class="stream-quality-label">
+                  <span>⚙️ Yayım Keyfiyyəti:</span>
+                </label>
+                <select id="stream-quality-select" class="stream-quality-select">
+                  <option value="1080p-high" selected>🌟 1080p Full HD — Kristal Təmiz (Kino Rejimi • 8.5 Mbps)</option>
+                  <option value="1080p-balanced">⚡ 1080p Balans — Stabil & Axıcı (5.0 Mbps)</option>
+                  <option value="720p-smooth">🚀 720p HD — Zəif İnternet üçün (3.0 Mbps)</option>
+                </select>
+              </div>
               <div class="stream-actions">
                 <button id="btn-start-stream" class="btn-primary">
                   <span>🎥 Film Tabını Yayımla (Səslə)</span>
@@ -804,6 +814,16 @@
                 <p>Netflix qorunması səbəbilə qara ekran olmasın deyə brauzerdə bir dəfəlik:</p>
                 <p><strong>Parametrlər ➡️ Sistem (System) ➡️ "Use graphics acceleration when available"</strong> seçimini <em>söndürün (OFF)</em> və brauzeri yenidən başladın.</p>
                 <p>Sonra Netflix-də filmi açıb aşağıdakı düymə ilə tabı yayımlayın:</p>
+              </div>
+              <div class="stream-quality-row" style="margin-bottom: 12px;">
+                <label for="netflix-quality-select" class="stream-quality-label">
+                  <span>⚙️ Yayım Keyfiyyəti:</span>
+                </label>
+                <select id="netflix-quality-select" class="stream-quality-select">
+                  <option value="1080p-high" selected>🌟 1080p Full HD — Kristal Təmiz (8.5 Mbps)</option>
+                  <option value="1080p-balanced">⚡ 1080p Balans — Stabil (5.0 Mbps)</option>
+                  <option value="720p-smooth">🚀 720p HD — Zəif İnternet (3.0 Mbps)</option>
+                </select>
               </div>
               <button id="btn-start-netflix-stream" class="btn-primary netflix-red-btn">
                 <span>🎬 Netflix Tabını Yayımla (Səslə)</span>

@@ -1646,6 +1646,102 @@ btnSyncNow.addEventListener('click', () => {
 // 6. WEBRTC TAB YAYIMI & NETFLIX
 // ==========================================
 
+// Keyfiyyət Profilləri: Film və seriallar üçün 1080p Full HD kristal təmiz standart (30 FPS)
+const STREAM_PROFILES = {
+  '1080p-high': {
+    name: '🌟 1080p Full HD — Kristal Təmiz (Kino Rejimi • 8.5 Mbps)',
+    width: { ideal: 1920, max: 1920 },
+    height: { ideal: 1080, max: 1080 },
+    frameRate: { ideal: 30, max: 30 }, // Kino/film üçün 30 FPS standartı (donmaların qarşısını alır)
+    maxBitrate: 8500000, // 8.5 Mbps (tam HD, sıxılma və ləkələnmə yoxdur)
+    contentHint: 'detail', // Mətn və incə kino detallarının bulanıqlaşmasının qarşısını alır
+    degradationPreference: 'maintain-resolution'
+  },
+  '1080p-balanced': {
+    name: '⚡ 1080p Balans — Stabil & Axıcı (5.0 Mbps)',
+    width: { ideal: 1920, max: 1920 },
+    height: { ideal: 1080, max: 1080 },
+    frameRate: { ideal: 30, max: 30 },
+    maxBitrate: 5000000, // 5.0 Mbps
+    contentHint: 'detail',
+    degradationPreference: 'balanced'
+  },
+  '720p-smooth': {
+    name: '🚀 720p HD — Zəif İnternet (3.0 Mbps)',
+    width: { ideal: 1280, max: 1920 },
+    height: { ideal: 720, max: 1080 },
+    frameRate: { ideal: 30, max: 30 },
+    maxBitrate: 3000000, // 3.0 Mbps
+    contentHint: 'motion',
+    degradationPreference: 'maintain-framerate'
+  }
+};
+
+let currentStreamProfileKey = '1080p-high';
+
+const selectStreamQuality = document.getElementById('stream-quality-select');
+const selectNetflixQuality = document.getElementById('netflix-quality-select');
+
+function getActiveStreamProfile() {
+  return STREAM_PROFILES[currentStreamProfileKey] || STREAM_PROFILES['1080p-high'];
+}
+
+async function changeStreamQuality(newKey, notify = true) {
+  if (!STREAM_PROFILES[newKey]) return;
+  currentStreamProfileKey = newKey;
+  if (selectStreamQuality) selectStreamQuality.value = newKey;
+  if (selectNetflixQuality) selectNetflixQuality.value = newKey;
+
+  const profile = getActiveStreamProfile();
+
+  // Əgər yayım aktivdirsə, yeni keyfiyyəti dərhal canlı olaraq tətbiq et
+  if (localScreenStream) {
+    const videoTrack = localScreenStream.getVideoTracks()[0];
+    if (videoTrack) {
+      if ('contentHint' in videoTrack) {
+        videoTrack.contentHint = profile.contentHint;
+      }
+      try {
+        await videoTrack.applyConstraints({ frameRate: profile.frameRate });
+      } catch (e) {}
+    }
+
+    for (const targetId in screenBroadcasterPeers) {
+      const pc = screenBroadcasterPeers[targetId];
+      if (pc) {
+        const videoSender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
+        if (videoSender) {
+          try {
+            const params = videoSender.getParameters();
+            if (!params.encodings || params.encodings.length === 0) params.encodings = [{}];
+            params.encodings[0].maxBitrate = profile.maxBitrate;
+            params.encodings[0].scaleResolutionDownBy = 1.0;
+            params.degradationPreference = profile.degradationPreference;
+            await videoSender.setParameters(params);
+          } catch (e) {
+            console.warn(`[WebRTC Stream] Bitrate yenilənmə xətası (${targetId}):`, e);
+          }
+        }
+      }
+    }
+  }
+
+  if (notify) {
+    showNotice(`⚙️ ${profile.name}`);
+  }
+}
+
+if (selectStreamQuality) {
+  selectStreamQuality.addEventListener('change', (e) => {
+    changeStreamQuality(e.target.value);
+  });
+}
+if (selectNetflixQuality) {
+  selectNetflixQuality.addEventListener('change', (e) => {
+    changeStreamQuality(e.target.value);
+  });
+}
+
 btnStartStream.addEventListener('click', startScreenCapture);
 if (btnStartNetflixStream) {
   btnStartNetflixStream.addEventListener('click', startScreenCapture);
@@ -1653,12 +1749,14 @@ if (btnStartNetflixStream) {
 
 async function startScreenCapture() {
   try {
+    const profile = getActiveStreamProfile();
+
     localScreenStream = await navigator.mediaDevices.getDisplayMedia({
       video: {
         displaySurface: 'browser',
-        frameRate: { ideal: 30, max: 30 }, // Film üçün 30 FPS standart (60 FPS donmalarını və şəbəkə tıxacını aradan qaldırır)
-        width: { max: 1920, ideal: 1280 },
-        height: { max: 1080, ideal: 720 }
+        frameRate: profile.frameRate, // 30 FPS kino standartı: GPU yükünü azaldır və kadr donmasını tam aradan qaldırır
+        width: profile.width,
+        height: profile.height
       },
       audio: {
         echoCancellation: false,
@@ -1670,7 +1768,7 @@ async function startScreenCapture() {
 
     const videoTrack = localScreenStream.getVideoTracks()[0];
     if (videoTrack) {
-      videoTrack.contentHint = 'motion'; // GPU Hardware video hərəkət rejimi (donmaları tam bloklayır)
+      videoTrack.contentHint = profile.contentHint; // 'detail' = Kristal təmiz, heç bir sıxılma bulanıqlığı olmur!
     }
 
     const audioTracks = localScreenStream.getAudioTracks();
@@ -1693,7 +1791,7 @@ async function startScreenCapture() {
     socket.emit('stream-ready');
 
     localScreenStream.getVideoTracks()[0].onended = stopScreenStream;
-    showNotice('🎥 Film tabı yayımlanır! Səs aktivdir.');
+    showNotice(`🎥 Film tabı yayımlanır! (${profile.name})`);
   } catch (err) {
     console.error('Ekran yayımı xətası:', err);
   }
@@ -1746,14 +1844,34 @@ async function initiateScreenPeer(targetSocketId) {
     pc.addTrack(track, localScreenStream);
   });
 
-  // WebRTC Video Bitreyt Nəzarəti və Donmanın qarşısının alınması (Film üçün 3 Mbps hədd və kadr saxlanması)
+  // H.264 Donmanı bloklamaq üçün Hardware Acceleration kodekini prioritet et
+  try {
+    const transceivers = pc.getTransceivers();
+    const videoTransceiver = transceivers.find(t => t.sender && t.sender.track && t.sender.track.kind === 'video');
+    if (videoTransceiver && typeof videoTransceiver.setCodecPreferences === 'function' && RTCRtpReceiver.getCapabilities) {
+      const capabilities = RTCRtpReceiver.getCapabilities('video');
+      if (capabilities && capabilities.codecs) {
+        const h264Codecs = capabilities.codecs.filter(c => c.mimeType.toLowerCase() === 'video/h264');
+        const otherCodecs = capabilities.codecs.filter(c => c.mimeType.toLowerCase() !== 'video/h264');
+        if (h264Codecs.length > 0) {
+          videoTransceiver.setCodecPreferences([...h264Codecs, ...otherCodecs]);
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('Codec preference error:', e);
+  }
+
+  // WebRTC Video Bitreyt Nəzarəti və Keyfiyyəti (8.5 Mbps tam HD axın)
+  const profile = getActiveStreamProfile();
   const videoSender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
   if (videoSender) {
     try {
       const params = videoSender.getParameters();
       if (!params.encodings || params.encodings.length === 0) params.encodings = [{}];
-      params.encodings[0].maxBitrate = 3000000; // 3.0 Mbps max (sürətli, dalğalanmasız, kəsintisiz video axını)
-      params.degradationPreference = 'maintain-framerate'; // Heç vaxt kadr itməsin və donmasın!
+      params.encodings[0].maxBitrate = profile.maxBitrate;
+      params.encodings[0].scaleResolutionDownBy = 1.0; // Qətnamənin süni azaldılmasını qadağan et
+      params.degradationPreference = profile.degradationPreference;
       await videoSender.setParameters(params);
     } catch (e) {
       console.warn('Bitrate parameters error:', e);
@@ -1784,6 +1902,22 @@ async function handleScreenOffer(senderSocketId, sdp) {
   screenViewerIceQueue = [];
 
   screenViewerPeer = new RTCPeerConnection(rtcConfig);
+
+  // İzləyici tərəfdə də H.264 aparat sürətləndirməsi
+  try {
+    const transceivers = screenViewerPeer.getTransceivers();
+    const videoTransceiver = transceivers.find(t => t.receiver && t.receiver.track && t.receiver.track.kind === 'video');
+    if (videoTransceiver && typeof videoTransceiver.setCodecPreferences === 'function' && RTCRtpReceiver.getCapabilities) {
+      const capabilities = RTCRtpReceiver.getCapabilities('video');
+      if (capabilities && capabilities.codecs) {
+        const h264Codecs = capabilities.codecs.filter(c => c.mimeType.toLowerCase() === 'video/h264');
+        const otherCodecs = capabilities.codecs.filter(c => c.mimeType.toLowerCase() !== 'video/h264');
+        if (h264Codecs.length > 0) {
+          videoTransceiver.setCodecPreferences([...h264Codecs, ...otherCodecs]);
+        }
+      }
+    }
+  } catch (e) {}
 
   screenViewerPeer.ontrack = (event) => {
     streamPlayer.srcObject = event.streams[0];
