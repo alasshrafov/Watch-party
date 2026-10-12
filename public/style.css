@@ -6509,7 +6509,7 @@ body.theme-netflix .tab-btn.active {
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.14);
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -7077,6 +7077,10 @@ body.theme-netflix .tab-btn.active {
   #lobby-screen .corner-brand-logo-img {
     height: 40px !important;
     width: auto !important;
+  }
+
+  .btn-hamburger-menu {
+    display: flex !important;
   }
 
   .btn-install-apk-pill {

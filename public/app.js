@@ -4915,12 +4915,15 @@ function setupMobileAppAndDrawer() {
 
   function openLeftDrawer() {
     syncDrawerUIWithMain();
-    if (drawer) drawer.classList.remove('hidden');
+    if (drawer) {
+      drawer.classList.remove('hidden');
+      drawer.classList.add('open');
+    }
     if (backdrop) backdrop.classList.remove('hidden');
   }
 
   function closeLeftDrawer() {
-    if (drawer) drawer.classList.add('hidden');
+    if (drawer) drawer.classList.remove('open');
     if (backdrop) backdrop.classList.add('hidden');
   }
 
@@ -4929,37 +4932,36 @@ function setupMobileAppAndDrawer() {
   if (btnCloseDrawer) btnCloseDrawer.addEventListener('click', closeLeftDrawer);
   if (backdrop) backdrop.addEventListener('click', closeLeftDrawer);
 
-  // 4. Menyudakı Bölmə Keçidləri
+  // 4. Menyudakı Bölmə Keçidləri (Modallar və Bölmələr)
   const linkCharacters = document.getElementById('drawer-link-characters');
   const linkWatchlist = document.getElementById('drawer-link-watchlist');
   const linkHistory = document.getElementById('drawer-link-history');
   const linkHow = document.getElementById('drawer-link-how');
   const btnCloseHowModal = document.getElementById('btn-close-how-modal');
 
-  function navigateToLobbySection(sectionSelector) {
-    closeLeftDrawer();
-    const roomScr = document.getElementById('room-screen');
-    if (roomScr && !roomScr.classList.contains('hidden')) {
-      showNotice('📌 Bu bölmə ana səhifədədir. Otaqdan çıxdıqda görə bilərsiniz.');
-      return;
-    }
-    const el = document.querySelector(sectionSelector);
-    if (el) {
-      el.classList.add('mobile-section-visible');
-      setTimeout(() => {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 80);
-    }
-  }
-
   if (linkCharacters) {
-    linkCharacters.addEventListener('click', () => navigateToLobbySection('.characters-showcase-section'));
+    linkCharacters.addEventListener('click', () => {
+      closeLeftDrawer();
+      const navChars = document.getElementById('nav-link-characters');
+      if (navChars) navChars.click();
+      else openModal('modal-characters');
+    });
   }
   if (linkWatchlist) {
-    linkWatchlist.addEventListener('click', () => navigateToLobbySection('.watchlist-roulette-section'));
+    linkWatchlist.addEventListener('click', () => {
+      closeLeftDrawer();
+      const btnWl = document.getElementById('btn-open-watchlist');
+      if (btnWl) btnWl.click();
+      else openModal('modal-watchlist');
+    });
   }
   if (linkHistory) {
-    linkHistory.addEventListener('click', () => navigateToLobbySection('#history-section'));
+    linkHistory.addEventListener('click', () => {
+      closeLeftDrawer();
+      const btnHist = document.getElementById('btn-open-history');
+      if (btnHist) btnHist.click();
+      else openModal('modal-history');
+    });
   }
   if (linkHow) {
     linkHow.addEventListener('click', () => {
@@ -4981,15 +4983,23 @@ function setupMobileAppAndDrawer() {
   if (drawerBtnGoogle) {
     drawerBtnGoogle.addEventListener('click', () => {
       closeLeftDrawer();
-      const mainGoogleBtn = document.getElementById('btn-google-login');
-      if (mainGoogleBtn) mainGoogleBtn.click();
+      if (typeof openAuthModal === 'function') {
+        openAuthModal();
+      } else {
+        const mainGoogleBtn = document.getElementById('btn-open-auth-lobby');
+        if (mainGoogleBtn) mainGoogleBtn.click();
+      }
     });
   }
   if (drawerBtnLogout) {
     drawerBtnLogout.addEventListener('click', () => {
       closeLeftDrawer();
-      const mainLogoutBtn = document.getElementById('btn-logout');
-      if (mainLogoutBtn) mainLogoutBtn.click();
+      if (typeof logoutUser === 'function') {
+        logoutUser();
+      } else {
+        const mainLogoutBtn = document.getElementById('btn-lobby-logout');
+        if (mainLogoutBtn) mainLogoutBtn.click();
+      }
     });
   }
   if (drawerBtnMode) {
@@ -5001,7 +5011,7 @@ function setupMobileAppAndDrawer() {
   }
   if (drawerThemeSelect) {
     drawerThemeSelect.addEventListener('change', (e) => {
-      const mainThemeSelect = document.getElementById('lobby-theme-select');
+      const mainThemeSelect = document.getElementById('theme-select');
       if (mainThemeSelect) {
         mainThemeSelect.value = e.target.value;
         mainThemeSelect.dispatchEvent(new Event('change'));
@@ -5011,42 +5021,47 @@ function setupMobileAppAndDrawer() {
   document.querySelectorAll('.drawer-lang-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const lang = btn.getAttribute('data-lang');
-      const mainLangBtn = document.querySelector(`.lobby-top-header-row .lang-btn[data-lang="${lang}"]`);
-      if (mainLangBtn) mainLangBtn.click();
+      const mainLangOpt = document.querySelector(`.lang-option[data-lang="${lang}"]`);
+      if (mainLangOpt) mainLangOpt.click();
       document.querySelectorAll('.drawer-lang-btn').forEach(b => b.classList.toggle('active', b === btn));
     });
   });
 
   function syncDrawerUIWithMain() {
-    // Google User / Guest vəziyyəti
-    const mainUserBadge = document.getElementById('user-profile-badge');
-    const drawerUserBadge = document.getElementById('drawer-user-badge');
-    const mainGoogleBtn = document.getElementById('btn-google-login');
-    const isLogged = mainUserBadge && !mainUserBadge.classList.contains('hidden');
+    const drawerUserCard = document.getElementById('drawer-user-card');
+    const isLogged = !!(currentUser && currentUser.isGoogle);
 
-    if (drawerBtnGoogle && drawerUserBadge) {
+    if (drawerBtnGoogle && drawerUserCard) {
       if (isLogged) {
         drawerBtnGoogle.classList.add('hidden');
-        drawerUserBadge.classList.remove('hidden');
-        const mainAvatar = document.getElementById('user-avatar-img');
-        const mainName = document.getElementById('user-display-name');
+        drawerUserCard.classList.remove('hidden');
         const dAvatar = document.getElementById('drawer-user-avatar');
         const dName = document.getElementById('drawer-user-name');
-        if (dAvatar && mainAvatar) dAvatar.src = mainAvatar.src;
-        if (dName && mainName) dName.textContent = mainName.textContent;
+        const dEmail = document.getElementById('drawer-user-email');
+        if (dAvatar) dAvatar.textContent = currentUser.avatar || '🍿';
+        if (dName) dName.textContent = currentUser.username || 'İstifadəçi';
+        if (dEmail) dEmail.textContent = currentUser.email || 'Google Hesabı Aktivdir';
       } else {
         drawerBtnGoogle.classList.remove('hidden');
-        drawerUserBadge.classList.add('hidden');
+        drawerUserCard.classList.add('hidden');
       }
     }
     // Tema və İşıq rejimi
-    const mainThemeSelect = document.getElementById('lobby-theme-select');
+    const mainThemeSelect = document.getElementById('theme-select');
     if (drawerThemeSelect && mainThemeSelect) {
       drawerThemeSelect.value = mainThemeSelect.value;
     }
-    const isLight = document.body.classList.contains('light-mode');
-    if (drawerBtnMode) {
-      drawerBtnMode.textContent = isLight ? '🌙 Tünd Rejim' : '☀️ İşıqlı Rejim';
+    const isLight = document.documentElement.getAttribute('data-mode') === 'light' || document.body.classList.contains('light-mode');
+    const dModeIcon = document.getElementById('drawer-mode-icon');
+    const dModeText = document.getElementById('drawer-mode-text');
+    if (dModeIcon && dModeText) {
+      dModeIcon.textContent = isLight ? '🌙' : '☀️';
+      dModeText.textContent = isLight ? 'Dark Rejim' : 'Light Rejim';
+    }
+    if (typeof currentLang !== 'undefined') {
+      document.querySelectorAll('.drawer-lang-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-lang') === currentLang);
+      });
     }
   }
 
