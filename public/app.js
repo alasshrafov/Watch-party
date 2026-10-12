@@ -2648,6 +2648,18 @@ function stopScreenStream() {
   showNotice('⏹️ Yayım dayandırıldı');
 }
 
+function enforceHiFiStereoOpus(sdp) {
+  if (!sdp) return sdp;
+  return sdp.replace(/a=fmtp:(\d+)( [^\r\n]+)?/g, (match, pt, params) => {
+    params = params || '';
+    if (sdp.includes(`rtpmap:${pt} opus/48000`)) {
+      // 510 kbps Full-Band Stereo Cinema Audio (Tam studio stereo effekti və toxunulmaz kino səsi)
+      return `a=fmtp:${pt} minptime=10;useinbandfec=1;stereo=1;sprop-stereo=1;maxaveragebitrate=510000;cbr=1;maxplaybackrate=48000;sprop-maxcapturerate=48000`;
+    }
+    return match;
+  });
+}
+
 async function initiateScreenPeer(targetSocketId) {
   if (!localScreenStream || !targetSocketId || targetSocketId === socket.id) return;
 
@@ -2706,6 +2718,7 @@ async function initiateScreenPeer(targetSocketId) {
 
   try {
     const offer = await pc.createOffer();
+    offer.sdp = enforceHiFiStereoOpus(offer.sdp);
     await pc.setLocalDescription(offer);
     socket.emit('webrtc-offer', { target: targetSocketId, sdp: offer });
   } catch (err) {
@@ -2770,6 +2783,7 @@ async function handleScreenOffer(senderSocketId, sdp) {
     screenViewerIceQueue = [];
 
     const answer = await screenViewerPeer.createAnswer();
+    answer.sdp = enforceHiFiStereoOpus(answer.sdp);
     await screenViewerPeer.setLocalDescription(answer);
     socket.emit('webrtc-answer', { target: senderSocketId, sdp: answer });
   } catch (err) {
@@ -2889,9 +2903,17 @@ function handleIncomingVoiceChunk(senderId, username, arrayBuffer) {
     const now = ctx.currentTime;
     let playAt = scheduledPlayTimes[senderId] || 0;
 
-    // Adaptiv Jitter Buferi (70ms başlanğıc buferi - şəbəkə dalğalanmalarını tam udur, səsdə qırılma və ilişmə olmur)
-    if (playAt < now || playAt > now + 0.350) {
-      playAt = now + 0.070;
+    // Fasiləsiz Axıcı Jitter Buferi (Danışıqda qırılmaları və söz kəsilmələrini tam ləğv edir):
+    if (playAt < now) {
+      if (now - playAt > 0.150 || playAt === 0) {
+        // Yeni cümlə və ya fasilədən sonra: 50ms sabit jitter yastığı
+        playAt = now + 0.050;
+      } else {
+        // Kiçik şəbəkə gecikməsi (5-50ms): heç bir boşluq/sükut qoyma, dərhal calaşdır!
+        playAt = now + 0.005;
+      }
+    } else if (playAt > now + 0.350) {
+      playAt = now + 0.050;
     }
 
     source.start(playAt);
