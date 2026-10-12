@@ -652,6 +652,7 @@ const CULT_CHARACTERS = {
     meta: 'Zəka & Kimya Dahisi',
     quote: '"I am not in danger, Skyler. I AM the danger. A guy opens his door and gets shot, and you think that of me? No. I am the one who knocks!"',
     speech: 'I am the one who knocks.',
+    audio: 'assets/heisenberg.mp3',
     role: 'Baş Kimyaçı & Zəka Lideri',
     perk: 'Met-Lab Ultra HD WebRTC Sinxronizasiyası',
     theme: 'theme-breaking-bad',
@@ -666,8 +667,9 @@ const CULT_CHARACTERS = {
     emoji: '🦇',
     img: 'assets/characters/batman.jpg',
     meta: 'Qaranlıq Cəngavər & Ədalət',
-    quote: '"It\'s not who I am underneath, but what I do that defines me. I\'m whatever Gotham needs me to be."',
-    speech: "It's not who I am underneath, but what I do that defines me.",
+    quote: '"It\'s not who I am underneath, but what I do that defines me. I\'m Batman."',
+    speech: "I'm Batman.",
+    audio: 'assets/batman.mp3',
     role: 'Qotham Qoruyucusu',
     perk: 'Bat-Radar — Kristal Səs & Auto Ducking',
     theme: 'theme-batman',
@@ -684,6 +686,7 @@ const CULT_CHARACTERS = {
     meta: 'Nüfuz & Klassik Lider',
     quote: '"A man who doesn\'t spend time with his family can never be a real man. I\'m gonna make him an offer he can\'t refuse."',
     speech: "I'm gonna make him an offer he can't refuse.",
+    audio: 'assets/godfather.mp3',
     role: 'Ailə Başçısı (Don)',
     perk: 'İmtina Edilməz Təklif — Sinxron Otaq İdarəetməsi',
     theme: 'theme-netflix',
@@ -698,8 +701,9 @@ const CULT_CHARACTERS = {
     emoji: '⚡',
     img: 'assets/characters/cyberpunk.jpg',
     meta: 'Seçilmiş Şəxs & Kiberpank',
-    quote: '"There is no spoon. Free your mind. I\'m going to show them a world without rules."',
-    speech: 'There is no spoon. Free your mind.',
+    quote: '"There is no spoon. Free your mind. I know kung fu!"',
+    speech: 'I know kung fu.',
+    audio: 'assets/cyberpunk.mp3',
     role: 'Seçilmiş Şəxs (The One)',
     perk: 'Bullet-Time Video Play/Pause Sinxronizasiyası',
     theme: 'theme-matrix',
@@ -716,6 +720,7 @@ const CULT_CHARACTERS = {
     meta: 'Dərin Fəlsəfə & Sirr',
     quote: '"Time is a flat circle. Everything we\'ve ever done or will do, we\'re gonna do over and over and over again."',
     speech: 'Time is a flat circle.',
+    audio: 'assets/detective.mp3',
     role: 'Kino Filosofu & Tənqidçi',
     perk: 'Dərin Analiz — Seans Sonu Film Arxivi',
     theme: 'theme-matrix',
@@ -760,113 +765,79 @@ function setupMiniMovieFigures() {
   const charKeysList = ['heisenberg', 'batman', 'godfather', 'cyberpunk', 'detective'];
   let currentShowcaseIndex = 2; // Default Don Corleone
   let activeShowcaseChar = 'godfather';
+  let currentCharacterAudio = null;
 
-  function playCinematicSound(type) {
-    try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = new AudioCtx();
-      const now = ctx.currentTime;
-      
-      if (type === 'godfather') {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(130.81, now);
-        osc.frequency.exponentialRampToValueAtTime(65.41, now + 1.2);
-        gain.gain.setValueAtTime(0.35, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + 1.2);
-      } else if (type === 'heisenberg') {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(220, now);
-        osc.frequency.exponentialRampToValueAtTime(45, now + 0.9);
-        gain.gain.setValueAtTime(0.3, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.9);
-      } else if (type === 'batman') {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(85, now);
-        osc.frequency.exponentialRampToValueAtTime(32, now + 1.5);
-        gain.gain.setValueAtTime(0.5, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + 1.5);
-      } else if (type === 'cyberpunk') {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(440, now);
-        osc.frequency.linearRampToValueAtTime(880, now + 0.15);
-        osc.frequency.exponentialRampToValueAtTime(110, now + 0.8);
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.8);
-      } else {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(110, now);
-        osc.frequency.exponentialRampToValueAtTime(40, now + 1.4);
-        gain.gain.setValueAtTime(0.4, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 1.4);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + 1.4);
-      }
-    } catch (e) {}
-  }
+  window.stopCharacterAudio = function() {
+    if (currentCharacterAudio) {
+      try {
+        currentCharacterAudio.pause();
+        currentCharacterAudio.currentTime = 0;
+      } catch (e) {}
+      currentCharacterAudio = null;
+    }
+    const voiceBtn = document.getElementById('btn-showcase-voice-play');
+    if (voiceBtn) {
+      voiceBtn.classList.remove('playing');
+      const icon = voiceBtn.querySelector('.voice-icon-play');
+      if (icon) icon.textContent = '▶️';
+    }
+  };
 
-  function speakCharacterQuote(speechText, charKey) {
-    if (!('speechSynthesis' in window)) return;
+  function playCharacterAudio(charKey) {
+    const data = CULT_CHARACTERS[charKey];
+    if (!data || !data.audio) return;
+
+    window.stopCharacterAudio();
+
+    const voiceBtn = document.getElementById('btn-showcase-voice-play');
+    if (voiceBtn) {
+      voiceBtn.classList.add('playing');
+      const icon = voiceBtn.querySelector('.voice-icon-play');
+      if (icon) icon.textContent = '🔊';
+    }
+
     try {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(speechText);
-      utterance.lang = 'en-US';
-      if (charKey === 'batman') {
-        utterance.pitch = 0.55;
-        utterance.rate = 0.85;
-      } else if (charKey === 'godfather') {
-        utterance.pitch = 0.7;
-        utterance.rate = 0.8;
-      } else if (charKey === 'heisenberg') {
-        utterance.pitch = 0.85;
-        utterance.rate = 0.9;
-      } else if (charKey === 'cyberpunk') {
-        utterance.pitch = 1.0;
-        utterance.rate = 0.95;
-      } else {
-        utterance.pitch = 0.65;
-        utterance.rate = 0.85;
+      const audio = new Audio(data.audio);
+      audio.volume = 0.92;
+      currentCharacterAudio = audio;
+
+      audio.onended = () => {
+        if (voiceBtn) {
+          voiceBtn.classList.remove('playing');
+          const icon = voiceBtn.querySelector('.voice-icon-play');
+          if (icon) icon.textContent = '▶️';
+        }
+        currentCharacterAudio = null;
+      };
+
+      audio.onerror = (err) => {
+        console.warn('Audio playback error for character:', charKey, err);
+        if (voiceBtn) {
+          voiceBtn.classList.remove('playing');
+          const icon = voiceBtn.querySelector('.voice-icon-play');
+          if (icon) icon.textContent = '▶️';
+        }
+        currentCharacterAudio = null;
+      };
+
+      const p = audio.play();
+      if (p !== undefined) {
+        p.catch(err => {
+          console.warn('Playback prevented by browser policy:', err);
+          if (voiceBtn) {
+            voiceBtn.classList.remove('playing');
+            const icon = voiceBtn.querySelector('.voice-icon-play');
+            if (icon) icon.textContent = '▶️';
+          }
+        });
       }
-      
-      const voiceBtn = document.getElementById('btn-showcase-voice-play');
-      if (voiceBtn) {
-        voiceBtn.classList.add('playing');
-        utterance.onend = () => { voiceBtn.classList.remove('playing'); };
-        utterance.onerror = () => { voiceBtn.classList.remove('playing'); };
-      }
-      window.speechSynthesis.speak(utterance);
-    } catch (e) {}
+    } catch (e) {
+      console.warn('Audio initialization error:', e);
+    }
   }
 
   function showGalleryView() {
+    window.stopCharacterAudio();
     const galleryView = document.getElementById('char-modal-gallery-view');
     const showcaseView = document.getElementById('char-modal-showcase-view');
     const quizView = document.getElementById('char-modal-quiz-view');
@@ -925,10 +896,9 @@ function setupMiniMovieFigures() {
     // Modalı aç
     openModal('modal-characters');
 
-    // Səs və Teatral Aura
+    // Aktyorun Orijinal Səsi / Film İkonu Səsi
     if (autoPlaySound) {
-      playCinematicSound(charKey);
-      speakCharacterQuote(data.speech, charKey);
+      playCharacterAudio(charKey);
     }
 
     if (typeof spawnFloatingEmoji === 'function') {
@@ -937,13 +907,15 @@ function setupMiniMovieFigures() {
     }
   }
 
-  // Voice replay button
+  // Voice replay / pause button
   const voicePlayBtn = document.getElementById('btn-showcase-voice-play');
   if (voicePlayBtn) {
     voicePlayBtn.addEventListener('click', () => {
-      const data = CULT_CHARACTERS[activeShowcaseChar] || CULT_CHARACTERS.godfather;
-      playCinematicSound(activeShowcaseChar);
-      speakCharacterQuote(data.speech, activeShowcaseChar);
+      if (currentCharacterAudio && !currentCharacterAudio.paused) {
+        window.stopCharacterAudio();
+      } else {
+        playCharacterAudio(activeShowcaseChar);
+      }
     });
   }
 
@@ -3275,6 +3247,9 @@ function setupModalsAndFeatures() {
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
         modal.classList.add('hidden');
+        if (modal.id === 'modal-characters' && typeof window.stopCharacterAudio === 'function') {
+          window.stopCharacterAudio();
+        }
       }
     });
   });
@@ -3698,6 +3673,9 @@ window.openModal = function(modalId) {
 window.closeModal = function(modalId) {
   const el = document.getElementById(modalId);
   if (el) el.classList.add('hidden');
+  if (modalId === 'modal-characters' && typeof window.stopCharacterAudio === 'function') {
+    window.stopCharacterAudio();
+  }
 };
 
 // ==========================================
