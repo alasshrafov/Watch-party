@@ -332,68 +332,81 @@ body.theme-spiderman .spidey-hanging-mascot {
   overflow-x: hidden;
 }
 
-/* 1.1 YUXARI NAVİQASİYA (PREMIUM FLOATING GLASS DOCK) */
-.lobby-navbar {
+/* 1.1 YUXARI HİSSƏ: NAVİQASİYA TABI VƏ SAĞ YUXARI KÜNC BÖYÜK LOQO */
+.lobby-top-header-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  max-width: 1160px;
-  margin: 0 auto 36px auto;
-  padding: 8px 14px 8px 18px;
+  max-width: 1260px;
+  margin: 0 auto 32px auto;
+  padding: 0 8px;
+  position: relative;
+  z-index: 50;
+  gap: 20px;
+}
+
+.lobby-navbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 12px;
   background: rgba(14, 17, 26, 0.78);
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 18px;
   backdrop-filter: blur(28px) saturate(180%);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
   box-shadow: 0 16px 45px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  z-index: 50;
-  position: relative;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  margin: 0;
 }
 
-.lobby-nav-brand {
+/* Sağ Yuxarı Kənar: Böyük Loqo */
+.lobby-corner-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
-  user-select: none;
+  justify-content: center;
+  padding: 8px 16px;
+  background: rgba(14, 17, 26, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 18px;
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
 }
-.brand-logo-img {
-  height: 32px;
+
+.lobby-corner-brand:hover {
+  transform: translateY(-2px) scale(1.03);
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.corner-brand-logo-img {
+  height: 56px;
   width: auto;
-  border-radius: 6px;
   object-fit: contain;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: block;
+  border-radius: 10px;
+  transition: transform 0.3s ease;
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.45));
 }
-.brand-logo-img:hover {
-  transform: scale(1.06);
-}
-.brand-sub-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  padding: 3px 8px;
-  background: rgba(229, 9, 20, 0.12);
-  border: 1px solid rgba(229, 9, 20, 0.3);
-  border-radius: 6px;
-  color: #ff334b;
-  text-transform: uppercase;
-}
-.brand-sub-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #ff334b;
-  box-shadow: 0 0 6px #ff334b;
-  animation: cinemaLivePulse 2s infinite ease-in-out;
-}
-@keyframes cinemaLivePulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.8); }
+
+@media (max-width: 900px) {
+  .lobby-top-header-row {
+    flex-direction: column-reverse;
+    gap: 16px;
+    align-items: center;
+  }
+  .lobby-corner-brand {
+    align-self: flex-end;
+  }
+  .corner-brand-logo-img {
+    height: 44px;
+  }
 }
 
 .room-brand-logo-img {
@@ -4647,16 +4660,15 @@ body.lights-dimmed .player-section {
   color: #0f172a !important;
 }
 
-/* 1. Navbar in Light Mode */
-[data-mode="light"] #lobby-screen .lobby-navbar {
+/* 1. Navbar & Corner Brand in Light Mode */
+[data-mode="light"] #lobby-screen .lobby-navbar,
+[data-mode="light"] #lobby-screen .lobby-corner-brand {
   background: rgba(255, 255, 255, 0.88) !important;
   border: 1px solid rgba(15, 23, 42, 0.08) !important;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
 }
-[data-mode="light"] #lobby-screen .brand-sub-badge {
-  background: rgba(229, 9, 20, 0.08) !important;
-  border-color: rgba(229, 9, 20, 0.22) !important;
-  color: #dc2626 !important;
+[data-mode="light"] #lobby-screen .corner-brand-logo-img {
+  filter: drop-shadow(0 4px 12px rgba(15, 23, 42, 0.08));
 }
 [data-mode="light"] #lobby-screen .lobby-nav-links {
   background: #f1f5f9 !important;
