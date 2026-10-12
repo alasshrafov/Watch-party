@@ -167,16 +167,23 @@ const I18N = {
     topLogin: 'Google ilə Giriş',
     dropdownStatus: 'Google Hesabı Aktivdir',
     dropdownLogout: 'Hesabdan Çıx',
+    navHow: 'Necə İşləyir?',
     navCharacters: 'Xarakterlər',
     navArchetypes: 'Arxetiplər',
     navRooms: 'Kino Otağı',
     heroBadge: 'İKİ EKRAN. TƏK DİVAN.',
     heroSlogan: 'Two screens. One couch.',
     heroDesc: 'İstənilən film saytından, Netflix və YouTube-dan dostlarınızla sanki eyni divanda yanaşı oturmuş kimi birlikdə izləyin və canlı danışın.',
-    cineMainTitle: 'SƏHNƏ SƏNİNDİR',
+    cineMainTitle: 'Birlikdə İzləyin. Məsafələri Unudun.',
+    cineMainTitleHtml: 'Birlikdə İzləyin.<br><span class="accent-text">Məsafələri Unudun.</span>',
     cineSubSlogan: 'Two screens. One couch.',
     btnHeroRoom: '🛋️ İndi Otaq Aç',
     btnHeroExplore: '🎭 Xarakterləri Kəşf Et',
+    mockupCta: 'Otaq Aç ▶',
+    mockupHint: '🎬 İndi Otaq Aç & İzlə',
+    mockupHost: 'Otaq Sahibi',
+    mockupGuest: 'Qonaq',
+    mockupLiveTab: '1080p CANLI TAB',
     modalCharTitle: 'Kult Kino Xarakterləri & Avatar Qalereyası',
     modalCharSub: 'Xarakterinizi seçin, ləqəbinizi və otaq ab-havasını 1 kliklə fərdiləşdirin',
     btnCharPickRandom: '🎲 Təsadüfi Xarakter Seç',
@@ -216,8 +223,11 @@ const I18N = {
     hostLockRequired: '🔒 Google Tələb Olunur',
     hostLockActive: '🟢 Google ilə Aktivdir',
     hostTitle: 'Yeni Kino Otağı Yarat',
-    hostDesc: 'Öz kinoteatr zalınızı başladın, filmi idarə edin və dostlarınıza link göndərin.',
-    hostContinueGoogle: 'Continue with Google',
+    hostDesc: 'Kinoteatr zalınızı başladın, filmi idarə edin və dostlarınıza link göndərin.',
+    hostPerk1: '1080p 60FPS HD WebRTC Axını',
+    hostPerk2: 'İkitərəfli Kristal Səsli Əlaqə',
+    hostPerk3: 'Kult Temalar & Əyləncəli Çarxıfələk',
+    hostContinueGoogle: 'Google ilə Başla',
     hostHint: '⚡ 1 kliklə daxil olub dərhal otaq başladın',
     btnCreateRoom: '🛋️ Yeni Otaq Yarat',
     dividerOr: 'VƏ YA',
@@ -229,6 +239,15 @@ const I18N = {
     labelRoom: 'Otaq Kodu və ya Link:',
     placeholderRoom: 'Məs: kino-101',
     btnJoin: 'Otağa Daxil Ol',
+    howTagPill: 'Sadə və Sürətli',
+    howTitle: 'Necə İşləyir?',
+    howSub: 'Üç addımda fərqli məkanlarda eyni kinoteatr hissi.',
+    step1Title: 'Otaq Yaradın',
+    step1Desc: '1 kliklə Google hesabınızla xüsusi kino otağınızı başladın və dostlarınıza dəvət linkini göndərin.',
+    step2Title: 'Tabı Yayımlayın',
+    step2Desc: 'Netflix, YouTube və ya istənilən film saytını açın və 1080p kristal təmiz WebRTC axını ilə paylaşın.',
+    step3Title: 'Sinxron Zövq Alın',
+    step3Desc: 'Kəsintisiz canlı səsli söhbət və avtomatik dayandırma/başlatma sinxronizasiyası ilə birlikdə izləyin.',
     feat1Title: 'Bütün Saytlar',
     feat1Sub: 'WebRTC HD Səs',
     feat2Title: 'Səsli Zəng',
@@ -237,6 +256,16 @@ const I18N = {
     feat3Sub: 'Auto Ducking',
     feat4Title: 'Çarxıfələk',
     feat4Sub: 'Püşkatma Ruletkası',
+    roomTools: '⚙️ Alətlər',
+    roomOpen: 'Otaq Açıqdır',
+    roomLocked: 'Otaq Bağlıdır',
+    dimLights: 'İşıqları Söndür',
+    restoreLights: 'İşıqları Yandır',
+    reviewMovie: 'Filmi Qiymətləndir',
+    rouletteWheel: 'Püşkatma Ruletkası',
+    watchedMovies: 'Baxılmış Filmlər',
+    voiceChatBtn: 'Səsli Zəng',
+    leaveRoomBtn: '🚪 Çıxış',
     copyHint: '📋 Kopyala',
     noticeLogout: '👋 Hesabdan çıxış edildi',
     noticeLogin: '👤 Xoş gəldiniz',
@@ -250,16 +279,23 @@ const I18N = {
     topLogin: 'Google ile Giriş',
     dropdownStatus: 'Google Hesabı Aktif',
     dropdownLogout: 'Çıkış Yap',
+    navHow: 'Nasıl Çalışır?',
     navCharacters: 'Karakterler',
     navArchetypes: 'Arketipler',
     navRooms: 'Sinema Odası',
     heroBadge: 'İKİ EKRAN. TEK KOLTUK.',
     heroSlogan: 'Two screens. One couch.',
     heroDesc: 'Tüm film sitelerinden, Netflix ve YouTube\'dan arkadaşlarınızla sanki aynı koltukta oturuyormuş gibi birlikte izleyin ve sesli sohbet edin.',
-    cineMainTitle: 'SAHNE SENİNDİR',
+    cineMainTitle: 'Birlikte İzleyin. Mesafeleri Unutun.',
+    cineMainTitleHtml: 'Birlikte İzleyin.<br><span class="accent-text">Mesafeleri Unutun.</span>',
     cineSubSlogan: 'Two screens. One couch.',
     btnHeroRoom: '🛋️ Şimdi Oda Aç',
     btnHeroExplore: '🎭 Karakterleri Keşfet',
+    mockupCta: 'Oda Aç ▶',
+    mockupHint: '🎬 Şimdi Oda Aç ve İzle',
+    mockupHost: 'Oda Sahibi',
+    mockupGuest: 'Misafir',
+    mockupLiveTab: '1080p CANLI SEKME',
     modalCharTitle: 'Kült Sinema Karakterleri ve Galeri',
     modalCharSub: 'Karakterinizi seçin, takma adınızı ve oda temasını 1 tıkla özelleştirin',
     btnCharPickRandom: '🎲 Rastgele Karakter Seç',
@@ -300,7 +336,10 @@ const I18N = {
     hostLockActive: '🟢 Google ile Aktif',
     hostTitle: 'Yeni Sinema Odası Oluştur',
     hostDesc: 'Kendi sinema odanızı başlatın, filmi yönetin ve arkadaşlarınıza davet linki gönderin.',
-    hostContinueGoogle: 'Continue with Google',
+    hostPerk1: '1080p 60FPS HD WebRTC Yayını',
+    hostPerk2: 'Çift Yönlü Kristal Sesli İletişim',
+    hostPerk3: 'Kült Temalar & Eğlenceli Çarkıfelek',
+    hostContinueGoogle: 'Google ile Başla',
     hostHint: '⚡ 1 tıkla giriş yapıp hemen oda başlatın',
     btnCreateRoom: '🛋️ Yeni Oda Oluştur',
     dividerOr: 'VEYA',
@@ -312,6 +351,15 @@ const I18N = {
     labelRoom: 'Oda Kodu veya Link:',
     placeholderRoom: 'Örn: sinema-101',
     btnJoin: 'Odaya Katıl',
+    howTagPill: 'Basit ve Hızlı',
+    howTitle: 'Nasıl Çalışır?',
+    howSub: 'Üç adımda farklı mekanlarda aynı sinema deneyimi.',
+    step1Title: 'Oda Oluşturun',
+    step1Desc: '1 tıklamayla Google hesabınızla özel sinema odanızı başlatın ve arkadaşlarınıza davet linki gönderin.',
+    step2Title: 'Sekmeyi Yayınlayın',
+    step2Desc: 'Netflix, YouTube veya herhangi bir film sitesini açın ve 1080p kristal netliğinde WebRTC akışıyla paylaşın.',
+    step3Title: 'Senkron Keyfini Çıkarın',
+    step3Desc: 'Kesintisiz canlı sesli sohbet ve otomatik duraklat/oynat senkronizasyonu ile birlikte izleyin.',
     feat1Title: 'Tüm Siteler',
     feat1Sub: 'WebRTC HD Ses',
     feat2Title: 'Sesli Sohbet',
@@ -320,6 +368,16 @@ const I18N = {
     feat3Sub: 'Auto Ducking',
     feat4Title: 'Çarkıfelek',
     feat4Sub: 'Kura Ruleti',
+    roomTools: '⚙️ Araçlar',
+    roomOpen: 'Oda Açık',
+    roomLocked: 'Oda Kilitli',
+    dimLights: 'Işıkları Kapat',
+    restoreLights: 'Işıkları Aç',
+    reviewMovie: 'Filmi Değerlendir',
+    rouletteWheel: 'Kura Ruleti',
+    watchedMovies: 'İzlenen Filmler',
+    voiceChatBtn: 'Sesli Sohbet',
+    leaveRoomBtn: '🚪 Çıkış',
     copyHint: '📋 Kopyala',
     noticeLogout: '👋 Hesaptan çıkış yapıldı',
     noticeLogin: '👤 Hoş geldiniz',
@@ -333,16 +391,23 @@ const I18N = {
     topLogin: 'Sign in with Google',
     dropdownStatus: 'Google Account Active',
     dropdownLogout: 'Log out',
+    navHow: 'How It Works',
     navCharacters: 'Characters',
     navArchetypes: 'Archetypes',
     navRooms: 'Cinema Room',
     heroBadge: 'TWO SCREENS. ONE COUCH.',
     heroSlogan: 'Two screens. One couch.',
     heroDesc: 'Watch movies together from any streaming site, Netflix & YouTube, and voice chat with friends like you are sitting on the same couch.',
-    cineMainTitle: 'THE STAGE IS YOURS',
+    cineMainTitle: 'Watch Together. Forget The Distance.',
+    cineMainTitleHtml: 'Watch Together.<br><span class="accent-text">Forget The Distance.</span>',
     cineSubSlogan: 'Two screens. One couch.',
     btnHeroRoom: '🛋️ Start Watch Party',
     btnHeroExplore: '🎭 Explore Characters',
+    mockupCta: 'Open Room ▶',
+    mockupHint: '🎬 Create Room & Watch Now',
+    mockupHost: 'Room Host',
+    mockupGuest: 'Guest',
+    mockupLiveTab: '1080p LIVE TAB',
     modalCharTitle: 'Cult Cinema Characters & Gallery',
     modalCharSub: 'Choose your cinema icon: customize your nickname and room ambiance in 1 click',
     btnCharPickRandom: '🎲 Pick Random Character',
@@ -383,7 +448,10 @@ const I18N = {
     hostLockActive: '🟢 Google Active',
     hostTitle: 'Create New Cinema Room',
     hostDesc: 'Start your personal theater, control the playback, and share the invite link with friends.',
-    hostContinueGoogle: 'Continue with Google',
+    hostPerk1: '1080p 60FPS HD WebRTC Stream',
+    hostPerk2: 'Two-way Crystal Voice Chat',
+    hostPerk3: 'Cult Themes & Movie Wheel',
+    hostContinueGoogle: 'Start with Google',
     hostHint: '⚡ Sign in with 1 click to start your room',
     btnCreateRoom: '🛋️ Create New Room',
     dividerOr: 'OR',
@@ -395,6 +463,15 @@ const I18N = {
     labelRoom: 'Room Code or Link:',
     placeholderRoom: 'e.g. movie-101',
     btnJoin: 'Join Room',
+    howTagPill: 'Simple and Fast',
+    howTitle: 'How It Works',
+    howSub: 'The same cinema feel across different places in three simple steps.',
+    step1Title: 'Create a Room',
+    step1Desc: 'Start your private cinema room in 1 click with your Google account and send the invite link to friends.',
+    step2Title: 'Stream Your Tab',
+    step2Desc: 'Open Netflix, YouTube, or any movie site and stream with crystal-clear 1080p WebRTC.',
+    step3Title: 'Enjoy in Sync',
+    step3Desc: 'Watch together with seamless live voice chat and automatic play/pause synchronization.',
     feat1Title: 'Any Website',
     feat1Sub: 'WebRTC HD Audio',
     feat2Title: 'Voice Chat',
@@ -403,6 +480,16 @@ const I18N = {
     feat3Sub: 'Smart Ducking',
     feat4Title: 'Movie Wheel',
     feat4Sub: 'Random Picker',
+    roomTools: '⚙️ Tools',
+    roomOpen: 'Room is Open',
+    roomLocked: 'Room is Locked',
+    dimLights: 'Dim Lights',
+    restoreLights: 'Turn on Lights',
+    reviewMovie: 'Rate Movie',
+    rouletteWheel: 'Movie Wheel',
+    watchedMovies: 'Watched Movies',
+    voiceChatBtn: 'Voice Chat',
+    leaveRoomBtn: '🚪 Leave',
     copyHint: '📋 Copy',
     noticeLogout: '👋 Logged out successfully',
     noticeLogin: '👤 Welcome',
@@ -416,16 +503,23 @@ const I18N = {
     topLogin: 'Вход через Google',
     dropdownStatus: 'Google Аккаунт Активен',
     dropdownLogout: 'Выйти',
+    navHow: 'Как это работает?',
     navCharacters: 'Персонажи',
     navArchetypes: 'Архетипы',
     navRooms: 'Кинокомната',
     heroBadge: 'ДВА ЭКРАНА. ОДИН ДИВАН.',
     heroSlogan: 'Two screens. One couch.',
     heroDesc: 'Смотрите фильмы с любых сайтов, Netflix и YouTube вместе с друзьями и общайтесь голосом, будто сидите на одном диване.',
-    cineMainTitle: 'СЦЕНА ЗА ТОБОЙ',
+    cineMainTitle: 'Смотрите вместе. Забудьте о расстояниях.',
+    cineMainTitleHtml: 'Смотрите вместе.<br><span class="accent-text">Забудьте о расстояниях.</span>',
     cineSubSlogan: 'Two screens. One couch.',
     btnHeroRoom: '🛋️ Создать Комнату',
     btnHeroExplore: '🎭 Исследовать Персонажей',
+    mockupCta: 'В Комнату ▶',
+    mockupHint: '🎬 Создать комнату и смотреть',
+    mockupHost: 'Создатель',
+    mockupGuest: 'Гость',
+    mockupLiveTab: '1080p ЖИВАЯ ВКЛАДКА',
     modalCharTitle: 'Культовые Киногерои и Галерея',
     modalCharSub: 'Выберите киногероя: настройте свой ник и атмосферу комнаты в 1 клик',
     btnCharPickRandom: '🎲 Случайный Персонаж',
@@ -466,7 +560,10 @@ const I18N = {
     hostLockActive: '🟢 Google Активен',
     hostTitle: 'Создать Кинокомнату',
     hostDesc: 'Создайте свой кинозал, управляйте просмотром и отправьте ссылку друзьям.',
-    hostContinueGoogle: 'Continue with Google',
+    hostPerk1: '1080p 60FPS HD WebRTC Стрим',
+    hostPerk2: 'Двусторонняя кристальная голосовая связь',
+    hostPerk3: 'Культовые темы и Колесо фильмов',
+    hostContinueGoogle: 'Начать через Google',
     hostHint: '⚡ Войдите в 1 клик и сразу начните',
     btnCreateRoom: '🛋️ Создать Комнату',
     dividerOr: 'ИЛИ',
@@ -478,6 +575,15 @@ const I18N = {
     labelRoom: 'Код Комнаты или Ссылка:',
     placeholderRoom: 'Напр: kino-101',
     btnJoin: 'Войти в Комнату',
+    howTagPill: 'Просто и быстро',
+    howTitle: 'Как это работает?',
+    howSub: 'Ощущение одного кинотеатра на расстоянии в три простых шага.',
+    step1Title: 'Создайте Комнату',
+    step1Desc: 'В 1 клик запустите свою кинокомнату через аккаунт Google и отправьте ссылку друзьям.',
+    step2Title: 'Транслируйте вкладку',
+    step2Desc: 'Откройте Netflix, YouTube или любой киносайт и делитесь видео в кристальном 1080p через WebRTC.',
+    step3Title: 'Наслаждайтесь синхронно',
+    step3Desc: 'Смотрите вместе с непрерывным голосовым чатом и автоматической синхронизацией паузы и воспроизведения.',
     feat1Title: 'Любые Сайты',
     feat1Sub: 'WebRTC HD Звук',
     feat2Title: 'Голосовой Чат',
@@ -486,6 +592,16 @@ const I18N = {
     feat3Sub: 'Авто-приглушение',
     feat4Title: 'Колесо Фортуны',
     feat4Sub: 'Случайный Выбор',
+    roomTools: '⚙️ Инструменты',
+    roomOpen: 'Комната открыта',
+    roomLocked: 'Комната закрыта',
+    dimLights: 'Выключить свет',
+    restoreLights: 'Включить свет',
+    reviewMovie: 'Оценить фильм',
+    rouletteWheel: 'Колесо фильмов',
+    watchedMovies: 'Просмотренные фильмы',
+    voiceChatBtn: 'Голосовой чат',
+    leaveRoomBtn: '🚪 Выход',
     copyHint: '📋 Копировать',
     noticeLogout: '👋 Вы вышли из аккаунта',
     noticeLogin: '👤 Добро пожаловать',
@@ -507,12 +623,19 @@ function setLanguage(lang) {
   if (el('top-login-label')) el('top-login-label').textContent = t.topLogin;
   if (el('dropdown-status-text')) el('dropdown-status-text').textContent = t.dropdownStatus;
   if (el('dropdown-logout-label')) el('dropdown-logout-label').textContent = t.dropdownLogout;
+  if (el('nav-link-how')) el('nav-link-how').textContent = t.navHow;
   if (el('nav-link-characters')) el('nav-link-characters').textContent = t.navCharacters;
   if (el('nav-link-archetypes')) el('nav-link-archetypes').textContent = t.navArchetypes;
   if (el('nav-link-rooms')) el('nav-link-rooms').textContent = t.navRooms;
   if (el('lobby-hero-badge')) el('lobby-hero-badge').textContent = t.heroBadge;
   if (el('lobby-hero-desc')) el('lobby-hero-desc').textContent = t.heroDesc;
-  if (el('cine-main-title')) el('cine-main-title').textContent = t.cineMainTitle;
+  if (el('cine-main-title')) {
+    if (t.cineMainTitleHtml) {
+      el('cine-main-title').innerHTML = t.cineMainTitleHtml;
+    } else {
+      el('cine-main-title').textContent = t.cineMainTitle;
+    }
+  }
   if (el('cine-sub-slogan')) el('cine-sub-slogan').textContent = t.cineSubSlogan;
 
   if (el('btn-hero-cta-room')) {
@@ -523,6 +646,14 @@ function setLanguage(lang) {
     const span = el('btn-hero-cta-explore').querySelector('span');
     if (span) span.textContent = t.btnHeroExplore;
   }
+
+  // Hero Mockup Translations
+  if (el('mockup-cta-text') && t.mockupCta) el('mockup-cta-text').textContent = t.mockupCta;
+  if (el('mockup-hint-text') && t.mockupHint) el('mockup-hint-text').textContent = t.mockupHint;
+  if (el('mockup-host-label') && t.mockupHost) el('mockup-host-label').textContent = t.mockupHost;
+  if (el('mockup-guest-label') && t.mockupGuest) el('mockup-guest-label').textContent = t.mockupGuest;
+  if (el('mockup-strip-live-tab') && t.mockupLiveTab) el('mockup-strip-live-tab').textContent = t.mockupLiveTab;
+
   if (el('modal-char-title')) el('modal-char-title').textContent = t.modalCharTitle;
   if (el('modal-char-sub')) el('modal-char-sub').textContent = t.modalCharSub;
   if (el('btn-char-pick-random')) {
@@ -577,12 +708,18 @@ function setLanguage(lang) {
   if (el('arch-title-cyberpunk')) el('arch-title-cyberpunk').textContent = t.archTitleCyber;
   if (el('arch-desc-cyberpunk')) el('arch-desc-cyberpunk').textContent = t.archDescCyber;
 
+  // Host Console Card
   if (el('host-badge-text')) el('host-badge-text').textContent = t.hostBadge;
   if (el('host-title-text')) el('host-title-text').textContent = t.hostTitle;
   if (el('host-desc-text')) el('host-desc-text').textContent = t.hostDesc;
+  if (el('host-perk-1-text') && t.hostPerk1) el('host-perk-1-text').textContent = t.hostPerk1;
+  if (el('host-perk-2-text') && t.hostPerk2) el('host-perk-2-text').textContent = t.hostPerk2;
+  if (el('host-perk-3-text') && t.hostPerk3) el('host-perk-3-text').textContent = t.hostPerk3;
   if (el('btn-host-google-text')) el('btn-host-google-text').textContent = t.hostContinueGoogle;
   if (el('host-hint-text')) el('host-hint-text').textContent = t.hostHint;
   if (el('btn-create-room-text')) el('btn-create-room-text').textContent = t.btnCreateRoom;
+
+  // Guest Console Card
   if (el('divider-or-text')) el('divider-or-text').textContent = t.dividerOr;
   if (el('guest-badge-text')) el('guest-badge-text').textContent = t.guestBadge;
   if (el('guest-title-text')) el('guest-title-text').textContent = t.guestTitle;
@@ -592,6 +729,19 @@ function setLanguage(lang) {
   if (el('label-room-text')) el('label-room-text').textContent = t.labelRoom;
   if (roomInput) roomInput.placeholder = t.placeholderRoom;
   if (el('btn-join-text')) el('btn-join-text').textContent = t.btnJoin;
+
+  // "Necə İşləyir?" (How It Works) Section
+  if (el('how-tag-pill') && t.howTagPill) el('how-tag-pill').textContent = t.howTagPill;
+  if (el('how-section-title') && t.howTitle) el('how-section-title').textContent = t.howTitle;
+  if (el('how-section-sub') && t.howSub) el('how-section-sub').textContent = t.howSub;
+  if (el('step-1-title') && t.step1Title) el('step-1-title').textContent = t.step1Title;
+  if (el('step-1-desc') && t.step1Desc) el('step-1-desc').textContent = t.step1Desc;
+  if (el('step-2-title') && t.step2Title) el('step-2-title').textContent = t.step2Title;
+  if (el('step-2-desc') && t.step2Desc) el('step-2-desc').textContent = t.step2Desc;
+  if (el('step-3-title') && t.step3Title) el('step-3-title').textContent = t.step3Title;
+  if (el('step-3-desc') && t.step3Desc) el('step-3-desc').textContent = t.step3Desc;
+
+  // Features Strip
   if (el('feat-1-title')) el('feat-1-title').textContent = t.feat1Title;
   if (el('feat-1-sub')) el('feat-1-sub').textContent = t.feat1Sub;
   if (el('feat-2-title')) el('feat-2-title').textContent = t.feat2Title;
@@ -601,6 +751,40 @@ function setLanguage(lang) {
   if (el('feat-4-title')) el('feat-4-title').textContent = t.feat4Title;
   if (el('feat-4-sub')) el('feat-4-sub').textContent = t.feat4Sub;
   if (el('copy-hint-text')) el('copy-hint-text').textContent = t.copyHint;
+
+  // Room Tools
+  if (el('btn-room-tools-toggle')) {
+    const span = el('btn-room-tools-toggle').querySelector('span:first-child');
+    if (span && t.roomTools) span.textContent = t.roomTools;
+  }
+  if (el('btn-dim-lights')) {
+    const span = el('btn-dim-lights').querySelector('span:not(.row-icon)');
+    if (span && t.dimLights) span.textContent = t.dimLights;
+  }
+  if (el('btn-floating-restore-lights')) {
+    const span = el('btn-floating-restore-lights').querySelector('span:not(.bulb-icon)');
+    if (span && t.restoreLights) span.textContent = t.restoreLights;
+  }
+  if (el('btn-open-review')) {
+    const span = el('btn-open-review').querySelector('span:not(.row-icon)');
+    if (span && t.reviewMovie) span.textContent = t.reviewMovie;
+  }
+  if (el('btn-open-watchlist')) {
+    const span = el('btn-open-watchlist').querySelector('span:not(.row-icon)');
+    if (span && t.rouletteWheel) span.textContent = t.rouletteWheel;
+  }
+  if (el('btn-open-history')) {
+    const span = el('btn-open-history').querySelector('span:not(.row-icon)');
+    if (span && t.watchedMovies) span.textContent = t.watchedMovies;
+  }
+  if (el('btn-voice-toggle')) {
+    const span = el('btn-voice-toggle').querySelector('.mic-text');
+    if (span && t.voiceChatBtn) span.textContent = t.voiceChatBtn;
+  }
+  if (el('btn-logout')) {
+    const span = el('btn-logout').querySelector('span');
+    if (span && t.leaveRoomBtn) span.textContent = t.leaveRoomBtn;
+  }
 
   document.querySelectorAll('.lang-option').forEach(opt => {
     if (opt.getAttribute('data-lang') === lang) {
@@ -4113,7 +4297,7 @@ function updateUserUI() {
   } else {
     if (lobbyUserName) lobbyUserName.textContent = t ? t.topLogin : 'Google ilə Giriş';
     if (lobbyUserAvatar) lobbyUserAvatar.textContent = '🌐';
-    if (headerUserName) headerUserName.textContent = 'Qonaq';
+    if (headerUserName) headerUserName.textContent = t ? t.mockupGuest : 'Qonaq';
     if (headerUserAvatar) headerUserAvatar.textContent = '🍿';
     if (inputAvatarPreview) inputAvatarPreview.textContent = '👤';
 
