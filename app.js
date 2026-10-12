@@ -167,27 +167,16 @@ const I18N = {
     topLogin: 'Google ilə Giriş',
     dropdownStatus: 'Google Hesabı Aktivdir',
     dropdownLogout: 'Hesabdan Çıx',
-    navHow: 'Necə İşləyir?',
     navCharacters: 'Xarakterlər',
     navArchetypes: 'Arxetiplər',
     navRooms: 'Kino Otağı',
     heroBadge: 'İKİ EKRAN. TƏK DİVAN.',
     heroSlogan: 'Two screens. One couch.',
     heroDesc: 'İstənilən film saytından, Netflix və YouTube-dan dostlarınızla sanki eyni divanda yanaşı oturmuş kimi birlikdə izləyin və canlı danışın.',
-    cineMainTitle: 'Birlikdə İzləyin. Məsafələri Unudun.',
-    cineMainTitleHtml: 'Birlikdə İzləyin.<br><span class="accent-text">Məsafələri Unudun.</span>',
+    cineMainTitle: 'SƏHNƏ SƏNİNDİR',
     cineSubSlogan: 'Two screens. One couch.',
     btnHeroRoom: '🛋️ İndi Otaq Aç',
     btnHeroExplore: '🎭 Xarakterləri Kəşf Et',
-    mockupCta: 'Otaq Aç ▶',
-    mockupHint: '🎬 İndi Otaq Aç & İzlə',
-    mockupHost: 'Otaq Sahibi',
-    mockupGuest: 'Qonaq',
-    mockupLiveTab: '1080p CANLI TAB',
-    modalCharTitle: 'Kult Kino Xarakterləri & Avatar Qalereyası',
-    modalCharSub: 'Xarakterinizi seçin, ləqəbinizi və otaq ab-havasını 1 kliklə fərdiləşdirin',
-    btnCharPickRandom: '🎲 Təsadüfi Xarakter Seç',
-    btnCharSkipJoin: '🔑 Yalnız Koda ilə Otağa Qoşul',
     sectionTagArchetypes: '🎭 KİNO ARXETİPLƏRİ',
     archetypeTitle: 'Kult Qəhrəmanlar və Rollar',
     archetypeSub: 'Dünya kino tarixinin ən unudulmaz simvolları və xarakterləri.',
@@ -223,11 +212,8 @@ const I18N = {
     hostLockRequired: '🔒 Google Tələb Olunur',
     hostLockActive: '🟢 Google ilə Aktivdir',
     hostTitle: 'Yeni Kino Otağı Yarat',
-    hostDesc: 'Kinoteatr zalınızı başladın, filmi idarə edin və dostlarınıza link göndərin.',
-    hostPerk1: '1080p 60FPS HD WebRTC Axını',
-    hostPerk2: 'İkitərəfli Kristal Səsli Əlaqə',
-    hostPerk3: 'Kult Temalar & Əyləncəli Çarxıfələk',
-    hostContinueGoogle: 'Google ilə Başla',
+    hostDesc: 'Öz kinoteatr zalınızı başladın, filmi idarə edin və dostlarınıza link göndərin.',
+    hostContinueGoogle: 'Continue with Google',
     hostHint: '⚡ 1 kliklə daxil olub dərhal otaq başladın',
     btnCreateRoom: '🛋️ Yeni Otaq Yarat',
     dividerOr: 'VƏ YA',
@@ -239,15 +225,6 @@ const I18N = {
     labelRoom: 'Otaq Kodu və ya Link:',
     placeholderRoom: 'Məs: kino-101',
     btnJoin: 'Otağa Daxil Ol',
-    howTagPill: 'Sadə və Sürətli',
-    howTitle: 'Necə İşləyir?',
-    howSub: 'Üç addımda fərqli məkanlarda eyni kinoteatr hissi.',
-    step1Title: 'Otaq Yaradın',
-    step1Desc: '1 kliklə Google hesabınızla xüsusi kino otağınızı başladın və dostlarınıza dəvət linkini göndərin.',
-    step2Title: 'Tabı Yayımlayın',
-    step2Desc: 'Netflix, YouTube və ya istənilən film saytını açın və 1080p kristal təmiz WebRTC axını ilə paylaşın.',
-    step3Title: 'Sinxron Zövq Alın',
-    step3Desc: 'Kəsintisiz canlı səsli söhbət və avtomatik dayandırma/başlatma sinxronizasiyası ilə birlikdə izləyin.',
     feat1Title: 'Bütün Saytlar',
     feat1Sub: 'WebRTC HD Səs',
     feat2Title: 'Səsli Zəng',
@@ -256,16 +233,6 @@ const I18N = {
     feat3Sub: 'Auto Ducking',
     feat4Title: 'Çarxıfələk',
     feat4Sub: 'Püşkatma Ruletkası',
-    roomTools: '⚙️ Alətlər',
-    roomOpen: 'Otaq Açıqdır',
-    roomLocked: 'Otaq Bağlıdır',
-    dimLights: 'İşıqları Söndür',
-    restoreLights: 'İşıqları Yandır',
-    reviewMovie: 'Filmi Qiymətləndir',
-    rouletteWheel: 'Püşkatma Ruletkası',
-    watchedMovies: 'Baxılmış Filmlər',
-    voiceChatBtn: 'Səsli Zəng',
-    leaveRoomBtn: '🚪 Çıxış',
     copyHint: '📋 Kopyala',
     noticeLogout: '👋 Hesabdan çıxış edildi',
     noticeLogin: '👤 Xoş gəldiniz',
@@ -279,27 +246,16 @@ const I18N = {
     topLogin: 'Google ile Giriş',
     dropdownStatus: 'Google Hesabı Aktif',
     dropdownLogout: 'Çıkış Yap',
-    navHow: 'Nasıl Çalışır?',
     navCharacters: 'Karakterler',
     navArchetypes: 'Arketipler',
     navRooms: 'Sinema Odası',
     heroBadge: 'İKİ EKRAN. TEK KOLTUK.',
     heroSlogan: 'Two screens. One couch.',
     heroDesc: 'Tüm film sitelerinden, Netflix ve YouTube\'dan arkadaşlarınızla sanki aynı koltukta oturuyormuş gibi birlikte izleyin ve sesli sohbet edin.',
-    cineMainTitle: 'Birlikte İzleyin. Mesafeleri Unutun.',
-    cineMainTitleHtml: 'Birlikte İzleyin.<br><span class="accent-text">Mesafeleri Unutun.</span>',
+    cineMainTitle: 'SAHNE SENİNDİR',
     cineSubSlogan: 'Two screens. One couch.',
     btnHeroRoom: '🛋️ Şimdi Oda Aç',
     btnHeroExplore: '🎭 Karakterleri Keşfet',
-    mockupCta: 'Oda Aç ▶',
-    mockupHint: '🎬 Şimdi Oda Aç ve İzle',
-    mockupHost: 'Oda Sahibi',
-    mockupGuest: 'Misafir',
-    mockupLiveTab: '1080p CANLI SEKME',
-    modalCharTitle: 'Kült Sinema Karakterleri ve Galeri',
-    modalCharSub: 'Karakterinizi seçin, takma adınızı ve oda temasını 1 tıkla özelleştirin',
-    btnCharPickRandom: '🎲 Rastgele Karakter Seç',
-    btnCharSkipJoin: '🔑 Sadece Kodla Odaya Katıl',
     sectionTagArchetypes: '🎭 SİNEMA ARKETİPLERİ',
     archetypeTitle: 'Kült Kahramanlar ve Roller',
     archetypeSub: 'Dünya sinema tarihinin en unutulmaz ikonları ve karakterleri.',
@@ -336,10 +292,7 @@ const I18N = {
     hostLockActive: '🟢 Google ile Aktif',
     hostTitle: 'Yeni Sinema Odası Oluştur',
     hostDesc: 'Kendi sinema odanızı başlatın, filmi yönetin ve arkadaşlarınıza davet linki gönderin.',
-    hostPerk1: '1080p 60FPS HD WebRTC Yayını',
-    hostPerk2: 'Çift Yönlü Kristal Sesli İletişim',
-    hostPerk3: 'Kült Temalar & Eğlenceli Çarkıfelek',
-    hostContinueGoogle: 'Google ile Başla',
+    hostContinueGoogle: 'Continue with Google',
     hostHint: '⚡ 1 tıkla giriş yapıp hemen oda başlatın',
     btnCreateRoom: '🛋️ Yeni Oda Oluştur',
     dividerOr: 'VEYA',
@@ -351,15 +304,6 @@ const I18N = {
     labelRoom: 'Oda Kodu veya Link:',
     placeholderRoom: 'Örn: sinema-101',
     btnJoin: 'Odaya Katıl',
-    howTagPill: 'Basit ve Hızlı',
-    howTitle: 'Nasıl Çalışır?',
-    howSub: 'Üç adımda farklı mekanlarda aynı sinema deneyimi.',
-    step1Title: 'Oda Oluşturun',
-    step1Desc: '1 tıklamayla Google hesabınızla özel sinema odanızı başlatın ve arkadaşlarınıza davet linki gönderin.',
-    step2Title: 'Sekmeyi Yayınlayın',
-    step2Desc: 'Netflix, YouTube veya herhangi bir film sitesini açın ve 1080p kristal netliğinde WebRTC akışıyla paylaşın.',
-    step3Title: 'Senkron Keyfini Çıkarın',
-    step3Desc: 'Kesintisiz canlı sesli sohbet ve otomatik duraklat/oynat senkronizasyonu ile birlikte izleyin.',
     feat1Title: 'Tüm Siteler',
     feat1Sub: 'WebRTC HD Ses',
     feat2Title: 'Sesli Sohbet',
@@ -368,16 +312,6 @@ const I18N = {
     feat3Sub: 'Auto Ducking',
     feat4Title: 'Çarkıfelek',
     feat4Sub: 'Kura Ruleti',
-    roomTools: '⚙️ Araçlar',
-    roomOpen: 'Oda Açık',
-    roomLocked: 'Oda Kilitli',
-    dimLights: 'Işıkları Kapat',
-    restoreLights: 'Işıkları Aç',
-    reviewMovie: 'Filmi Değerlendir',
-    rouletteWheel: 'Kura Ruleti',
-    watchedMovies: 'İzlenen Filmler',
-    voiceChatBtn: 'Sesli Sohbet',
-    leaveRoomBtn: '🚪 Çıkış',
     copyHint: '📋 Kopyala',
     noticeLogout: '👋 Hesaptan çıkış yapıldı',
     noticeLogin: '👤 Hoş geldiniz',
@@ -391,27 +325,16 @@ const I18N = {
     topLogin: 'Sign in with Google',
     dropdownStatus: 'Google Account Active',
     dropdownLogout: 'Log out',
-    navHow: 'How It Works',
     navCharacters: 'Characters',
     navArchetypes: 'Archetypes',
     navRooms: 'Cinema Room',
     heroBadge: 'TWO SCREENS. ONE COUCH.',
     heroSlogan: 'Two screens. One couch.',
     heroDesc: 'Watch movies together from any streaming site, Netflix & YouTube, and voice chat with friends like you are sitting on the same couch.',
-    cineMainTitle: 'Watch Together. Forget The Distance.',
-    cineMainTitleHtml: 'Watch Together.<br><span class="accent-text">Forget The Distance.</span>',
+    cineMainTitle: 'THE STAGE IS YOURS',
     cineSubSlogan: 'Two screens. One couch.',
     btnHeroRoom: '🛋️ Start Watch Party',
     btnHeroExplore: '🎭 Explore Characters',
-    mockupCta: 'Open Room ▶',
-    mockupHint: '🎬 Create Room & Watch Now',
-    mockupHost: 'Room Host',
-    mockupGuest: 'Guest',
-    mockupLiveTab: '1080p LIVE TAB',
-    modalCharTitle: 'Cult Cinema Characters & Gallery',
-    modalCharSub: 'Choose your cinema icon: customize your nickname and room ambiance in 1 click',
-    btnCharPickRandom: '🎲 Pick Random Character',
-    btnCharSkipJoin: '🔑 Join Room with Code Only',
     sectionTagArchetypes: '🎭 CINEMA ARCHETYPES',
     archetypeTitle: 'Cult Heroes & Icons',
     archetypeSub: 'The most unforgettable characters in cinematic history.',
@@ -448,10 +371,7 @@ const I18N = {
     hostLockActive: '🟢 Google Active',
     hostTitle: 'Create New Cinema Room',
     hostDesc: 'Start your personal theater, control the playback, and share the invite link with friends.',
-    hostPerk1: '1080p 60FPS HD WebRTC Stream',
-    hostPerk2: 'Two-way Crystal Voice Chat',
-    hostPerk3: 'Cult Themes & Movie Wheel',
-    hostContinueGoogle: 'Start with Google',
+    hostContinueGoogle: 'Continue with Google',
     hostHint: '⚡ Sign in with 1 click to start your room',
     btnCreateRoom: '🛋️ Create New Room',
     dividerOr: 'OR',
@@ -463,15 +383,6 @@ const I18N = {
     labelRoom: 'Room Code or Link:',
     placeholderRoom: 'e.g. movie-101',
     btnJoin: 'Join Room',
-    howTagPill: 'Simple and Fast',
-    howTitle: 'How It Works',
-    howSub: 'The same cinema feel across different places in three simple steps.',
-    step1Title: 'Create a Room',
-    step1Desc: 'Start your private cinema room in 1 click with your Google account and send the invite link to friends.',
-    step2Title: 'Stream Your Tab',
-    step2Desc: 'Open Netflix, YouTube, or any movie site and stream with crystal-clear 1080p WebRTC.',
-    step3Title: 'Enjoy in Sync',
-    step3Desc: 'Watch together with seamless live voice chat and automatic play/pause synchronization.',
     feat1Title: 'Any Website',
     feat1Sub: 'WebRTC HD Audio',
     feat2Title: 'Voice Chat',
@@ -480,16 +391,6 @@ const I18N = {
     feat3Sub: 'Smart Ducking',
     feat4Title: 'Movie Wheel',
     feat4Sub: 'Random Picker',
-    roomTools: '⚙️ Tools',
-    roomOpen: 'Room is Open',
-    roomLocked: 'Room is Locked',
-    dimLights: 'Dim Lights',
-    restoreLights: 'Turn on Lights',
-    reviewMovie: 'Rate Movie',
-    rouletteWheel: 'Movie Wheel',
-    watchedMovies: 'Watched Movies',
-    voiceChatBtn: 'Voice Chat',
-    leaveRoomBtn: '🚪 Leave',
     copyHint: '📋 Copy',
     noticeLogout: '👋 Logged out successfully',
     noticeLogin: '👤 Welcome',
@@ -503,27 +404,16 @@ const I18N = {
     topLogin: 'Вход через Google',
     dropdownStatus: 'Google Аккаунт Активен',
     dropdownLogout: 'Выйти',
-    navHow: 'Как это работает?',
     navCharacters: 'Персонажи',
     navArchetypes: 'Архетипы',
     navRooms: 'Кинокомната',
     heroBadge: 'ДВА ЭКРАНА. ОДИН ДИВАН.',
     heroSlogan: 'Two screens. One couch.',
     heroDesc: 'Смотрите фильмы с любых сайтов, Netflix и YouTube вместе с друзьями и общайтесь голосом, будто сидите на одном диване.',
-    cineMainTitle: 'Смотрите вместе. Забудьте о расстояниях.',
-    cineMainTitleHtml: 'Смотрите вместе.<br><span class="accent-text">Забудьте о расстояниях.</span>',
+    cineMainTitle: 'СЦЕНА ЗА ТОБОЙ',
     cineSubSlogan: 'Two screens. One couch.',
     btnHeroRoom: '🛋️ Создать Комнату',
-    btnHeroExplore: '🎭 Исследовать Персонажей',
-    mockupCta: 'В Комнату ▶',
-    mockupHint: '🎬 Создать комнату и смотреть',
-    mockupHost: 'Создатель',
-    mockupGuest: 'Гость',
-    mockupLiveTab: '1080p ЖИВАЯ ВКЛАДКА',
-    modalCharTitle: 'Культовые Киногерои и Галерея',
-    modalCharSub: 'Выберите киногероя: настройте свой ник и атмосферу комнаты в 1 клик',
-    btnCharPickRandom: '🎲 Случайный Персонаж',
-    btnCharSkipJoin: '🔑 Войти только по коду',
+    btnHeroExplore: '🎭 Исследовать',
     sectionTagArchetypes: '🎭 КИНОАРХЕТИПЫ',
     archetypeTitle: 'Культовые Персонажи',
     archetypeSub: 'Самые незабываемые образы мирового кинематографа.',
@@ -560,10 +450,7 @@ const I18N = {
     hostLockActive: '🟢 Google Активен',
     hostTitle: 'Создать Кинокомнату',
     hostDesc: 'Создайте свой кинозал, управляйте просмотром и отправьте ссылку друзьям.',
-    hostPerk1: '1080p 60FPS HD WebRTC Стрим',
-    hostPerk2: 'Двусторонняя кристальная голосовая связь',
-    hostPerk3: 'Культовые темы и Колесо фильмов',
-    hostContinueGoogle: 'Начать через Google',
+    hostContinueGoogle: 'Continue with Google',
     hostHint: '⚡ Войдите в 1 клик и сразу начните',
     btnCreateRoom: '🛋️ Создать Комнату',
     dividerOr: 'ИЛИ',
@@ -575,15 +462,6 @@ const I18N = {
     labelRoom: 'Код Комнаты или Ссылка:',
     placeholderRoom: 'Напр: kino-101',
     btnJoin: 'Войти в Комнату',
-    howTagPill: 'Просто и быстро',
-    howTitle: 'Как это работает?',
-    howSub: 'Ощущение одного кинотеатра на расстоянии в три простых шага.',
-    step1Title: 'Создайте Комнату',
-    step1Desc: 'В 1 клик запустите свою кинокомнату через аккаунт Google и отправьте ссылку друзьям.',
-    step2Title: 'Транслируйте вкладку',
-    step2Desc: 'Откройте Netflix, YouTube или любой киносайт и делитесь видео в кристальном 1080p через WebRTC.',
-    step3Title: 'Наслаждайтесь синхронно',
-    step3Desc: 'Смотрите вместе с непрерывным голосовым чатом и автоматической синхронизацией паузы и воспроизведения.',
     feat1Title: 'Любые Сайты',
     feat1Sub: 'WebRTC HD Звук',
     feat2Title: 'Голосовой Чат',
@@ -592,16 +470,6 @@ const I18N = {
     feat3Sub: 'Авто-приглушение',
     feat4Title: 'Колесо Фортуны',
     feat4Sub: 'Случайный Выбор',
-    roomTools: '⚙️ Инструменты',
-    roomOpen: 'Комната открыта',
-    roomLocked: 'Комната закрыта',
-    dimLights: 'Выключить свет',
-    restoreLights: 'Включить свет',
-    reviewMovie: 'Оценить фильм',
-    rouletteWheel: 'Колесо фильмов',
-    watchedMovies: 'Просмотренные фильмы',
-    voiceChatBtn: 'Голосовой чат',
-    leaveRoomBtn: '🚪 Выход',
     copyHint: '📋 Копировать',
     noticeLogout: '👋 Вы вышли из аккаунта',
     noticeLogin: '👤 Добро пожаловать',
@@ -623,19 +491,12 @@ function setLanguage(lang) {
   if (el('top-login-label')) el('top-login-label').textContent = t.topLogin;
   if (el('dropdown-status-text')) el('dropdown-status-text').textContent = t.dropdownStatus;
   if (el('dropdown-logout-label')) el('dropdown-logout-label').textContent = t.dropdownLogout;
-  if (el('nav-link-how')) el('nav-link-how').textContent = t.navHow;
   if (el('nav-link-characters')) el('nav-link-characters').textContent = t.navCharacters;
   if (el('nav-link-archetypes')) el('nav-link-archetypes').textContent = t.navArchetypes;
   if (el('nav-link-rooms')) el('nav-link-rooms').textContent = t.navRooms;
   if (el('lobby-hero-badge')) el('lobby-hero-badge').textContent = t.heroBadge;
   if (el('lobby-hero-desc')) el('lobby-hero-desc').textContent = t.heroDesc;
-  if (el('cine-main-title')) {
-    if (t.cineMainTitleHtml) {
-      el('cine-main-title').innerHTML = t.cineMainTitleHtml;
-    } else {
-      el('cine-main-title').textContent = t.cineMainTitle;
-    }
-  }
+  if (el('cine-main-title')) el('cine-main-title').textContent = t.cineMainTitle;
   if (el('cine-sub-slogan')) el('cine-sub-slogan').textContent = t.cineSubSlogan;
 
   if (el('btn-hero-cta-room')) {
@@ -645,24 +506,6 @@ function setLanguage(lang) {
   if (el('btn-hero-cta-explore')) {
     const span = el('btn-hero-cta-explore').querySelector('span');
     if (span) span.textContent = t.btnHeroExplore;
-  }
-
-  // Hero Mockup Translations
-  if (el('mockup-cta-text') && t.mockupCta) el('mockup-cta-text').textContent = t.mockupCta;
-  if (el('mockup-hint-text') && t.mockupHint) el('mockup-hint-text').textContent = t.mockupHint;
-  if (el('mockup-host-label') && t.mockupHost) el('mockup-host-label').textContent = t.mockupHost;
-  if (el('mockup-guest-label') && t.mockupGuest) el('mockup-guest-label').textContent = t.mockupGuest;
-  if (el('mockup-strip-live-tab') && t.mockupLiveTab) el('mockup-strip-live-tab').textContent = t.mockupLiveTab;
-
-  if (el('modal-char-title')) el('modal-char-title').textContent = t.modalCharTitle;
-  if (el('modal-char-sub')) el('modal-char-sub').textContent = t.modalCharSub;
-  if (el('btn-char-pick-random')) {
-    const span = el('btn-char-pick-random').querySelector('span');
-    if (span) span.textContent = t.btnCharPickRandom;
-  }
-  if (el('btn-char-skip-join')) {
-    const span = el('btn-char-skip-join').querySelector('span');
-    if (span) span.textContent = t.btnCharSkipJoin;
   }
 
   // 3D Fanned Cards
@@ -708,18 +551,12 @@ function setLanguage(lang) {
   if (el('arch-title-cyberpunk')) el('arch-title-cyberpunk').textContent = t.archTitleCyber;
   if (el('arch-desc-cyberpunk')) el('arch-desc-cyberpunk').textContent = t.archDescCyber;
 
-  // Host Console Card
   if (el('host-badge-text')) el('host-badge-text').textContent = t.hostBadge;
   if (el('host-title-text')) el('host-title-text').textContent = t.hostTitle;
   if (el('host-desc-text')) el('host-desc-text').textContent = t.hostDesc;
-  if (el('host-perk-1-text') && t.hostPerk1) el('host-perk-1-text').textContent = t.hostPerk1;
-  if (el('host-perk-2-text') && t.hostPerk2) el('host-perk-2-text').textContent = t.hostPerk2;
-  if (el('host-perk-3-text') && t.hostPerk3) el('host-perk-3-text').textContent = t.hostPerk3;
   if (el('btn-host-google-text')) el('btn-host-google-text').textContent = t.hostContinueGoogle;
   if (el('host-hint-text')) el('host-hint-text').textContent = t.hostHint;
   if (el('btn-create-room-text')) el('btn-create-room-text').textContent = t.btnCreateRoom;
-
-  // Guest Console Card
   if (el('divider-or-text')) el('divider-or-text').textContent = t.dividerOr;
   if (el('guest-badge-text')) el('guest-badge-text').textContent = t.guestBadge;
   if (el('guest-title-text')) el('guest-title-text').textContent = t.guestTitle;
@@ -729,19 +566,6 @@ function setLanguage(lang) {
   if (el('label-room-text')) el('label-room-text').textContent = t.labelRoom;
   if (roomInput) roomInput.placeholder = t.placeholderRoom;
   if (el('btn-join-text')) el('btn-join-text').textContent = t.btnJoin;
-
-  // "Necə İşləyir?" (How It Works) Section
-  if (el('how-tag-pill') && t.howTagPill) el('how-tag-pill').textContent = t.howTagPill;
-  if (el('how-section-title') && t.howTitle) el('how-section-title').textContent = t.howTitle;
-  if (el('how-section-sub') && t.howSub) el('how-section-sub').textContent = t.howSub;
-  if (el('step-1-title') && t.step1Title) el('step-1-title').textContent = t.step1Title;
-  if (el('step-1-desc') && t.step1Desc) el('step-1-desc').textContent = t.step1Desc;
-  if (el('step-2-title') && t.step2Title) el('step-2-title').textContent = t.step2Title;
-  if (el('step-2-desc') && t.step2Desc) el('step-2-desc').textContent = t.step2Desc;
-  if (el('step-3-title') && t.step3Title) el('step-3-title').textContent = t.step3Title;
-  if (el('step-3-desc') && t.step3Desc) el('step-3-desc').textContent = t.step3Desc;
-
-  // Features Strip
   if (el('feat-1-title')) el('feat-1-title').textContent = t.feat1Title;
   if (el('feat-1-sub')) el('feat-1-sub').textContent = t.feat1Sub;
   if (el('feat-2-title')) el('feat-2-title').textContent = t.feat2Title;
@@ -751,40 +575,6 @@ function setLanguage(lang) {
   if (el('feat-4-title')) el('feat-4-title').textContent = t.feat4Title;
   if (el('feat-4-sub')) el('feat-4-sub').textContent = t.feat4Sub;
   if (el('copy-hint-text')) el('copy-hint-text').textContent = t.copyHint;
-
-  // Room Tools
-  if (el('btn-room-tools-toggle')) {
-    const span = el('btn-room-tools-toggle').querySelector('span:first-child');
-    if (span && t.roomTools) span.textContent = t.roomTools;
-  }
-  if (el('btn-dim-lights')) {
-    const span = el('btn-dim-lights').querySelector('span:not(.row-icon)');
-    if (span && t.dimLights) span.textContent = t.dimLights;
-  }
-  if (el('btn-floating-restore-lights')) {
-    const span = el('btn-floating-restore-lights').querySelector('span:not(.bulb-icon)');
-    if (span && t.restoreLights) span.textContent = t.restoreLights;
-  }
-  if (el('btn-open-review')) {
-    const span = el('btn-open-review').querySelector('span:not(.row-icon)');
-    if (span && t.reviewMovie) span.textContent = t.reviewMovie;
-  }
-  if (el('btn-open-watchlist')) {
-    const span = el('btn-open-watchlist').querySelector('span:not(.row-icon)');
-    if (span && t.rouletteWheel) span.textContent = t.rouletteWheel;
-  }
-  if (el('btn-open-history')) {
-    const span = el('btn-open-history').querySelector('span:not(.row-icon)');
-    if (span && t.watchedMovies) span.textContent = t.watchedMovies;
-  }
-  if (el('btn-voice-toggle')) {
-    const span = el('btn-voice-toggle').querySelector('.mic-text');
-    if (span && t.voiceChatBtn) span.textContent = t.voiceChatBtn;
-  }
-  if (el('btn-logout')) {
-    const span = el('btn-logout').querySelector('span');
-    if (span && t.leaveRoomBtn) span.textContent = t.leaveRoomBtn;
-  }
 
   document.querySelectorAll('.lang-option').forEach(opt => {
     if (opt.getAttribute('data-lang') === lang) {
@@ -824,562 +614,73 @@ function setupLanguageSwitcher() {
   });
 }
 
-const CULT_CHARACTERS = {
-  heisenberg: {
-    key: 'heisenberg',
-    name: 'Walter White • Heisenberg',
-    source: 'Breaking Bad • Albuquerque',
-    badge: 'ZƏKA OYUNÇUSU',
-    badgeClass: 'emerald',
-    emoji: '🧪',
-    img: 'assets/characters/heisenberg.jpg',
-    meta: 'Zəka & Kimya Dahisi',
-    quote: '"I am not in danger, Skyler. I AM the danger. A guy opens his door and gets shot, and you think that of me? No. I am the one who knocks!"',
-    speech: 'I am the one who knocks.',
-    audio: 'assets/heisenberg.mp3',
-    role: 'Baş Kimyaçı & Zəka Lideri',
-    perk: 'Met-Lab Ultra HD WebRTC Sinxronizasiyası',
-    theme: 'theme-breaking-bad',
-    roomSuggestion: 'heisenberg-lab'
-  },
-  batman: {
-    key: 'batman',
-    name: 'Bruce Wayne • Batman',
-    source: 'The Dark Knight • Gotham City',
-    badge: 'QƏHRƏMAN',
-    badgeClass: 'gold',
-    emoji: '🦇',
-    img: 'assets/characters/batman.jpg',
-    meta: 'Qaranlıq Cəngavər & Ədalət',
-    quote: '"It\'s not who I am underneath, but what I do that defines me. I\'m Batman."',
-    speech: "I'm Batman.",
-    audio: 'assets/batman.mp3',
-    role: 'Qotham Qoruyucusu',
-    perk: 'Bat-Radar — Kristal Səs & Auto Ducking',
-    theme: 'theme-batman',
-    roomSuggestion: 'gotham-cinema'
-  },
-  godfather: {
-    key: 'godfather',
-    name: 'Don Vito Corleone',
-    source: 'The Godfather • Siciliya & Nyu York',
-    badge: 'AİLƏ & GÜC',
-    badgeClass: 'crimson',
-    emoji: '🌹',
-    img: 'assets/characters/godfather.jpg',
-    meta: 'Nüfuz & Klassik Lider',
-    quote: '"A man who doesn\'t spend time with his family can never be a real man. I\'m gonna make him an offer he can\'t refuse."',
-    speech: "I'm gonna make him an offer he can't refuse.",
-    audio: 'assets/godfather.mp3',
-    role: 'Ailə Başçısı (Don)',
-    perk: 'İmtina Edilməz Təklif — Sinxron Otaq İdarəetməsi',
-    theme: 'theme-netflix',
-    roomSuggestion: 'corleone-lounge'
-  },
-  cyberpunk: {
-    key: 'cyberpunk',
-    name: 'Neo • Matrix Terminal',
-    source: 'The Matrix • Sion & Gələcək',
-    badge: 'SCI-FI',
-    badgeClass: 'cyan',
-    emoji: '⚡',
-    img: 'assets/characters/cyberpunk.jpg',
-    meta: 'Seçilmiş Şəxs & Kiberpank',
-    quote: '"There is no spoon. Free your mind. I know kung fu!"',
-    speech: 'I know kung fu.',
-    audio: 'assets/cyberpunk.mp3',
-    role: 'Seçilmiş Şəxs (The One)',
-    perk: 'Bullet-Time Video Play/Pause Sinxronizasiyası',
-    theme: 'theme-matrix',
-    roomSuggestion: 'matrix-terminal'
-  },
-  detective: {
-    key: 'detective',
-    name: 'Rust Cohle',
-    source: 'True Detective • Qaranlıq Kölgələr',
-    badge: 'NOIR DETEKTİV',
-    badgeClass: 'violet',
-    emoji: '🕶️',
-    img: 'assets/characters/detective.jpg',
-    meta: 'Dərin Fəlsəfə & Sirr',
-    quote: '"Time is a flat circle. Everything we\'ve ever done or will do, we\'re gonna do over and over and over again."',
-    speech: 'Time is a flat circle.',
-    audio: 'assets/detective.mp3',
-    role: 'Kino Filosofu & Tənqidçi',
-    perk: 'Dərin Analiz — Seans Sonu Film Arxivi',
-    theme: 'theme-matrix',
-    roomSuggestion: 'detective-noir'
-  }
-};
-
-const QUIZ_QUESTIONS = [
-  {
-    title: 'Gecə seansında kinoya baxanda ən çox hansı ab-havanı sevirsən?',
-    options: [
-      { text: 'Dahi zəka, intriqa və strateji oyunlar', char: 'heisenberg', emoji: '🧪' },
-      { text: 'Qaranlıq qəhrəman, ədalət və gərgin döyüşlər', char: 'batman', emoji: '🦇' },
-      { text: 'Ailə dəyərləri, intizam və klassik nüfuz', char: 'godfather', emoji: '🌹' },
-      { text: 'Elmi-fantastika, kiberpank və gələcəyin sirləri', char: 'cyberpunk', emoji: '⚡' },
-      { text: 'Dərin fəlsəfə, sirli cinayətlər və noir atmosferi', char: 'detective', emoji: '🕶️' }
-    ]
-  },
-  {
-    title: 'Otaqda dostlarla film seçərkən sənin rolun nə olur?',
-    options: [
-      { text: 'Hər şeyi dəqiqliklə planlayıram və ən yaxşı filmi tapıram', char: 'heisenberg', emoji: '🧠' },
-      { text: 'Qaydaları qoruyuram, hər kəsin rahat izləməsinə nəzarət edirəm', char: 'batman', emoji: '🛡️' },
-      { text: 'Sözüm qətidir, dediyim filmə birlikdə baxırıq', char: 'godfather', emoji: '👑' },
-      { text: 'Süni intellekt və ya ruletka çarxı ilə şansımızı sınayırıq', char: 'cyberpunk', emoji: '🎡' },
-      { text: 'Ən dərin mənalı, insanı düşündürən şah əsəri seçirəm', char: 'detective', emoji: '📜' }
-    ]
-  },
-  {
-    title: 'Kinoteatrda ən sevimli seans tərzin hansıdır?',
-    options: [
-      { text: 'Dəqiq hazırlanmış qəhvə və təzə popkorn', char: 'heisenberg', emoji: '☕' },
-      { text: 'Gecə yarısı qaranlıq zalda kəsintisiz immersiya', char: 'batman', emoji: '🌙' },
-      { text: 'Klassik içki qədəhi və ev rahatlığında divan', char: 'godfather', emoji: '🍷' },
-      { text: 'İki ekran, neon işıqlar və canlı WebRTC sinxronu', char: 'cyberpunk', emoji: '💻' },
-      { text: 'Təkbaşına dərin düşüncələr və sirli gecə baxışı', char: 'detective', emoji: '🕯️' }
-    ]
-  }
-];
-
 function setupMiniMovieFigures() {
-  const charKeysList = ['heisenberg', 'batman', 'godfather', 'cyberpunk', 'detective'];
-  let currentShowcaseIndex = 2; // Default Don Corleone
-  let activeShowcaseChar = 'godfather';
-  let currentCharacterAudio = null;
-
-  window.stopCharacterAudio = function() {
-    if (currentCharacterAudio) {
-      try {
-        currentCharacterAudio.pause();
-        currentCharacterAudio.currentTime = 0;
-      } catch (e) {}
-      currentCharacterAudio = null;
-    }
-    const voiceBtn = document.getElementById('btn-showcase-voice-play');
-    if (voiceBtn) {
-      voiceBtn.classList.remove('playing');
-      const icon = voiceBtn.querySelector('.voice-icon-play');
-      if (icon) icon.textContent = '▶️';
+  const charDetailsByLang = {
+    az: {
+      cyberpunk: { emoji: '⚡', title: 'Kiber Döyüşçü (Sci-Fi)' },
+      godfather: { emoji: '🌹', title: 'Don Vito Corleone (Xaç Atası)' },
+      heisenberg: { emoji: '🧪', title: 'Walter White (Heisenberg)' },
+      batman: { emoji: '🦇', title: 'Batman (Qaranlıq Cəngavər)' },
+      detective: { emoji: '🕶️', title: 'Noir Dedektiv (Klassik)' }
+    },
+    tr: {
+      cyberpunk: { emoji: '⚡', title: 'Siber Savaşçı (Bilim Kurgu)' },
+      godfather: { emoji: '🌹', title: 'Don Vito Corleone (Baba)' },
+      heisenberg: { emoji: '🧪', title: 'Walter White (Heisenberg)' },
+      batman: { emoji: '🦇', title: 'Batman (Kara Şövalye)' },
+      detective: { emoji: '🕶️', title: 'Noir Dedektif (Klasik)' }
+    },
+    en: {
+      cyberpunk: { emoji: '⚡', title: 'Cyber Warrior (Sci-Fi)' },
+      godfather: { emoji: '🌹', title: 'Don Vito Corleone (The Godfather)' },
+      heisenberg: { emoji: '🧪', title: 'Walter White (Heisenberg)' },
+      batman: { emoji: '🦇', title: 'Batman (The Dark Knight)' },
+      detective: { emoji: '🕶️', title: 'Noir Detective (Classic)' }
+    },
+    ru: {
+      cyberpunk: { emoji: '⚡', title: 'Кибер-Воин (Науч. Фант.)' },
+      godfather: { emoji: '🌹', title: 'Дон Вито Корлеоне (Крёстный Отец)' },
+      heisenberg: { emoji: '🧪', title: 'Уолтер Уайт (Хайзенберг)' },
+      batman: { emoji: '🦇', title: 'Бэтмен (Тёмный Рыцарь)' },
+      detective: { emoji: '🕶️', title: 'Нуар Детектив (Классика)' }
     }
   };
 
-  function playCharacterAudio(charKey) {
-    const data = CULT_CHARACTERS[charKey];
-    if (!data || !data.audio) return;
-
-    window.stopCharacterAudio();
-
-    const voiceBtn = document.getElementById('btn-showcase-voice-play');
-    if (voiceBtn) {
-      voiceBtn.classList.add('playing');
-      const icon = voiceBtn.querySelector('.voice-icon-play');
-      if (icon) icon.textContent = '🔊';
-    }
-
-    try {
-      const audio = new Audio(data.audio);
-      audio.volume = 0.92;
-      currentCharacterAudio = audio;
-
-      audio.onended = () => {
-        if (voiceBtn) {
-          voiceBtn.classList.remove('playing');
-          const icon = voiceBtn.querySelector('.voice-icon-play');
-          if (icon) icon.textContent = '▶️';
-        }
-        currentCharacterAudio = null;
-      };
-
-      audio.onerror = (err) => {
-        console.warn('Audio playback error for character:', charKey, err);
-        if (voiceBtn) {
-          voiceBtn.classList.remove('playing');
-          const icon = voiceBtn.querySelector('.voice-icon-play');
-          if (icon) icon.textContent = '▶️';
-        }
-        currentCharacterAudio = null;
-      };
-
-      const p = audio.play();
-      if (p !== undefined) {
-        p.catch(err => {
-          console.warn('Playback prevented by browser policy:', err);
-          if (voiceBtn) {
-            voiceBtn.classList.remove('playing');
-            const icon = voiceBtn.querySelector('.voice-icon-play');
-            if (icon) icon.textContent = '▶️';
-          }
-        });
-      }
-    } catch (e) {
-      console.warn('Audio initialization error:', e);
-    }
-  }
-
-  function showGalleryView() {
-    window.stopCharacterAudio();
-    const galleryView = document.getElementById('char-modal-gallery-view');
-    const showcaseView = document.getElementById('char-modal-showcase-view');
-    const quizView = document.getElementById('char-modal-quiz-view');
-    if (galleryView) galleryView.classList.remove('hidden');
-    if (showcaseView) showcaseView.classList.add('hidden');
-    if (quizView) quizView.classList.add('hidden');
-  }
-
-  function openCharacterShowcase(charKey, autoPlaySound = true) {
-    const data = CULT_CHARACTERS[charKey] || CULT_CHARACTERS.godfather;
-    activeShowcaseChar = charKey;
-    currentShowcaseIndex = charKeysList.indexOf(charKey);
-    if (currentShowcaseIndex < 0) currentShowcaseIndex = 0;
-
-    const galleryView = document.getElementById('char-modal-gallery-view');
-    const showcaseView = document.getElementById('char-modal-showcase-view');
-    const quizView = document.getElementById('char-modal-quiz-view');
-    if (galleryView) galleryView.classList.add('hidden');
-    if (quizView) quizView.classList.add('hidden');
-    if (showcaseView) showcaseView.classList.remove('hidden');
-
-    // Məlumatları doldur
-    const imgEl = document.getElementById('showcase-char-img');
-    if (imgEl) imgEl.src = data.img;
-
-    const badgeEl = document.getElementById('showcase-badge');
-    if (badgeEl) {
-      badgeEl.textContent = data.badge;
-      badgeEl.className = `char-badge ${data.badgeClass}`;
-    }
-
-    const emojiStamp = document.getElementById('showcase-emoji-stamp');
-    if (emojiStamp) emojiStamp.textContent = data.emoji;
-
-    const metaTag = document.getElementById('showcase-meta-tag');
-    if (metaTag) metaTag.textContent = data.meta;
-
-    const nameEl = document.getElementById('showcase-char-name');
-    if (nameEl) nameEl.textContent = data.name;
-
-    const sourceEl = document.getElementById('showcase-source-title');
-    if (sourceEl) sourceEl.textContent = data.source;
-
-    const quoteP = document.getElementById('showcase-quote-p');
-    if (quoteP) quoteP.textContent = data.quote;
-
-    const roleName = document.getElementById('ticket-role-name');
-    if (roleName) roleName.textContent = data.role;
-
-    const perkName = document.getElementById('ticket-perk-name');
-    if (perkName) perkName.textContent = data.perk;
-
-    const counterEl = document.getElementById('showcase-counter');
-    if (counterEl) counterEl.textContent = `${currentShowcaseIndex + 1} / ${charKeysList.length}`;
-
-    // Modalı aç
-    openModal('modal-characters');
-
-    // Aktyorun Orijinal Səsi / Film İkonu Səsi
-    if (autoPlaySound) {
-      playCharacterAudio(charKey);
-    }
-
-    if (typeof spawnFloatingEmoji === 'function') {
-      spawnFloatingEmoji(data.emoji);
-      spawnFloatingEmoji('✨');
-    }
-  }
-
-  // Voice replay / pause button
-  const voicePlayBtn = document.getElementById('btn-showcase-voice-play');
-  if (voicePlayBtn) {
-    voicePlayBtn.addEventListener('click', () => {
-      if (currentCharacterAudio && !currentCharacterAudio.paused) {
-        window.stopCharacterAudio();
-      } else {
-        playCharacterAudio(activeShowcaseChar);
-      }
-    });
-  }
-
-  // Navigation inside Showcase
-  const btnShowcaseBack = document.getElementById('btn-showcase-back');
-  if (btnShowcaseBack) {
-    btnShowcaseBack.addEventListener('click', showGalleryView);
-  }
-
-  const btnShowcasePrev = document.getElementById('btn-showcase-prev');
-  if (btnShowcasePrev) {
-    btnShowcasePrev.addEventListener('click', () => {
-      currentShowcaseIndex = (currentShowcaseIndex - 1 + charKeysList.length) % charKeysList.length;
-      openCharacterShowcase(charKeysList[currentShowcaseIndex], true);
-    });
-  }
-
-  const btnShowcaseNext = document.getElementById('btn-showcase-next');
-  if (btnShowcaseNext) {
-    btnShowcaseNext.addEventListener('click', () => {
-      currentShowcaseIndex = (currentShowcaseIndex + 1) % charKeysList.length;
-      openCharacterShowcase(charKeysList[currentShowcaseIndex], true);
-    });
-  }
-
-  // Fəaliyyət: "Bu Xarakterlə Otaq Başlat"
-  const btnShowcaseCreate = document.getElementById('btn-showcase-create-room');
-  if (btnShowcaseCreate) {
-    btnShowcaseCreate.addEventListener('click', () => {
-      const data = CULT_CHARACTERS[activeShowcaseChar] || CULT_CHARACTERS.godfather;
-      
-      // Avatar & Ləqəb təyin et
-      if (typeof selectedAvatarChoice !== 'undefined') selectedAvatarChoice = data.emoji;
-      const avatarPreview = document.getElementById('input-avatar-preview');
-      if (avatarPreview) avatarPreview.textContent = data.emoji;
-      if (usernameInput) usernameInput.value = data.name.split('•')[0].trim();
-      
-      // Temanı yadda saxla
-      localStorage.setItem('watchparty-theme', data.theme);
-
-      closeModal('modal-characters');
-      showNotice(`👑 ${data.name} mövzusunda otaq başladılır...`);
-
-      // Otaq yaratma sahəsinə yönləndir
-      const hostConsole = document.getElementById('action-console');
-      if (hostConsole) {
-        hostConsole.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-
-      setTimeout(() => {
-        if (!currentUser || !currentUser.isGoogle) {
-          openAuthModal();
-        } else {
-          const btnCreateRoom = document.getElementById('btn-create-room');
-          if (btnCreateRoom && !btnCreateRoom.classList.contains('hidden')) {
-            btnCreateRoom.click();
-          }
-        }
-      }, 500);
-    });
-  }
-
-  // Fəaliyyət: "Bu Ləqəblə Otağa Daxil Ol"
-  const btnShowcaseJoin = document.getElementById('btn-showcase-join-room');
-  if (btnShowcaseJoin) {
-    btnShowcaseJoin.addEventListener('click', () => {
-      const data = CULT_CHARACTERS[activeShowcaseChar] || CULT_CHARACTERS.godfather;
-      
-      if (typeof selectedAvatarChoice !== 'undefined') selectedAvatarChoice = data.emoji;
-      const avatarPreview = document.getElementById('input-avatar-preview');
-      if (avatarPreview) {
-        avatarPreview.textContent = data.emoji;
-        avatarPreview.style.transform = 'scale(1.4)';
-        setTimeout(() => { avatarPreview.style.transform = ''; }, 350);
-      }
-      if (usernameInput) usernameInput.value = data.name.split('•')[0].trim();
-      localStorage.setItem('watchparty-theme', data.theme);
-
-      closeModal('modal-characters');
-      showNotice(`🎟️ ${data.name} ləqəbi qəbul olundu. Otaq kodunu daxil edin!`);
-
-      const consoleEl = document.getElementById('action-console');
-      if (consoleEl) {
-        consoleEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-      setTimeout(() => {
-        if (roomInput) roomInput.focus();
-      }, 450);
-    });
-  }
-
-  // Fəaliyyət: "Bilet Mətnini Kopyala"
-  const btnShowcaseCopy = document.getElementById('btn-showcase-copy-pass');
-  if (btnShowcaseCopy) {
-    btnShowcaseCopy.addEventListener('click', () => {
-      const data = CULT_CHARACTERS[activeShowcaseChar] || CULT_CHARACTERS.godfather;
-      const passText = 
-`🎬 ONECOUCH KİNOTEATR VIP BİLETİ 🎟️
-━━━━━━━━━━━━━━━━━━━━━━━━
-🎭 Seçilmiş Qəhrəman: ${data.name} ${data.emoji}
-👑 Təyin Edilən Titul: ${data.role}
-⚡ Otaq Bacarığı: ${data.perk}
-🍿 İzləmə Keyfiyyəti: 1080p 60FPS WebRTC Sinxron
-💬 Kult Sitat: ${data.quote}
-🔗 Birgə İzləmə Linki: ${window.location.origin}
-━━━━━━━━━━━━━━━━━━━━━━━━
-İki ekran. Tək divan. Birlikdə izləyirik! 🍿`;
-
-      navigator.clipboard.writeText(passText).then(() => {
-        showNotice('📋 VIP Kinoteatr Bileti kopyalandı! Dostunuza göndərə bilərsiniz.');
-        if (typeof spawnFloatingEmoji === 'function') {
-          spawnFloatingEmoji('🎟️');
-          spawnFloatingEmoji('✨');
-        }
-      });
-    });
-  }
-
-  // Quiz Controller
-  let quizStep = 0;
-  let quizScores = { heisenberg: 0, batman: 0, godfather: 0, cyberpunk: 0, detective: 0 };
-
-  function renderQuizQuestion() {
-    const q = QUIZ_QUESTIONS[quizStep];
-    const trackFill = document.getElementById('quiz-progress-fill');
-    if (trackFill) trackFill.style.width = `${((quizStep + 1) / QUIZ_QUESTIONS.length) * 100}%`;
-
-    const stepTitle = document.getElementById('quiz-step-title');
-    if (stepTitle) stepTitle.textContent = `Sual ${quizStep + 1} / ${QUIZ_QUESTIONS.length}`;
-
-    const qTitle = document.getElementById('quiz-q-title');
-    if (qTitle) qTitle.textContent = q.title;
-
-    const answersGrid = document.getElementById('quiz-answers-grid');
-    if (answersGrid) {
-      answersGrid.innerHTML = '';
-      q.options.forEach(opt => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'quiz-answer-card';
-        btn.innerHTML = `<span class="quiz-ans-emoji">${opt.emoji}</span><span>${opt.text}</span>`;
-        btn.onclick = () => {
-          quizScores[opt.char] = (quizScores[opt.char] || 0) + 1;
-          quizStep++;
-          if (quizStep < QUIZ_QUESTIONS.length) {
-            renderQuizQuestion();
-          } else {
-            // Find winner
-            let topChar = 'godfather';
-            let maxScore = -1;
-            Object.keys(quizScores).forEach(k => {
-              if (quizScores[k] > maxScore) {
-                maxScore = quizScores[k];
-                topChar = k;
-              }
-            });
-            showNotice('🎉 Test tamamlandı! Sənə ən uyğun kino xarakteri təyin olundu.');
-            openCharacterShowcase(topChar, true);
-          }
-        };
-        answersGrid.appendChild(btn);
-      });
-    }
-  }
-
-  const btnOpenQuiz = document.getElementById('btn-open-char-quiz');
-  if (btnOpenQuiz) {
-    btnOpenQuiz.addEventListener('click', () => {
-      quizStep = 0;
-      quizScores = { heisenberg: 0, batman: 0, godfather: 0, cyberpunk: 0, detective: 0 };
-      const galleryView = document.getElementById('char-modal-gallery-view');
-      const showcaseView = document.getElementById('char-modal-showcase-view');
-      const quizView = document.getElementById('char-modal-quiz-view');
-      if (galleryView) galleryView.classList.add('hidden');
-      if (showcaseView) showcaseView.classList.add('hidden');
-      if (quizView) quizView.classList.remove('hidden');
-      renderQuizQuestion();
-    });
-  }
-
-  const btnQuizBack = document.getElementById('btn-quiz-back');
-  if (btnQuizBack) {
-    btnQuizBack.addEventListener('click', showGalleryView);
-  }
-
-  // 1. Hero "🎭 Xarakterləri Kəşf Et" düyməsi -> Modalı Açır
-  const btnExplore = document.getElementById('btn-hero-cta-explore');
-  if (btnExplore) {
-    btnExplore.addEventListener('click', (e) => {
-      e.preventDefault();
-      showGalleryView();
-      openModal('modal-characters');
-    });
-  }
-
-  // 1.1 Hero Real-Time Cinema Mockup -> Action Console-a yönləndirir və Host qutusunu işıqlandırır
-  const heroMockupCard = document.getElementById('hero-mockup-card');
-  if (heroMockupCard) {
-    const handleMockupClick = (e) => {
-      e.preventDefault();
-      const actionConsole = document.getElementById('action-console');
-      if (actionConsole) {
-        actionConsole.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        const hostBox = document.querySelector('.host-box');
-        if (hostBox) {
-          hostBox.classList.remove('console-spotlight-pulse');
-          void hostBox.offsetWidth; // trigger reflow
-          hostBox.classList.add('console-spotlight-pulse');
-          setTimeout(() => hostBox.classList.remove('console-spotlight-pulse'), 2500);
-        }
-      }
-    };
-    heroMockupCard.addEventListener('click', handleMockupClick);
-    heroMockupCard.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        handleMockupClick(e);
-      }
-    });
-  }
-
-  // 2. Üst naviqasiya "Xarakterlər" linki -> Modalı Açır
-  const navLinkChars = document.getElementById('nav-link-characters');
-  if (navLinkChars) {
-    navLinkChars.addEventListener('click', (e) => {
-      e.preventDefault();
-      showGalleryView();
-      openModal('modal-characters');
-    });
-  }
-
-  // 3. Ad inputunun yanındakı Avatar Nişanı -> Modalı Açır
-  const avatarPreviewBadge = document.getElementById('input-avatar-preview');
-  if (avatarPreviewBadge) {
-    avatarPreviewBadge.addEventListener('click', () => {
-      showGalleryView();
-      openModal('modal-characters');
-    });
-  }
-
-  // 4. Modal daxilindəki Xarakter Kartları & Düymələri -> SHOWCASE AÇIR!
-  document.querySelectorAll('.char-gallery-card').forEach(card => {
-    card.addEventListener('click', () => {
-      const charKey = card.getAttribute('data-char');
-      openCharacterShowcase(charKey, true);
-    });
-  });
-
-  // 5. Modal Alt: Təsadüfi Xarakter Seç -> SHOWCASE AÇIR!
-  const btnPickRandom = document.getElementById('btn-char-pick-random');
-  if (btnPickRandom) {
-    btnPickRandom.addEventListener('click', () => {
-      const randomKey = charKeysList[Math.floor(Math.random() * charKeysList.length)];
-      openCharacterShowcase(randomKey, true);
-    });
-  }
-
-  // 6. Modal Alt: Yalnız Koda ilə Otağa Qoşul
-  const btnSkipJoin = document.getElementById('btn-char-skip-join');
-  if (btnSkipJoin) {
-    btnSkipJoin.addEventListener('click', () => {
-      closeModal('modal-characters');
-      const consoleEl = document.getElementById('action-console');
-      if (consoleEl) {
-        consoleEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-      setTimeout(() => {
-        if (roomInput) roomInput.focus();
-      }, 400);
-    });
-  }
-
-  // 7. Hero Sağ və Sol Qanaddakı 3D Flank Kartları -> SHOWCASE AÇIR!
+  // 1. 3D Fanned Character Cards
   document.querySelectorAll('.cine-char-card').forEach(card => {
     card.addEventListener('click', () => {
       const charKey = card.getAttribute('data-char');
-      openCharacterShowcase(charKey, true);
+      const langDict = charDetailsByLang[currentLang] || charDetailsByLang.az;
+      const info = langDict[charKey] || { emoji: '🍿', title: 'Hero' };
+      
+      if (typeof selectedAvatarChoice !== 'undefined') {
+        selectedAvatarChoice = info.emoji;
+      }
+      const avatarPreview = document.getElementById('input-avatar-preview');
+      if (avatarPreview) {
+        avatarPreview.textContent = info.emoji;
+        avatarPreview.style.transform = 'scale(1.3)';
+        setTimeout(() => { avatarPreview.style.transform = ''; }, 300);
+      }
+
+      if (typeof spawnFloatingEmoji === 'function') {
+        spawnFloatingEmoji(info.emoji);
+        spawnFloatingEmoji('✨');
+        spawnFloatingEmoji('⭐');
+      }
+
+      const selectedWord = {
+        az: 'seçildi!',
+        tr: 'seçildi!',
+        en: 'selected!',
+        ru: 'выбран!'
+      }[currentLang] || 'seçildi!';
+
+      showNotice(`🎭 ${info.title} ${selectedWord}`);
     });
   });
 
-  // 8. Archetype Cards Click
+  // 2. Archetype Cards Click
   document.querySelectorAll('.archetype-card').forEach(card => {
     card.addEventListener('click', () => {
       const title = card.querySelector('.arch-title')?.textContent || 'Arxetip';
@@ -1433,45 +734,13 @@ window.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
   const roomParam = urlParams.get('room');
   if (roomParam) {
-    const cleanRoom = roomParam.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
-    if (cleanRoom) {
-      if (roomInput) roomInput.value = cleanRoom;
-
-      // Link ilə gələn istifadəçiyə avtomatik ad və avatar təyin edib birbaşa daxil olmaq
-      let joinUsername = '';
-      if (currentUser && currentUser.username) {
-        joinUsername = currentUser.username;
-      } else if (usernameInput && usernameInput.value.trim()) {
-        joinUsername = usernameInput.value.trim();
-      } else {
-        const guestNames = ['KinoSevər', 'Tamaşaçı', 'FilmHəvəskarı', 'CouchDost', 'Sinefil', 'Qonaq'];
-        const randName = guestNames[Math.floor(Math.random() * guestNames.length)];
-        const randNum = Math.floor(100 + Math.random() * 900);
-        joinUsername = `${randName}-${randNum}`;
-        if (usernameInput) usernameInput.value = joinUsername;
-      }
-
-      const randomAvatars = ['🍿', '🎬', '🥤', '🍕', '🕶️', '⚡', '🦇', '🍫'];
-      const joinAvatar = (currentUser && currentUser.avatar) ? currentUser.avatar : randomAvatars[Math.floor(Math.random() * randomAvatars.length)];
-      if (typeof selectedAvatarChoice !== 'undefined') {
-        selectedAvatarChoice = joinAvatar;
-      }
-
-      // Linklə gələn qonaq üçün birbaşa otaq açılır (Heç bir qeydiyyat və ya gözləmə tələb olunmur)
-      setTimeout(() => {
-        enterRoomWithId(cleanRoom, joinUsername, false);
-      }, 250);
-    }
+    roomInput.value = roomParam;
   }
 
-  // Kult Film/Serial Tema Seçicisi (Yalnız Otaq Daxilində Aktiv Olur)
+  // Kult Film/Serial Tema Seçicisi (Yalnız Otaq Daxilində)
   const themeSelect = document.getElementById('theme-select');
   const savedTheme = localStorage.getItem('watchparty-theme') || 'theme-netflix';
-  if (roomScreen && roomScreen.classList.contains('active')) {
-    applyTheme(savedTheme);
-  } else {
-    document.body.className = 'theme-netflix';
-  }
+  applyTheme(savedTheme);
 
   if (themeSelect) {
     themeSelect.value = savedTheme;
@@ -1514,9 +783,6 @@ window.addEventListener('DOMContentLoaded', () => {
   const savedLang = localStorage.getItem('onecouch_lang') || 'az';
   setLanguage(savedLang);
 
-  // 🌓 Gündüz / Gecə Rejimi (Lobby Light/Dark Mode)
-  setupLobbyMode();
-
   // Balaca Kino Fiqurları İnteraktivliyi
   setupMiniMovieFigures();
 
@@ -1530,51 +796,6 @@ window.addEventListener('DOMContentLoaded', () => {
   setupMovieReview();
   setupLightsDimmer();
 });
-
-// ==========================================
-// LOBBY LIGHT / DARK MODE CONTROLLER
-// ==========================================
-function applyLobbyMode(mode) {
-  const currentMode = mode === 'light' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-mode', currentMode);
-  try {
-    localStorage.setItem('onecouch_lobby_mode', currentMode);
-  } catch (e) {}
-
-  const toggleBtn = document.getElementById('btn-mode-toggle');
-  if (toggleBtn) {
-    const sunIcon = toggleBtn.querySelector('.mode-icon-sun');
-    const moonIcon = toggleBtn.querySelector('.mode-icon-moon');
-    const label = document.getElementById('mode-label-text');
-
-    if (currentMode === 'light') {
-      if (sunIcon) sunIcon.classList.remove('hidden');
-      if (moonIcon) moonIcon.classList.add('hidden');
-      if (label) label.textContent = 'Light';
-    } else {
-      if (sunIcon) sunIcon.classList.add('hidden');
-      if (moonIcon) moonIcon.classList.remove('hidden');
-      if (label) label.textContent = 'Dark';
-    }
-  }
-}
-
-function setupLobbyMode() {
-  let savedMode = 'dark';
-  try {
-    savedMode = localStorage.getItem('onecouch_lobby_mode') || 'dark';
-  } catch (e) {}
-  applyLobbyMode(savedMode);
-
-  const toggleBtn = document.getElementById('btn-mode-toggle');
-  if (toggleBtn) {
-    toggleBtn.addEventListener('click', () => {
-      const current = document.documentElement.getAttribute('data-mode') || 'dark';
-      const nextMode = current === 'light' ? 'dark' : 'light';
-      applyLobbyMode(nextMode);
-    });
-  }
-}
 
 function applyTheme(themeName, syncWithRoom = true) {
   document.body.className = themeName;
@@ -1696,10 +917,6 @@ function enterRoomWithId(roomId, username, isHostIntent) {
   lobbyScreen.classList.remove('active');
   roomScreen.classList.add('active');
   displayRoomId.textContent = currentRoom;
-
-  // Otağa daxil olduqda seçilmiş kino mövzusunu aktivləşdir
-  const savedTheme = localStorage.getItem('watchparty-theme') || 'theme-netflix';
-  applyTheme(savedTheme, false);
 }
 
 btnCopyLink.addEventListener('click', () => {
@@ -1709,12 +926,18 @@ btnCopyLink.addEventListener('click', () => {
   });
 });
 
-function forceLeaveRoomAndReturnToLobby(customNotice) {
+function leaveRoomAndReturnToLobby() {
   const t = (typeof I18N !== 'undefined' && I18N[currentLang]) ? I18N[currentLang] : null;
+  if (roomScreen && roomScreen.classList.contains('active')) {
+    const confirmLeave = confirm(t ? t.confirmLeave : 'Kino otağından çıxıb əsas ekrana (Lobby) qayıtmaq istəyirsiniz?');
+    if (!confirmLeave) return;
+  } else {
+    return;
+  }
 
   // 1. WebRTC və ekran/səs yayımlarını dayandır
   if (localScreenStream) {
-    try { localScreenStream.getTracks().forEach(track => track.stop()); } catch (e) {}
+    try { localScreenStream.getTracks().forEach(t => t.stop()); } catch (e) {}
     localScreenStream = null;
   }
   Object.values(screenBroadcasterPeers).forEach(pc => {
@@ -1728,7 +951,7 @@ function forceLeaveRoomAndReturnToLobby(customNotice) {
   }
   screenViewerIceQueue = [];
   if (localVoiceStream) {
-    try { localVoiceStream.getTracks().forEach(track => track.stop()); } catch (e) {}
+    try { localVoiceStream.getTracks().forEach(t => t.stop()); } catch (e) {}
     localVoiceStream = null;
   }
   if (typeof voicePeerConnections === 'object') {
@@ -1749,7 +972,7 @@ function forceLeaveRoomAndReturnToLobby(customNotice) {
     try { ytPlayer.stopVideo(); } catch (e) {}
   }
 
-  // 3. Socket əlaqəsini bağla (Serverə çıxış siqnalı göndər)
+  // 3. Socket əlaqəsini bağla
   if (socket) {
     try {
       socket.emit('leave-room');
@@ -1768,28 +991,12 @@ function forceLeaveRoomAndReturnToLobby(customNotice) {
   if (roomInput) roomInput.value = '';
 
   // 6. Ekranları dəyişdir
-  if (roomScreen) roomScreen.classList.remove('active');
-  if (lobbyScreen) lobbyScreen.classList.add('active');
-  document.body.className = 'theme-netflix';
+  roomScreen.classList.remove('active');
+  lobbyScreen.classList.add('active');
 
   // 7. UI-ı yenilə
   updateUserUI();
-  showNotice(customNotice || (t ? t.noticeReturnLobby : '🛋️ Əsas ekrana qayıtdınız'));
-}
-
-function leaveRoomAndReturnToLobby() {
-  const t = (typeof I18N !== 'undefined' && I18N[currentLang]) ? I18N[currentLang] : null;
-  if (roomScreen && roomScreen.classList.contains('active')) {
-    const confirmMsg = isHost
-      ? '👑 Otaq rəhbərisiniz. Çıxsanız, kino zalı hər kəs üçün bağlanacaq. Çıxmaq istəyirsiniz?'
-      : (t ? t.confirmLeave : 'Kino otağından çıxıb əsas ekrana (Lobby) qayıtmaq istəyirsiniz?');
-    const confirmLeave = confirm(confirmMsg);
-    if (!confirmLeave) return;
-  } else {
-    return;
-  }
-
-  forceLeaveRoomAndReturnToLobby();
+  showNotice(t ? t.noticeReturnLobby : '🛋️ Əsas ekrana qayıtdınız');
 }
 
 // ==========================================
@@ -1867,19 +1074,12 @@ function initSocket() {
 
   socket.on('room-locked-denied', (data) => {
     alert(`⛔ ${data.message || 'Bu otaq hal-hazırda kilidlənib! Host yalnız dəvətli üzvlərə icazə verir.'}`);
-    forceLeaveRoomAndReturnToLobby();
-  });
-
-  // Otaq bağlandıqda (Otaq rəhbəri çıxdıqda bütün otaq avtomatik bağlanır)
-  socket.on('room-closed', (data) => {
-    alert(`🛋️ ${data.message || 'Otaq rəhbəri çıxdığı üçün kino zalı bağlandı.'}`);
-    forceLeaveRoomAndReturnToLobby('🛋️ Otaq rəhbəri çıxdığı üçün zal bağlandı');
-  });
-
-  // Host tərəfindən otaqdan çıxarıldıqda (Kick)
-  socket.on('kicked-from-room', (data) => {
-    alert(`⛔ ${data.message || 'Otaq rəhbəri tərəfindən otaqdan çıxarıldınız.'}`);
-    forceLeaveRoomAndReturnToLobby('⛔ Otaq rəhbəri tərəfindən çıxarıldınız');
+    roomScreen.classList.remove('active');
+    lobbyScreen.classList.add('active');
+    if (socket) {
+      socket.disconnect();
+      socket = null;
+    }
   });
 
   socket.on('room-lock-status', ({ isLocked, lockedBy }) => {
@@ -2120,28 +1320,8 @@ function updateUsersList(users) {
             }
           </div>
         </div>
-        ${(isHost && !isMe) ? `
-          <button class="btn-kick-participant" title="İştirakçını otaqdan çıxart" data-socket-id="${sockId}" data-username="${escapeHtml(u.username)}">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
-            <span>Çıxart</span>
-          </button>
-        ` : ''}
       `;
       sidebarList.appendChild(card);
-    });
-
-    // Otaq sahibi üçün iştirakçını çıxarmaq (Kick) düymələrinə listener qoş
-    sidebarList.querySelectorAll('.btn-kick-participant').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const targetSockId = btn.getAttribute('data-socket-id');
-        const targetName = btn.getAttribute('data-username') || 'Bu istifadəçini';
-        if (confirm(`"${targetName}" adlı iştirakçını otaqdan çıxarmaq istəyirsiniz?`)) {
-          if (socket) {
-            socket.emit('kick-user', { targetSocketId: targetSockId });
-          }
-        }
-      });
     });
   }
 }
@@ -2466,102 +1646,6 @@ btnSyncNow.addEventListener('click', () => {
 // 6. WEBRTC TAB YAYIMI & NETFLIX
 // ==========================================
 
-// Keyfiyyət Profilləri: Film və seriallar üçün 1080p Full HD kristal təmiz standart (30 FPS)
-const STREAM_PROFILES = {
-  '1080p-high': {
-    name: '🌟 1080p Full HD — Kristal Təmiz (Kino Rejimi • 8.5 Mbps)',
-    width: { ideal: 1920, max: 1920 },
-    height: { ideal: 1080, max: 1080 },
-    frameRate: { ideal: 30, max: 30 }, // Kino/film üçün 30 FPS standartı (donmaların qarşısını alır)
-    maxBitrate: 8500000, // 8.5 Mbps (tam HD, sıxılma və ləkələnmə yoxdur)
-    contentHint: 'detail', // Mətn və incə kino detallarının bulanıqlaşmasının qarşısını alır
-    degradationPreference: 'maintain-resolution'
-  },
-  '1080p-balanced': {
-    name: '⚡ 1080p Balans — Stabil & Axıcı (5.0 Mbps)',
-    width: { ideal: 1920, max: 1920 },
-    height: { ideal: 1080, max: 1080 },
-    frameRate: { ideal: 30, max: 30 },
-    maxBitrate: 5000000, // 5.0 Mbps
-    contentHint: 'detail',
-    degradationPreference: 'balanced'
-  },
-  '720p-smooth': {
-    name: '🚀 720p HD — Zəif İnternet (3.0 Mbps)',
-    width: { ideal: 1280, max: 1920 },
-    height: { ideal: 720, max: 1080 },
-    frameRate: { ideal: 30, max: 30 },
-    maxBitrate: 3000000, // 3.0 Mbps
-    contentHint: 'motion',
-    degradationPreference: 'maintain-framerate'
-  }
-};
-
-let currentStreamProfileKey = '1080p-high';
-
-const selectStreamQuality = document.getElementById('stream-quality-select');
-const selectNetflixQuality = document.getElementById('netflix-quality-select');
-
-function getActiveStreamProfile() {
-  return STREAM_PROFILES[currentStreamProfileKey] || STREAM_PROFILES['1080p-high'];
-}
-
-async function changeStreamQuality(newKey, notify = true) {
-  if (!STREAM_PROFILES[newKey]) return;
-  currentStreamProfileKey = newKey;
-  if (selectStreamQuality) selectStreamQuality.value = newKey;
-  if (selectNetflixQuality) selectNetflixQuality.value = newKey;
-
-  const profile = getActiveStreamProfile();
-
-  // Əgər yayım aktivdirsə, yeni keyfiyyəti dərhal canlı olaraq tətbiq et
-  if (localScreenStream) {
-    const videoTrack = localScreenStream.getVideoTracks()[0];
-    if (videoTrack) {
-      if ('contentHint' in videoTrack) {
-        videoTrack.contentHint = profile.contentHint;
-      }
-      try {
-        await videoTrack.applyConstraints({ frameRate: profile.frameRate });
-      } catch (e) {}
-    }
-
-    for (const targetId in screenBroadcasterPeers) {
-      const pc = screenBroadcasterPeers[targetId];
-      if (pc) {
-        const videoSender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
-        if (videoSender) {
-          try {
-            const params = videoSender.getParameters();
-            if (!params.encodings || params.encodings.length === 0) params.encodings = [{}];
-            params.encodings[0].maxBitrate = profile.maxBitrate;
-            params.encodings[0].scaleResolutionDownBy = 1.0;
-            params.degradationPreference = profile.degradationPreference;
-            await videoSender.setParameters(params);
-          } catch (e) {
-            console.warn(`[WebRTC Stream] Bitrate yenilənmə xətası (${targetId}):`, e);
-          }
-        }
-      }
-    }
-  }
-
-  if (notify) {
-    showNotice(`⚙️ ${profile.name}`);
-  }
-}
-
-if (selectStreamQuality) {
-  selectStreamQuality.addEventListener('change', (e) => {
-    changeStreamQuality(e.target.value);
-  });
-}
-if (selectNetflixQuality) {
-  selectNetflixQuality.addEventListener('change', (e) => {
-    changeStreamQuality(e.target.value);
-  });
-}
-
 btnStartStream.addEventListener('click', startScreenCapture);
 if (btnStartNetflixStream) {
   btnStartNetflixStream.addEventListener('click', startScreenCapture);
@@ -2569,14 +1653,12 @@ if (btnStartNetflixStream) {
 
 async function startScreenCapture() {
   try {
-    const profile = getActiveStreamProfile();
-
     localScreenStream = await navigator.mediaDevices.getDisplayMedia({
       video: {
         displaySurface: 'browser',
-        frameRate: profile.frameRate, // 30 FPS kino standartı: GPU yükünü azaldır və kadr donmasını tam aradan qaldırır
-        width: profile.width,
-        height: profile.height
+        frameRate: { ideal: 30, max: 30 }, // Film üçün 30 FPS standart (60 FPS donmalarını və şəbəkə tıxacını aradan qaldırır)
+        width: { max: 1920, ideal: 1280 },
+        height: { max: 1080, ideal: 720 }
       },
       audio: {
         echoCancellation: false,
@@ -2588,7 +1670,7 @@ async function startScreenCapture() {
 
     const videoTrack = localScreenStream.getVideoTracks()[0];
     if (videoTrack) {
-      videoTrack.contentHint = profile.contentHint; // 'detail' = Kristal təmiz, heç bir sıxılma bulanıqlığı olmur!
+      videoTrack.contentHint = 'motion'; // GPU Hardware video hərəkət rejimi (donmaları tam bloklayır)
     }
 
     const audioTracks = localScreenStream.getAudioTracks();
@@ -2611,7 +1693,7 @@ async function startScreenCapture() {
     socket.emit('stream-ready');
 
     localScreenStream.getVideoTracks()[0].onended = stopScreenStream;
-    showNotice(`🎥 Film tabı yayımlanır! (${profile.name})`);
+    showNotice('🎥 Film tabı yayımlanır! Səs aktivdir.');
   } catch (err) {
     console.error('Ekran yayımı xətası:', err);
   }
@@ -2648,6 +1730,18 @@ function stopScreenStream() {
   showNotice('⏹️ Yayım dayandırıldı');
 }
 
+function enforceHiFiStereoOpus(sdp) {
+  if (!sdp) return sdp;
+  return sdp.replace(/a=fmtp:(\d+)( [^\r\n]+)?/g, (match, pt, params) => {
+    params = params || '';
+    if (sdp.includes(`rtpmap:${pt} opus/48000`)) {
+      // 510 kbps Full-Band Stereo Cinema Audio (Tam studio stereo effekti və toxunulmaz kino səsi)
+      return `a=fmtp:${pt} minptime=10;useinbandfec=1;stereo=1;sprop-stereo=1;maxaveragebitrate=510000;cbr=1;maxplaybackrate=48000;sprop-maxcapturerate=48000`;
+    }
+    return match;
+  });
+}
+
 async function initiateScreenPeer(targetSocketId) {
   if (!localScreenStream || !targetSocketId || targetSocketId === socket.id) return;
 
@@ -2664,34 +1758,14 @@ async function initiateScreenPeer(targetSocketId) {
     pc.addTrack(track, localScreenStream);
   });
 
-  // H.264 Donmanı bloklamaq üçün Hardware Acceleration kodekini prioritet et
-  try {
-    const transceivers = pc.getTransceivers();
-    const videoTransceiver = transceivers.find(t => t.sender && t.sender.track && t.sender.track.kind === 'video');
-    if (videoTransceiver && typeof videoTransceiver.setCodecPreferences === 'function' && RTCRtpReceiver.getCapabilities) {
-      const capabilities = RTCRtpReceiver.getCapabilities('video');
-      if (capabilities && capabilities.codecs) {
-        const h264Codecs = capabilities.codecs.filter(c => c.mimeType.toLowerCase() === 'video/h264');
-        const otherCodecs = capabilities.codecs.filter(c => c.mimeType.toLowerCase() !== 'video/h264');
-        if (h264Codecs.length > 0) {
-          videoTransceiver.setCodecPreferences([...h264Codecs, ...otherCodecs]);
-        }
-      }
-    }
-  } catch (e) {
-    console.warn('Codec preference error:', e);
-  }
-
-  // WebRTC Video Bitreyt Nəzarəti və Keyfiyyəti (8.5 Mbps tam HD axın)
-  const profile = getActiveStreamProfile();
+  // WebRTC Video Bitreyt Nəzarəti və Donmanın qarşısının alınması (Film üçün 3 Mbps hədd və kadr saxlanması)
   const videoSender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
   if (videoSender) {
     try {
       const params = videoSender.getParameters();
       if (!params.encodings || params.encodings.length === 0) params.encodings = [{}];
-      params.encodings[0].maxBitrate = profile.maxBitrate;
-      params.encodings[0].scaleResolutionDownBy = 1.0; // Qətnamənin süni azaldılmasını qadağan et
-      params.degradationPreference = profile.degradationPreference;
+      params.encodings[0].maxBitrate = 3000000; // 3.0 Mbps max (sürətli, dalğalanmasız, kəsintisiz video axını)
+      params.degradationPreference = 'maintain-framerate'; // Heç vaxt kadr itməsin və donmasın!
       await videoSender.setParameters(params);
     } catch (e) {
       console.warn('Bitrate parameters error:', e);
@@ -2706,6 +1780,7 @@ async function initiateScreenPeer(targetSocketId) {
 
   try {
     const offer = await pc.createOffer();
+    offer.sdp = enforceHiFiStereoOpus(offer.sdp);
     await pc.setLocalDescription(offer);
     socket.emit('webrtc-offer', { target: targetSocketId, sdp: offer });
   } catch (err) {
@@ -2722,22 +1797,6 @@ async function handleScreenOffer(senderSocketId, sdp) {
   screenViewerIceQueue = [];
 
   screenViewerPeer = new RTCPeerConnection(rtcConfig);
-
-  // İzləyici tərəfdə də H.264 aparat sürətləndirməsi
-  try {
-    const transceivers = screenViewerPeer.getTransceivers();
-    const videoTransceiver = transceivers.find(t => t.receiver && t.receiver.track && t.receiver.track.kind === 'video');
-    if (videoTransceiver && typeof videoTransceiver.setCodecPreferences === 'function' && RTCRtpReceiver.getCapabilities) {
-      const capabilities = RTCRtpReceiver.getCapabilities('video');
-      if (capabilities && capabilities.codecs) {
-        const h264Codecs = capabilities.codecs.filter(c => c.mimeType.toLowerCase() === 'video/h264');
-        const otherCodecs = capabilities.codecs.filter(c => c.mimeType.toLowerCase() !== 'video/h264');
-        if (h264Codecs.length > 0) {
-          videoTransceiver.setCodecPreferences([...h264Codecs, ...otherCodecs]);
-        }
-      }
-    }
-  } catch (e) {}
 
   screenViewerPeer.ontrack = (event) => {
     streamPlayer.srcObject = event.streams[0];
@@ -2770,6 +1829,7 @@ async function handleScreenOffer(senderSocketId, sdp) {
     screenViewerIceQueue = [];
 
     const answer = await screenViewerPeer.createAnswer();
+    answer.sdp = enforceHiFiStereoOpus(answer.sdp);
     await screenViewerPeer.setLocalDescription(answer);
     socket.emit('webrtc-answer', { target: senderSocketId, sdp: answer });
   } catch (err) {
@@ -2791,6 +1851,10 @@ if (btnUnmuteOverlay) {
 // 7. WEBRTC SƏSLİ ZƏNG & AUDIO DUCKING
 // ==========================================
 
+let selectedMicDeviceId = '';
+let isPushToTalk = false;
+let isSpacePressed = false;
+
 function setupVoiceChat() {
   const toggleHandler = async () => {
     if (!isVoiceActive) {
@@ -2808,6 +1872,8 @@ function setupVoiceChat() {
     btnVoiceSidebar.addEventListener('click', toggleHandler);
   }
   setupAudioModeToggle();
+  populateMicDeviceList();
+  setupPushToTalk();
 }
 
 let isHeadphoneMode = true; // Susmaya görə: Qulaqlıq Rejimi (Kino səsi 100% təmiz qalır, heç bir boğulma olmur)
@@ -2843,6 +1909,120 @@ function updateAudioModeUI() {
       txt.textContent = 'Dinamik';
       if (btn) btn.title = 'Dinamik Rejimi: Əks-səda əleyhinə filtr aktivdir. Qulaqlıq üçün toxunun.';
     }
+  }
+}
+
+async function populateMicDeviceList() {
+  const select = document.getElementById('select-mic-device');
+  if (!select || !navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const mics = devices.filter(d => d.kind === 'audioinput');
+    if (mics.length === 0) return;
+
+    select.innerHTML = '';
+    let internalFound = null;
+
+    mics.forEach((mic, index) => {
+      const opt = document.createElement('option');
+      opt.value = mic.deviceId;
+      const label = mic.label || `Mikrofon ${index + 1}`;
+      const isInternal = /array|realtek|internal|built-in|daxili|integrated/i.test(label) &&
+                         !/bluetooth|hands-free|headset|airpods|buds/i.test(label);
+
+      if (isInternal && !internalFound) {
+        internalFound = mic.deviceId;
+        opt.textContent = `💻 ${label} (Tövsiyə - Təmiz Kino)`;
+      } else {
+        opt.textContent = `🎙️ ${label}`;
+      }
+      select.appendChild(opt);
+    });
+
+    if (internalFound && !selectedMicDeviceId) {
+      selectedMicDeviceId = internalFound;
+      select.value = internalFound;
+    } else if (selectedMicDeviceId) {
+      select.value = selectedMicDeviceId;
+    }
+
+    select.onchange = async () => {
+      selectedMicDeviceId = select.value;
+      if (isVoiceActive) {
+        showNotice('🎙️ Mikrofon dəyişdirildi');
+        await startVoiceChat();
+      }
+    };
+  } catch (e) {
+    console.warn('Device enumeration error:', e);
+  }
+}
+
+async function getSafeMicrophoneId() {
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return '';
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const mics = devices.filter(d => d.kind === 'audioinput');
+    if (mics.length <= 1) return mics[0] ? mics[0].deviceId : '';
+
+    if (selectedMicDeviceId) {
+      const match = mics.find(m => m.deviceId === selectedMicDeviceId);
+      if (match) return match.deviceId;
+    }
+
+    // Bluetooth qulaqlığın Hands-Free telefon rejiminə düşməməsi üçün noutbukun daxili mikrofonunu seç
+    const internalMic = mics.find(m => {
+      const name = (m.label || '').toLowerCase();
+      return (name.includes('array') || name.includes('realtek') || name.includes('internal') || name.includes('built-in') || name.includes('daxili') || name.includes('integrated')) &&
+             !name.includes('bluetooth') && !name.includes('hands-free') && !name.includes('headset') && !name.includes('airpods') && !name.includes('buds');
+    });
+
+    if (internalMic) {
+      selectedMicDeviceId = internalMic.deviceId;
+      return internalMic.deviceId;
+    }
+  } catch (e) {}
+  return '';
+}
+
+function setupPushToTalk() {
+  window.addEventListener('keydown', (e) => {
+    if (!isPushToTalk) return;
+    if (e.code === 'Space' && !isSpacePressed) {
+      const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+      if (activeTag === 'input' || activeTag === 'textarea') return;
+      e.preventDefault();
+      isSpacePressed = true;
+      if (!isVoiceActive) {
+        startVoiceChat();
+        showNotice('🎙️ Danışırsınız (Space basılıdır)...');
+      }
+    }
+  });
+
+  window.addEventListener('keyup', (e) => {
+    if (!isPushToTalk) return;
+    if (e.code === 'Space' && isSpacePressed) {
+      const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+      if (activeTag === 'input' || activeTag === 'textarea') return;
+      e.preventDefault();
+      isSpacePressed = false;
+      if (isVoiceActive) {
+        stopVoiceChat();
+        showNotice('🎙️ Mikrofon bağlandı (Space buraxıldı)');
+      }
+    }
+  });
+
+  const btnPtt = document.getElementById('btn-ptt-toggle');
+  if (btnPtt) {
+    btnPtt.addEventListener('click', () => {
+      isPushToTalk = !isPushToTalk;
+      btnPtt.classList.toggle('active', isPushToTalk);
+      btnPtt.textContent = isPushToTalk ? '🎙️ Bas-Danış (Space) ✅' : '🎙️ Bas-Danış (Space)';
+      showNotice(isPushToTalk ? '🎙️ Bas-Danış rejimi aktivdir! Danışmaq üçün Boşluq (Space) düyməsini sıxıb saxlayın.' : '🎙️ Normal rejim: Düyməni basıb sərbəst danışın.');
+    });
   }
 }
 
@@ -2889,20 +2069,29 @@ function handleIncomingVoiceChunk(senderId, username, arrayBuffer) {
     const now = ctx.currentTime;
     let playAt = scheduledPlayTimes[senderId] || 0;
 
-    // Adaptiv Jitter Buferi (70ms başlanğıc buferi - şəbəkə dalğalanmalarını tam udur, səsdə qırılma və ilişmə olmur)
-    if (playAt < now || playAt > now + 0.350) {
-      playAt = now + 0.070;
+    // Fasiləsiz axıcı jitter buferi:
+    if (playAt < now) {
+      if (now - playAt > 0.200 || playAt === 0) {
+        // Yeni danışıq axını: 60ms sabit jitter yastığı
+        playAt = now + 0.060;
+      } else {
+        // Kiçik şəbəkə ləngiməsi (5-50ms): boşluq yaratma, dərhal ardınca calaşdır!
+        playAt = now + 0.005;
+      }
+    } else if (playAt > now + 0.350) {
+      // Çox irəli gedibsə, ritmi tənzimlə
+      playAt = now + 0.060;
     }
 
     source.start(playAt);
     scheduledPlayTimes[senderId] = playAt + audioBuffer.duration;
 
-    // Discord Səs Haləsi (Qarşı tərəf danışanda dərhal yaşıl yanır)
+    // Discord Səs Haləsi
     updateSpeakingVisual(senderId, true);
     clearTimeout(speakerTimeouts[senderId]);
     speakerTimeouts[senderId] = setTimeout(() => {
       updateSpeakingVisual(senderId, false);
-    }, 400);
+    }, 350);
   } catch (err) {
     console.warn('[Voice Engine] Playback chunk error:', err);
   }
@@ -2924,84 +2113,58 @@ function startAudioChunkCapture(stream) {
     const bufferSize = nativeRate >= 44100 ? 4096 : 2048;
     voiceCaptureProcessor = voiceCaptureContext.createScriptProcessor(bufferSize, 1, 1);
 
-    let silenceCount = 0;
     let isSpeakingState = false;
-    let isGateOpen = false;
-    let preRollBuffer = []; // Cümlənin başlanğıcının kəsilməməsi üçün 5 paketlik (~425ms) dairəvi bufer
 
     voiceCaptureProcessor.onaudioprocess = (e) => {
       if (!isVoiceActive) return;
       const input = e.inputBuffer.getChannelData(0);
 
-      // RMS səs səviyyəsi hesabla
+      // RMS səs enerjisi hesabla
       let sum = 0;
       for (let i = 0; i < input.length; i++) {
         sum += input[i] * input[i];
       }
       const rms = Math.sqrt(sum / input.length);
-      // Həssas danışıq həddi (pıçıltı və yumşaq samitləri dərhal tutur)
-      const isVoice = rms > 0.005;
-
-      // 24kHz PCM-ə çevir
-      const outLen = Math.floor(input.length / downsampleStep);
-      const int16 = new Int16Array(outLen);
-      for (let i = 0; i < outLen; i++) {
-        const sample = input[Math.floor(i * downsampleStep)];
-        int16[i] = Math.max(-32768, Math.min(32767, Math.floor(sample * 32767)));
-      }
-      const chunkBuffer = int16.buffer;
+      const isVoice = rms > 0.003;
 
       if (isVoice) {
-        silenceCount = 0;
-        if (!isGateOpen) {
-          isGateOpen = true;
-          // CÜMLƏNİN ƏVVƏLİ: Pre-roll buferdəki bütün əvvəlki paketləri dərhal göndər!
-          // Beləliklə, cümlənin ilk hecası/sözü zərrə qədər də kəsilmir!
-          if (socket && preRollBuffer.length > 0) {
-            preRollBuffer.forEach(prev => {
-              socket.emit('voice-chunk', prev);
-            });
-            preRollBuffer = [];
-          }
-        }
         if (!isSpeakingState) {
           isSpeakingState = true;
           updateSpeakingVisual(socket ? socket.id : null, true);
           if (socket) socket.emit('user-speaking', { isSpeaking: true });
         }
       } else {
-        silenceCount++;
-        // CÜMLƏNİN SONU: 15 paketlik (~1.3 saniyə) geniş bufer.
-        // Tənəffüs və cümlə sonundakı səslər qətiyyən kəsilmir!
-        if (silenceCount > 15) {
-          if (isGateOpen) isGateOpen = false;
-          if (isSpeakingState) {
-            isSpeakingState = false;
-            updateSpeakingVisual(socket ? socket.id : null, false);
-            if (socket) socket.emit('user-speaking', { isSpeaking: false });
-          }
+        if (isSpeakingState) {
+          isSpeakingState = false;
+          updateSpeakingVisual(socket ? socket.id : null, false);
+          if (socket) socket.emit('user-speaking', { isSpeaking: false });
         }
       }
 
-      if (isGateOpen || silenceCount <= 15) {
-        if (socket) {
-          socket.emit('voice-chunk', chunkBuffer);
+      // 24kHz PCM-ə çevir və METRONOM KİMİ FASİLƏSİZ GÖNDƏR
+      // Fasiləsiz axın: Cümlənin əvvəli, sonu və ya ortası HEÇ VAXT qırılmır!
+      const outLen = Math.floor(input.length / downsampleStep);
+      const int16 = new Int16Array(outLen);
+      for (let i = 0; i < outLen; i++) {
+        const sample = input[Math.floor(i * downsampleStep)];
+        // Əgər tam sükutdursa (rms < 0.0018), arxa fon küyünü ləğv etmək üçün sıfırla, amma paketi göndər ki axın pozulmasın
+        if (rms < 0.0018) {
+          int16[i] = 0;
+        } else {
+          int16[i] = Math.max(-32768, Math.min(32767, Math.floor(sample * 32767)));
         }
-      } else {
-        // Sükut zamanı ən son 5 paketi (~425ms) pre-roll üçün yaddaşda saxla
-        preRollBuffer.push(chunkBuffer);
-        if (preRollBuffer.length > 5) {
-          preRollBuffer.shift();
-        }
+      }
+
+      if (socket) {
+        socket.emit('voice-chunk', int16.buffer);
       }
     };
 
-    const muteNode = voiceCaptureContext.createGain();
-    muteNode.gain.value = 0;
-
+    // Qeyd: destination-a bağlamırıq ki, səs kartında əlavə çıxış kanalı açılıb videonun səsinə mane olmasın
+    const dummyGain = voiceCaptureContext.createGain();
+    dummyGain.gain.value = 0;
     voiceCaptureSource.connect(voiceCaptureProcessor);
-    voiceCaptureProcessor.connect(muteNode);
-    muteNode.connect(voiceCaptureContext.destination);
+    voiceCaptureProcessor.connect(dummyGain);
 
   } catch (err) {
     console.warn('[Voice Engine] Capture setup error:', err);
@@ -3025,42 +2188,39 @@ function stopAudioChunkCapture() {
 
 async function startVoiceChat() {
   try {
-    // Əgər artıq mikrofon axını varsa, təmiz bağla
     if (localVoiceStream) {
       localVoiceStream.getTracks().forEach(t => t.stop());
       localVoiceStream = null;
     }
 
-    // Qulaqlıq rejimində: echoCancellation=false, noiseSuppression=false
-    // Bu zaman Windows heç vaxt videonun səsini boğmur və kəsmir, 100% təmiz stereo saxlayır!
-    const audioConstraints = isHeadphoneMode ? {
-      echoCancellation: false,
-      noiseSuppression: false,
-      autoGainControl: false,
-      channelCount: 1
-    } : {
-      echoCancellation: true,
-      noiseSuppression: true,
+    const safeMicId = await getSafeMicrophoneId();
+    const audioConstraints = {
+      echoCancellation: isHeadphoneMode ? false : true,
+      noiseSuppression: isHeadphoneMode ? false : true,
       autoGainControl: false,
       channelCount: 1
     };
+    if (safeMicId) {
+      audioConstraints.deviceId = { exact: safeMicId };
+    }
 
     localVoiceStream = await navigator.mediaDevices.getUserMedia({
       audio: audioConstraints,
       video: false
     });
 
+    // İcazə veriləndən sonra mikrofon siyahısını tam adlarla yenilə
+    populateMicDeviceList();
+
     isVoiceActive = true;
     updateVoiceUI(true);
     showNotice(isHeadphoneMode ? '🎙️ Səsli danışıq aktivdir! (Qulaqlıq rejimi: Film səsi 100% təmizdir)' : '🎙️ Səsli danışıq aktivdir! (Dinamik rejimi)');
 
-    // Səs oxutma sistemini aç
     const pCtx = getPlaybackContext();
     if (pCtx && pCtx.state === 'suspended') {
       pCtx.resume().catch(() => {});
     }
 
-    // 100% Zəmanətli Pre-Roll & Hangover Canlı Audio Capturer-i işə sal
     startAudioChunkCapture(localVoiceStream);
 
     if (socket) {
@@ -3421,13 +2581,15 @@ function hideAudioUnlockBanner() {
 
 function getThemeName(theme) {
   const map = {
-    'theme-netflix': '🎬 Cinema Premier (Netflix)',
-    'theme-batman': '🦇 The Dark Knight (Gotham)',
-    'theme-interstellar': '🌌 Interstellar (Gargantua)',
-    'theme-matrix': '🕶️ The Matrix (Cyber Terminal)',
+    'theme-netflix': '🎬 Netflix Cinema',
+    'theme-spiderman': '🕷️ Marvel / Avengers (MCU)',
     'theme-breaking-bad': '🧪 Breaking Bad (Heisenberg)',
-    'theme-got': '❄️ Winterfell (Game of Thrones)',
-    'theme-spiderman': '🕷️ Marvel MCU (Stark Tech)'
+    'theme-got': '⚔️ Game of Thrones (Winterfell)',
+    'theme-batman': '🦇 The Dark Knight (Gotham)',
+    'theme-interstellar': '🌌 Interstellar (Cosmos)',
+    'theme-matrix': '🕶️ The Matrix (Cyber)',
+    'theme-discord': '👾 Discord Dark',
+    'theme-oled': '🖤 OLED Minimal'
   };
   return map[theme] || theme;
 }
@@ -3450,18 +2612,6 @@ function setupModalsAndFeatures() {
     drawWheel();
   });
   btnOpenHistory.addEventListener('click', () => openModal('modal-history'));
-
-  // Bütün modallarda backdrop-a klikləndikdə bağlanma
-  document.querySelectorAll('.modal-backdrop').forEach(modal => {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.classList.add('hidden');
-        if (modal.id === 'modal-characters' && typeof window.stopCharacterAudio === 'function') {
-          window.stopCharacterAudio();
-        }
-      }
-    });
-  });
 
   // Watchlist Əlavə Et
   watchlistForm.addEventListener('submit', (e) => {
@@ -3882,9 +3032,6 @@ window.openModal = function(modalId) {
 window.closeModal = function(modalId) {
   const el = document.getElementById(modalId);
   if (el) el.classList.add('hidden');
-  if (modalId === 'modal-characters' && typeof window.stopCharacterAudio === 'function') {
-    window.stopCharacterAudio();
-  }
 };
 
 // ==========================================
@@ -4000,20 +3147,8 @@ function setupAuth() {
   try {
     const savedUserStr = localStorage.getItem('watchparty_user');
     if (savedUserStr) {
-      const parsed = JSON.parse(savedUserStr);
-      // Köhnə sınaqdan qalmış şəxsi məlumatlar varsa dərhal yaddaşdan təmizlə
-      if (parsed && (
-        parsed.username === 'Vali Alashrafov' ||
-        parsed.username === 'Vali' ||
-        parsed.email === 'alialashrafov0708@gmail.com' ||
-        parsed.email === 'valialashrafov60@gmail.com'
-      )) {
-        localStorage.removeItem('watchparty_user');
-        currentUser = null;
-      } else {
-        currentUser = parsed;
-        updateUserUI();
-      }
+      currentUser = JSON.parse(savedUserStr);
+      updateUserUI();
     }
   } catch (e) {
     console.error('Yadda saxlanılan istifadəçi oxuna bilmədi:', e);
@@ -4089,24 +3224,55 @@ function setupAuth() {
     });
   }
 
-  // 3. Google Formu ilə Birbaşa Giriş
-  const formGoogleDirect = document.getElementById('form-google-direct-auth');
-  if (formGoogleDirect) {
-    formGoogleDirect.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const nameInput = document.getElementById('google-login-name');
-      const emailInput = document.getElementById('google-login-email');
-      const name = nameInput ? nameInput.value.trim() : '';
-      const email = emailInput ? emailInput.value.trim() : '';
-      if (!name || !email) {
-        showAuthStatus('Zəhmət olmasa adınızı və e-poçt ünvanınızı daxil edin.', 'error');
-        return;
+  // 3. Chess.com Stilli "Continue with Google" Düyməsi (Modal daxilində)
+  const btnChessGoogle = document.getElementById('btn-chess-google');
+  if (btnChessGoogle) {
+    btnChessGoogle.addEventListener('click', () => {
+      if (window.google && window.google.accounts && window.google.accounts.id) {
+        try {
+          window.google.accounts.id.prompt();
+        } catch (e) {}
       }
+      const chooser = document.getElementById('google-account-chooser');
+      if (chooser) {
+        chooser.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
+
+  // 4. Google Hesab Seçimi Kartları (Şəkildəki Vali Alashrafov və s. 1-kliklə daxil olmaq)
+  const userTiles = document.querySelectorAll('.google-user-tile:not(#tile-custom-google)');
+  userTiles.forEach(tile => {
+    tile.addEventListener('click', async () => {
+      const email = tile.getAttribute('data-email');
+      const name = tile.getAttribute('data-name');
+      await executeGoogleLogin(email, name);
+    });
+  });
+
+  // 5. Başqa Google hesabı daxil etmə forması
+  const tileCustom = document.getElementById('tile-custom-google');
+  const formCustom = document.getElementById('form-custom-google');
+  const customEmailInput = document.getElementById('custom-google-email');
+  if (tileCustom && formCustom) {
+    tileCustom.addEventListener('click', () => {
+      formCustom.classList.toggle('hidden');
+      if (!formCustom.classList.contains('hidden') && customEmailInput) {
+        customEmailInput.focus();
+      }
+    });
+  }
+  if (formCustom) {
+    formCustom.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = customEmailInput.value.trim();
+      if (!email) return;
+      const name = email.split('@')[0];
       await executeGoogleLogin(email, name);
     });
   }
 
-  // 4. Rəsmi Google GIS SDK-nı inisializasiya et
+  // 6. Rəsmi Google GIS SDK-nı inisializasiya et
   initGoogleAuth();
 }
 
@@ -4127,13 +3293,11 @@ async function executeGoogleLogin(email, name, credential) {
       showAuthStatus(data.error || 'Google girişi uğursuz oldu', 'error');
     }
   } catch (err) {
-    // API/Server əlçatan olmadıqda belə, istifadəçinin öz daxil etdiyi məlumatla təhlükəsiz sessiya aç
-    const cleanEmail = email ? email.toLowerCase().trim() : 'user@gmail.com';
-    const cleanName = name || cleanEmail.split('@')[0] || 'Google İstifadəçisi';
+    // Şəbəkə / API gecikməsi olsa belə, 1 kliklə yerli sessiya aç
     const fallbackUser = {
       id: 'g_' + Date.now(),
-      username: cleanName,
-      email: cleanEmail,
+      username: name || (email ? email.split('@')[0] : 'Vali Alashrafov'),
+      email: email || 'alialashrafov0708@gmail.com',
       avatar: '🍿',
       isGoogle: true
     };
@@ -4281,9 +3445,7 @@ function updateUserUI() {
       if (currentUser.username) {
         const parts = currentUser.username.trim().split(/\s+/);
         const initials = parts.map(p => p[0]).join('').substring(0, 2).toUpperCase();
-        dropdownAvatarCircle.textContent = initials || '👤';
-      } else {
-        dropdownAvatarCircle.textContent = '👤';
+        dropdownAvatarCircle.textContent = initials || 'VA';
       }
     }
 
@@ -4297,7 +3459,7 @@ function updateUserUI() {
   } else {
     if (lobbyUserName) lobbyUserName.textContent = t ? t.topLogin : 'Google ilə Giriş';
     if (lobbyUserAvatar) lobbyUserAvatar.textContent = '🌐';
-    if (headerUserName) headerUserName.textContent = t ? t.mockupGuest : 'Qonaq';
+    if (headerUserName) headerUserName.textContent = 'Qonaq';
     if (headerUserAvatar) headerUserAvatar.textContent = '🍿';
     if (inputAvatarPreview) inputAvatarPreview.textContent = '👤';
 

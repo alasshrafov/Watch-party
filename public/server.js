@@ -17,9 +17,9 @@ const io = new Server(server, {
 
 app.use(cors());
 app.use(express.json());
-// Həm public qovluğunu, həm də əsas qovluğu dəstəkləyir
-app.use(express.static(path.join(__dirname, 'public')));
+// Əsas qovluq birinci gəlir (GitHub-a birbaşa atılan fayllar dərhal aktiv olsun)
 app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ==========================================
 // 1. İSTİFADƏÇİ VƏ QEYDİYYAT SİSTEMİ (AUTH DB)
@@ -111,10 +111,10 @@ app.post('/api/auth/google', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  const p1 = path.join(__dirname, 'public', 'index.html');
-  const p2 = path.join(__dirname, 'index.html');
-  if (fs.existsSync(p1)) return res.sendFile(p1);
-  if (fs.existsSync(p2)) return res.sendFile(p2);
+  const pRoot = path.join(__dirname, 'index.html');
+  const pPublic = path.join(__dirname, 'public', 'index.html');
+  if (fs.existsSync(pRoot)) return res.sendFile(pRoot);
+  if (fs.existsSync(pPublic)) return res.sendFile(pPublic);
   res.send('<h1>Kino Otağı Serveri İşləyir</h1>');
 });
 
@@ -138,7 +138,7 @@ io.on('connection', (socket) => {
   });
 
   // Otağa qoşulma
-  socket.on('join-room', ({ roomId, username, avatar, authUserId, isGoogleAuth }) => {
+  socket.on('join-room', ({ roomId, username, avatar, authUserId, isGoogleAuth, initialTheme }) => {
     const rId = (roomId || '').toLowerCase();
     const roomExists = !!rooms[rId];
 
@@ -174,6 +174,8 @@ io.on('connection', (socket) => {
       rooms[rId] = {
         users: {},
         isLocked: false,
+        lightsDimmed: false,
+        theme: initialTheme || 'theme-netflix',
         hostSocketId: socket.id,
         allowedUsers: {},
         videoState: {
@@ -199,7 +201,8 @@ io.on('connection', (socket) => {
     rooms[rId].users[socket.id] = {
       username: currentUsername,
       avatar: currentUserAvatar,
-      isHost: isHost
+      isHost: isHost,
+      isVoiceActive: false
     };
 
     // İstifadəçiyə mövcud otaq vəziyyətini göndər
@@ -207,6 +210,8 @@ io.on('connection', (socket) => {
       roomId: rId,
       isHost,
       isLocked: rooms[rId].isLocked,
+      lightsDimmed: !!rooms[rId].lightsDimmed,
+      theme: rooms[rId].theme || 'theme-netflix',
       users: rooms[rId].users,
       videoState: rooms[rId].videoState,
       watchlist: rooms[rId].watchlist || [],
@@ -217,8 +222,12 @@ io.on('connection', (socket) => {
     socket.to(rId).emit('user-joined', {
       socketId: socket.id,
       username: currentUsername,
-      avatar: currentUserAvatar
+      avatar: currentUserAvatar,
+      users: rooms[rId].users
     });
+
+    // Bütün otağa ən son iştirakçı siyahısını göndər (Hər kəsin ekranında siyahı dərhal yenilənsin)
+    io.to(rId).emit('update-users', rooms[rId].users);
 
     console.log(`[+] ${currentUsername} (${currentUserAvatar}) joined: ${rId} (Host: ${isHost})`);
   });
@@ -235,6 +244,17 @@ io.on('connection', (socket) => {
       by: user.username
     });
     console.log(`[Lock] Room ${currentRoom} lock changed to: ${rooms[currentRoom].isLocked}`);
+  });
+
+  // 2.15 Kinoteatr İşıqları (Dim Lights) Sinxronizasiyası
+  socket.on('toggle-room-lights', ({ dimmed }) => {
+    if (!currentRoom || !rooms[currentRoom]) return;
+    rooms[currentRoom].lightsDimmed = !!dimmed;
+    io.to(currentRoom).emit('room-lights-changed', {
+      dimmed: rooms[currentRoom].lightsDimmed,
+      by: currentUsername
+    });
+    console.log(`[Lights] Room ${currentRoom} lights dimmed: ${rooms[currentRoom].lightsDimmed} by ${currentUsername}`);
   });
 
   // 2.2 Səsli Danışıq: Kim Danışır (Discord Voice Halo)
@@ -380,7 +400,25 @@ io.on('connection', (socket) => {
     });
   });
 
+  // Otaq Mövzusunun Sinxronlaşdırılması (Theme Sync)
+  socket.on('change-room-theme', ({ theme }) => {
+    if (!currentRoom || !rooms[currentRoom] || !theme) return;
+    rooms[currentRoom].theme = theme;
+    socket.to(currentRoom).emit('room-theme-changed', {
+      theme,
+      changedBy: currentUsername
+    });
+    console.log(`[Theme] Room ${currentRoom} theme changed to: ${theme} by ${currentUsername}`);
+  });
+
   // WebRTC Səsli Zəng (Mikrofon) Siqnalları
+  socket.on('voice-user-state', ({ isVoiceActive }) => {
+    if (!currentRoom || !rooms[currentRoom] || !rooms[currentRoom].users[socket.id]) return;
+    rooms[currentRoom].users[socket.id].isVoiceActive = !!isVoiceActive;
+    io.to(currentRoom).emit('voice-users-updated', rooms[currentRoom].users);
+    io.to(currentRoom).emit('update-users', rooms[currentRoom].users);
+  });
+
   socket.on('voice-peer-ready', () => {
     if (!currentRoom) return;
     socket.to(currentRoom).emit('voice-peer-ready', { sender: socket.id, username: currentUsername });
@@ -388,24 +426,46 @@ io.on('connection', (socket) => {
 
   socket.on('voice-peer-left', () => {
     if (!currentRoom) return;
+    if (rooms[currentRoom] && rooms[currentRoom].users[socket.id]) {
+      rooms[currentRoom].users[socket.id].isVoiceActive = false;
+      io.to(currentRoom).emit('voice-users-updated', rooms[currentRoom].users);
+      io.to(currentRoom).emit('update-users', rooms[currentRoom].users);
+    }
     socket.to(currentRoom).emit('voice-peer-left', { peerId: socket.id, username: currentUsername });
   });
 
   socket.on('voice-offer', ({ target, sdp }) => {
+    if (!target) return;
     io.to(target).emit('voice-offer', { sender: socket.id, sdp, username: currentUsername });
   });
 
   socket.on('voice-answer', ({ target, sdp }) => {
+    if (!target) return;
     io.to(target).emit('voice-answer', { sender: socket.id, sdp });
   });
 
   socket.on('voice-ice', ({ target, candidate }) => {
+    if (!target) return;
     io.to(target).emit('voice-ice', { sender: socket.id, candidate });
   });
+
+  // Server-Relayed Canlı HD Səs Axını (100% Zəmanətli WebSocket Relay - Heç bir NAT/Firewall bloku olmur)
+  socket.on('voice-chunk', (audioBuffer) => {
+    if (!currentRoom) return;
+    socket.to(currentRoom).emit('voice-chunk-receive', {
+      sender: socket.id,
+      username: currentUsername,
+      audio: audioBuffer
+    });
+  });
+
 
   // Əlaqə kəsildikdə
   socket.on('disconnect', () => {
     if (currentRoom && rooms[currentRoom]) {
+      socket.to(currentRoom).emit('voice-peer-left', { peerId: socket.id, username: currentUsername });
+      socket.to(currentRoom).emit('peer-speaking', { socketId: socket.id, isSpeaking: false });
+
       delete rooms[currentRoom].users[socket.id];
       const remainingUsers = Object.keys(rooms[currentRoom].users);
 
@@ -422,6 +482,7 @@ io.on('connection', (socket) => {
           username: currentUsername,
           users: rooms[currentRoom].users
         });
+        io.to(currentRoom).emit('update-users', rooms[currentRoom].users);
         console.log(`[-] ${currentUsername} left room: ${currentRoom}`);
       }
     }

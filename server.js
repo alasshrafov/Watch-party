@@ -460,101 +460,30 @@ io.on('connection', (socket) => {
   });
 
 
-  // 2.3 İştirakçını Otaqdan Çıxarmaq (Yalnız Host üçün Kick funksiyası)
-  socket.on('kick-user', ({ targetSocketId }) => {
-    if (!currentRoom || !rooms[currentRoom]) return;
-    const caller = rooms[currentRoom].users[socket.id];
-    if (!caller || !caller.isHost) return;
-    if (targetSocketId === socket.id) return; // Host özünü ata bilməz
-
-    const targetUser = rooms[currentRoom].users[targetSocketId];
-    if (!targetUser) return;
-
-    // Həmin istifadəçiyə otaqdan çıxarıldığını bildir
-    io.to(targetSocketId).emit('kicked-from-room', {
-      message: 'Otaq rəhbəri tərəfindən otaqdan çıxarıldınız.'
-    });
-
-    const targetSocket = io.sockets.sockets.get(targetSocketId);
-    if (targetSocket) {
-      targetSocket.leave(currentRoom);
-    }
-
-    delete rooms[currentRoom].users[targetSocketId];
-    if (rooms[currentRoom].allowedUsers) {
-      delete rooms[currentRoom].allowedUsers[targetSocketId];
-    }
-
-    io.to(currentRoom).emit('user-left', {
-      socketId: targetSocketId,
-      username: targetUser.username,
-      users: rooms[currentRoom].users,
-      kicked: true
-    });
-    io.to(currentRoom).emit('update-users', rooms[currentRoom].users);
-    console.log(`[Kick] Host ${caller.username} kicked ${targetUser.username} from room: ${currentRoom}`);
-  });
-
-  // 2.4 Otaqdan İntensional Çıxış (Leave Room)
-  socket.on('leave-room', () => {
+  // Əlaqə kəsildikdə
+  socket.on('disconnect', () => {
     if (currentRoom && rooms[currentRoom]) {
-      const isHost = rooms[currentRoom].hostSocketId === socket.id || (rooms[currentRoom].users[socket.id] && rooms[currentRoom].users[socket.id].isHost);
-      
-      if (isHost) {
-        // Qayda: Otaq rəhbəri çıxdıqda otaq hər kəs üçün avtomatik bağlanır!
-        io.to(currentRoom).emit('room-closed', {
-          message: 'Otaq rəhbəri otaqdan çıxdığı üçün kino zalı bağlandı.'
-        });
+      socket.to(currentRoom).emit('voice-peer-left', { peerId: socket.id, username: currentUsername });
+      socket.to(currentRoom).emit('peer-speaking', { socketId: socket.id, isSpeaking: false });
+
+      delete rooms[currentRoom].users[socket.id];
+      const remainingUsers = Object.keys(rooms[currentRoom].users);
+
+      if (remainingUsers.length === 0) {
         delete rooms[currentRoom];
-        console.log(`[Closed] Host left. Room ${currentRoom} was completely closed.`);
+        console.log(`[-] Room ${currentRoom} deleted (empty)`);
       } else {
-        delete rooms[currentRoom].users[socket.id];
-        socket.to(currentRoom).emit('voice-peer-left', { peerId: socket.id, username: currentUsername });
+        const nextHostId = remainingUsers[0];
+        rooms[currentRoom].users[nextHostId].isHost = true;
+        rooms[currentRoom].hostSocketId = nextHostId;
+
         io.to(currentRoom).emit('user-left', {
           socketId: socket.id,
           username: currentUsername,
           users: rooms[currentRoom].users
         });
         io.to(currentRoom).emit('update-users', rooms[currentRoom].users);
-        console.log(`[-] Guest ${currentUsername} left room: ${currentRoom}`);
-      }
-
-      socket.leave(currentRoom);
-      currentRoom = null;
-    }
-  });
-
-  // Əlaqə kəsildikdə (Disconnect)
-  socket.on('disconnect', () => {
-    if (currentRoom && rooms[currentRoom]) {
-      socket.to(currentRoom).emit('voice-peer-left', { peerId: socket.id, username: currentUsername });
-      socket.to(currentRoom).emit('peer-speaking', { socketId: socket.id, isSpeaking: false });
-
-      const isHost = rooms[currentRoom].hostSocketId === socket.id || (rooms[currentRoom].users[socket.id] && rooms[currentRoom].users[socket.id].isHost);
-
-      if (isHost) {
-        // Qayda: Otaq rəhbəri çıxdıqda / əlaqəsi kəsildikdə otaq avtomatik bağlanır!
-        io.to(currentRoom).emit('room-closed', {
-          message: 'Otaq rəhbəri çıxdığı üçün kino zalı avtomatik bağlandı.'
-        });
-        delete rooms[currentRoom];
-        console.log(`[Closed] Host disconnected. Room ${currentRoom} was deleted.`);
-      } else {
-        delete rooms[currentRoom].users[socket.id];
-        const remainingUsers = Object.keys(rooms[currentRoom].users);
-
-        if (remainingUsers.length === 0) {
-          delete rooms[currentRoom];
-          console.log(`[-] Room ${currentRoom} deleted (empty)`);
-        } else {
-          io.to(currentRoom).emit('user-left', {
-            socketId: socket.id,
-            username: currentUsername,
-            users: rooms[currentRoom].users
-          });
-          io.to(currentRoom).emit('update-users', rooms[currentRoom].users);
-          console.log(`[-] Guest ${currentUsername} disconnected from room: ${currentRoom}`);
-        }
+        console.log(`[-] ${currentUsername} left room: ${currentRoom}`);
       }
     }
   });
