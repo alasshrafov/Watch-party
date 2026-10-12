@@ -663,6 +663,17 @@ function setupMiniMovieFigures() {
         setTimeout(() => { avatarPreview.style.transform = ''; }, 300);
       }
 
+      // Xarakterə uyğun otaq mövzusunu sinxronlaşdır
+      if (charKey === 'heisenberg') {
+        applyTheme('theme-breaking-bad', false);
+      } else if (charKey === 'batman') {
+        applyTheme('theme-batman', false);
+      } else if (charKey === 'cyberpunk') {
+        applyTheme('theme-matrix', false);
+      } else if (charKey === 'godfather') {
+        applyTheme('theme-netflix', false);
+      }
+
       if (typeof spawnFloatingEmoji === 'function') {
         spawnFloatingEmoji(info.emoji);
         spawnFloatingEmoji('✨');

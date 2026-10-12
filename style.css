@@ -4024,21 +4024,131 @@ body.lights-dimmed .player-section {
   line-height: 1;
 }
 
+/* FLANKED HERO STAGE (SOL VƏ SAĞ KİNO XARAKTERLƏRİ) */
+.cine-stage-flanked {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto 30px;
+  padding: 10px 16px;
+  position: relative;
+}
+
+.hero-flank-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex-shrink: 0;
+  width: 175px;
+  z-index: 10;
+}
+.hero-flank-column.flank-left {
+  align-items: flex-end;
+}
+.hero-flank-column.flank-right {
+  align-items: flex-start;
+}
+
+.hero-flank-column .cine-char-card {
+  width: 170px;
+  height: 240px;
+  border-radius: 16px;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #0d0f17;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.flank-left .cine-char-card:nth-child(1) {
+  transform: rotate(-3deg);
+}
+.flank-left .cine-char-card:nth-child(2) {
+  transform: rotate(-1deg) translateX(-4px);
+}
+.flank-right .cine-char-card:nth-child(1) {
+  transform: rotate(3deg);
+}
+.flank-right .cine-char-card:nth-child(2) {
+  transform: rotate(1deg) translateX(4px);
+}
+
+.hero-flank-column .cine-char-card:hover {
+  transform: translateY(-8px) scale(1.08) rotate(0deg) !important;
+  z-index: 35 !important;
+  border-color: rgba(229, 9, 20, 0.6);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(229, 9, 20, 0.35);
+}
+
+@media (max-width: 1200px) {
+  .cine-stage-flanked {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .hero-flank-column {
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+    overflow-x: auto;
+    padding: 10px 0;
+  }
+  .hero-flank-column .cine-char-card {
+    transform: none !important;
+    width: 150px;
+    height: 220px;
+    flex-shrink: 0;
+  }
+}
+
 /* 2-COLOR HERO GRID & MOCKUP */
 .cine-hero-grid {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-columns: 1.1fr 0.9fr;
   align-items: center;
-  gap: 40px;
-  width: 100%;
-  max-width: 1140px;
-  margin: 10px auto 40px;
+  gap: 32px;
+  flex: 1;
+  max-width: 1050px;
 }
 @media (max-width: 960px) {
   .cine-hero-grid {
     grid-template-columns: 1fr;
     gap: 32px;
   }
+}
+
+/* HOST PERKS LIST */
+.host-perks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 0 14px;
+}
+.perk-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #c4c9d6;
+  transition: all 0.2s ease;
+}
+.perk-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(229, 9, 20, 0.25);
+  transform: translateX(3px);
+}
+.perk-icon {
+  font-size: 1rem;
+  line-height: 1;
 }
 
 .cine-hero-showcase .cine-hero-content {
@@ -4388,70 +4498,241 @@ body.lights-dimmed .player-section {
 /* ==========================================================
    LIGHT MODE DESIGN SPECIFICATIONS (DATA-MODE="LIGHT")
    ========================================================== */
+/* ==========================================================
+   LIGHT MODE DESIGN SPECIFICATIONS (DATA-MODE="LIGHT")
+   High-Contrast, Rich Architectural Cinema Styling
+   ========================================================== */
 [data-mode="light"] #lobby-screen {
-  background: #f8fafc !important;
+  background: radial-gradient(circle at 50% -10%, rgba(229, 9, 20, 0.07) 0%, transparent 60%),
+              radial-gradient(circle at 10% 30%, rgba(15, 23, 42, 0.03) 0%, transparent 50%),
+              radial-gradient(circle at 90% 70%, rgba(229, 9, 20, 0.04) 0%, transparent 50%),
+              linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 50%, #F1F5F9 100%) !important;
   color: #0f172a !important;
 }
+
+/* 1. Navbar in Light Mode */
 [data-mode="light"] #lobby-screen .lobby-navbar {
-  background: rgba(255, 255, 255, 0.92) !important;
-  border-color: rgba(15, 23, 42, 0.08) !important;
-  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.05) !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-color: rgba(15, 23, 42, 0.1) !important;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06) !important;
 }
 [data-mode="light"] #lobby-screen .nav-menu-link {
-  color: #64748b !important;
+  color: #475569 !important;
 }
 [data-mode="light"] #lobby-screen .nav-menu-link:hover,
 [data-mode="light"] #lobby-screen .nav-menu-link.nav-highlight {
   color: #0f172a !important;
-  background: rgba(15, 23, 42, 0.05) !important;
+  background: rgba(15, 23, 42, 0.06) !important;
 }
 [data-mode="light"] #lobby-screen .btn-lang-pill,
 [data-mode="light"] #lobby-screen .btn-mode-pill {
   background: #ffffff !important;
-  border-color: rgba(15, 23, 42, 0.12) !important;
+  border-color: #cbd5e1 !important;
   color: #0f172a !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
 }
 [data-mode="light"] #lobby-screen .btn-mode-pill:hover,
 [data-mode="light"] #lobby-screen .btn-lang-pill:hover {
   background: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
 }
 [data-mode="light"] #lobby-screen .btn-lobby-login {
   background: #ffffff !important;
   color: #0f172a !important;
-  border-color: rgba(15, 23, 42, 0.12) !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
 }
-[data-mode="light"] #lobby-screen .ambient-filmstrip-ribbon {
-  background: #f1f5f9 !important;
-  border-color: #e2e8f0 !important;
+
+/* Profil düyməsi və açılan menyu */
+[data-mode="light"] #lobby-screen .btn-profile-pill {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
 }
-[data-mode="light"] #lobby-screen .film-frame {
+[data-mode="light"] #lobby-screen .btn-profile-pill:hover {
+  background: #f8fafc !important;
+  border-color: #94a3b8 !important;
+}
+[data-mode="light"] #lobby-screen .user-name-tag {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+[data-mode="light"] #lobby-screen .profile-arrow {
   color: #64748b !important;
 }
-[data-mode="light"] #lobby-screen .cine-main-title,
-[data-mode="light"] #lobby-screen .how-section-title,
-[data-mode="light"] #lobby-screen .step-title {
+[data-mode="light"] #lobby-screen .profile-dropdown-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12) !important;
   color: #0f172a !important;
 }
-[data-mode="light"] #lobby-screen .cine-sub-slogan,
-[data-mode="light"] #lobby-screen .lobby-hero-subtitle,
-[data-mode="light"] #lobby-screen .how-section-sub,
-[data-mode="light"] #lobby-screen .step-desc {
+[data-mode="light"] #lobby-screen .dropdown-full-name {
+  color: #0f172a !important;
+}
+[data-mode="light"] #lobby-screen .dropdown-email-text {
   color: #64748b !important;
+}
+[data-mode="light"] #lobby-screen .dropdown-status-row {
+  background: #f0fdf4 !important;
+  border: 1px solid #bbf7d0 !important;
+  color: #15803d !important;
+}
+[data-mode="light"] #lobby-screen .btn-dropdown-logout {
+  background: #fef2f2 !important;
+  color: #dc2626 !important;
+  border: 1px solid #fecaca !important;
+}
+
+/* Dil seçimi menyusu */
+[data-mode="light"] #lobby-screen .lang-menu-dropdown {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.1) !important;
+}
+[data-mode="light"] #lobby-screen .lang-option {
+  color: #0f172a !important;
+}
+[data-mode="light"] #lobby-screen .lang-option:hover {
+  background: #f1f5f9 !important;
+}
+
+/* 2. Filmstrip Ribbon in Light Mode */
+[data-mode="light"] #lobby-screen .ambient-filmstrip-ribbon {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03) !important;
+}
+[data-mode="light"] #lobby-screen .film-frame {
+  color: #334155 !important;
+  font-weight: 700 !important;
+  border-right-color: #e2e8f0 !important;
+  border-left-color: #e2e8f0 !important;
+}
+[data-mode="light"] #lobby-screen .film-frame:hover {
+  color: #e50914 !important;
+  background: rgba(229, 9, 20, 0.05) !important;
+}
+
+/* 3. Hero Section & Typography in Light Mode */
+[data-mode="light"] #lobby-screen .hero-mini-pill {
+  background: rgba(229, 9, 20, 0.08) !important;
+  border-color: rgba(229, 9, 20, 0.25) !important;
+  color: #dc2626 !important;
+}
+[data-mode="light"] #lobby-screen .cine-main-title {
+  color: #0f172a !important;
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 55%, #E50914 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 2px 10px rgba(15, 23, 42, 0.08)) !important;
+}
+[data-mode="light"] #lobby-screen .accent-text {
+  color: #e50914 !important;
+  text-shadow: 0 0 25px rgba(229, 9, 20, 0.25) !important;
+}
+[data-mode="light"] #lobby-screen .cine-sub-slogan {
+  color: #e50914 !important;
+  font-weight: 800 !important;
+}
+[data-mode="light"] #lobby-screen .lobby-hero-subtitle {
+  color: #475569 !important;
+  font-weight: 500 !important;
+}
+[data-mode="light"] #lobby-screen .btn-cine-cta.primary {
+  background: linear-gradient(135deg, #e50914, #b91c1c) !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 24px rgba(229, 9, 20, 0.3) !important;
 }
 [data-mode="light"] #lobby-screen .btn-cine-cta.secondary {
   background: #ffffff !important;
   color: #0f172a !important;
-  border-color: #cbd5e1 !important;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04) !important;
+  border: 1.5px solid #cbd5e1 !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05) !important;
 }
-[data-mode="light"] #lobby-screen .cinema-mockup-card,
-[data-mode="light"] #lobby-screen .console-glass-panel,
-[data-mode="light"] #lobby-screen .lobby-action-box,
-[data-mode="light"] #lobby-screen .how-step-card {
+[data-mode="light"] #lobby-screen .btn-cine-cta.secondary:hover {
+  background: #f8fafc !important;
+  border-color: #94a3b8 !important;
+}
+
+/* 4. Flanked Character Cards in Light Mode */
+[data-mode="light"] .hero-flank-column .cine-char-card {
   background: #ffffff !important;
-  border-color: rgba(15, 23, 42, 0.08) !important;
-  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.04) !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.09) !important;
+}
+[data-mode="light"] .hero-flank-column .cine-char-card:hover {
+  border-color: #e50914 !important;
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.16), 0 0 25px rgba(229, 9, 20, 0.2) !important;
+}
+
+/* 5. Real-Time Cinema Mockup in Light Mode */
+[data-mode="light"] #lobby-screen .cinema-mockup-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08) !important;
+}
+[data-mode="light"] #lobby-screen .mockup-top-bar {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+[data-mode="light"] #lobby-screen .mockup-sync-status {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+}
+[data-mode="light"] #lobby-screen .mockup-platforms-strip {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #64748b !important;
+}
+
+/* 6. Action Console (Host & Guest Cards) in Light Mode */
+[data-mode="light"] #lobby-screen .console-glass-panel {
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.06) !important;
+}
+[data-mode="light"] #lobby-screen .host-box {
+  background: linear-gradient(180deg, rgba(229, 9, 20, 0.03) 0%, #ffffff 100%) !important;
+  border: 1.5px solid rgba(229, 9, 20, 0.2) !important;
+  border-top: 3px solid #e50914 !important;
+  box-shadow: 0 12px 30px rgba(229, 9, 20, 0.05) !important;
+}
+[data-mode="light"] #lobby-screen .guest-box {
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.03) 0%, #ffffff 100%) !important;
+  border: 1.5px solid rgba(59, 130, 246, 0.2) !important;
+  border-top: 3px solid #3b82f6 !important;
+  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.05) !important;
+}
+[data-mode="light"] #lobby-screen .perk-item {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #334155 !important;
+}
+[data-mode="light"] #lobby-screen .perk-item:hover {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+[data-mode="light"] #lobby-screen .host-badge {
+  background: rgba(229, 9, 20, 0.1) !important;
+  color: #dc2626 !important;
+  border-color: rgba(229, 9, 20, 0.25) !important;
+}
+[data-mode="light"] #lobby-screen .guest-badge {
+  background: rgba(59, 130, 246, 0.1) !important;
+  color: #2563eb !important;
+  border-color: rgba(59, 130, 246, 0.25) !important;
+}
+[data-mode="light"] #lobby-screen .lock-badge.logged-in {
+  background: rgba(16, 185, 129, 0.12) !important;
+  color: #059669 !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+[data-mode="light"] #lobby-screen .lock-badge:not(.logged-in) {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #dc2626 !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
 }
 [data-mode="light"] #lobby-screen .lobby-action-box h3,
 [data-mode="light"] #lobby-screen label {
@@ -4462,21 +4743,59 @@ body.lights-dimmed .player-section {
 }
 [data-mode="light"] #lobby-screen input[type="text"] {
   background: #f8fafc !important;
-  border-color: #cbd5e1 !important;
+  border: 1.5px solid #cbd5e1 !important;
   color: #0f172a !important;
+  font-weight: 600 !important;
 }
 [data-mode="light"] #lobby-screen input[type="text"]:focus {
   border-color: #e50914 !important;
-  box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.12) !important;
+  box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.15) !important;
 }
-[data-mode="light"] #lobby-screen .feature-item {
+[data-mode="light"] #lobby-screen .btn-join-room-action {
+  background: #0f172a !important;
+  border-color: #0f172a !important;
+  color: #ffffff !important;
+}
+[data-mode="light"] #lobby-screen .btn-join-room-action:hover {
+  background: #e50914 !important;
+  border-color: #e50914 !important;
+}
+[data-mode="light"] #lobby-screen .btn-chess-google {
   background: #ffffff !important;
-  border-color: rgba(15, 23, 42, 0.08) !important;
+  border: 1.5px solid #cbd5e1 !important;
+  color: #1e293b !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
 }
-[data-mode="light"] #lobby-screen .feature-name {
+[data-mode="light"] #lobby-screen .btn-chess-google:hover {
+  background: #f8fafc !important;
+  border-color: #94a3b8 !important;
+}
+
+/* 7. How It Works Cards in Light Mode */
+[data-mode="light"] #lobby-screen .how-section-title {
   color: #0f172a !important;
 }
-[data-mode="light"] #lobby-screen .feature-sub {
+[data-mode="light"] #lobby-screen .how-section-sub {
+  color: #64748b !important;
+}
+[data-mode="light"] #lobby-screen .how-step-card {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04) !important;
+}
+[data-mode="light"] #lobby-screen .how-step-card:hover {
+  border-color: #e50914 !important;
+  box-shadow: 0 16px 40px rgba(229, 9, 20, 0.08) !important;
+}
+[data-mode="light"] #lobby-screen .step-number {
+  background: #f1f5f9 !important;
+  color: #e50914 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+[data-mode="light"] #lobby-screen .step-title {
+  color: #0f172a !important;
+}
+[data-mode="light"] #lobby-screen .step-desc {
   color: #64748b !important;
 }
 [data-mode="light"] #lobby-screen .btn-secondary {
