@@ -332,42 +332,70 @@ body.theme-spiderman .spidey-hanging-mascot {
   overflow-x: hidden;
 }
 
-/* 1.1 YUXARI NAVİQASİYA */
+/* 1.1 YUXARI NAVİQASİYA (PREMIUM FLOATING GLASS DOCK) */
 .lobby-navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  max-width: 1140px;
-  margin-bottom: 28px;
-  padding: 10px 16px;
-  background: rgba(18, 20, 29, 0.75);
-  border: 1px solid var(--border-color);
-  border-radius: 50px;
-  backdrop-filter: blur(24px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  max-width: 1160px;
+  margin: 0 auto 36px auto;
+  padding: 8px 14px 8px 18px;
+  background: rgba(14, 17, 26, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 18px;
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   z-index: 50;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .lobby-nav-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   user-select: none;
   cursor: pointer;
 }
 .brand-logo-img {
-  height: 38px;
+  height: 32px;
   width: auto;
-  border-radius: 8px;
+  border-radius: 6px;
   object-fit: contain;
-  transition: transform 0.25s ease, filter 0.25s ease;
-  filter: drop-shadow(0 2px 8px rgba(249, 115, 22, 0.45));
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .brand-logo-img:hover {
-  transform: scale(1.04);
-  filter: drop-shadow(0 4px 14px rgba(249, 115, 22, 0.7));
+  transform: scale(1.06);
 }
+.brand-sub-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  padding: 3px 8px;
+  background: rgba(229, 9, 20, 0.12);
+  border: 1px solid rgba(229, 9, 20, 0.3);
+  border-radius: 6px;
+  color: #ff334b;
+  text-transform: uppercase;
+}
+.brand-sub-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ff334b;
+  box-shadow: 0 0 6px #ff334b;
+  animation: cinemaLivePulse 2s infinite ease-in-out;
+}
+@keyframes cinemaLivePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
 .room-brand-logo-img {
   height: 34px;
   width: auto;
@@ -379,6 +407,7 @@ body.theme-spiderman .spidey-hanging-mascot {
 .room-brand-logo-img:hover {
   transform: scale(1.04);
 }
+
 .hero-logo-banner {
   margin-bottom: 4px;
   display: flex;
@@ -399,53 +428,78 @@ body.theme-spiderman .spidey-hanging-mascot {
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.95);
   filter: drop-shadow(0 14px 40px rgba(249, 115, 22, 0.6)) drop-shadow(0 0 35px rgba(139, 92, 246, 0.45));
 }
-.brand-sub-badge {
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  padding: 2px 7px;
-  background: rgba(229, 9, 20, 0.18);
-  border: 1px solid rgba(229, 9, 20, 0.4);
-  border-radius: 4px;
-  color: #ff4d4d;
-}
 
+/* Naviqasiya Menyusu (Modern Segmented Bar) */
 .lobby-nav-links {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 4px;
+  border-radius: 12px;
 }
 .nav-menu-link {
   color: #94a3b8 !important;
   text-decoration: none;
-  font-family: 'Outfit', sans-serif !important;
-  font-size: 0.88rem;
+  font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif !important;
+  font-size: 0.85rem;
   font-weight: 600;
   padding: 7px 16px;
-  border-radius: 50px;
-  transition: all 0.25s ease;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 .nav-menu-link:hover {
   color: #ffffff !important;
   background: rgba(255, 255, 255, 0.08);
-  transform: translateY(-1px);
 }
 .nav-menu-link.nav-highlight {
   color: #ffffff !important;
-  background: rgba(229, 9, 20, 0.15) !important;
-  border: 1px solid rgba(229, 9, 20, 0.45) !important;
-  box-shadow: 0 0 16px rgba(229, 9, 20, 0.25);
+  background: linear-gradient(135deg, #e50914, #ff334b) !important;
+  box-shadow: 0 4px 14px rgba(229, 9, 20, 0.4);
 }
 .nav-menu-link.nav-highlight:hover {
-  background: #e50914 !important;
-  border-color: #e50914 !important;
-  box-shadow: 0 4px 20px rgba(229, 9, 20, 0.55);
+  background: linear-gradient(135deg, #ff1925, #ff4d63) !important;
+  box-shadow: 0 6px 20px rgba(229, 9, 20, 0.55);
+  transform: translateY(-1px);
 }
 
+/* Sağ Fəaliyyət İdarəetmələri */
 .lobby-nav-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+}
+
+/* 🌓 GÜNDÜZ / GECƏ DÜYMƏSİ */
+.btn-mode-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 10px;
+  color: #cbd5e1;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-mode-pill:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  transform: translateY(-1px);
 }
 
 /* 🌍 DİL SEÇİMİ (LANG SELECTOR) */
@@ -455,21 +509,24 @@ body.theme-spiderman .spidey-hanging-mascot {
 .btn-lang-pill {
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 7px 14px;
-  background: var(--bg-input);
-  border: 1px solid var(--border-color);
-  border-radius: 50px;
-  color: var(--text-main);
-  font-size: 0.85rem;
-  font-weight: 700;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 10px;
+  color: #cbd5e1;
+  font-size: 0.82rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;
 }
 .btn-lang-pill:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  transform: translateY(-1px);
 }
 .chevron-icon {
   transition: transform 0.2s ease;
@@ -530,24 +587,25 @@ body.theme-spiderman .spidey-hanging-mascot {
 .btn-lobby-login {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  padding: 8px 18px;
+  gap: 8px;
+  height: 36px;
+  padding: 0 16px;
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
   color: #ffffff;
-  font-family: 'Outfit', sans-serif !important;
-  font-size: 0.86rem;
-  font-weight: 600;
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 .btn-lobby-login:hover {
   background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.35);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
 }
 
 .lobby-user-profile-menu {
@@ -557,19 +615,20 @@ body.theme-spiderman .spidey-hanging-mascot {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 5px 14px 5px 8px;
-  background: var(--bg-input);
-  border: 1px solid var(--border-color);
-  border-radius: 50px;
+  height: 36px;
+  padding: 0 12px 0 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
   color: var(--text-main);
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;
 }
 .btn-profile-pill:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.25);
 }
 .user-avatar-tag {
@@ -688,60 +747,7 @@ body.theme-spiderman .spidey-hanging-mascot {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ========================================================
-   1.2 KİNOTİK 35MM FİLM LENTİ & CANLI KİNO MASKOTLARI
-   ======================================================== */
 
-/* 1.2.1 FİLM LENTİ (BACKGROUND CINEMA REEL RIBBON) */
-.ambient-filmstrip-ribbon {
-  position: absolute;
-  top: 76px;
-  left: 0;
-  width: 100%;
-  height: 38px;
-  background: rgba(10, 13, 20, 0.6);
-  border-top: 2px dashed rgba(255, 255, 255, 0.14);
-  border-bottom: 2px dashed rgba(255, 255, 255, 0.14);
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  z-index: 5;
-  pointer-events: none;
-  backdrop-filter: blur(10px);
-}
-
-.filmstrip-track {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-  white-space: nowrap;
-  animation: scrollFilmstrip 30s linear infinite !important;
-  will-change: transform;
-}
-
-@keyframes scrollFilmstrip {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-.film-frame {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: 'Outfit', sans-serif !important;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
-  padding: 5px 16px;
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 6px;
-  border-left: 2px solid rgba(229, 9, 20, 0.5);
-}
-.film-icon {
-  font-size: 0.85rem;
-}
 
 /* ========================================================
    4. CINEVERSE LUXURY CINEMA STYLES (4K CINEMATIC UI)
@@ -4643,35 +4649,55 @@ body.lights-dimmed .player-section {
 
 /* 1. Navbar in Light Mode */
 [data-mode="light"] #lobby-screen .lobby-navbar {
-  background: rgba(255, 255, 255, 0.94) !important;
-  border-color: rgba(15, 23, 42, 0.1) !important;
-  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06) !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+}
+[data-mode="light"] #lobby-screen .brand-sub-badge {
+  background: rgba(229, 9, 20, 0.08) !important;
+  border-color: rgba(229, 9, 20, 0.22) !important;
+  color: #dc2626 !important;
+}
+[data-mode="light"] #lobby-screen .lobby-nav-links {
+  background: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
 }
 [data-mode="light"] #lobby-screen .nav-menu-link {
   color: #475569 !important;
 }
-[data-mode="light"] #lobby-screen .nav-menu-link:hover,
-[data-mode="light"] #lobby-screen .nav-menu-link.nav-highlight {
+[data-mode="light"] #lobby-screen .nav-menu-link:hover {
   color: #0f172a !important;
-  background: rgba(15, 23, 42, 0.06) !important;
+  background: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+}
+[data-mode="light"] #lobby-screen .nav-menu-link.nav-highlight {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #e50914, #dc2626) !important;
+  box-shadow: 0 4px 14px rgba(229, 9, 20, 0.3) !important;
 }
 [data-mode="light"] #lobby-screen .btn-lang-pill,
 [data-mode="light"] #lobby-screen .btn-mode-pill {
   background: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+  border-color: #e2e8f0 !important;
+  color: #1e293b !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
 }
 [data-mode="light"] #lobby-screen .btn-mode-pill:hover,
 [data-mode="light"] #lobby-screen .btn-lang-pill:hover {
-  background: #f1f5f9 !important;
-  border-color: #94a3b8 !important;
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
 }
 [data-mode="light"] #lobby-screen .btn-lobby-login {
   background: #ffffff !important;
   color: #0f172a !important;
   border-color: #cbd5e1 !important;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+}
+[data-mode="light"] #lobby-screen .btn-lobby-login:hover {
+  background: #f8fafc !important;
+  border-color: #94a3b8 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
 
 /* Profil düyməsi və açılan menyu */
@@ -4726,23 +4752,6 @@ body.lights-dimmed .player-section {
 }
 [data-mode="light"] #lobby-screen .lang-option:hover {
   background: #f1f5f9 !important;
-}
-
-/* 2. Filmstrip Ribbon in Light Mode */
-[data-mode="light"] #lobby-screen .ambient-filmstrip-ribbon {
-  background: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03) !important;
-}
-[data-mode="light"] #lobby-screen .film-frame {
-  color: #334155 !important;
-  font-weight: 700 !important;
-  border-right-color: #e2e8f0 !important;
-  border-left-color: #e2e8f0 !important;
-}
-[data-mode="light"] #lobby-screen .film-frame:hover {
-  color: #e50914 !important;
-  background: rgba(229, 9, 20, 0.05) !important;
 }
 
 /* 3. Hero Section & Typography in Light Mode */
