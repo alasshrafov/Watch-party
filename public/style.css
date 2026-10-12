@@ -2392,29 +2392,315 @@ body:not(.theme-spiderman):not(.theme-breaking-bad):not(.theme-got):not(.theme-b
   overflow: hidden;
   aspect-ratio: 16 / 9;
   max-height: 72vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85), 0 0 35px var(--theme-ambient-glow);
 }
 
-.player-frame {
-  width: 100%;
-  height: 100%;
+.player-frame,
+#youtube-player,
+#direct-player,
+#stream-player {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
   border: none;
   background: #000;
   object-fit: contain;
 }
 
 .player-frame.hidden,
+#youtube-player.hidden,
+iframe#youtube-player.hidden,
+#direct-player.hidden,
+#stream-player.hidden,
 .empty-player-state.hidden,
 .sync-notice.hidden,
 .unmute-overlay.hidden,
 .pause-trivia-overlay.hidden,
 .modal-backdrop.hidden,
 .winner-announcement.hidden,
+.cinema-fullscreen-chat.hidden,
+.fs-chat-pill.hidden,
 .btn-danger.hidden {
   display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* ==========================================================
+   KİNO TAM EKRAN (CINEMA FULLSCREEN & FLOATING CHAT)
+   ========================================================== */
+.player-wrapper:fullscreen,
+.player-wrapper:-webkit-full-screen {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  aspect-ratio: unset !important;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  background: #000 !important;
+}
+
+.player-wrapper:fullscreen .player-frame,
+.player-wrapper:-webkit-full-screen .player-frame,
+.player-wrapper:fullscreen #youtube-player,
+.player-wrapper:-webkit-full-screen #youtube-player,
+.player-wrapper:fullscreen #direct-player,
+.player-wrapper:-webkit-full-screen #direct-player,
+.player-wrapper:fullscreen #stream-player,
+.player-wrapper:-webkit-full-screen #stream-player {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+/* Kino Tam Ekran Düyməsi */
+.btn-cinema-fullscreen {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(14, 18, 28, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #fff;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 45;
+  backdrop-filter: blur(14px);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7);
+}
+.btn-cinema-fullscreen:hover {
+  transform: scale(1.15);
+  background: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 0 20px var(--primary-glow);
+}
+.player-wrapper:fullscreen .btn-cinema-fullscreen,
+.player-wrapper:-webkit-full-screen .btn-cinema-fullscreen {
+  bottom: 24px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  font-size: 1.3rem;
+}
+
+/* Tam Ekran Kino Çatı Overlay */
+.cinema-fullscreen-chat {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  bottom: 24px;
+  width: 360px;
+  max-width: 32vw;
+  background: rgba(10, 14, 22, 0.82);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 50;
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: auto;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.fs-chat-header {
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fs-chat-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+.fs-chat-dot {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #22c55e;
+}
+
+.fs-chat-btn-icon {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fs-chat-btn-icon:hover {
+  background: rgba(239, 68, 68, 0.8);
+  border-color: rgba(239, 68, 68, 0.8);
+}
+
+.fs-chat-messages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scroll-behavior: smooth;
+}
+
+.fs-chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+.fs-chat-messages::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.fs-chat-system-msg {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  padding: 8px 12px;
+  border-radius: 10px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.fs-chat-reactions {
+  padding: 8px 14px;
+  background: rgba(0, 0, 0, 0.25);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.fs-reaction-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 6px 0;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease;
+}
+
+.fs-reaction-btn:hover {
+  transform: scale(1.22);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.fs-chat-input-form {
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  gap: 8px;
+}
+
+.fs-chat-input-form input {
+  flex: 1;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.88rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.fs-chat-input-form input:focus {
+  border-color: var(--primary);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 12px var(--primary-glow);
+}
+
+.fs-chat-send-btn {
+  background: var(--primary);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  padding: 0 16px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.fs-chat-send-btn:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+/* Floating Pill Button to toggle chat in fullscreen */
+.fs-chat-pill {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: rgba(10, 14, 22, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 50px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  z-index: 46;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.fs-chat-pill:hover {
+  transform: scale(1.08);
+  border-color: var(--primary);
+  box-shadow: 0 0 20px var(--primary-glow);
 }
 
 .sync-notice {
@@ -2815,6 +3101,10 @@ body:not(.theme-spiderman):not(.theme-breaking-bad):not(.theme-got):not(.theme-b
 .sidebar-section {
   width: 340px;
   min-width: 340px;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
   background: var(--bg-card);
   border-left: 1px solid var(--border-color);
   display: flex;
@@ -2824,6 +3114,7 @@ body:not(.theme-spiderman):not(.theme-breaking-bad):not(.theme-got):not(.theme-b
 }
 
 .reactions-bar {
+  flex-shrink: 0;
   padding: 12px 16px;
   border-bottom: 1px solid var(--border-color);
 }
@@ -2860,11 +3151,13 @@ body:not(.theme-spiderman):not(.theme-breaking-bad):not(.theme-got):not(.theme-b
 
 .chat-wrapper {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 .chat-header {
+  flex-shrink: 0;
   padding: 12px 16px;
   border-bottom: 1px solid var(--border-color);
   font-size: 0.85rem;
@@ -2875,11 +3168,21 @@ body:not(.theme-spiderman):not(.theme-breaking-bad):not(.theme-got):not(.theme-b
 }
 .chat-messages {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  scroll-behavior: smooth;
+}
+.chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+.chat-messages::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
 }
 .chat-system-msg {
   background: rgba(255, 255, 255, 0.04);
@@ -2934,10 +3237,14 @@ body.theme-breaking-bad .chat-msg.msg-self .chat-msg-bubble {
   border-bottom-left-radius: 3px;
 }
 .chat-input-form {
+  flex-shrink: 0;
   padding: 12px 16px;
   border-top: 1px solid var(--border-color);
   display: flex;
   gap: 8px;
+  background: var(--bg-card);
+  position: relative;
+  z-index: 10;
 }
 .chat-input-form input {
   flex: 1;
@@ -3870,11 +4177,14 @@ body.lights-dimmed .player-section {
    19. OTAQ İŞTİRAKÇILARI SİYAHISI (ROOM PARTICIPANTS PANEL)
    ---------------------------------------------------------- */
 .room-participants-panel {
+  flex-shrink: 0;
+  max-height: 130px;
+  overflow-y: auto;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 10px 14px;
-  margin-bottom: 12px;
+  margin: 8px 14px 6px 14px;
   backdrop-filter: blur(12px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }

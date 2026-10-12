@@ -76,7 +76,17 @@ const usersList = document.getElementById('users-list');
 
 // Pleyerlər & Overlay
 const emptyPlayer = document.getElementById('empty-player');
-const ytPlayerFrame = document.getElementById('youtube-player');
+function getYtPlayerFrame() { return document.getElementById('youtube-player'); }
+const ytPlayerFrame = {
+  get classList() {
+    const el = document.getElementById('youtube-player');
+    return el ? el.classList : { add() {}, remove() {}, contains() { return false; } };
+  },
+  get style() {
+    const el = document.getElementById('youtube-player');
+    return el ? el.style : {};
+  }
+};
 const directPlayer = document.getElementById('direct-player');
 const streamPlayer = document.getElementById('stream-player');
 const btnUnmuteOverlay = document.getElementById('btn-unmute-overlay');
@@ -2153,15 +2163,32 @@ function updateUsersList(users) {
 function applyVideoState(state, showNotification = true) {
   currentVideoState = state;
 
-  emptyPlayer.classList.add('hidden');
-  ytPlayerFrame.classList.add('hidden');
-  directPlayer.classList.add('hidden');
-  streamPlayer.classList.add('hidden');
+  const ytEl = getYtPlayerFrame();
+  if (ytEl) {
+    ytEl.classList.add('hidden');
+    ytEl.style.display = 'none';
+  }
+  if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+    try { ytPlayer.pauseVideo(); } catch (e) {}
+  }
+  if (directPlayer) {
+    try { directPlayer.pause(); } catch (e) {}
+    directPlayer.classList.add('hidden');
+  }
+  if (streamPlayer) {
+    streamPlayer.classList.add('hidden');
+  }
+  if (emptyPlayer) {
+    emptyPlayer.classList.add('hidden');
+  }
   if (btnUnmuteOverlay) btnUnmuteOverlay.classList.add('hidden');
   if (pauseTriviaOverlay) pauseTriviaOverlay.classList.add('hidden');
 
   if (state.type === 'youtube') {
-    ytPlayerFrame.classList.remove('hidden');
+    if (ytEl) {
+      ytEl.classList.remove('hidden');
+      ytEl.style.display = 'block';
+    }
     loadYouTubeVideo(state.url);
     if (showNotification) showNotice('🔴 YouTube videosu açıldı');
   } else if (state.type === 'direct') {
@@ -2181,7 +2208,7 @@ function applyVideoState(state, showNotification = true) {
     }
     if (showNotification) showNotice('💻 Canlı film yayımı aktivdir');
   } else {
-    emptyPlayer.classList.remove('hidden');
+    if (emptyPlayer) emptyPlayer.classList.remove('hidden');
   }
 }
 
@@ -2598,6 +2625,20 @@ async function startScreenCapture() {
       audioTracks[0].contentHint = 'music'; // Film və musiqi üçün təmiz stereo səs rejimi
     }
 
+    // YouTube və direct pleyerləri tam dayandır və gizlət
+    const ytEl = getYtPlayerFrame();
+    if (ytEl) {
+      ytEl.classList.add('hidden');
+      ytEl.style.display = 'none';
+    }
+    if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+      try { ytPlayer.pauseVideo(); } catch (e) {}
+    }
+    if (directPlayer) {
+      try { directPlayer.pause(); } catch (e) {}
+      directPlayer.classList.add('hidden');
+    }
+
     streamPlayer.srcObject = localScreenStream;
     streamPlayer.muted = true;
     streamPlayer.classList.remove('hidden');
@@ -2903,17 +2944,12 @@ function handleIncomingVoiceChunk(senderId, username, arrayBuffer) {
     const now = ctx.currentTime;
     let playAt = scheduledPlayTimes[senderId] || 0;
 
-    // Fasiləsiz Axıcı Jitter Buferi (Danışıqda qırılmaları və söz kəsilmələrini tam ləğv edir):
+    // Fasiləsiz Ultra Aşağı Gecikməli Jitter Buferi (<80ms):
     if (playAt < now) {
-      if (now - playAt > 0.150 || playAt === 0) {
-        // Yeni cümlə və ya fasilədən sonra: 50ms sabit jitter yastığı
-        playAt = now + 0.050;
-      } else {
-        // Kiçik şəbəkə gecikməsi (5-50ms): heç bir boşluq/sükut qoyma, dərhal calaşdır!
-        playAt = now + 0.005;
-      }
-    } else if (playAt > now + 0.350) {
-      playAt = now + 0.050;
+      playAt = now + 0.020;
+    } else if (playAt > now + 0.080) {
+      // Şəbəkə dalğalanması olduqda yığılan gecikməni dərhal sıxaraq real vaxta qaytar!
+      playAt = now + 0.020;
     }
 
     source.start(playAt);
@@ -2941,15 +2977,23 @@ function startAudioChunkCapture(stream) {
     }
 
     voiceCaptureSource = voiceCaptureContext.createMediaStreamSource(stream);
+
+    // 120Hz KÜLƏK VƏ KULLER ƏLEYHİNƏ FİLTR (Highpass Filter):
+    // 120Hz-dən aşağı tezlikləri (ventilyator uğultusu, külək, masa vibrasiyası) tam kəsir!
+    const hpFilter = voiceCaptureContext.createBiquadFilter();
+    hpFilter.type = 'highpass';
+    hpFilter.frequency.value = 120;
+    hpFilter.Q.value = 0.7;
+
     const nativeRate = voiceCaptureContext.sampleRate || 48000;
     const downsampleStep = nativeRate / 24000;
-    const bufferSize = nativeRate >= 44100 ? 4096 : 2048;
+    const bufferSize = 2048; // ~42.6ms mikro-bufer (gecikməni minimuma endirir)
     voiceCaptureProcessor = voiceCaptureContext.createScriptProcessor(bufferSize, 1, 1);
 
     let silenceCount = 0;
     let isSpeakingState = false;
     let isGateOpen = false;
-    let preRollBuffer = []; // Cümlənin başlanğıcının kəsilməməsi üçün 5 paketlik (~425ms) dairəvi bufer
+    let preRollBuffer = []; // Tək 1 paketlik (~42ms) yüngül pre-roll (başlanğıc samitləri qoruyur, gecikmə yaratmır)
 
     voiceCaptureProcessor.onaudioprocess = (e) => {
       if (!isVoiceActive) return;
@@ -2961,8 +3005,8 @@ function startAudioChunkCapture(stream) {
         sum += input[i] * input[i];
       }
       const rms = Math.sqrt(sum / input.length);
-      // Həssas danışıq həddi (pıçıltı və yumşaq samitləri dərhal tutur)
-      const isVoice = rms > 0.005;
+      // Təbii danışıq həddi (arxa fondakı zəif küy və ventilyator səsini keçirmir)
+      const isVoice = rms > 0.012;
 
       // 24kHz PCM-ə çevir
       const outLen = Math.floor(input.length / downsampleStep);
@@ -2977,12 +3021,9 @@ function startAudioChunkCapture(stream) {
         silenceCount = 0;
         if (!isGateOpen) {
           isGateOpen = true;
-          // CÜMLƏNİN ƏVVƏLİ: Pre-roll buferdəki bütün əvvəlki paketləri dərhal göndər!
-          // Beləliklə, cümlənin ilk hecası/sözü zərrə qədər də kəsilmir!
+          // Danışıq başladıqda yüngül 1 paket pre-roll göndər
           if (socket && preRollBuffer.length > 0) {
-            preRollBuffer.forEach(prev => {
-              socket.emit('voice-chunk', prev);
-            });
+            socket.emit('voice-chunk', preRollBuffer[preRollBuffer.length - 1]);
             preRollBuffer = [];
           }
         }
@@ -2993,9 +3034,9 @@ function startAudioChunkCapture(stream) {
         }
       } else {
         silenceCount++;
-        // CÜMLƏNİN SONU: 15 paketlik (~1.3 saniyə) geniş bufer.
-        // Tənəffüs və cümlə sonundakı səslər qətiyyən kəsilmir!
-        if (silenceCount > 15) {
+        // CÜMLƏNİN SONU: 4 paketlik (~170ms) qısa bufer.
+        // Cümlə bitdikdə arxadan heç bir küy/külək səsi getmir!
+        if (silenceCount > 4) {
           if (isGateOpen) isGateOpen = false;
           if (isSpeakingState) {
             isSpeakingState = false;
@@ -3005,23 +3046,20 @@ function startAudioChunkCapture(stream) {
         }
       }
 
-      if (isGateOpen || silenceCount <= 15) {
+      if (isGateOpen || silenceCount <= 4) {
         if (socket) {
           socket.emit('voice-chunk', chunkBuffer);
         }
       } else {
-        // Sükut zamanı ən son 5 paketi (~425ms) pre-roll üçün yaddaşda saxla
-        preRollBuffer.push(chunkBuffer);
-        if (preRollBuffer.length > 5) {
-          preRollBuffer.shift();
-        }
+        preRollBuffer = [chunkBuffer];
       }
     };
 
     const muteNode = voiceCaptureContext.createGain();
     muteNode.gain.value = 0;
 
-    voiceCaptureSource.connect(voiceCaptureProcessor);
+    voiceCaptureSource.connect(hpFilter);
+    hpFilter.connect(voiceCaptureProcessor);
     voiceCaptureProcessor.connect(muteNode);
     muteNode.connect(voiceCaptureContext.destination);
 
@@ -3094,25 +3132,15 @@ async function startVoiceChat() {
 
     const safeMicId = await getSafeMicrophoneId();
 
-    // Qulaqlıq/Kino rejimində: echoCancellation=false, noiseSuppression=false
-    // Bu zaman Chrome və Windows heç vaxt videonun səsini boğmur və kəsmir, 100% təmiz stereo saxlayır!
-    const audioConstraints = isHeadphoneMode ? {
-      echoCancellation: false,
-      noiseSuppression: false,
-      autoGainControl: false,
-      googEchoCancellation: false,
-      googAutoGainControl: false,
-      googNoiseSuppression: false,
-      googHighpassFilter: false,
-      googAudioMirroring: false,
-      googTypingNoiseDetection: false,
-      voiceIsolation: false,
-      channelCount: 1
-    } : {
+    // Mikrofon üçün yüksək keyfiyyətli səs filtrləri (Külək, ventilyator və arxa fon səsini ləğv edir)
+    const audioConstraints = {
       echoCancellation: true,
       noiseSuppression: true,
-      autoGainControl: false,
-      googHighpassFilter: false,
+      autoGainControl: true,
+      googEchoCancellation: true,
+      googAutoGainControl: true,
+      googNoiseSuppression: true,
+      googHighpassFilter: true,
       channelCount: 1
     };
 
@@ -3987,22 +4015,134 @@ window.closeModal = function(modalId) {
 // ==========================================
 
 function setupChatAndReactions() {
-  chatForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const text = chatInput.value.trim();
-    if (!text || !socket) return;
-    socket.emit('send-message', { text });
-    chatInput.value = '';
-  });
+  if (chatForm) {
+    chatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const text = chatInput.value.trim();
+      if (!text || !socket) return;
+      socket.emit('send-message', { text });
+      chatInput.value = '';
+    });
+  }
+
+  // Tam Ekran Kino Çatı Formu
+  const fsChatForm = document.getElementById('fs-chat-form');
+  const fsChatInput = document.getElementById('fs-chat-input');
+  if (fsChatForm) {
+    fsChatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!fsChatInput) return;
+      const text = fsChatInput.value.trim();
+      if (!text || !socket) return;
+      socket.emit('send-message', { text });
+      fsChatInput.value = '';
+    });
+  }
+
+  window.sendReaction = function(emoji) {
+    if (socket) {
+      socket.emit('send-reaction', { reaction: emoji });
+    }
+    spawnFloatingEmoji(emoji);
+  };
 
   document.querySelectorAll('.reaction-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const emoji = btn.getAttribute('data-reaction');
-      if (socket) {
-        socket.emit('send-reaction', { reaction: emoji });
-      }
-      spawnFloatingEmoji(emoji);
+      if (emoji) window.sendReaction(emoji);
     });
+  });
+
+  setupCinemaFullscreen();
+}
+
+function setupCinemaFullscreen() {
+  const playerContainer = document.getElementById('player-container');
+  const btnCinemaFullscreen = document.getElementById('btn-cinema-fullscreen');
+  const btnTabFullscreen = document.getElementById('btn-tab-fullscreen');
+  const cinemaFsChat = document.getElementById('cinema-fullscreen-chat');
+  const btnFsChatPill = document.getElementById('btn-fs-chat-pill');
+  const btnCloseFsChat = document.getElementById('btn-close-fs-chat');
+  const fsChatInput = document.getElementById('fs-chat-input');
+
+  function isCinemaFullscreen() {
+    return document.fullscreenElement === playerContainer || document.webkitFullscreenElement === playerContainer;
+  }
+
+  function toggleCinemaFullscreen() {
+    if (!playerContainer) return;
+    if (isCinemaFullscreen()) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+    } else {
+      if (playerContainer.requestFullscreen) {
+        playerContainer.requestFullscreen().catch(() => {});
+      } else if (playerContainer.webkitRequestFullscreen) {
+        playerContainer.webkitRequestFullscreen();
+      }
+    }
+  }
+
+  function updateFullscreenState() {
+    const inFs = isCinemaFullscreen();
+    if (inFs) {
+      if (cinemaFsChat) cinemaFsChat.classList.remove('hidden');
+      if (btnFsChatPill) btnFsChatPill.classList.add('hidden');
+      if (btnCinemaFullscreen) btnCinemaFullscreen.title = 'Tam Ekrandan Çıx (Esc / F)';
+    } else {
+      if (cinemaFsChat) cinemaFsChat.classList.add('hidden');
+      if (btnFsChatPill) btnFsChatPill.classList.add('hidden');
+      if (btnCinemaFullscreen) btnCinemaFullscreen.title = 'Kino Tam Ekran (F)';
+    }
+  }
+
+  document.addEventListener('fullscreenchange', updateFullscreenState);
+  document.addEventListener('webkitfullscreenchange', updateFullscreenState);
+
+  if (btnCinemaFullscreen) btnCinemaFullscreen.addEventListener('click', toggleCinemaFullscreen);
+  if (btnTabFullscreen) btnTabFullscreen.addEventListener('click', toggleCinemaFullscreen);
+
+  if (btnCloseFsChat) {
+    btnCloseFsChat.addEventListener('click', () => {
+      if (cinemaFsChat) cinemaFsChat.classList.add('hidden');
+      if (btnFsChatPill && isCinemaFullscreen()) btnFsChatPill.classList.remove('hidden');
+    });
+  }
+
+  if (btnFsChatPill) {
+    btnFsChatPill.addEventListener('click', () => {
+      if (cinemaFsChat) cinemaFsChat.classList.remove('hidden');
+      btnFsChatPill.classList.add('hidden');
+      if (fsChatInput) fsChatInput.focus();
+    });
+  }
+
+  // Qısayollar: F = Tam Ekran, C = Kino Çatı Aç/Bağla
+  document.addEventListener('keydown', (e) => {
+    const activeTag = (document.activeElement && document.activeElement.tagName) ? document.activeElement.tagName.toLowerCase() : '';
+    if (activeTag === 'input' || activeTag === 'textarea' || (document.activeElement && document.activeElement.isContentEditable)) {
+      return;
+    }
+
+    if (e.key === 'f' || e.key === 'F') {
+      e.preventDefault();
+      toggleCinemaFullscreen();
+    } else if (e.key === 'c' || e.key === 'C') {
+      if (isCinemaFullscreen()) {
+        e.preventDefault();
+        if (cinemaFsChat && cinemaFsChat.classList.contains('hidden')) {
+          cinemaFsChat.classList.remove('hidden');
+          if (btnFsChatPill) btnFsChatPill.classList.add('hidden');
+          if (fsChatInput) fsChatInput.focus();
+        } else if (cinemaFsChat) {
+          cinemaFsChat.classList.add('hidden');
+          if (btnFsChatPill) btnFsChatPill.classList.remove('hidden');
+        }
+      }
+    }
   });
 }
 
@@ -4017,8 +4157,30 @@ function appendChatMessage(msg) {
     </div>
     <div class="chat-msg-bubble">${escapeHtml(msg.text)}</div>
   `;
-  chatMessages.appendChild(msgDiv);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
+  if (chatMessages) {
+    chatMessages.appendChild(msgDiv);
+    requestAnimationFrame(() => {
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+  }
+
+  // Tam Ekran Kino Çatına da əlavə et
+  const fsMessages = document.getElementById('fs-chat-messages');
+  if (fsMessages) {
+    const fsMsgDiv = document.createElement('div');
+    fsMsgDiv.className = `chat-msg ${isMine ? 'mine' : 'theirs'}`;
+    fsMsgDiv.innerHTML = `
+      <div class="chat-msg-header">
+        <span class="sender" style="color: ${isMine ? '#38bdf8' : '#f59e0b'}; font-weight:700;">${isMine ? 'Sən' : msg.sender}</span>
+        <span class="time" style="opacity:0.6; font-size:0.7rem;">${msg.time}</span>
+      </div>
+      <div class="chat-msg-bubble">${escapeHtml(msg.text)}</div>
+    `;
+    fsMessages.appendChild(fsMsgDiv);
+    requestAnimationFrame(() => {
+      fsMessages.scrollTop = fsMessages.scrollHeight;
+    });
+  }
 }
 
 function spawnFloatingEmoji(emoji) {
