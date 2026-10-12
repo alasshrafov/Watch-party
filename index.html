@@ -38,6 +38,7 @@
 
       <nav class="lobby-nav-links" aria-label="Naviqasiya menyusu">
         <a href="#how-it-works" class="nav-menu-link" id="nav-link-how">Necə İşləyir?</a>
+        <button type="button" class="nav-menu-link btn-nav-plain" id="nav-link-characters">Xarakterlər</button>
         <a href="#action-console" class="nav-menu-link nav-highlight" id="nav-link-rooms">Kino Otağı</a>
       </nav>
 
@@ -172,9 +173,9 @@
                 <span>İndi Otaq Aç</span>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </a>
-              <a href="#action-console" class="btn-cine-cta secondary" id="btn-hero-cta-explore">
-                <span>Koda ilə Qoşul</span>
-              </a>
+              <button type="button" class="btn-cine-cta secondary" id="btn-hero-cta-explore">
+                <span>🎭 Xarakterləri Kəşf Et</span>
+              </button>
             </div>
           </div>
 
@@ -326,7 +327,8 @@
 
             <div class="input-group">
               <label for="username-input" id="label-nickname-text">Adınız / Ləqəbiniz:</label>
-              <div class="input-icon-wrap">
+              <div class="input-icon-wrap user-input-with-avatar">
+                <span id="input-avatar-preview" class="input-avatar-badge" title="Kino Avatarınız (Xarakter seçmək üçün klikləyin)">🍿</span>
                 <input type="text" id="username-input" placeholder="Ləqəbiniz (məs: KinoSevər)" maxlength="20">
               </div>
             </div>
@@ -996,6 +998,122 @@
         </div>
       </aside>
     </main>
+  </div>
+
+  <!-- ========================================================
+       MODAL: KULT KİNO XARAKTERLƏRİ & AVATAR QALEREYASI
+       ======================================================== -->
+  <div id="modal-characters" class="modal-backdrop hidden">
+    <div class="modal-card modal-characters-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="modal-icon-badge">🎭</span>
+          <div>
+            <h2 id="modal-char-title">Kult Kino Xarakterləri & Avatar Qalereyası</h2>
+            <span class="modal-char-sub" id="modal-char-sub">Xarakterinizi seçin, ləqəbinizi və otaq ab-havasını 1 kliklə fərdiləşdirin</span>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-characters')">✕</button>
+      </div>
+
+      <div class="characters-gallery-grid">
+        <!-- 1. Walter White / Heisenberg -->
+        <div class="char-gallery-card" data-char="heisenberg" data-nickname="Heisenberg" data-theme="theme-breaking-bad" data-emoji="🧪">
+          <div class="char-gallery-img-wrap">
+            <img src="assets/characters/heisenberg.jpg" alt="Walter White Heisenberg" loading="lazy">
+            <span class="char-badge emerald">ZƏKA OYUNÇUSU</span>
+            <div class="char-gallery-emoji-tag">🧪</div>
+          </div>
+          <div class="char-gallery-body">
+            <h4 class="char-card-name">Walter White • Heisenberg</h4>
+            <span class="char-card-source">Breaking Bad • Albuquerque</span>
+            <p class="char-card-quote">"I am the one who knocks."</p>
+            <button type="button" class="btn-select-character">
+              <span>🧪 Heisenberg Ol</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. The Dark Knight / Batman -->
+        <div class="char-gallery-card" data-char="batman" data-nickname="Batman" data-theme="theme-batman" data-emoji="🦇">
+          <div class="char-gallery-img-wrap">
+            <img src="assets/characters/batman.jpg" alt="The Dark Knight Batman" loading="lazy">
+            <span class="char-badge gold">QƏHRƏMAN</span>
+            <div class="char-gallery-emoji-tag">🦇</div>
+          </div>
+          <div class="char-gallery-body">
+            <h4 class="char-card-name">Bruce Wayne • Batman</h4>
+            <span class="char-card-source">The Dark Knight • Gotham</span>
+            <p class="char-card-quote">"It's not who I am underneath, but what I do that defines me."</p>
+            <button type="button" class="btn-select-character">
+              <span>🦇 Batman Ol</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. The Godfather / Vito Corleone -->
+        <div class="char-gallery-card" data-char="godfather" data-nickname="Don Corleone" data-theme="theme-netflix" data-emoji="🌹">
+          <div class="char-gallery-img-wrap">
+            <img src="assets/characters/godfather.jpg" alt="Don Vito Corleone" loading="lazy">
+            <span class="char-badge crimson">AİLƏ & GÜC</span>
+            <div class="char-gallery-emoji-tag">🌹</div>
+          </div>
+          <div class="char-gallery-body">
+            <h4 class="char-card-name">Don Vito Corleone</h4>
+            <span class="char-card-source">The Godfather • Siciliya</span>
+            <p class="char-card-quote">"I'm gonna make him an offer he can't refuse."</p>
+            <button type="button" class="btn-select-character">
+              <span>🌹 Don Corleone Ol</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. Cyber Warrior / Neo -->
+        <div class="char-gallery-card" data-char="cyberpunk" data-nickname="Neo" data-theme="theme-matrix" data-emoji="⚡">
+          <div class="char-gallery-img-wrap">
+            <img src="assets/characters/cyberpunk.jpg" alt="Neo Cyber Warrior" loading="lazy">
+            <span class="char-badge cyan">SCI-FI MATRIX</span>
+            <div class="char-gallery-emoji-tag">⚡</div>
+          </div>
+          <div class="char-gallery-body">
+            <h4 class="char-card-name">Neo • Matrix Terminal</h4>
+            <span class="char-card-source">The Matrix • Gələcək</span>
+            <p class="char-card-quote">"There is no spoon. Free your mind."</p>
+            <button type="button" class="btn-select-character">
+              <span>⚡ Neo Ol</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 5. Sirli Detektiv / Rust Cohle -->
+        <div class="char-gallery-card" data-char="detective" data-nickname="Rust Cohle" data-theme="theme-matrix" data-emoji="🕶️">
+          <div class="char-gallery-img-wrap">
+            <img src="assets/characters/detective.jpg" alt="Rust Cohle Detective" loading="lazy">
+            <span class="char-badge violet">NOIR DETEKTİV</span>
+            <div class="char-gallery-emoji-tag">🕶️</div>
+          </div>
+          <div class="char-gallery-body">
+            <h4 class="char-card-name">Rust Cohle</h4>
+            <span class="char-card-source">True Detective • Qaranlıq</span>
+            <p class="char-card-quote">"Time is a flat circle."</p>
+            <button type="button" class="btn-select-character">
+              <span>🕶️ Rust Cohle Ol</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alt Tez Keçid Zolağı -->
+      <div class="modal-char-footer">
+        <button type="button" class="btn-char-random" id="btn-char-pick-random">
+          <span>🎲 Təsadüfi Xarakter Seç</span>
+        </button>
+        <button type="button" class="btn-char-skip-join" id="btn-char-skip-join">
+          <span>🔑 Yalnız Koda ilə Otağa Qoşul</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- ========================================================

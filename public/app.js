@@ -177,6 +177,10 @@ const I18N = {
     cineSubSlogan: 'Two screens. One couch.',
     btnHeroRoom: '🛋️ İndi Otaq Aç',
     btnHeroExplore: '🎭 Xarakterləri Kəşf Et',
+    modalCharTitle: 'Kult Kino Xarakterləri & Avatar Qalereyası',
+    modalCharSub: 'Xarakterinizi seçin, ləqəbinizi və otaq ab-havasını 1 kliklə fərdiləşdirin',
+    btnCharPickRandom: '🎲 Təsadüfi Xarakter Seç',
+    btnCharSkipJoin: '🔑 Yalnız Koda ilə Otağa Qoşul',
     sectionTagArchetypes: '🎭 KİNO ARXETİPLƏRİ',
     archetypeTitle: 'Kult Qəhrəmanlar və Rollar',
     archetypeSub: 'Dünya kino tarixinin ən unudulmaz simvolları və xarakterləri.',
@@ -256,6 +260,10 @@ const I18N = {
     cineSubSlogan: 'Two screens. One couch.',
     btnHeroRoom: '🛋️ Şimdi Oda Aç',
     btnHeroExplore: '🎭 Karakterleri Keşfet',
+    modalCharTitle: 'Kült Sinema Karakterleri ve Galeri',
+    modalCharSub: 'Karakterinizi seçin, takma adınızı ve oda temasını 1 tıkla özelleştirin',
+    btnCharPickRandom: '🎲 Rastgele Karakter Seç',
+    btnCharSkipJoin: '🔑 Sadece Kodla Odaya Katıl',
     sectionTagArchetypes: '🎭 SİNEMA ARKETİPLERİ',
     archetypeTitle: 'Kült Kahramanlar ve Roller',
     archetypeSub: 'Dünya sinema tarihinin en unutulmaz ikonları ve karakterleri.',
@@ -335,6 +343,10 @@ const I18N = {
     cineSubSlogan: 'Two screens. One couch.',
     btnHeroRoom: '🛋️ Start Watch Party',
     btnHeroExplore: '🎭 Explore Characters',
+    modalCharTitle: 'Cult Cinema Characters & Gallery',
+    modalCharSub: 'Choose your cinema icon: customize your nickname and room ambiance in 1 click',
+    btnCharPickRandom: '🎲 Pick Random Character',
+    btnCharSkipJoin: '🔑 Join Room with Code Only',
     sectionTagArchetypes: '🎭 CINEMA ARCHETYPES',
     archetypeTitle: 'Cult Heroes & Icons',
     archetypeSub: 'The most unforgettable characters in cinematic history.',
@@ -413,7 +425,11 @@ const I18N = {
     cineMainTitle: 'СЦЕНА ЗА ТОБОЙ',
     cineSubSlogan: 'Two screens. One couch.',
     btnHeroRoom: '🛋️ Создать Комнату',
-    btnHeroExplore: '🎭 Исследовать',
+    btnHeroExplore: '🎭 Исследовать Персонажей',
+    modalCharTitle: 'Культовые Киногерои и Галерея',
+    modalCharSub: 'Выберите киногероя: настройте свой ник и атмосферу комнаты в 1 клик',
+    btnCharPickRandom: '🎲 Случайный Персонаж',
+    btnCharSkipJoin: '🔑 Войти только по коду',
     sectionTagArchetypes: '🎭 КИНОАРХЕТИПЫ',
     archetypeTitle: 'Культовые Персонажи',
     archetypeSub: 'Самые незабываемые образы мирового кинематографа.',
@@ -506,6 +522,16 @@ function setLanguage(lang) {
   if (el('btn-hero-cta-explore')) {
     const span = el('btn-hero-cta-explore').querySelector('span');
     if (span) span.textContent = t.btnHeroExplore;
+  }
+  if (el('modal-char-title')) el('modal-char-title').textContent = t.modalCharTitle;
+  if (el('modal-char-sub')) el('modal-char-sub').textContent = t.modalCharSub;
+  if (el('btn-char-pick-random')) {
+    const span = el('btn-char-pick-random').querySelector('span');
+    if (span) span.textContent = t.btnCharPickRandom;
+  }
+  if (el('btn-char-skip-join')) {
+    const span = el('btn-char-skip-join').querySelector('span');
+    if (span) span.textContent = t.btnCharSkipJoin;
   }
 
   // 3D Fanned Cards
@@ -617,82 +643,176 @@ function setupLanguageSwitcher() {
 function setupMiniMovieFigures() {
   const charDetailsByLang = {
     az: {
-      cyberpunk: { emoji: '⚡', title: 'Kiber Döyüşçü (Sci-Fi)' },
+      cyberpunk: { emoji: '⚡', title: 'Neo (Matrix Sci-Fi)' },
       godfather: { emoji: '🌹', title: 'Don Vito Corleone (Xaç Atası)' },
       heisenberg: { emoji: '🧪', title: 'Walter White (Heisenberg)' },
       batman: { emoji: '🦇', title: 'Batman (Qaranlıq Cəngavər)' },
-      detective: { emoji: '🕶️', title: 'Noir Dedektiv (Klassik)' }
+      detective: { emoji: '🕶️', title: 'Rust Cohle (True Detective)' }
     },
     tr: {
-      cyberpunk: { emoji: '⚡', title: 'Siber Savaşçı (Bilim Kurgu)' },
+      cyberpunk: { emoji: '⚡', title: 'Neo (Matrix Bilim Kurgu)' },
       godfather: { emoji: '🌹', title: 'Don Vito Corleone (Baba)' },
       heisenberg: { emoji: '🧪', title: 'Walter White (Heisenberg)' },
       batman: { emoji: '🦇', title: 'Batman (Kara Şövalye)' },
-      detective: { emoji: '🕶️', title: 'Noir Dedektif (Klasik)' }
+      detective: { emoji: '🕶️', title: 'Rust Cohle (True Detective)' }
     },
     en: {
-      cyberpunk: { emoji: '⚡', title: 'Cyber Warrior (Sci-Fi)' },
+      cyberpunk: { emoji: '⚡', title: 'Neo (Matrix Sci-Fi)' },
       godfather: { emoji: '🌹', title: 'Don Vito Corleone (The Godfather)' },
       heisenberg: { emoji: '🧪', title: 'Walter White (Heisenberg)' },
       batman: { emoji: '🦇', title: 'Batman (The Dark Knight)' },
-      detective: { emoji: '🕶️', title: 'Noir Detective (Classic)' }
+      detective: { emoji: '🕶️', title: 'Rust Cohle (True Detective)' }
     },
     ru: {
-      cyberpunk: { emoji: '⚡', title: 'Кибер-Воин (Науч. Фант.)' },
+      cyberpunk: { emoji: '⚡', title: 'Нео (Матрица)' },
       godfather: { emoji: '🌹', title: 'Дон Вито Корлеоне (Крёстный Отец)' },
       heisenberg: { emoji: '🧪', title: 'Уолтер Уайт (Хайзенберг)' },
       batman: { emoji: '🦇', title: 'Бэтмен (Тёмный Рыцарь)' },
-      detective: { emoji: '🕶️', title: 'Нуар Детектив (Классика)' }
+      detective: { emoji: '🕶️', title: 'Раст Коул (True Detective)' }
     }
   };
 
-  // 1. 3D Fanned Character Cards
-  document.querySelectorAll('.cine-char-card').forEach(card => {
+  const characterDefaultNames = {
+    heisenberg: 'Heisenberg',
+    batman: 'Batman',
+    godfather: 'Don Corleone',
+    cyberpunk: 'Neo',
+    detective: 'Rust Cohle'
+  };
+
+  const characterThemes = {
+    heisenberg: 'theme-breaking-bad',
+    batman: 'theme-batman',
+    cyberpunk: 'theme-matrix',
+    godfather: 'theme-netflix',
+    detective: 'theme-matrix'
+  };
+
+  function selectCharacterProfile(charKey, customNickname = null) {
+    const langDict = charDetailsByLang[currentLang] || charDetailsByLang.az;
+    const info = langDict[charKey] || { emoji: '🍿', title: 'Kino Xarakteri' };
+    const nickToApply = customNickname || characterDefaultNames[charKey] || 'KinoSevər';
+
+    if (typeof selectedAvatarChoice !== 'undefined') {
+      selectedAvatarChoice = info.emoji;
+    }
+
+    const avatarPreview = document.getElementById('input-avatar-preview');
+    if (avatarPreview) {
+      avatarPreview.textContent = info.emoji;
+      avatarPreview.style.transform = 'scale(1.4)';
+      setTimeout(() => { avatarPreview.style.transform = ''; }, 350);
+    }
+
+    if (usernameInput) {
+      usernameInput.value = nickToApply;
+    }
+
+    const targetTheme = characterThemes[charKey] || 'theme-netflix';
+    localStorage.setItem('watchparty-theme', targetTheme);
+    if (roomScreen && roomScreen.classList.contains('active')) {
+      applyTheme(targetTheme, false);
+    }
+
+    if (typeof spawnFloatingEmoji === 'function') {
+      spawnFloatingEmoji(info.emoji);
+      spawnFloatingEmoji('✨');
+      spawnFloatingEmoji('⭐');
+    }
+
+    const selectedWord = {
+      az: 'xarakteri seçildi! Ləqəbiniz təyin olundu.',
+      tr: 'karakteri seçildi! Takma adınız belirlendi.',
+      en: 'character selected! Nickname updated.',
+      ru: 'персонаж выбран! Ник обновлён.'
+    }[currentLang] || 'xarakteri seçildi!';
+
+    showNotice(`🎭 ${nickToApply} ${selectedWord}`);
+
+    // Modalı bağla
+    closeModal('modal-characters');
+
+    // Səliqəli şəkildə konsola sürüşdür və fokuslan
+    const consoleEl = document.getElementById('action-console');
+    if (consoleEl) {
+      consoleEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    setTimeout(() => {
+      if (roomInput && !roomInput.value) {
+        roomInput.focus();
+      }
+    }, 450);
+  }
+
+  // 1. Hero "🎭 Xarakterləri Kəşf Et" düyməsi -> Modalı Açır
+  const btnExplore = document.getElementById('btn-hero-cta-explore');
+  if (btnExplore) {
+    btnExplore.addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal('modal-characters');
+    });
+  }
+
+  // 2. Üst naviqasiya "Xarakterlər" linki -> Modalı Açır
+  const navLinkChars = document.getElementById('nav-link-characters');
+  if (navLinkChars) {
+    navLinkChars.addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal('modal-characters');
+    });
+  }
+
+  // 3. Ad inputunun yanındakı Avatar Nişanı -> Modalı Açır
+  const avatarPreviewBadge = document.getElementById('input-avatar-preview');
+  if (avatarPreviewBadge) {
+    avatarPreviewBadge.addEventListener('click', () => {
+      openModal('modal-characters');
+    });
+  }
+
+  // 4. Modal daxilindəki Xarakter Kartları & Düymələri
+  document.querySelectorAll('.char-gallery-card').forEach(card => {
     card.addEventListener('click', () => {
       const charKey = card.getAttribute('data-char');
-      const langDict = charDetailsByLang[currentLang] || charDetailsByLang.az;
-      const info = langDict[charKey] || { emoji: '🍿', title: 'Hero' };
-      
-      if (typeof selectedAvatarChoice !== 'undefined') {
-        selectedAvatarChoice = info.emoji;
-      }
-      const avatarPreview = document.getElementById('input-avatar-preview');
-      if (avatarPreview) {
-        avatarPreview.textContent = info.emoji;
-        avatarPreview.style.transform = 'scale(1.3)';
-        setTimeout(() => { avatarPreview.style.transform = ''; }, 300);
-      }
-
-      // Xarakterə uyğun otaq mövzusunu yadda saxla (Yalnız otaq daxilində tətbiq olunur)
-      let targetTheme = 'theme-netflix';
-      if (charKey === 'heisenberg') targetTheme = 'theme-breaking-bad';
-      else if (charKey === 'batman') targetTheme = 'theme-batman';
-      else if (charKey === 'cyberpunk') targetTheme = 'theme-matrix';
-      else if (charKey === 'godfather') targetTheme = 'theme-netflix';
-
-      localStorage.setItem('watchparty-theme', targetTheme);
-      if (roomScreen && roomScreen.classList.contains('active')) {
-        applyTheme(targetTheme, false);
-      }
-
-      if (typeof spawnFloatingEmoji === 'function') {
-        spawnFloatingEmoji(info.emoji);
-        spawnFloatingEmoji('✨');
-        spawnFloatingEmoji('⭐');
-      }
-
-      const selectedWord = {
-        az: 'seçildi!',
-        tr: 'seçildi!',
-        en: 'selected!',
-        ru: 'выбран!'
-      }[currentLang] || 'seçildi!';
-
-      showNotice(`🎭 ${info.title} ${selectedWord}`);
+      const nick = card.getAttribute('data-nickname');
+      selectCharacterProfile(charKey, nick);
     });
   });
 
-  // 2. Archetype Cards Click
+  // 5. Modal Alt: Təsadüfi Xarakter Seç
+  const btnPickRandom = document.getElementById('btn-char-pick-random');
+  if (btnPickRandom) {
+    btnPickRandom.addEventListener('click', () => {
+      const keys = ['heisenberg', 'batman', 'godfather', 'cyberpunk', 'detective'];
+      const randomKey = keys[Math.floor(Math.random() * keys.length)];
+      selectCharacterProfile(randomKey);
+    });
+  }
+
+  // 6. Modal Alt: Yalnız Koda ilə Otağa Qoşul
+  const btnSkipJoin = document.getElementById('btn-char-skip-join');
+  if (btnSkipJoin) {
+    btnSkipJoin.addEventListener('click', () => {
+      closeModal('modal-characters');
+      const consoleEl = document.getElementById('action-console');
+      if (consoleEl) {
+        consoleEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      setTimeout(() => {
+        if (roomInput) roomInput.focus();
+      }, 400);
+    });
+  }
+
+  // 7. Hero Sağ və Sol Qanaddakı 3D Flank Kartları
+  document.querySelectorAll('.cine-char-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const charKey = card.getAttribute('data-char');
+      selectCharacterProfile(charKey);
+    });
+  });
+
+  // 8. Archetype Cards Click
   document.querySelectorAll('.archetype-card').forEach(card => {
     card.addEventListener('click', () => {
       const title = card.querySelector('.arch-title')?.textContent || 'Arxetip';
@@ -2763,6 +2883,15 @@ function setupModalsAndFeatures() {
     drawWheel();
   });
   btnOpenHistory.addEventListener('click', () => openModal('modal-history'));
+
+  // Bütün modallarda backdrop-a klikləndikdə bağlanma
+  document.querySelectorAll('.modal-backdrop').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.add('hidden');
+      }
+    });
+  });
 
   // Watchlist Əlavə Et
   watchlistForm.addEventListener('submit', (e) => {
