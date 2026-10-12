@@ -3288,8 +3288,20 @@ function setupAuth() {
   try {
     const savedUserStr = localStorage.getItem('watchparty_user');
     if (savedUserStr) {
-      currentUser = JSON.parse(savedUserStr);
-      updateUserUI();
+      const parsed = JSON.parse(savedUserStr);
+      // Köhnə sınaqdan qalmış şəxsi məlumatlar varsa dərhal yaddaşdan təmizlə
+      if (parsed && (
+        parsed.username === 'Vali Alashrafov' ||
+        parsed.username === 'Vali' ||
+        parsed.email === 'alialashrafov0708@gmail.com' ||
+        parsed.email === 'valialashrafov60@gmail.com'
+      )) {
+        localStorage.removeItem('watchparty_user');
+        currentUser = null;
+      } else {
+        currentUser = parsed;
+        updateUserUI();
+      }
     }
   } catch (e) {
     console.error('Yadda saxlanılan istifadəçi oxuna bilmədi:', e);
@@ -3557,7 +3569,9 @@ function updateUserUI() {
       if (currentUser.username) {
         const parts = currentUser.username.trim().split(/\s+/);
         const initials = parts.map(p => p[0]).join('').substring(0, 2).toUpperCase();
-        dropdownAvatarCircle.textContent = initials || 'VA';
+        dropdownAvatarCircle.textContent = initials || '👤';
+      } else {
+        dropdownAvatarCircle.textContent = '👤';
       }
     }
 

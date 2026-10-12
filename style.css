@@ -25,7 +25,9 @@ body.theme-netflix, body {
   --border-hover: rgba(229, 9, 20, 0.5);
   --radius: 16px;
   --radius-sm: 10px;
-  --brand-font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --brand-font: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
   --theme-ambient-glow: rgba(229, 9, 20, 0.12);
 }
 
@@ -190,7 +192,7 @@ html, body {
 }
 
 body {
-  font-family: var(--brand-font, 'Plus Jakarta Sans', sans-serif);
+  font-family: var(--brand-font, 'Outfit', 'Plus Jakarta Sans', sans-serif);
   background-color: var(--bg-dark);
   color: var(--text-main);
   min-height: 100vh;
@@ -198,6 +200,8 @@ body {
   user-select: none;
   transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s ease;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* Custom Scrollbar */
@@ -4169,33 +4173,40 @@ body.lights-dimmed .player-section {
 }
 
 .cine-main-title {
-  font-size: clamp(2.4rem, 5vw, 3.8rem);
+  font-size: clamp(2.5rem, 5.2vw, 4.1rem);
   font-weight: 900;
-  line-height: 1.08;
-  letter-spacing: -0.04em;
-  font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
   color: #ffffff;
   margin: 0;
+  background: linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 50%, #94A3B8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .accent-text {
-  color: #e50914;
-  text-shadow: 0 0 30px rgba(229, 9, 20, 0.4);
+  background: linear-gradient(135deg, #FF2E36 0%, #E50914 55%, #B80710 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 25px rgba(229, 9, 20, 0.45));
 }
 
 .cine-sub-slogan {
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #8e95a5;
-  margin: 4px 0;
+  color: #e50914;
+  margin: 4px 0 2px;
+  font-family: 'Outfit', sans-serif;
 }
 .lobby-hero-subtitle {
   font-size: 1.05rem;
-  line-height: 1.55;
+  line-height: 1.6;
   color: #9ba1b5;
   max-width: 540px;
-  margin: 4px 0 16px;
+  margin: 4px 0 18px;
+  font-weight: 450;
 }
 
 .cine-hero-cta-group {
@@ -4206,7 +4217,9 @@ body.lights-dimmed .player-section {
 .cine-hero-cta-group .btn-cine-cta {
   padding: 14px 28px;
   font-size: 0.96rem;
-  border-radius: 10px;
+  border-radius: 12px;
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: 0.01em;
 }
 
 /* REAL-TIME CINEMA PREVIEW MOCKUP */
@@ -4215,20 +4228,31 @@ body.lights-dimmed .player-section {
   width: 100%;
 }
 .cinema-mockup-card {
-  background: #111219;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  background: rgba(15, 17, 26, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
   padding: 16px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(229, 9, 20, 0.15);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.8), 0 0 45px rgba(229, 9, 20, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   display: flex;
   flex-direction: column;
   gap: 14px;
-  backdrop-filter: blur(20px);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(24px);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.3s ease;
+  position: relative;
+}
+.cinema-mockup-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
 }
 .cinema-mockup-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8), 0 0 40px rgba(229, 9, 20, 0.25);
+  transform: translateY(-5px);
+  border-color: rgba(229, 9, 20, 0.35);
+  box-shadow: 0 35px 85px rgba(0, 0, 0, 0.9), 0 0 55px rgba(229, 9, 20, 0.25);
 }
 
 .mockup-top-bar {
@@ -4431,7 +4455,7 @@ body.lights-dimmed .player-section {
   font-size: 2.2rem;
   font-weight: 900;
   letter-spacing: -0.03em;
-  font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Outfit', sans-serif;
   color: #ffffff;
   margin: 0 0 8px;
 }
@@ -4467,7 +4491,7 @@ body.lights-dimmed .player-section {
 .step-num {
   font-size: 2.2rem;
   font-weight: 900;
-  font-family: 'Space Grotesk', monospace;
+  font-family: 'JetBrains Mono', 'Space Grotesk', monospace;
   color: #e50914;
   line-height: 1;
   margin-bottom: 14px;
@@ -4475,6 +4499,7 @@ body.lights-dimmed .player-section {
 .step-title {
   font-size: 1.18rem;
   font-weight: 800;
+  font-family: 'Outfit', sans-serif;
   color: #ffffff;
   margin: 0 0 8px;
 }

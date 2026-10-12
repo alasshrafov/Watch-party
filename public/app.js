@@ -19,37 +19,49 @@ let currentVideoState = { type: 'empty', url: '', isPlaying: false, time: 0 };
 
 // WebRTC Tab Yayımı
 let localScreenStream = null;
-let screenPeerConnection = null;
+const screenBroadcasterPeers = {};
+const screenBroadcasterIceQueues = {};
+let screenViewerPeer = null;
+let screenViewerIceQueue = [];
 
-// WebRTC Səsli Zəng (Mikrofon)
+// WebRTC Səsli Zəng (Mikrofon & Audio Engine)
 let localVoiceStream = null;
 let isVoiceActive = false;
 const voicePeerConnections = {};
+const voiceIceCandidatesQueue = {};
+const pcMakingOffer = {};
+let vadInterval = null;
+let vadAudioContext = null;
+let isSpeakingLocally = false;
+let currentRoomUsers = {};
 
-// Audio Ducking (Səs Balansı)
-let audioContext = null;
-let analyserNode = null;
-let duckingTimer = null;
-let isDucked = false;
-
-// Trivia Sualları
-const triviaList = [
-  { q: "Popkorn və ya çay gətirmək növbəsi kimdədir? 🍿", opts: ["Məndədir, qaçdım gətirməyə 🏃‍♂️", "Səndədir, tez ol gəl! ⏳", "Gəl filmə davam edək ▶️"] },
-  { q: "🧪 Breaking Bad: Walter White-ın gizli kimyagər ləqəbi nə idi?", opts: ["Heisenberg (Düzgün)", "Gus Fring", "Cap'n Cook"] },
-  { q: "⚔️ Game of Thrones: Dəmir Taxt hansı paytaxt şəhərdə yerləşir?", opts: ["King's Landing (Düzgün)", "Winterfell", "Braavos"] },
-  { q: "🌌 Interstellar: Qara Dəliyin (Black Hole) adı nə idi?", opts: ["Gargantua (Düzgün)", "Millers", "Edmunds"] },
-  { q: "🦇 Batman: The Dark Knight-da Cokeri (Joker) hansı əfsanəvi aktyor oynamışdı?", opts: ["Heath Ledger (Düzgün)", "Joaquin Phoenix", "Christian Bale"] },
-  { q: "🕶️ The Matrix: Neo həqiqəti görmək üçün hansı rəng həbi seçir?", opts: ["Qırmızı həb (Düzgün)", "Mavi həb", "Yaşıl həb"] }
-];
-let currentTriviaIndex = 0;
-
-// STUN Serverləri
+// STUN və TURN Serverləri (Qlobal Relay - Fərqli Şəbəkələr və Mobil üçün Zəmanətli Səs)
 const rtcConfig = {
   iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' }
-  ]
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:stun2.l.google.com:19302' },
+    { urls: 'stun:stun3.l.google.com:19302' },
+    { urls: 'stun:stun.cloudflare.com:3478' },
+    {
+      urls: 'turn:openrelay.metered.ca:80',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
+    },
+    {
+      urls: 'turn:openrelay.metered.ca:443',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
+    },
+    {
+      urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
+    }
+  ],
+  iceCandidatePoolSize: 10
 };
+
 
 // DOM Elementləri
 const lobbyScreen = document.getElementById('lobby-screen');
@@ -96,7 +108,6 @@ const chatForm = document.getElementById('chat-form');
 const chatInput = document.getElementById('chat-input');
 const chatMessages = document.getElementById('chat-messages');
 const floatingEmojisContainer = document.getElementById('floating-emojis-container');
-const duckingBadge = document.querySelector('.ducking-indicator');
 
 // Modallar (Ruletka & Xatirə)
 const btnOpenWatchlist = document.getElementById('btn-open-watchlist');
@@ -140,6 +151,7 @@ const starsRow = document.getElementById('stars-row');
 
 // Xüsusiyyət 4: İşıqları Söndür DOM
 const btnDimLights = document.getElementById('btn-dim-lights');
+const btnFloatingRestoreLights = document.getElementById('btn-floating-restore-lights');
 
 
 // ==========================================
@@ -651,6 +663,17 @@ function setupMiniMovieFigures() {
         setTimeout(() => { avatarPreview.style.transform = ''; }, 300);
       }
 
+      // Xarakterə uyğun otaq mövzusunu sinxronlaşdır
+      if (charKey === 'heisenberg') {
+        applyTheme('theme-breaking-bad', false);
+      } else if (charKey === 'batman') {
+        applyTheme('theme-batman', false);
+      } else if (charKey === 'cyberpunk') {
+        applyTheme('theme-matrix', false);
+      } else if (charKey === 'godfather') {
+        applyTheme('theme-netflix', false);
+      }
+
       if (typeof spawnFloatingEmoji === 'function') {
         spawnFloatingEmoji(info.emoji);
         spawnFloatingEmoji('✨');
@@ -722,7 +745,35 @@ window.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
   const roomParam = urlParams.get('room');
   if (roomParam) {
-    roomInput.value = roomParam;
+    const cleanRoom = roomParam.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+    if (cleanRoom) {
+      if (roomInput) roomInput.value = cleanRoom;
+
+      // Link ilə gələn istifadəçiyə avtomatik ad və avatar təyin edib birbaşa daxil olmaq
+      let joinUsername = '';
+      if (currentUser && currentUser.username) {
+        joinUsername = currentUser.username;
+      } else if (usernameInput && usernameInput.value.trim()) {
+        joinUsername = usernameInput.value.trim();
+      } else {
+        const guestNames = ['KinoSevər', 'Tamaşaçı', 'FilmHəvəskarı', 'CouchDost', 'Sinefil', 'Qonaq'];
+        const randName = guestNames[Math.floor(Math.random() * guestNames.length)];
+        const randNum = Math.floor(100 + Math.random() * 900);
+        joinUsername = `${randName}-${randNum}`;
+        if (usernameInput) usernameInput.value = joinUsername;
+      }
+
+      const randomAvatars = ['🍿', '🎬', '🥤', '🍕', '🕶️', '⚡', '🦇', '🍫'];
+      const joinAvatar = (currentUser && currentUser.avatar) ? currentUser.avatar : randomAvatars[Math.floor(Math.random() * randomAvatars.length)];
+      if (typeof selectedAvatarChoice !== 'undefined') {
+        selectedAvatarChoice = joinAvatar;
+      }
+
+      // Linklə gələn qonaq üçün birbaşa otaq açılır (Heç bir qeydiyyat və ya gözləmə tələb olunmur)
+      setTimeout(() => {
+        enterRoomWithId(cleanRoom, joinUsername, false);
+      }, 250);
+    }
   }
 
   // Kult Film/Serial Tema Seçicisi (Yalnız Otaq Daxilində)
@@ -771,6 +822,9 @@ window.addEventListener('DOMContentLoaded', () => {
   const savedLang = localStorage.getItem('onecouch_lang') || 'az';
   setLanguage(savedLang);
 
+  // 🌓 Gündüz / Gecə Rejimi (Lobby Light/Dark Mode)
+  setupLobbyMode();
+
   // Balaca Kino Fiqurları İnteraktivliyi
   setupMiniMovieFigures();
 
@@ -785,7 +839,52 @@ window.addEventListener('DOMContentLoaded', () => {
   setupLightsDimmer();
 });
 
-function applyTheme(themeName) {
+// ==========================================
+// LOBBY LIGHT / DARK MODE CONTROLLER
+// ==========================================
+function applyLobbyMode(mode) {
+  const currentMode = mode === 'light' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-mode', currentMode);
+  try {
+    localStorage.setItem('onecouch_lobby_mode', currentMode);
+  } catch (e) {}
+
+  const toggleBtn = document.getElementById('btn-mode-toggle');
+  if (toggleBtn) {
+    const sunIcon = toggleBtn.querySelector('.mode-icon-sun');
+    const moonIcon = toggleBtn.querySelector('.mode-icon-moon');
+    const label = document.getElementById('mode-label-text');
+
+    if (currentMode === 'light') {
+      if (sunIcon) sunIcon.classList.remove('hidden');
+      if (moonIcon) moonIcon.classList.add('hidden');
+      if (label) label.textContent = 'Light';
+    } else {
+      if (sunIcon) sunIcon.classList.add('hidden');
+      if (moonIcon) moonIcon.classList.remove('hidden');
+      if (label) label.textContent = 'Dark';
+    }
+  }
+}
+
+function setupLobbyMode() {
+  let savedMode = 'dark';
+  try {
+    savedMode = localStorage.getItem('onecouch_lobby_mode') || 'dark';
+  } catch (e) {}
+  applyLobbyMode(savedMode);
+
+  const toggleBtn = document.getElementById('btn-mode-toggle');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-mode') || 'dark';
+      const nextMode = current === 'light' ? 'dark' : 'light';
+      applyLobbyMode(nextMode);
+    });
+  }
+}
+
+function applyTheme(themeName, syncWithRoom = true) {
   document.body.className = themeName;
   localStorage.setItem('watchparty-theme', themeName);
 
@@ -794,6 +893,11 @@ function applyTheme(themeName) {
   if (themeSelect) themeSelect.value = themeName;
   const lobbyThemeSelect = document.getElementById('lobby-theme-select');
   if (lobbyThemeSelect) lobbyThemeSelect.value = themeName;
+
+  // Otaqda olan digər iştirakçılarla dərhal sinxronlaşdır
+  if (syncWithRoom && socket && currentRoom) {
+    socket.emit('change-room-theme', { theme: themeName });
+  }
 
   // Logo tərtibatı
   const logo = document.getElementById('brand-logo-text');
@@ -909,26 +1013,26 @@ btnCopyLink.addEventListener('click', () => {
   });
 });
 
-function leaveRoomAndReturnToLobby() {
+function forceLeaveRoomAndReturnToLobby(customNotice) {
   const t = (typeof I18N !== 'undefined' && I18N[currentLang]) ? I18N[currentLang] : null;
-  if (roomScreen && roomScreen.classList.contains('active')) {
-    const confirmLeave = confirm(t ? t.confirmLeave : 'Kino otağından çıxıb əsas ekrana (Lobby) qayıtmaq istəyirsiniz?');
-    if (!confirmLeave) return;
-  } else {
-    return;
-  }
 
   // 1. WebRTC və ekran/səs yayımlarını dayandır
   if (localScreenStream) {
-    try { localScreenStream.getTracks().forEach(t => t.stop()); } catch (e) {}
+    try { localScreenStream.getTracks().forEach(track => track.stop()); } catch (e) {}
     localScreenStream = null;
   }
-  if (screenPeerConnection) {
-    try { screenPeerConnection.close(); } catch (e) {}
-    screenPeerConnection = null;
+  Object.values(screenBroadcasterPeers).forEach(pc => {
+    try { pc.close(); } catch (e) {}
+  });
+  for (const k in screenBroadcasterPeers) delete screenBroadcasterPeers[k];
+  for (const k in screenBroadcasterIceQueues) delete screenBroadcasterIceQueues[k];
+  if (screenViewerPeer) {
+    try { screenViewerPeer.close(); } catch (e) {}
+    screenViewerPeer = null;
   }
+  screenViewerIceQueue = [];
   if (localVoiceStream) {
-    try { localVoiceStream.getTracks().forEach(t => t.stop()); } catch (e) {}
+    try { localVoiceStream.getTracks().forEach(track => track.stop()); } catch (e) {}
     localVoiceStream = null;
   }
   if (typeof voicePeerConnections === 'object') {
@@ -949,7 +1053,7 @@ function leaveRoomAndReturnToLobby() {
     try { ytPlayer.stopVideo(); } catch (e) {}
   }
 
-  // 3. Socket əlaqəsini bağla
+  // 3. Socket əlaqəsini bağla (Serverə çıxış siqnalı göndər)
   if (socket) {
     try {
       socket.emit('leave-room');
@@ -968,12 +1072,27 @@ function leaveRoomAndReturnToLobby() {
   if (roomInput) roomInput.value = '';
 
   // 6. Ekranları dəyişdir
-  roomScreen.classList.remove('active');
-  lobbyScreen.classList.add('active');
+  if (roomScreen) roomScreen.classList.remove('active');
+  if (lobbyScreen) lobbyScreen.classList.add('active');
 
   // 7. UI-ı yenilə
   updateUserUI();
-  showNotice(t ? t.noticeReturnLobby : '🛋️ Əsas ekrana qayıtdınız');
+  showNotice(customNotice || (t ? t.noticeReturnLobby : '🛋️ Əsas ekrana qayıtdınız'));
+}
+
+function leaveRoomAndReturnToLobby() {
+  const t = (typeof I18N !== 'undefined' && I18N[currentLang]) ? I18N[currentLang] : null;
+  if (roomScreen && roomScreen.classList.contains('active')) {
+    const confirmMsg = isHost
+      ? '👑 Otaq rəhbərisiniz. Çıxsanız, kino zalı hər kəs üçün bağlanacaq. Çıxmaq istəyirsiniz?'
+      : (t ? t.confirmLeave : 'Kino otağından çıxıb əsas ekrana (Lobby) qayıtmaq istəyirsiniz?');
+    const confirmLeave = confirm(confirmMsg);
+    if (!confirmLeave) return;
+  } else {
+    return;
+  }
+
+  forceLeaveRoomAndReturnToLobby();
 }
 
 // ==========================================
@@ -988,12 +1107,20 @@ function initSocket() {
     username: currentUsername,
     avatar: currentUser ? currentUser.avatar : '🍿',
     authUserId: currentUser ? currentUser.id : null,
-    isGoogleAuth: !!(currentUser && currentUser.isGoogle)
+    isGoogleAuth: !!(currentUser && currentUser.isGoogle),
+    initialTheme: localStorage.getItem('watchparty-theme') || 'theme-netflix'
   });
 
   socket.on('room-joined', (data) => {
     isHost = data.isHost;
-    updateUsersList(data.users);
+    if (data.theme) {
+      applyTheme(data.theme, false);
+    }
+    if (data.users) {
+      currentRoomUsers = data.users;
+      updateUsersList(data.users);
+      // Səs axını 100% zəmanətli WebSocket PCM Relay ilə ötürülür
+    }
     if (data.isLocked !== undefined) {
       isRoomLocked = data.isLocked;
       updateRoomLockUI(data.isLocked);
@@ -1006,8 +1133,28 @@ function initSocket() {
       renderWatchlist(data.watchlist);
       drawWheel();
     }
+    if (data.lightsDimmed !== undefined) {
+      applyRoomLights(data.lightsDimmed);
+    }
     if (data.history) renderHistory(data.history);
     showNotice(isHost ? '👑 Otaq rəhbərisiniz. Xoş gəldiniz!' : '🍿 Otağa qoşuldunuz!');
+  });
+
+  socket.on('room-lights-changed', ({ dimmed, by }) => {
+    applyRoomLights(dimmed);
+    showNotice(`💡 ${by} kinoteatr işıqlarını ${dimmed ? 'söndürdü' : 'yandırdı'}`);
+  });
+
+  socket.on('room-theme-changed', ({ theme, changedBy }) => {
+    applyTheme(theme, false);
+    showNotice(`🎨 Otaq mövzusu yeniləndi: ${getThemeName(theme)} (${changedBy})`);
+  });
+
+  socket.on('voice-users-updated', (users) => {
+    if (users) {
+      currentRoomUsers = users;
+      updateUsersList(users);
+    }
   });
 
   socket.on('room-create-denied', (data) => {
@@ -1023,12 +1170,19 @@ function initSocket() {
 
   socket.on('room-locked-denied', (data) => {
     alert(`⛔ ${data.message || 'Bu otaq hal-hazırda kilidlənib! Host yalnız dəvətli üzvlərə icazə verir.'}`);
-    roomScreen.classList.remove('active');
-    lobbyScreen.classList.add('active');
-    if (socket) {
-      socket.disconnect();
-      socket = null;
-    }
+    forceLeaveRoomAndReturnToLobby();
+  });
+
+  // Otaq bağlandıqda (Otaq rəhbəri çıxdıqda bütün otaq avtomatik bağlanır)
+  socket.on('room-closed', (data) => {
+    alert(`🛋️ ${data.message || 'Otaq rəhbəri çıxdığı üçün kino zalı bağlandı.'}`);
+    forceLeaveRoomAndReturnToLobby('🛋️ Otaq rəhbəri çıxdığı üçün zal bağlandı');
+  });
+
+  // Host tərəfindən otaqdan çıxarıldıqda (Kick)
+  socket.on('kicked-from-room', (data) => {
+    alert(`⛔ ${data.message || 'Otaq rəhbəri tərəfindən otaqdan çıxarıldınız.'}`);
+    forceLeaveRoomAndReturnToLobby('⛔ Otaq rəhbəri tərəfindən çıxarıldınız');
   });
 
   socket.on('room-lock-status', ({ isLocked, lockedBy }) => {
@@ -1040,11 +1194,13 @@ function initSocket() {
   socket.on('peer-speaking', ({ socketId, isSpeaking }) => {
     const peerPill = document.getElementById(`user-pill-${socketId}`);
     if (peerPill) {
-      if (isSpeaking) {
-        peerPill.classList.add('speaking-halo');
-      } else {
-        peerPill.classList.remove('speaking-halo');
-      }
+      if (isSpeaking) peerPill.classList.add('speaking-halo');
+      else peerPill.classList.remove('speaking-halo');
+    }
+    const peerCard = document.getElementById(`participant-item-${socketId}`);
+    if (peerCard) {
+      if (isSpeaking) peerCard.classList.add('speaking');
+      else peerCard.classList.remove('speaking');
     }
   });
 
@@ -1058,16 +1214,25 @@ function initSocket() {
   });
 
   socket.on('user-joined', (data) => {
-    updateUsersList(data.users);
+    if (data.users) currentRoomUsers = data.users;
+    updateUsersList(data.users || currentRoomUsers);
     showNotice(`👋 ${data.username} otağa daxil oldu!`);
     if (localScreenStream) {
       initiateScreenPeer(data.socketId);
     }
+    // Səs axını 100% zəmanətli WebSocket PCM Relay ilə ötürülür
   });
 
   socket.on('user-left', (data) => {
-    updateUsersList(data.users);
+    if (data.users) currentRoomUsers = data.users;
+    updateUsersList(data.users || currentRoomUsers);
     showNotice(`👋 ${data.username} otaqdan ayrıldı`);
+    if (screenBroadcasterPeers[data.socketId]) {
+      try { screenBroadcasterPeers[data.socketId].close(); } catch (e) {}
+      delete screenBroadcasterPeers[data.socketId];
+    }
+    delete screenBroadcasterIceQueues[data.socketId];
+    cleanupVoicePeer(data.socketId);
   });
 
   socket.on('video-changed', (videoState) => {
@@ -1120,29 +1285,53 @@ function initSocket() {
   });
 
   socket.on('webrtc-answer', async ({ sender, sdp }) => {
-    if (screenPeerConnection) {
-      await screenPeerConnection.setRemoteDescription(new RTCSessionDescription(sdp));
+    const pc = screenBroadcasterPeers[sender];
+    if (pc) {
+      try {
+        await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+        if (screenBroadcasterIceQueues[sender]) {
+          for (const cand of screenBroadcasterIceQueues[sender]) {
+            try { await pc.addIceCandidate(new RTCIceCandidate(cand)); } catch (e) {}
+          }
+          delete screenBroadcasterIceQueues[sender];
+        }
+      } catch (err) {
+        console.warn('Broadcaster setRemoteDescription error:', err);
+      }
     }
   });
 
   socket.on('webrtc-ice', async ({ sender, candidate }) => {
-    if (screenPeerConnection && candidate) {
-      try {
-        await screenPeerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-      } catch (e) {}
+    if (!candidate) return;
+    // 1. Əgər biz ekran paylaşan tərəfik (Broadcaster)
+    if (localScreenStream && screenBroadcasterPeers[sender]) {
+      const pc = screenBroadcasterPeers[sender];
+      if (pc.remoteDescription && pc.remoteDescription.type) {
+        try { await pc.addIceCandidate(new RTCIceCandidate(candidate)); } catch (e) {}
+      } else {
+        if (!screenBroadcasterIceQueues[sender]) screenBroadcasterIceQueues[sender] = [];
+        screenBroadcasterIceQueues[sender].push(candidate);
+      }
+      return;
+    }
+
+    // 2. Əgər biz ekran izləyən tərəfik (Viewer)
+    if (screenViewerPeer) {
+      if (screenViewerPeer.remoteDescription && screenViewerPeer.remoteDescription.type) {
+        try { await screenViewerPeer.addIceCandidate(new RTCIceCandidate(candidate)); } catch (e) {}
+      } else {
+        screenViewerIceQueue.push(candidate);
+      }
     }
   });
 
   // WebRTC Səsli Zəng Siqnalları
   socket.on('voice-peer-ready', async ({ sender }) => {
-    await callVoicePeer(sender);
+    // Səs axını 100% zəmanətli WebSocket PCM Relay ilə ötürülür
   });
 
   socket.on('voice-peer-left', ({ peerId }) => {
-    if (voicePeerConnections[peerId]) {
-      voicePeerConnections[peerId].close();
-      delete voicePeerConnections[peerId];
-    }
+    cleanupVoicePeer(peerId);
   });
 
   socket.on('voice-offer', async ({ sender, sdp }) => {
@@ -1150,34 +1339,114 @@ function initSocket() {
   });
 
   socket.on('voice-answer', async ({ sender, sdp }) => {
-    if (voicePeerConnections[sender]) {
-      await voicePeerConnections[sender].setRemoteDescription(new RTCSessionDescription(sdp));
-    }
+    await handleVoiceAnswer(sender, sdp);
   });
 
   socket.on('voice-ice', async ({ sender, candidate }) => {
-    if (voicePeerConnections[sender] && candidate) {
-      try {
-        await voicePeerConnections[sender].addIceCandidate(new RTCIceCandidate(candidate));
-      } catch (e) {}
-    }
+    await handleVoiceIceCandidate(sender, candidate);
+  });
+
+  // Server-Relayed Canlı HD Səs Qəbulu (100% Zəmanətli Səs)
+  socket.on('voice-chunk-receive', ({ sender, username, audio }) => {
+    handleIncomingVoiceChunk(sender, username, audio);
   });
 }
 
+
 function updateUsersList(users) {
-  usersList.innerHTML = '';
-  Object.entries(users).forEach(([sockId, u]) => {
-    const pill = document.createElement('div');
-    pill.className = 'user-pill';
-    pill.id = `user-pill-${sockId}`;
-    pill.dataset.socketId = sockId;
-    pill.innerHTML = `
-      <span class="user-avatar-tag">${u.avatar || '🍿'}</span>
-      <span class="status-dot"></span>
-      <span>${escapeHtml(u.username)} ${u.isHost ? '👑' : ''}</span>
-    `;
-    usersList.appendChild(pill);
-  });
+  if (users) currentRoomUsers = users;
+  const userEntries = Object.entries(users || {});
+  const userCount = userEntries.length;
+
+  // 1. Sayğac (Count Badge)
+  const countBadge = document.getElementById('participants-count-badge');
+  if (countBadge) {
+    countBadge.textContent = userCount;
+  }
+
+  // 2. Üst Header Pills (Başlıqdakı pill-lər)
+  if (usersList) {
+    usersList.innerHTML = '';
+    userEntries.forEach(([sockId, u]) => {
+      const isMe = socket && (sockId === socket.id);
+      const isAvatarImg = u.avatar && (u.avatar.startsWith('http') || u.avatar.includes('/') || u.avatar.includes('.jpg') || u.avatar.includes('.png'));
+
+      const pill = document.createElement('div');
+      pill.className = 'user-pill';
+      pill.id = `user-pill-${sockId}`;
+      pill.dataset.socketId = sockId;
+      pill.innerHTML = `
+        <span class="user-avatar-tag">
+          ${isAvatarImg ? `<img src="${u.avatar}" alt="Avatar" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;">` : (u.avatar || '🍿')}
+        </span>
+        <span class="status-dot ${u.isVoiceActive ? 'voice-on' : ''}"></span>
+        <span>${escapeHtml(u.username)} ${u.isHost ? '👑' : ''} ${isMe ? '(Sən)' : ''}</span>
+        ${u.isVoiceActive ? '<span class="mic-status-tag" title="Mikrofon Aktivdir">🎙️</span>' : ''}
+      `;
+      usersList.appendChild(pill);
+    });
+  }
+
+  // 3. Sağ Panel: Siyahı Şəklində İştirakçılar (Sidebar Participant List)
+  const sidebarList = document.getElementById('sidebar-users-list');
+  if (sidebarList) {
+    sidebarList.innerHTML = '';
+    userEntries.forEach(([sockId, u]) => {
+      const isMe = socket && (sockId === socket.id);
+      const isAvatarImg = u.avatar && (u.avatar.startsWith('http') || u.avatar.includes('/') || u.avatar.includes('.jpg') || u.avatar.includes('.png'));
+
+      const card = document.createElement('div');
+      card.className = 'participant-card';
+      card.id = `participant-item-${sockId}`;
+      card.dataset.socketId = sockId;
+
+      card.innerHTML = `
+        <div class="participant-avatar-wrap">
+          ${isAvatarImg ?
+            `<img src="${u.avatar}" alt="Avatar" class="participant-avatar-img">` :
+            `<span class="participant-avatar-txt">${u.avatar || '🍿'}</span>`
+          }
+          <span class="participant-status-dot ${u.isVoiceActive ? 'voice-on' : ''}"></span>
+        </div>
+        <div class="participant-info">
+          <div class="participant-name-row">
+            <span class="participant-name">${escapeHtml(u.username)}</span>
+            ${isMe ? '<span class="participant-you-tag">Sən</span>' : ''}
+            ${u.isHost ? '<span class="participant-crown" title="Otaq Rəhbəri">👑</span>' : ''}
+          </div>
+          <div class="participant-role-sub">
+            <span>${u.isHost ? 'Otaq Rəhbəri' : 'Qonaq'}</span>
+            <span>•</span>
+            ${u.isVoiceActive ?
+              '<span class="voice-badge active">🎙️ Səs Aktivdir</span>' :
+              '<span class="voice-badge muted">🔇 Səssiz</span>'
+            }
+          </div>
+        </div>
+        ${(isHost && !isMe) ? `
+          <button class="btn-kick-participant" title="İştirakçını otaqdan çıxart" data-socket-id="${sockId}" data-username="${escapeHtml(u.username)}">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            <span>Çıxart</span>
+          </button>
+        ` : ''}
+      `;
+      sidebarList.appendChild(card);
+    });
+
+    // Otaq sahibi üçün iştirakçını çıxarmaq (Kick) düymələrinə listener qoş
+    sidebarList.querySelectorAll('.btn-kick-participant').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const targetSockId = btn.getAttribute('data-socket-id');
+        const targetName = btn.getAttribute('data-username') || 'Bu istifadəçini';
+        if (confirm(`"${targetName}" adlı iştirakçını otaqdan çıxarmaq istəyirsiniz?`)) {
+          if (socket) {
+            socket.emit('kick-user', { targetSocketId: targetSockId });
+          }
+        }
+      });
+    });
+  }
 }
 
 // ==========================================
@@ -1222,21 +1491,28 @@ function applyVideoState(state, showNotification = true) {
 function handleRemoteVideoAction({ action, time, sender }) {
   isRemoteAction = true;
 
-  if (currentVideoState.type === 'youtube' && ytPlayer && isYtReady) {
-    if (Math.abs(ytPlayer.getCurrentTime() - time) > 1.5) {
-      ytPlayer.seekTo(time, true);
-    }
-    if (action === 'play') {
-      ytPlayer.playVideo();
-      showNotice(`▶️ ${sender} videonu başlatdı`);
-      hideTrivia();
-    } else if (action === 'pause') {
-      ytPlayer.pauseVideo();
-      showNotice(`⏸️ ${sender} videonu saxladı`);
-      showRandomTrivia();
-    } else if (action === 'seek') {
-      ytPlayer.seekTo(time, true);
-      showNotice(`⏩ ${sender} vaxtı dəyişdi (${formatTime(time)})`);
+  if (currentVideoState.type === 'youtube' && ytPlayer) {
+    try {
+      if (typeof ytPlayer.getCurrentTime === 'function' && typeof ytPlayer.seekTo === 'function') {
+        const cur = ytPlayer.getCurrentTime();
+        if (Math.abs(cur - time) > 1.5) {
+          ytPlayer.seekTo(time, true);
+        }
+      }
+      if (action === 'play' && typeof ytPlayer.playVideo === 'function') {
+        ytPlayer.playVideo();
+        showNotice(`▶️ ${sender} videonu başlatdı`);
+        hideTrivia();
+      } else if (action === 'pause' && typeof ytPlayer.pauseVideo === 'function') {
+        ytPlayer.pauseVideo();
+        showNotice(`⏸️ ${sender} videonu saxladı`);
+        showRandomTrivia();
+      } else if (action === 'seek' && typeof ytPlayer.seekTo === 'function') {
+        ytPlayer.seekTo(time, true);
+        showNotice(`⏩ ${sender} vaxtı dəyişdi (${formatTime(time)})`);
+      }
+    } catch (err) {
+      console.warn('YouTube remote action error:', err);
     }
   } else if (currentVideoState.type === 'direct') {
     if (Math.abs(directPlayer.currentTime - time) > 1.5) {
@@ -1258,7 +1534,7 @@ function handleRemoteVideoAction({ action, time, sender }) {
 
   setTimeout(() => {
     isRemoteAction = false;
-  }, 400);
+  }, 500);
 }
 
 // Fasilə Trivia Sistemi
@@ -1291,9 +1567,9 @@ if (btnCloseTrivia) btnCloseTrivia.addEventListener('click', hideTrivia);
 // 4. YOUTUBE İNTEQRASİYASI
 // ==========================================
 
-function onYouTubeIframeAPIReady() {
+window.onYouTubeIframeAPIReady = function() {
   isYtReady = true;
-}
+};
 
 function extractYouTubeId(url) {
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -1308,9 +1584,23 @@ function loadYouTubeVideo(url) {
     return;
   }
 
-  if (ytPlayer && ytPlayer.loadVideoById) {
+  if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
     ytPlayer.loadVideoById(videoId);
+  } else if (window.YT && window.YT.Player) {
+    createYTPlayer(videoId);
   } else {
+    // YouTube scripti yüklənənə qədər qısa intervalla yoxla
+    const ytTimer = setInterval(() => {
+      if (window.YT && window.YT.Player) {
+        clearInterval(ytTimer);
+        createYTPlayer(videoId);
+      }
+    }, 150);
+  }
+}
+
+function createYTPlayer(videoId) {
+  try {
     ytPlayer = new YT.Player('youtube-player', {
       height: '100%',
       width: '100%',
@@ -1319,26 +1609,107 @@ function loadYouTubeVideo(url) {
         autoplay: 1,
         controls: 1,
         rel: 0,
-        modestbranding: 1
+        modestbranding: 1,
+        enablejsapi: 1,
+        origin: window.location.origin
       },
       events: {
+        'onReady': (event) => {
+          isYtReady = true;
+          if (currentVideoState && currentVideoState.time) {
+            try { event.target.seekTo(currentVideoState.time, true); } catch (e) {}
+          }
+          if (currentVideoState && currentVideoState.isPlaying) {
+            try { event.target.playVideo(); } catch (e) {}
+          }
+        },
         'onStateChange': onYouTubeStateChange
       }
     });
+  } catch (e) {
+    console.error('Error creating YouTube player:', e);
   }
 }
 
 function onYouTubeStateChange(event) {
   if (isRemoteAction || !socket) return;
-  const currentTime = ytPlayer.getCurrentTime();
+  const state = event.data;
+  let currentTime = 0;
+  try {
+    if (event.target && typeof event.target.getCurrentTime === 'function') {
+      currentTime = event.target.getCurrentTime();
+    }
+  } catch (e) {}
 
-  if (event.data === YT.PlayerState.PLAYING) {
+  // 1 = PLAYING, 2 = PAUSED (YouTube API rəsmi standart kodları)
+  if (state === 1) {
     socket.emit('video-action', { action: 'play', time: currentTime });
     hideTrivia();
-  } else if (event.data === YT.PlayerState.PAUSED) {
+  } else if (state === 2) {
     socket.emit('video-action', { action: 'pause', time: currentTime });
     showRandomTrivia();
   }
+}
+
+// Qonaq və ya Host YouTube videosunu dayandırdıqda/başlatdıqda 100% zəmanətli avtomatik sinxronizasiya
+let lastYtSyncState = null;
+setInterval(() => {
+  if (isRemoteAction || !socket || !ytPlayer || currentVideoState.type !== 'youtube') return;
+  try {
+    if (typeof ytPlayer.getPlayerState === 'function') {
+      const state = ytPlayer.getPlayerState();
+      let curTime = 0;
+      if (typeof ytPlayer.getCurrentTime === 'function') curTime = ytPlayer.getCurrentTime();
+
+      if (state !== lastYtSyncState) {
+        if (state === 2) { // PAUSED
+          lastYtSyncState = 2;
+          socket.emit('video-action', { action: 'pause', time: curTime });
+          showRandomTrivia();
+        } else if (state === 1) { // PLAYING
+          lastYtSyncState = 1;
+          socket.emit('video-action', { action: 'play', time: curTime });
+          hideTrivia();
+        }
+      }
+    }
+  } catch (e) {}
+}, 400);
+
+// Alətlər panelindəki Otaq Play/Pause Düymələri (Həm Qonaq, həm Host üçün anında sinxron)
+const btnRoomPlay = document.getElementById('btn-room-play');
+const btnRoomPause = document.getElementById('btn-room-pause');
+
+if (btnRoomPlay) {
+  btnRoomPlay.addEventListener('click', () => {
+    let curTime = 0;
+    if (currentVideoState.type === 'youtube' && ytPlayer) {
+      if (typeof ytPlayer.playVideo === 'function') ytPlayer.playVideo();
+      if (typeof ytPlayer.getCurrentTime === 'function') curTime = ytPlayer.getCurrentTime();
+    } else if (currentVideoState.type === 'direct') {
+      directPlayer.play().catch(() => {});
+      curTime = directPlayer.currentTime;
+    }
+    if (socket) socket.emit('video-action', { action: 'play', time: curTime });
+    showNotice('▶️ Video başladıldı (Hamı üçün)');
+    hideTrivia();
+  });
+}
+
+if (btnRoomPause) {
+  btnRoomPause.addEventListener('click', () => {
+    let curTime = 0;
+    if (currentVideoState.type === 'youtube' && ytPlayer) {
+      if (typeof ytPlayer.pauseVideo === 'function') ytPlayer.pauseVideo();
+      if (typeof ytPlayer.getCurrentTime === 'function') curTime = ytPlayer.getCurrentTime();
+    } else if (currentVideoState.type === 'direct') {
+      directPlayer.pause();
+      curTime = directPlayer.currentTime;
+    }
+    if (socket) socket.emit('video-action', { action: 'pause', time: curTime });
+    showNotice('⏸️ Video saxlanıldı (Hamı üçün)');
+    showRandomTrivia();
+  });
 }
 
 btnLoadYt.addEventListener('click', () => {
@@ -1398,6 +1769,102 @@ btnSyncNow.addEventListener('click', () => {
 // 6. WEBRTC TAB YAYIMI & NETFLIX
 // ==========================================
 
+// Keyfiyyət Profilləri: Film və seriallar üçün 1080p Full HD kristal təmiz standart (30 FPS)
+const STREAM_PROFILES = {
+  '1080p-high': {
+    name: '🌟 1080p Full HD — Kristal Təmiz (Kino Rejimi • 8.5 Mbps)',
+    width: { ideal: 1920, max: 1920 },
+    height: { ideal: 1080, max: 1080 },
+    frameRate: { ideal: 30, max: 30 }, // Kino/film üçün 30 FPS standartı (donmaların qarşısını alır)
+    maxBitrate: 8500000, // 8.5 Mbps (tam HD, sıxılma və ləkələnmə yoxdur)
+    contentHint: 'detail', // Mətn və incə kino detallarının bulanıqlaşmasının qarşısını alır
+    degradationPreference: 'maintain-resolution'
+  },
+  '1080p-balanced': {
+    name: '⚡ 1080p Balans — Stabil & Axıcı (5.0 Mbps)',
+    width: { ideal: 1920, max: 1920 },
+    height: { ideal: 1080, max: 1080 },
+    frameRate: { ideal: 30, max: 30 },
+    maxBitrate: 5000000, // 5.0 Mbps
+    contentHint: 'detail',
+    degradationPreference: 'balanced'
+  },
+  '720p-smooth': {
+    name: '🚀 720p HD — Zəif İnternet (3.0 Mbps)',
+    width: { ideal: 1280, max: 1920 },
+    height: { ideal: 720, max: 1080 },
+    frameRate: { ideal: 30, max: 30 },
+    maxBitrate: 3000000, // 3.0 Mbps
+    contentHint: 'motion',
+    degradationPreference: 'maintain-framerate'
+  }
+};
+
+let currentStreamProfileKey = '1080p-high';
+
+const selectStreamQuality = document.getElementById('stream-quality-select');
+const selectNetflixQuality = document.getElementById('netflix-quality-select');
+
+function getActiveStreamProfile() {
+  return STREAM_PROFILES[currentStreamProfileKey] || STREAM_PROFILES['1080p-high'];
+}
+
+async function changeStreamQuality(newKey, notify = true) {
+  if (!STREAM_PROFILES[newKey]) return;
+  currentStreamProfileKey = newKey;
+  if (selectStreamQuality) selectStreamQuality.value = newKey;
+  if (selectNetflixQuality) selectNetflixQuality.value = newKey;
+
+  const profile = getActiveStreamProfile();
+
+  // Əgər yayım aktivdirsə, yeni keyfiyyəti dərhal canlı olaraq tətbiq et
+  if (localScreenStream) {
+    const videoTrack = localScreenStream.getVideoTracks()[0];
+    if (videoTrack) {
+      if ('contentHint' in videoTrack) {
+        videoTrack.contentHint = profile.contentHint;
+      }
+      try {
+        await videoTrack.applyConstraints({ frameRate: profile.frameRate });
+      } catch (e) {}
+    }
+
+    for (const targetId in screenBroadcasterPeers) {
+      const pc = screenBroadcasterPeers[targetId];
+      if (pc) {
+        const videoSender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
+        if (videoSender) {
+          try {
+            const params = videoSender.getParameters();
+            if (!params.encodings || params.encodings.length === 0) params.encodings = [{}];
+            params.encodings[0].maxBitrate = profile.maxBitrate;
+            params.encodings[0].scaleResolutionDownBy = 1.0;
+            params.degradationPreference = profile.degradationPreference;
+            await videoSender.setParameters(params);
+          } catch (e) {
+            console.warn(`[WebRTC Stream] Bitrate yenilənmə xətası (${targetId}):`, e);
+          }
+        }
+      }
+    }
+  }
+
+  if (notify) {
+    showNotice(`⚙️ ${profile.name}`);
+  }
+}
+
+if (selectStreamQuality) {
+  selectStreamQuality.addEventListener('change', (e) => {
+    changeStreamQuality(e.target.value);
+  });
+}
+if (selectNetflixQuality) {
+  selectNetflixQuality.addEventListener('change', (e) => {
+    changeStreamQuality(e.target.value);
+  });
+}
+
 btnStartStream.addEventListener('click', startScreenCapture);
 if (btnStartNetflixStream) {
   btnStartNetflixStream.addEventListener('click', startScreenCapture);
@@ -1405,10 +1872,14 @@ if (btnStartNetflixStream) {
 
 async function startScreenCapture() {
   try {
+    const profile = getActiveStreamProfile();
+
     localScreenStream = await navigator.mediaDevices.getDisplayMedia({
       video: {
         displaySurface: 'browser',
-        frameRate: { ideal: 60 }
+        frameRate: profile.frameRate, // 30 FPS kino standartı: GPU yükünü azaldır və kadr donmasını tam aradan qaldırır
+        width: profile.width,
+        height: profile.height
       },
       audio: {
         echoCancellation: false,
@@ -1418,9 +1889,16 @@ async function startScreenCapture() {
       }
     });
 
+    const videoTrack = localScreenStream.getVideoTracks()[0];
+    if (videoTrack) {
+      videoTrack.contentHint = profile.contentHint; // 'detail' = Kristal təmiz, heç bir sıxılma bulanıqlığı olmur!
+    }
+
     const audioTracks = localScreenStream.getAudioTracks();
     if (audioTracks.length === 0) {
       alert("⚠️ DİQQƏT: Filmin səsi qoşulmadı!\n\nChrome pəncərəsi açılanda aşağıdakı 'Also share tab audio' (Səsi paylaş) qutusunu mütləq işarələyin və 'Pəncərə' yox, 'Chrome Tab' (və ya Bütöv Ekran) seçin.");
+    } else {
+      audioTracks[0].contentHint = 'music'; // Film və musiqi üçün təmiz stereo səs rejimi
     }
 
     streamPlayer.srcObject = localScreenStream;
@@ -1436,7 +1914,7 @@ async function startScreenCapture() {
     socket.emit('stream-ready');
 
     localScreenStream.getVideoTracks()[0].onended = stopScreenStream;
-    showNotice('🎥 Film tabı yayımlanır! Səs aktivdir.');
+    showNotice(`🎥 Film tabı yayımlanır! (${profile.name})`);
   } catch (err) {
     console.error('Ekran yayımı xətası:', err);
   }
@@ -1449,10 +1927,17 @@ function stopScreenStream() {
     localScreenStream.getTracks().forEach(track => track.stop());
     localScreenStream = null;
   }
-  if (screenPeerConnection) {
-    screenPeerConnection.close();
-    screenPeerConnection = null;
+  Object.values(screenBroadcasterPeers).forEach(pc => {
+    try { pc.close(); } catch (e) {}
+  });
+  for (const k in screenBroadcasterPeers) delete screenBroadcasterPeers[k];
+  for (const k in screenBroadcasterIceQueues) delete screenBroadcasterIceQueues[k];
+
+  if (screenViewerPeer) {
+    try { screenViewerPeer.close(); } catch (e) {}
+    screenViewerPeer = null;
   }
+  screenViewerIceQueue = [];
 
   streamPlayer.srcObject = null;
   streamPlayer.classList.add('hidden');
@@ -1467,32 +1952,97 @@ function stopScreenStream() {
 }
 
 async function initiateScreenPeer(targetSocketId) {
-  if (!localScreenStream) return;
-  if (screenPeerConnection) screenPeerConnection.close();
+  if (!localScreenStream || !targetSocketId || targetSocketId === socket.id) return;
 
-  screenPeerConnection = new RTCPeerConnection(rtcConfig);
+  if (screenBroadcasterPeers[targetSocketId]) {
+    try { screenBroadcasterPeers[targetSocketId].close(); } catch (e) {}
+    delete screenBroadcasterPeers[targetSocketId];
+  }
+  delete screenBroadcasterIceQueues[targetSocketId];
+
+  const pc = new RTCPeerConnection(rtcConfig);
+  screenBroadcasterPeers[targetSocketId] = pc;
 
   localScreenStream.getTracks().forEach(track => {
-    screenPeerConnection.addTrack(track, localScreenStream);
+    pc.addTrack(track, localScreenStream);
   });
 
-  screenPeerConnection.onicecandidate = (event) => {
-    if (event.candidate) {
+  // H.264 Donmanı bloklamaq üçün Hardware Acceleration kodekini prioritet et
+  try {
+    const transceivers = pc.getTransceivers();
+    const videoTransceiver = transceivers.find(t => t.sender && t.sender.track && t.sender.track.kind === 'video');
+    if (videoTransceiver && typeof videoTransceiver.setCodecPreferences === 'function' && RTCRtpReceiver.getCapabilities) {
+      const capabilities = RTCRtpReceiver.getCapabilities('video');
+      if (capabilities && capabilities.codecs) {
+        const h264Codecs = capabilities.codecs.filter(c => c.mimeType.toLowerCase() === 'video/h264');
+        const otherCodecs = capabilities.codecs.filter(c => c.mimeType.toLowerCase() !== 'video/h264');
+        if (h264Codecs.length > 0) {
+          videoTransceiver.setCodecPreferences([...h264Codecs, ...otherCodecs]);
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('Codec preference error:', e);
+  }
+
+  // WebRTC Video Bitreyt Nəzarəti və Keyfiyyəti (8.5 Mbps tam HD axın)
+  const profile = getActiveStreamProfile();
+  const videoSender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
+  if (videoSender) {
+    try {
+      const params = videoSender.getParameters();
+      if (!params.encodings || params.encodings.length === 0) params.encodings = [{}];
+      params.encodings[0].maxBitrate = profile.maxBitrate;
+      params.encodings[0].scaleResolutionDownBy = 1.0; // Qətnamənin süni azaldılmasını qadağan et
+      params.degradationPreference = profile.degradationPreference;
+      await videoSender.setParameters(params);
+    } catch (e) {
+      console.warn('Bitrate parameters error:', e);
+    }
+  }
+
+  pc.onicecandidate = (event) => {
+    if (event.candidate && socket) {
       socket.emit('webrtc-ice', { target: targetSocketId, candidate: event.candidate });
     }
   };
 
-  const offer = await screenPeerConnection.createOffer();
-  await screenPeerConnection.setLocalDescription(offer);
-  socket.emit('webrtc-offer', { target: targetSocketId, sdp: offer });
+  try {
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    socket.emit('webrtc-offer', { target: targetSocketId, sdp: offer });
+  } catch (err) {
+    console.error('initiateScreenPeer error:', err);
+  }
 }
 
 async function handleScreenOffer(senderSocketId, sdp) {
-  if (screenPeerConnection) screenPeerConnection.close();
+  if (!senderSocketId || !sdp) return;
+  if (screenViewerPeer) {
+    try { screenViewerPeer.close(); } catch (e) {}
+    screenViewerPeer = null;
+  }
+  screenViewerIceQueue = [];
 
-  screenPeerConnection = new RTCPeerConnection(rtcConfig);
+  screenViewerPeer = new RTCPeerConnection(rtcConfig);
 
-  screenPeerConnection.ontrack = (event) => {
+  // İzləyici tərəfdə də H.264 aparat sürətləndirməsi
+  try {
+    const transceivers = screenViewerPeer.getTransceivers();
+    const videoTransceiver = transceivers.find(t => t.receiver && t.receiver.track && t.receiver.track.kind === 'video');
+    if (videoTransceiver && typeof videoTransceiver.setCodecPreferences === 'function' && RTCRtpReceiver.getCapabilities) {
+      const capabilities = RTCRtpReceiver.getCapabilities('video');
+      if (capabilities && capabilities.codecs) {
+        const h264Codecs = capabilities.codecs.filter(c => c.mimeType.toLowerCase() === 'video/h264');
+        const otherCodecs = capabilities.codecs.filter(c => c.mimeType.toLowerCase() !== 'video/h264');
+        if (h264Codecs.length > 0) {
+          videoTransceiver.setCodecPreferences([...h264Codecs, ...otherCodecs]);
+        }
+      }
+    }
+  } catch (e) {}
+
+  screenViewerPeer.ontrack = (event) => {
     streamPlayer.srcObject = event.streams[0];
     streamPlayer.muted = false;
     streamPlayer.volume = 1.0;
@@ -1508,16 +2058,26 @@ async function handleScreenOffer(senderSocketId, sdp) {
     }
   };
 
-  screenPeerConnection.onicecandidate = (event) => {
-    if (event.candidate) {
+  screenViewerPeer.onicecandidate = (event) => {
+    if (event.candidate && socket) {
       socket.emit('webrtc-ice', { target: senderSocketId, candidate: event.candidate });
     }
   };
 
-  await screenPeerConnection.setRemoteDescription(new RTCSessionDescription(sdp));
-  const answer = await screenPeerConnection.createAnswer();
-  await screenPeerConnection.setLocalDescription(answer);
-  socket.emit('webrtc-answer', { target: senderSocketId, sdp: answer });
+  try {
+    await screenViewerPeer.setRemoteDescription(new RTCSessionDescription(sdp));
+    // Növbədə gözləyən ICE namizədlərini dərhal əlaqəyə tətbiq et
+    for (const cand of screenViewerIceQueue) {
+      try { await screenViewerPeer.addIceCandidate(new RTCIceCandidate(cand)); } catch (e) {}
+    }
+    screenViewerIceQueue = [];
+
+    const answer = await screenViewerPeer.createAnswer();
+    await screenViewerPeer.setLocalDescription(answer);
+    socket.emit('webrtc-answer', { target: senderSocketId, sdp: answer });
+  } catch (err) {
+    console.error('handleScreenOffer error:', err);
+  }
 }
 
 if (btnUnmuteOverlay) {
@@ -1535,214 +2095,644 @@ if (btnUnmuteOverlay) {
 // ==========================================
 
 function setupVoiceChat() {
-  btnVoiceToggle.addEventListener('click', async () => {
+  const toggleHandler = async () => {
     if (!isVoiceActive) {
       await startVoiceChat();
     } else {
       stopVoiceChat();
     }
-  });
+  };
+
+  if (btnVoiceToggle) {
+    btnVoiceToggle.addEventListener('click', toggleHandler);
+  }
+  const btnVoiceSidebar = document.getElementById('btn-voice-chat-sidebar');
+  if (btnVoiceSidebar) {
+    btnVoiceSidebar.addEventListener('click', toggleHandler);
+  }
+  setupAudioModeToggle();
+}
+
+let isHeadphoneMode = true; // Susmaya görə: Qulaqlıq Rejimi (Kino səsi 100% təmiz qalır, heç bir boğulma olmur)
+
+function setupAudioModeToggle() {
+  const btnMode = document.getElementById('btn-audio-mode');
+  if (btnMode) {
+    btnMode.addEventListener('click', async () => {
+      isHeadphoneMode = !isHeadphoneMode;
+      updateAudioModeUI();
+      if (isVoiceActive) {
+        showNotice(isHeadphoneMode ? '🎧 Qulaqlıq Rejimi: Video səsi 100% təmizdir' : '🔊 Dinamik Rejimi: Əks-səda filtri aktivdir');
+        await startVoiceChat();
+      } else {
+        showNotice(isHeadphoneMode ? '🎧 Rejim: Qulaqlıq seçildi (Kino səsi təmiz)' : '🔊 Rejim: Dinamik seçildi (Əks-səda filtri)');
+      }
+    });
+  }
+  updateAudioModeUI();
+}
+
+function updateAudioModeUI() {
+  const icon = document.getElementById('audio-mode-icon');
+  const txt = document.getElementById('audio-mode-text');
+  const btn = document.getElementById('btn-audio-mode');
+  if (icon && txt) {
+    if (isHeadphoneMode) {
+      icon.textContent = '🎧';
+      txt.textContent = 'Qulaqlıq';
+      if (btn) btn.title = 'Qulaqlıq Rejimi: Film səsi 100% təmiz qalır (Boğulma olmur). Dinamik üçün toxunun.';
+    } else {
+      icon.textContent = '🔊';
+      txt.textContent = 'Dinamik';
+      if (btn) btn.title = 'Dinamik Rejimi: Əks-səda əleyhinə filtr aktivdir. Qulaqlıq üçün toxunun.';
+    }
+  }
+}
+
+let voiceCaptureContext = null;
+let voiceCaptureProcessor = null;
+let voiceCaptureSource = null;
+let audioPlaybackContext = null;
+const scheduledPlayTimes = {}; // Hər danışan üçün fərdi jitter vaxtı
+const speakerTimeouts = {};
+
+function getPlaybackContext() {
+  if (!audioPlaybackContext) {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (AudioCtx) {
+      audioPlaybackContext = new AudioCtx();
+    }
+  }
+  if (audioPlaybackContext && audioPlaybackContext.state === 'suspended') {
+    audioPlaybackContext.resume().catch(() => {});
+  }
+  return audioPlaybackContext;
+}
+
+function handleIncomingVoiceChunk(senderId, username, arrayBuffer) {
+  if (!arrayBuffer || (socket && senderId === socket.id)) return;
+  const ctx = getPlaybackContext();
+  if (!ctx) return;
+
+  try {
+    const int16 = new Int16Array(arrayBuffer);
+    const float32 = new Float32Array(int16.length);
+    for (let i = 0; i < int16.length; i++) {
+      float32[i] = int16[i] / 32767.0;
+    }
+
+    // 24kHz PCM buferi - Web Audio API bunu arxa planda təmiz şəkildə sistemin 48kHz çıxışına upsample edir
+    const audioBuffer = ctx.createBuffer(1, float32.length, 24000);
+    audioBuffer.copyToChannel(float32, 0);
+
+    const source = ctx.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(ctx.destination);
+
+    const now = ctx.currentTime;
+    let playAt = scheduledPlayTimes[senderId] || 0;
+
+    // Adaptiv Jitter Buferi (70ms başlanğıc buferi - şəbəkə dalğalanmalarını tam udur, səsdə qırılma və ilişmə olmur)
+    if (playAt < now || playAt > now + 0.350) {
+      playAt = now + 0.070;
+    }
+
+    source.start(playAt);
+    scheduledPlayTimes[senderId] = playAt + audioBuffer.duration;
+
+    // Discord Səs Haləsi (Qarşı tərəf danışanda dərhal yaşıl yanır)
+    updateSpeakingVisual(senderId, true);
+    clearTimeout(speakerTimeouts[senderId]);
+    speakerTimeouts[senderId] = setTimeout(() => {
+      updateSpeakingVisual(senderId, false);
+    }, 400);
+  } catch (err) {
+    console.warn('[Voice Engine] Playback chunk error:', err);
+  }
+}
+
+function startAudioChunkCapture(stream) {
+  stopAudioChunkCapture();
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    voiceCaptureContext = new AudioCtx();
+    if (voiceCaptureContext.state === 'suspended') {
+      voiceCaptureContext.resume().catch(() => {});
+    }
+
+    voiceCaptureSource = voiceCaptureContext.createMediaStreamSource(stream);
+    const nativeRate = voiceCaptureContext.sampleRate || 48000;
+    const downsampleStep = nativeRate / 24000;
+    const bufferSize = nativeRate >= 44100 ? 4096 : 2048;
+    voiceCaptureProcessor = voiceCaptureContext.createScriptProcessor(bufferSize, 1, 1);
+
+    let silenceCount = 0;
+    let isSpeakingState = false;
+    let isGateOpen = false;
+    let preRollBuffer = []; // Cümlənin başlanğıcının kəsilməməsi üçün 5 paketlik (~425ms) dairəvi bufer
+
+    voiceCaptureProcessor.onaudioprocess = (e) => {
+      if (!isVoiceActive) return;
+      const input = e.inputBuffer.getChannelData(0);
+
+      // RMS səs səviyyəsi hesabla
+      let sum = 0;
+      for (let i = 0; i < input.length; i++) {
+        sum += input[i] * input[i];
+      }
+      const rms = Math.sqrt(sum / input.length);
+      // Həssas danışıq həddi (pıçıltı və yumşaq samitləri dərhal tutur)
+      const isVoice = rms > 0.005;
+
+      // 24kHz PCM-ə çevir
+      const outLen = Math.floor(input.length / downsampleStep);
+      const int16 = new Int16Array(outLen);
+      for (let i = 0; i < outLen; i++) {
+        const sample = input[Math.floor(i * downsampleStep)];
+        int16[i] = Math.max(-32768, Math.min(32767, Math.floor(sample * 32767)));
+      }
+      const chunkBuffer = int16.buffer;
+
+      if (isVoice) {
+        silenceCount = 0;
+        if (!isGateOpen) {
+          isGateOpen = true;
+          // CÜMLƏNİN ƏVVƏLİ: Pre-roll buferdəki bütün əvvəlki paketləri dərhal göndər!
+          // Beləliklə, cümlənin ilk hecası/sözü zərrə qədər də kəsilmir!
+          if (socket && preRollBuffer.length > 0) {
+            preRollBuffer.forEach(prev => {
+              socket.emit('voice-chunk', prev);
+            });
+            preRollBuffer = [];
+          }
+        }
+        if (!isSpeakingState) {
+          isSpeakingState = true;
+          updateSpeakingVisual(socket ? socket.id : null, true);
+          if (socket) socket.emit('user-speaking', { isSpeaking: true });
+        }
+      } else {
+        silenceCount++;
+        // CÜMLƏNİN SONU: 15 paketlik (~1.3 saniyə) geniş bufer.
+        // Tənəffüs və cümlə sonundakı səslər qətiyyən kəsilmir!
+        if (silenceCount > 15) {
+          if (isGateOpen) isGateOpen = false;
+          if (isSpeakingState) {
+            isSpeakingState = false;
+            updateSpeakingVisual(socket ? socket.id : null, false);
+            if (socket) socket.emit('user-speaking', { isSpeaking: false });
+          }
+        }
+      }
+
+      if (isGateOpen || silenceCount <= 15) {
+        if (socket) {
+          socket.emit('voice-chunk', chunkBuffer);
+        }
+      } else {
+        // Sükut zamanı ən son 5 paketi (~425ms) pre-roll üçün yaddaşda saxla
+        preRollBuffer.push(chunkBuffer);
+        if (preRollBuffer.length > 5) {
+          preRollBuffer.shift();
+        }
+      }
+    };
+
+    const muteNode = voiceCaptureContext.createGain();
+    muteNode.gain.value = 0;
+
+    voiceCaptureSource.connect(voiceCaptureProcessor);
+    voiceCaptureProcessor.connect(muteNode);
+    muteNode.connect(voiceCaptureContext.destination);
+
+  } catch (err) {
+    console.warn('[Voice Engine] Capture setup error:', err);
+  }
+}
+
+function stopAudioChunkCapture() {
+  if (voiceCaptureProcessor) {
+    try { voiceCaptureProcessor.disconnect(); } catch (e) {}
+    voiceCaptureProcessor = null;
+  }
+  if (voiceCaptureSource) {
+    try { voiceCaptureSource.disconnect(); } catch (e) {}
+    voiceCaptureSource = null;
+  }
+  if (voiceCaptureContext) {
+    try { voiceCaptureContext.close(); } catch (e) {}
+    voiceCaptureContext = null;
+  }
 }
 
 async function startVoiceChat() {
   try {
+    // Əgər artıq mikrofon axını varsa, təmiz bağla
+    if (localVoiceStream) {
+      localVoiceStream.getTracks().forEach(t => t.stop());
+      localVoiceStream = null;
+    }
+
+    // Qulaqlıq rejimində: echoCancellation=false, noiseSuppression=false
+    // Bu zaman Windows heç vaxt videonun səsini boğmur və kəsmir, 100% təmiz stereo saxlayır!
+    const audioConstraints = isHeadphoneMode ? {
+      echoCancellation: false,
+      noiseSuppression: false,
+      autoGainControl: false,
+      channelCount: 1
+    } : {
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: false,
+      channelCount: 1
+    };
+
     localVoiceStream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: true
-      },
+      audio: audioConstraints,
       video: false
     });
+
     isVoiceActive = true;
-    btnVoiceToggle.classList.add('active');
-    btnVoiceToggle.querySelector('.mic-text').textContent = 'Səs: Açıq 🟢';
-    showNotice('🎙️ Mikrofon aktivdir! Canlı danışa bilərsiniz.');
+    updateVoiceUI(true);
+    showNotice(isHeadphoneMode ? '🎙️ Səsli danışıq aktivdir! (Qulaqlıq rejimi: Film səsi 100% təmizdir)' : '🎙️ Səsli danışıq aktivdir! (Dinamik rejimi)');
 
-    // Audio Ducking Aktiv Et
-    setupAudioDucking(localVoiceStream);
+    // Səs oxutma sistemini aç
+    const pCtx = getPlaybackContext();
+    if (pCtx && pCtx.state === 'suspended') {
+      pCtx.resume().catch(() => {});
+    }
 
-    Object.values(voicePeerConnections).forEach(pc => {
-      localVoiceStream.getTracks().forEach(track => {
-        pc.addTrack(track, localVoiceStream);
-      });
-    });
+    // 100% Zəmanətli Pre-Roll & Hangover Canlı Audio Capturer-i işə sal
+    startAudioChunkCapture(localVoiceStream);
 
-    socket.emit('voice-peer-ready');
+    if (socket) {
+      socket.emit('voice-user-state', { isVoiceActive: true });
+    }
+
   } catch (err) {
     console.error('Mikrofon xətası:', err);
-    alert('Mikrofon icazəsi verilmədi! Brauzerinizin parametrlərindən mikrofonu aktivləşdirin.');
+    alert('Mikrofon icazəsi verilmədi! Zəhmət olmasa brauzerinizin parametrlərindən mikrofona icazə verin.');
   }
 }
 
 function stopVoiceChat() {
+  stopAudioChunkCapture();
+
   if (localVoiceStream) {
-    localVoiceStream.getTracks().forEach(track => track.stop());
+    localVoiceStream.getTracks().forEach(track => {
+      track.stop();
+    });
     localVoiceStream = null;
   }
   isVoiceActive = false;
-  if (isSelfSpeaking) {
-    isSelfSpeaking = false;
-    setSelfSpeakingHalo(false);
-    if (socket) socket.emit('user-speaking', { isSpeaking: false });
+  updateVoiceUI(false);
+
+  if (socket) {
+    socket.emit('voice-user-state', { isVoiceActive: false });
+    socket.emit('user-speaking', { isSpeaking: false });
   }
-  btnVoiceToggle.classList.remove('active');
-  btnVoiceToggle.querySelector('.mic-text').textContent = 'Səsli Zəng: Qoşul';
-
-  stopAudioDucking();
-
-  Object.values(voicePeerConnections).forEach(pc => pc.close());
-  for (let key in voicePeerConnections) delete voicePeerConnections[key];
-
-  socket.emit('voice-peer-left');
+  updateSpeakingVisual(socket ? socket.id : null, false);
   showNotice('🎙️ Mikrofon bağlandı');
 }
 
-function setSelfSpeakingHalo(speaking) {
-  if (!socket) return;
-  const selfPill = document.getElementById(`user-pill-${socket.id}`);
-  if (selfPill) {
-    if (speaking) {
-      selfPill.classList.add('speaking-halo');
+
+function updateVoiceUI(active) {
+  if (btnVoiceToggle) {
+    const micText = btnVoiceToggle.querySelector('.mic-text');
+    if (active) {
+      btnVoiceToggle.classList.add('voice-active');
+      if (micText) micText.textContent = 'Səs Açıq 🟢';
     } else {
-      selfPill.classList.remove('speaking-halo');
+      btnVoiceToggle.classList.remove('voice-active');
+      if (micText) micText.textContent = 'Səsli Zəng';
+    }
+  }
+  const btnVoiceSidebar = document.getElementById('btn-voice-chat-sidebar');
+  if (btnVoiceSidebar) {
+    const micText = btnVoiceSidebar.querySelector('.mic-text');
+    if (active) {
+      btnVoiceSidebar.classList.add('voice-active');
+      if (micText) micText.textContent = 'Səs Açıq 🟢';
+    } else {
+      btnVoiceSidebar.classList.remove('voice-active');
+      if (micText) micText.textContent = 'Səsli Zəng';
     }
   }
 }
 
-// Audio Ducking: Danışanda filmin səsini 30%-ə salır, susanda 100%-ə qaldırır
-function setupAudioDucking(stream) {
+async function callVoicePeer(peerId) {
+  if (!socket || !peerId || peerId === socket.id) return;
+  console.log(`[WebRTC Voice] Zəng göndərilir -> ${peerId}`);
+
+  if (voicePeerConnections[peerId]) {
+    try { voicePeerConnections[peerId].close(); } catch (e) {}
+    delete voicePeerConnections[peerId];
+  }
+
+  const pc = new RTCPeerConnection(rtcConfig);
+  voicePeerConnections[peerId] = pc;
+
+  // Real mikrofon səsini əlaqəyə qoş
+  if (localVoiceStream && localVoiceStream.getAudioTracks().length > 0) {
+    localVoiceStream.getAudioTracks().forEach(track => {
+      try { pc.addTrack(track, localVoiceStream); } catch (e) {}
+    });
+  }
+
+  // Qarşı tərəfdən gələn səs axını
+  pc.ontrack = (event) => {
+    console.log(`[WebRTC Voice] Səs axını qəbul edildi (${peerId}):`, event.track);
+    const stream = (event.streams && event.streams[0]) ? event.streams[0] : new MediaStream([event.track]);
+    playRemoteVoice(stream, peerId, event.track);
+  };
+
+  pc.onicecandidate = (event) => {
+    if (event.candidate && socket) {
+      socket.emit('voice-ice', { target: peerId, candidate: event.candidate });
+    }
+  };
+
+  pc.oniceconnectionstatechange = () => {
+    console.log(`[WebRTC Voice] ICE Vəziyyəti (${peerId}): ${pc.iceConnectionState}`);
+    if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
+      unlockAllRemoteAudios();
+    }
+  };
+
   try {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const source = audioContext.createMediaStreamSource(stream);
-    analyserNode = audioContext.createAnalyser();
-    analyserNode.fftSize = 256;
-    source.connect(analyserNode);
+    const offer = await pc.createOffer({ offerToReceiveAudio: true });
+    await pc.setLocalDescription(offer);
+    socket.emit('voice-offer', { target: peerId, sdp: offer });
+  } catch (err) {
+    console.error(`[WebRTC Voice] Təklif yaratma xətası (${peerId}):`, err);
+  }
+}
 
-    const dataArray = new Uint8Array(analyserNode.frequencyBinCount);
+async function handleVoiceOffer(senderId, sdp) {
+  if (!senderId || !sdp || !socket) return;
+  console.log(`[WebRTC Voice] Səs təklifi qəbul edildi <- ${senderId}`);
 
-    if (duckingTimer) clearInterval(duckingTimer);
-    duckingTimer = setInterval(() => {
-      if (!isVoiceActive || !analyserNode) return;
-      analyserNode.getByteFrequencyData(dataArray);
+  let pc = voicePeerConnections[senderId];
+  if (!pc || pc.signalingState === 'closed') {
+    pc = new RTCPeerConnection(rtcConfig);
+    voicePeerConnections[senderId] = pc;
+  }
 
+  // Əgər bizim də mikrofonumuz aktivdirsə, öz səsimizi də cavaba əlavə et
+  if (localVoiceStream && isVoiceActive && localVoiceStream.getAudioTracks().length > 0) {
+    const senders = pc.getSenders();
+    if (!senders || senders.length === 0) {
+      localVoiceStream.getAudioTracks().forEach(track => {
+        try { pc.addTrack(track, localVoiceStream); } catch (e) {}
+      });
+    }
+  }
+
+  pc.ontrack = (event) => {
+    console.log(`[WebRTC Voice] Səs axını qəbul edildi (${senderId}):`, event.track);
+    const stream = (event.streams && event.streams[0]) ? event.streams[0] : new MediaStream([event.track]);
+    playRemoteVoice(stream, senderId, event.track);
+  };
+
+  pc.onicecandidate = (event) => {
+    if (event.candidate && socket) {
+      socket.emit('voice-ice', { target: senderId, candidate: event.candidate });
+    }
+  };
+
+  pc.oniceconnectionstatechange = () => {
+    if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
+      unlockAllRemoteAudios();
+    }
+  };
+
+  try {
+    await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+    drainIceCandidates(senderId, pc);
+
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    socket.emit('voice-answer', { target: senderId, sdp: answer });
+  } catch (err) {
+    console.error(`[WebRTC Voice] handleVoiceOffer xətası (${senderId}):`, err);
+  }
+}
+
+async function handleVoiceAnswer(senderId, sdp) {
+  if (!senderId || !sdp) return;
+  console.log(`[WebRTC Voice] Səs cavabı qəbul edildi <- ${senderId}`);
+  const pc = voicePeerConnections[senderId];
+  if (!pc) return;
+
+  try {
+    await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+    drainIceCandidates(senderId, pc);
+  } catch (err) {
+    console.error(`[WebRTC Voice] handleVoiceAnswer xətası (${senderId}):`, err);
+  }
+}
+
+async function handleVoiceIceCandidate(senderId, candidate) {
+  if (!candidate) return;
+  const pc = voicePeerConnections[senderId];
+  if (pc && pc.remoteDescription && pc.remoteDescription.type) {
+    try {
+      await pc.addIceCandidate(new RTCIceCandidate(candidate));
+    } catch (e) {
+      console.warn(`[WebRTC Voice] addIceCandidate xətası (${senderId}):`, e);
+    }
+  } else {
+    if (!voiceIceCandidatesQueue[senderId]) voiceIceCandidatesQueue[senderId] = [];
+    voiceIceCandidatesQueue[senderId].push(candidate);
+  }
+}
+
+async function drainIceCandidates(peerId, pc) {
+  if (!voiceIceCandidatesQueue[peerId]) return;
+  const queue = voiceIceCandidatesQueue[peerId];
+  delete voiceIceCandidatesQueue[peerId];
+  for (const cand of queue) {
+    try {
+      await pc.addIceCandidate(new RTCIceCandidate(cand));
+    } catch (e) {
+      console.warn(`[WebRTC Voice] Növbədəki ICE namizədi xətası (${peerId}):`, e);
+    }
+  }
+}
+
+function playRemoteVoice(stream, peerId, track) {
+  // Səs axını 100% zəmanətli şəkildə WebSocket PCM Relay (voice-chunk) ilə ötürülür və Web Audio ilə oxunur.
+  // Burada əlavə <audio> elementi yaradılmır ki, Windows brauzerə "VoIP zəng" rejimi tətbiq edib videonun səsini boğmasın!
+}
+
+function cleanupVoicePeer(peerId) {
+  if (voicePeerConnections[peerId]) {
+    try { voicePeerConnections[peerId].close(); } catch (e) {}
+    delete voicePeerConnections[peerId];
+  }
+  delete voiceIceCandidatesQueue[peerId];
+  delete pcMakingOffer[peerId];
+
+  const audioEl = document.getElementById(`remote-voice-audio-${peerId}`);
+  if (audioEl) {
+    audioEl.srcObject = null;
+    audioEl.remove();
+  }
+  updateSpeakingVisual(peerId, false);
+}
+
+// ------------------------------------------
+// Real Vaxt Səs Fəallığı və Discord Haləsi (VAD)
+// ------------------------------------------
+function startLocalSpeakingDetection(stream) {
+  stopLocalSpeakingDetection();
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    vadAudioContext = new AudioCtx();
+    if (vadAudioContext.state === 'suspended') {
+      vadAudioContext.resume().catch(() => {});
+    }
+
+    const source = vadAudioContext.createMediaStreamSource(stream);
+    const analyser = vadAudioContext.createAnalyser();
+    analyser.fftSize = 256;
+    analyser.smoothingTimeConstant = 0.3;
+    source.connect(analyser); // Dinləyiciyə qoşulmur (əks-səda olmur)
+
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    let silenceCounter = 0;
+
+    vadInterval = setInterval(() => {
+      if (!isVoiceActive || !localVoiceStream) {
+        stopLocalSpeakingDetection();
+        return;
+      }
+      analyser.getByteFrequencyData(dataArray);
       let sum = 0;
-      for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
-      let avg = sum / dataArray.length;
+      for (let i = 0; i < bufferLength; i++) {
+        sum += dataArray[i];
+      }
+      const avg = sum / bufferLength;
+      const isVoiceDetected = avg > 14;
 
-      if (avg > 16) {
-        if (!isSelfSpeaking) {
-          isSelfSpeaking = true;
-          setSelfSpeakingHalo(true);
+      if (isVoiceDetected) {
+        silenceCounter = 0;
+        if (!isSpeakingLocally) {
+          isSpeakingLocally = true;
+          updateSpeakingVisual(socket.id, true);
           if (socket) socket.emit('user-speaking', { isSpeaking: true });
         }
-        if (!isDucked) {
-          isDucked = true;
-          applyDuckingVolume(true);
-          if (duckingBadge) duckingBadge.classList.add('ducking-active');
-        }
       } else {
-        if (isSelfSpeaking) {
-          isSelfSpeaking = false;
-          setSelfSpeakingHalo(false);
-          if (socket) socket.emit('user-speaking', { isSpeaking: false });
-        }
-        if (isDucked) {
-          isDucked = false;
-          applyDuckingVolume(false);
-          if (duckingBadge) duckingBadge.classList.remove('ducking-active');
+        silenceCounter++;
+        if (silenceCounter > 4) {
+          if (isSpeakingLocally) {
+            isSpeakingLocally = false;
+            updateSpeakingVisual(socket.id, false);
+            if (socket) socket.emit('user-speaking', { isSpeaking: false });
+          }
         }
       }
-    }, 180);
+    }, 100);
   } catch (err) {
-    console.warn('Audio Ducking işə düşmədi:', err);
+    console.warn('[WebRTC Voice] VAD inisializasiya xətası:', err);
   }
 }
 
-function stopAudioDucking() {
-  if (duckingTimer) clearInterval(duckingTimer);
-  if (audioContext) {
-    audioContext.close().catch(() => {});
-    audioContext = null;
+function stopLocalSpeakingDetection() {
+  if (vadInterval) {
+    clearInterval(vadInterval);
+    vadInterval = null;
   }
-  applyDuckingVolume(false);
-  if (duckingBadge) duckingBadge.classList.remove('ducking-active');
-}
-
-function applyDuckingVolume(duck) {
-  const targetVol = duck ? 0.35 : 1.0;
-  const ytVol = duck ? 35 : 100;
-
-  if (streamPlayer) streamPlayer.volume = targetVol;
-  if (directPlayer) directPlayer.volume = targetVol;
-  if (ytPlayer && ytPlayer.setVolume) ytPlayer.setVolume(ytVol);
-}
-
-async function callVoicePeer(targetSocketId) {
-  if (voicePeerConnections[targetSocketId]) voicePeerConnections[targetSocketId].close();
-
-  const pc = new RTCPeerConnection(rtcConfig);
-  voicePeerConnections[targetSocketId] = pc;
-
-  if (localVoiceStream) {
-    localVoiceStream.getTracks().forEach(track => pc.addTrack(track, localVoiceStream));
-  } else {
-    pc.addTransceiver('audio', { direction: 'recvonly' });
+  if (vadAudioContext) {
+    try { vadAudioContext.close(); } catch (e) {}
+    vadAudioContext = null;
   }
-
-  pc.ontrack = (event) => playRemoteVoice(event.streams[0]);
-
-  pc.onicecandidate = (event) => {
-    if (event.candidate) {
-      socket.emit('voice-ice', { target: targetSocketId, candidate: event.candidate });
+  if (isSpeakingLocally) {
+    isSpeakingLocally = false;
+    if (socket) {
+      updateSpeakingVisual(socket.id, false);
+      socket.emit('user-speaking', { isSpeaking: false });
     }
-  };
-
-  const offer = await pc.createOffer();
-  await pc.setLocalDescription(offer);
-  socket.emit('voice-offer', { target: targetSocketId, sdp: offer });
+  }
 }
 
-async function handleVoiceOffer(senderSocketId, sdp) {
-  if (voicePeerConnections[senderSocketId]) voicePeerConnections[senderSocketId].close();
-
-  const pc = new RTCPeerConnection(rtcConfig);
-  voicePeerConnections[senderSocketId] = pc;
-
-  if (localVoiceStream) {
-    localVoiceStream.getTracks().forEach(track => pc.addTrack(track, localVoiceStream));
-  } else {
-    pc.addTransceiver('audio', { direction: 'recvonly' });
+function updateSpeakingVisual(sockId, isSpeaking) {
+  if (!sockId) return;
+  // 1. Başlıqdakı pill
+  const pill = document.getElementById(`user-pill-${sockId}`);
+  if (pill) {
+    if (isSpeaking) pill.classList.add('speaking-halo');
+    else pill.classList.remove('speaking-halo');
   }
-
-  pc.ontrack = (event) => playRemoteVoice(event.streams[0]);
-
-  pc.onicecandidate = (event) => {
-    if (event.candidate) {
-      socket.emit('voice-ice', { target: senderSocketId, candidate: event.candidate });
-    }
-  };
-
-  await pc.setRemoteDescription(new RTCSessionDescription(sdp));
-  const answer = await pc.createAnswer();
-  await pc.setLocalDescription(answer);
-  socket.emit('voice-answer', { target: senderSocketId, sdp: answer });
+  // 2. Sağ paneldəki kart
+  const card = document.getElementById(`participant-item-${sockId}`);
+  if (card) {
+    if (isSpeaking) card.classList.add('speaking');
+    else card.classList.remove('speaking');
+  }
 }
 
-function playRemoteVoice(stream) {
-  let audioEl = document.getElementById('remote-voice-audio');
-  if (!audioEl) {
-    audioEl = document.createElement('audio');
-    audioEl.id = 'remote-voice-audio';
-    audioEl.autoplay = true;
-    audioEl.playsInline = true;
-    document.body.appendChild(audioEl);
+function getPeerUsername(peerId) {
+  if (currentRoomUsers && currentRoomUsers[peerId] && currentRoomUsers[peerId].username) {
+    return currentRoomUsers[peerId].username;
   }
-  audioEl.srcObject = stream;
-  audioEl.muted = false;
-  audioEl.volume = 1.0;
-  audioEl.play().catch(() => {});
-  showNotice('💖 Canlı səsli danışıq qoşuldu!');
+  return 'İştirakçı';
+}
+
+// Bütün pleyer və səs kilidlərini istifadəçi kliklədikdə dərhal aç
+function unlockAllRemoteAudios() {
+  document.querySelectorAll('audio[id^="remote-voice-audio-"]').forEach(el => {
+    if (el.paused) el.play().catch(() => {});
+  });
+  if (audioPlaybackContext && audioPlaybackContext.state === 'suspended') {
+    audioPlaybackContext.resume().catch(() => {});
+  }
+  if (vadAudioContext && vadAudioContext.state === 'suspended') {
+    vadAudioContext.resume().catch(() => {});
+  }
+  hideAudioUnlockBanner();
+}
+document.addEventListener('click', unlockAllRemoteAudios, { passive: true });
+document.addEventListener('touchstart', unlockAllRemoteAudios, { passive: true });
+
+function showAudioUnlockBanner() {
+  let banner = document.getElementById('voice-unlock-banner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'voice-unlock-banner';
+    banner.className = 'voice-unlock-banner';
+    banner.innerHTML = `
+      <span>🔊 Canlı səsə qulaq asmaq üçün toxunun</span>
+      <button id="btn-unlock-voice" style="background:#fff;color:#064e3b;border:none;padding:6px 14px;border-radius:99px;font-weight:700;cursor:pointer;">Səsi Aç 📢</button>
+    `;
+    banner.onclick = () => {
+      unlockAllRemoteAudios();
+      banner.classList.add('hidden');
+    };
+    document.body.appendChild(banner);
+  }
+  banner.classList.remove('hidden');
+}
+
+function hideAudioUnlockBanner() {
+  const banner = document.getElementById('voice-unlock-banner');
+  if (banner) banner.classList.add('hidden');
+}
+
+function getThemeName(theme) {
+  const map = {
+    'theme-netflix': '🎬 Cinema Premier (Netflix)',
+    'theme-batman': '🦇 The Dark Knight (Gotham)',
+    'theme-interstellar': '🌌 Interstellar (Gargantua)',
+    'theme-matrix': '🕶️ The Matrix (Cyber Terminal)',
+    'theme-breaking-bad': '🧪 Breaking Bad (Heisenberg)',
+    'theme-got': '❄️ Winterfell (Game of Thrones)',
+    'theme-spiderman': '🕷️ Marvel MCU (Stark Tech)'
+  };
+  return map[theme] || theme;
 }
 
 // ==========================================
@@ -2298,8 +3288,20 @@ function setupAuth() {
   try {
     const savedUserStr = localStorage.getItem('watchparty_user');
     if (savedUserStr) {
-      currentUser = JSON.parse(savedUserStr);
-      updateUserUI();
+      const parsed = JSON.parse(savedUserStr);
+      // Köhnə sınaqdan qalmış şəxsi məlumatlar varsa dərhal yaddaşdan təmizlə
+      if (parsed && (
+        parsed.username === 'Vali Alashrafov' ||
+        parsed.username === 'Vali' ||
+        parsed.email === 'alialashrafov0708@gmail.com' ||
+        parsed.email === 'valialashrafov60@gmail.com'
+      )) {
+        localStorage.removeItem('watchparty_user');
+        currentUser = null;
+      } else {
+        currentUser = parsed;
+        updateUserUI();
+      }
     }
   } catch (e) {
     console.error('Yadda saxlanılan istifadəçi oxuna bilmədi:', e);
@@ -2320,7 +3322,7 @@ function setupAuth() {
   if (btnLogout) {
     btnLogout.addEventListener('click', (e) => {
       e.stopPropagation();
-      logoutUser();
+      leaveRoomAndReturnToLobby();
     });
   }
 
@@ -2375,55 +3377,24 @@ function setupAuth() {
     });
   }
 
-  // 3. Chess.com Stilli "Continue with Google" Düyməsi (Modal daxilində)
-  const btnChessGoogle = document.getElementById('btn-chess-google');
-  if (btnChessGoogle) {
-    btnChessGoogle.addEventListener('click', () => {
-      if (window.google && window.google.accounts && window.google.accounts.id) {
-        try {
-          window.google.accounts.id.prompt();
-        } catch (e) {}
-      }
-      const chooser = document.getElementById('google-account-chooser');
-      if (chooser) {
-        chooser.scrollIntoView({ behavior: 'smooth' });
-      }
-    });
-  }
-
-  // 4. Google Hesab Seçimi Kartları (Şəkildəki Vali Alashrafov və s. 1-kliklə daxil olmaq)
-  const userTiles = document.querySelectorAll('.google-user-tile:not(#tile-custom-google)');
-  userTiles.forEach(tile => {
-    tile.addEventListener('click', async () => {
-      const email = tile.getAttribute('data-email');
-      const name = tile.getAttribute('data-name');
-      await executeGoogleLogin(email, name);
-    });
-  });
-
-  // 5. Başqa Google hesabı daxil etmə forması
-  const tileCustom = document.getElementById('tile-custom-google');
-  const formCustom = document.getElementById('form-custom-google');
-  const customEmailInput = document.getElementById('custom-google-email');
-  if (tileCustom && formCustom) {
-    tileCustom.addEventListener('click', () => {
-      formCustom.classList.toggle('hidden');
-      if (!formCustom.classList.contains('hidden') && customEmailInput) {
-        customEmailInput.focus();
-      }
-    });
-  }
-  if (formCustom) {
-    formCustom.addEventListener('submit', async (e) => {
+  // 3. Google Formu ilə Birbaşa Giriş
+  const formGoogleDirect = document.getElementById('form-google-direct-auth');
+  if (formGoogleDirect) {
+    formGoogleDirect.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = customEmailInput.value.trim();
-      if (!email) return;
-      const name = email.split('@')[0];
+      const nameInput = document.getElementById('google-login-name');
+      const emailInput = document.getElementById('google-login-email');
+      const name = nameInput ? nameInput.value.trim() : '';
+      const email = emailInput ? emailInput.value.trim() : '';
+      if (!name || !email) {
+        showAuthStatus('Zəhmət olmasa adınızı və e-poçt ünvanınızı daxil edin.', 'error');
+        return;
+      }
       await executeGoogleLogin(email, name);
     });
   }
 
-  // 6. Rəsmi Google GIS SDK-nı inisializasiya et
+  // 4. Rəsmi Google GIS SDK-nı inisializasiya et
   initGoogleAuth();
 }
 
@@ -2444,11 +3415,13 @@ async function executeGoogleLogin(email, name, credential) {
       showAuthStatus(data.error || 'Google girişi uğursuz oldu', 'error');
     }
   } catch (err) {
-    // Şəbəkə / API gecikməsi olsa belə, 1 kliklə yerli sessiya aç
+    // API/Server əlçatan olmadıqda belə, istifadəçinin öz daxil etdiyi məlumatla təhlükəsiz sessiya aç
+    const cleanEmail = email ? email.toLowerCase().trim() : 'user@gmail.com';
+    const cleanName = name || cleanEmail.split('@')[0] || 'Google İstifadəçisi';
     const fallbackUser = {
       id: 'g_' + Date.now(),
-      username: name || (email ? email.split('@')[0] : 'Vali Alashrafov'),
-      email: email || 'alialashrafov0708@gmail.com',
+      username: cleanName,
+      email: cleanEmail,
       avatar: '🍿',
       isGoogle: true
     };
@@ -2596,7 +3569,9 @@ function updateUserUI() {
       if (currentUser.username) {
         const parts = currentUser.username.trim().split(/\s+/);
         const initials = parts.map(p => p[0]).join('').substring(0, 2).toUpperCase();
-        dropdownAvatarCircle.textContent = initials || 'VA';
+        dropdownAvatarCircle.textContent = initials || '👤';
+      } else {
+        dropdownAvatarCircle.textContent = '👤';
       }
     }
 
@@ -2651,6 +3626,8 @@ function clearAuthStatus() {
 // ==========================================
 
 function setupRoomLock() {
+  setupRoomToolsDropdown();
+
   if (!btnLockRoom) return;
   btnLockRoom.addEventListener('click', () => {
     if (!socket) return;
@@ -2660,6 +3637,31 @@ function setupRoomLock() {
     }
     socket.emit('toggle-room-lock');
   });
+}
+
+function setupRoomToolsDropdown() {
+  const btnToggle = document.getElementById('btn-room-tools-toggle');
+  const dropdown = document.getElementById('room-tools-dropdown');
+  if (btnToggle && dropdown) {
+    btnToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle('hidden');
+    });
+
+    dropdown.querySelectorAll('.tool-dropdown-row').forEach(btn => {
+      btn.addEventListener('click', () => {
+        dropdown.classList.add('hidden');
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!dropdown.classList.contains('hidden')) {
+        if (!dropdown.contains(e.target) && !btnToggle.contains(e.target)) {
+          dropdown.classList.add('hidden');
+        }
+      }
+    });
+  }
 }
 
 function updateRoomLockUI(locked) {
@@ -2755,21 +3757,34 @@ function setupMovieReview() {
 // 14. XÜSUSİYYƏT 4: İŞIQLARI SÖNDÜR (CINEMA LIGHTS DIMMER)
 // ==========================================
 
+function applyRoomLights(dimmed) {
+  const isDimmed = !!dimmed;
+  if (isDimmed) {
+    document.body.classList.add('lights-dimmed');
+    if (btnFloatingRestoreLights) btnFloatingRestoreLights.classList.remove('hidden');
+    if (btnDimLights) btnDimLights.classList.add('active');
+  } else {
+    document.body.classList.remove('lights-dimmed');
+    if (btnFloatingRestoreLights) btnFloatingRestoreLights.classList.add('hidden');
+    if (btnDimLights) btnDimLights.classList.remove('active');
+  }
+}
+
+function toggleRoomLights() {
+  const isCurrentlyDimmed = document.body.classList.contains('lights-dimmed');
+  const newDimmed = !isCurrentlyDimmed;
+  applyRoomLights(newDimmed);
+  if (socket) {
+    socket.emit('toggle-room-lights', { dimmed: newDimmed });
+  }
+}
+
 function setupLightsDimmer() {
-  if (!btnDimLights) return;
-  btnDimLights.addEventListener('click', () => {
-    const isDimmed = document.body.classList.toggle('lights-dimmed');
-    btnDimLights.classList.toggle('active', isDimmed);
-    const textSpan = btnDimLights.querySelector('span');
-    if (isDimmed) {
-      if (textSpan) textSpan.textContent = '💡 İşıqlar Söndü';
-      btnDimLights.title = 'İşıqları yandır (Normal rejimə qayıt)';
-      showNotice('🎬 Kinoteatr rejimi: Ətraf işıqlar söndürüldü!');
-    } else {
-      if (textSpan) textSpan.textContent = '💡 İşıqlar';
-      btnDimLights.title = 'Kinoteatr zalı rejimi: İşıqları söndür';
-      showNotice('💡 İşıqlar yandırıldı');
-    }
-  });
+  if (btnDimLights) {
+    btnDimLights.addEventListener('click', toggleRoomLights);
+  }
+  if (btnFloatingRestoreLights) {
+    btnFloatingRestoreLights.addEventListener('click', toggleRoomLights);
+  }
 }
 
