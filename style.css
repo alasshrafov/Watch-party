@@ -3265,96 +3265,61 @@ body.theme-breaking-bad .btn-spin { color: #050a07; }
   flex-shrink: 0;
 }
 
-/* GOOGLE ACCOUNT CHOOSER (Şəkil 2-yə tam uyğun) */
-.google-account-chooser {
-  background: #18181b;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 16px;
+/* GOOGLE DIRECT AUTH FORM */
+.google-direct-auth-form {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-.chooser-prompt-label {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--text-muted);
-  margin-bottom: 4px;
-}
-.google-accounts-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.google-user-tile {
-  display: flex;
-  align-items: center;
   gap: 12px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  width: 100%;
+  margin-top: 6px;
 }
-.google-user-tile:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-.google-tile-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #4285f4, #34a853);
+.auth-divider-line {
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: #ffffff;
-  font-weight: 800;
-  font-size: 0.85rem;
-  flex-shrink: 0;
+  text-align: center;
+  margin: 12px 0 8px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
 }
-.google-tile-avatar.add-icon {
-  background: rgba(255, 255, 255, 0.1);
-  font-size: 1rem;
+.auth-divider-line::before,
+.auth-divider-line::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--border-color);
 }
-.google-tile-text {
+.auth-divider-line span {
+  padding: 0 10px;
+}
+.auth-input-group {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  overflow: hidden;
+  gap: 6px;
+  text-align: left;
 }
-.google-tile-name {
-  font-size: 0.92rem;
+.auth-input-group label {
+  font-size: 0.8rem;
   font-weight: 700;
   color: var(--text-main);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
-.google-tile-email {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.custom-google-box {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-}
-.custom-google-box input {
-  flex: 1;
-  padding: 8px 12px;
-  background: var(--bg-card);
+.auth-input-group input {
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
   color: var(--text-main);
-  font-size: 0.85rem;
+  font-size: 0.92rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+.auth-input-group input:focus {
+  border-color: #4285f4;
+  box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
   outline: none;
 }
-.btn-sm {
-  padding: 8px 16px;
-  font-size: 0.85rem;
+.btn-submit-google {
+  margin-top: 6px;
+  width: 100%;
 }
 
 /* LOBBY FLOW (Host vs Qonaq Bölgüsü - 2 Sütunlu Geniş Dizayn) */
@@ -3952,6 +3917,31 @@ body.lights-dimmed .player-section {
 .voice-badge.muted {
   background: rgba(100, 116, 139, 0.12);
   color: #94a3b8;
+}
+
+.btn-kick-participant {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 6px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  margin-left: auto;
+  font-family: inherit;
+}
+.btn-kick-participant:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
+  transform: scale(1.04);
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.4);
 }
 
 /* ==========================================

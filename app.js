@@ -745,7 +745,35 @@ window.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
   const roomParam = urlParams.get('room');
   if (roomParam) {
-    roomInput.value = roomParam;
+    const cleanRoom = roomParam.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+    if (cleanRoom) {
+      if (roomInput) roomInput.value = cleanRoom;
+
+      // Link ilə gələn istifadəçiyə avtomatik ad və avatar təyin edib birbaşa daxil olmaq
+      let joinUsername = '';
+      if (currentUser && currentUser.username) {
+        joinUsername = currentUser.username;
+      } else if (usernameInput && usernameInput.value.trim()) {
+        joinUsername = usernameInput.value.trim();
+      } else {
+        const guestNames = ['KinoSevər', 'Tamaşaçı', 'FilmHəvəskarı', 'CouchDost', 'Sinefil', 'Qonaq'];
+        const randName = guestNames[Math.floor(Math.random() * guestNames.length)];
+        const randNum = Math.floor(100 + Math.random() * 900);
+        joinUsername = `${randName}-${randNum}`;
+        if (usernameInput) usernameInput.value = joinUsername;
+      }
+
+      const randomAvatars = ['🍿', '🎬', '🥤', '🍕', '🕶️', '⚡', '🦇', '🍫'];
+      const joinAvatar = (currentUser && currentUser.avatar) ? currentUser.avatar : randomAvatars[Math.floor(Math.random() * randomAvatars.length)];
+      if (typeof selectedAvatarChoice !== 'undefined') {
+        selectedAvatarChoice = joinAvatar;
+      }
+
+      // Linklə gələn qonaq üçün birbaşa otaq açılır (Heç bir qeydiyyat və ya gözləmə tələb olunmur)
+      setTimeout(() => {
+        enterRoomWithId(cleanRoom, joinUsername, false);
+      }, 250);
+    }
   }
 
   // Kult Film/Serial Tema Seçicisi (Yalnız Otaq Daxilində)
@@ -985,18 +1013,12 @@ btnCopyLink.addEventListener('click', () => {
   });
 });
 
-function leaveRoomAndReturnToLobby() {
+function forceLeaveRoomAndReturnToLobby(customNotice) {
   const t = (typeof I18N !== 'undefined' && I18N[currentLang]) ? I18N[currentLang] : null;
-  if (roomScreen && roomScreen.classList.contains('active')) {
-    const confirmLeave = confirm(t ? t.confirmLeave : 'Kino otağından çıxıb əsas ekrana (Lobby) qayıtmaq istəyirsiniz?');
-    if (!confirmLeave) return;
-  } else {
-    return;
-  }
 
   // 1. WebRTC və ekran/səs yayımlarını dayandır
   if (localScreenStream) {
-    try { localScreenStream.getTracks().forEach(t => t.stop()); } catch (e) {}
+    try { localScreenStream.getTracks().forEach(track => track.stop()); } catch (e) {}
     localScreenStream = null;
   }
   Object.values(screenBroadcasterPeers).forEach(pc => {
@@ -1010,7 +1032,7 @@ function leaveRoomAndReturnToLobby() {
   }
   screenViewerIceQueue = [];
   if (localVoiceStream) {
-    try { localVoiceStream.getTracks().forEach(t => t.stop()); } catch (e) {}
+    try { localVoiceStream.getTracks().forEach(track => track.stop()); } catch (e) {}
     localVoiceStream = null;
   }
   if (typeof voicePeerConnections === 'object') {
@@ -1031,7 +1053,7 @@ function leaveRoomAndReturnToLobby() {
     try { ytPlayer.stopVideo(); } catch (e) {}
   }
 
-  // 3. Socket əlaqəsini bağla
+  // 3. Socket əlaqəsini bağla (Serverə çıxış siqnalı göndər)
   if (socket) {
     try {
       socket.emit('leave-room');
@@ -1050,12 +1072,27 @@ function leaveRoomAndReturnToLobby() {
   if (roomInput) roomInput.value = '';
 
   // 6. Ekranları dəyişdir
-  roomScreen.classList.remove('active');
-  lobbyScreen.classList.add('active');
+  if (roomScreen) roomScreen.classList.remove('active');
+  if (lobbyScreen) lobbyScreen.classList.add('active');
 
   // 7. UI-ı yenilə
   updateUserUI();
-  showNotice(t ? t.noticeReturnLobby : '🛋️ Əsas ekrana qayıtdınız');
+  showNotice(customNotice || (t ? t.noticeReturnLobby : '🛋️ Əsas ekrana qayıtdınız'));
+}
+
+function leaveRoomAndReturnToLobby() {
+  const t = (typeof I18N !== 'undefined' && I18N[currentLang]) ? I18N[currentLang] : null;
+  if (roomScreen && roomScreen.classList.contains('active')) {
+    const confirmMsg = isHost
+      ? '👑 Otaq rəhbərisiniz. Çıxsanız, kino zalı hər kəs üçün bağlanacaq. Çıxmaq istəyirsiniz?'
+      : (t ? t.confirmLeave : 'Kino otağından çıxıb əsas ekrana (Lobby) qayıtmaq istəyirsiniz?');
+    const confirmLeave = confirm(confirmMsg);
+    if (!confirmLeave) return;
+  } else {
+    return;
+  }
+
+  forceLeaveRoomAndReturnToLobby();
 }
 
 // ==========================================
@@ -1133,12 +1170,19 @@ function initSocket() {
 
   socket.on('room-locked-denied', (data) => {
     alert(`⛔ ${data.message || 'Bu otaq hal-hazırda kilidlənib! Host yalnız dəvətli üzvlərə icazə verir.'}`);
-    roomScreen.classList.remove('active');
-    lobbyScreen.classList.add('active');
-    if (socket) {
-      socket.disconnect();
-      socket = null;
-    }
+    forceLeaveRoomAndReturnToLobby();
+  });
+
+  // Otaq bağlandıqda (Otaq rəhbəri çıxdıqda bütün otaq avtomatik bağlanır)
+  socket.on('room-closed', (data) => {
+    alert(`🛋️ ${data.message || 'Otaq rəhbəri çıxdığı üçün kino zalı bağlandı.'}`);
+    forceLeaveRoomAndReturnToLobby('🛋️ Otaq rəhbəri çıxdığı üçün zal bağlandı');
+  });
+
+  // Host tərəfindən otaqdan çıxarıldıqda (Kick)
+  socket.on('kicked-from-room', (data) => {
+    alert(`⛔ ${data.message || 'Otaq rəhbəri tərəfindən otaqdan çıxarıldınız.'}`);
+    forceLeaveRoomAndReturnToLobby('⛔ Otaq rəhbəri tərəfindən çıxarıldınız');
   });
 
   socket.on('room-lock-status', ({ isLocked, lockedBy }) => {
@@ -1379,8 +1423,28 @@ function updateUsersList(users) {
             }
           </div>
         </div>
+        ${(isHost && !isMe) ? `
+          <button class="btn-kick-participant" title="İştirakçını otaqdan çıxart" data-socket-id="${sockId}" data-username="${escapeHtml(u.username)}">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            <span>Çıxart</span>
+          </button>
+        ` : ''}
       `;
       sidebarList.appendChild(card);
+    });
+
+    // Otaq sahibi üçün iştirakçını çıxarmaq (Kick) düymələrinə listener qoş
+    sidebarList.querySelectorAll('.btn-kick-participant').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const targetSockId = btn.getAttribute('data-socket-id');
+        const targetName = btn.getAttribute('data-username') || 'Bu istifadəçini';
+        if (confirm(`"${targetName}" adlı iştirakçını otaqdan çıxarmaq istəyirsiniz?`)) {
+          if (socket) {
+            socket.emit('kick-user', { targetSocketId: targetSockId });
+          }
+        }
+      });
     });
   }
 }
@@ -3301,55 +3365,24 @@ function setupAuth() {
     });
   }
 
-  // 3. Chess.com Stilli "Continue with Google" Düyməsi (Modal daxilində)
-  const btnChessGoogle = document.getElementById('btn-chess-google');
-  if (btnChessGoogle) {
-    btnChessGoogle.addEventListener('click', () => {
-      if (window.google && window.google.accounts && window.google.accounts.id) {
-        try {
-          window.google.accounts.id.prompt();
-        } catch (e) {}
-      }
-      const chooser = document.getElementById('google-account-chooser');
-      if (chooser) {
-        chooser.scrollIntoView({ behavior: 'smooth' });
-      }
-    });
-  }
-
-  // 4. Google Hesab Seçimi Kartları (Şəkildəki Vali Alashrafov və s. 1-kliklə daxil olmaq)
-  const userTiles = document.querySelectorAll('.google-user-tile:not(#tile-custom-google)');
-  userTiles.forEach(tile => {
-    tile.addEventListener('click', async () => {
-      const email = tile.getAttribute('data-email');
-      const name = tile.getAttribute('data-name');
-      await executeGoogleLogin(email, name);
-    });
-  });
-
-  // 5. Başqa Google hesabı daxil etmə forması
-  const tileCustom = document.getElementById('tile-custom-google');
-  const formCustom = document.getElementById('form-custom-google');
-  const customEmailInput = document.getElementById('custom-google-email');
-  if (tileCustom && formCustom) {
-    tileCustom.addEventListener('click', () => {
-      formCustom.classList.toggle('hidden');
-      if (!formCustom.classList.contains('hidden') && customEmailInput) {
-        customEmailInput.focus();
-      }
-    });
-  }
-  if (formCustom) {
-    formCustom.addEventListener('submit', async (e) => {
+  // 3. Google Formu ilə Birbaşa Giriş
+  const formGoogleDirect = document.getElementById('form-google-direct-auth');
+  if (formGoogleDirect) {
+    formGoogleDirect.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = customEmailInput.value.trim();
-      if (!email) return;
-      const name = email.split('@')[0];
+      const nameInput = document.getElementById('google-login-name');
+      const emailInput = document.getElementById('google-login-email');
+      const name = nameInput ? nameInput.value.trim() : '';
+      const email = emailInput ? emailInput.value.trim() : '';
+      if (!name || !email) {
+        showAuthStatus('Zəhmət olmasa adınızı və e-poçt ünvanınızı daxil edin.', 'error');
+        return;
+      }
       await executeGoogleLogin(email, name);
     });
   }
 
-  // 6. Rəsmi Google GIS SDK-nı inisializasiya et
+  // 4. Rəsmi Google GIS SDK-nı inisializasiya et
   initGoogleAuth();
 }
 
@@ -3370,11 +3403,13 @@ async function executeGoogleLogin(email, name, credential) {
       showAuthStatus(data.error || 'Google girişi uğursuz oldu', 'error');
     }
   } catch (err) {
-    // Şəbəkə / API gecikməsi olsa belə, 1 kliklə yerli sessiya aç
+    // API/Server əlçatan olmadıqda belə, istifadəçinin öz daxil etdiyi məlumatla təhlükəsiz sessiya aç
+    const cleanEmail = email ? email.toLowerCase().trim() : 'user@gmail.com';
+    const cleanName = name || cleanEmail.split('@')[0] || 'Google İstifadəçisi';
     const fallbackUser = {
       id: 'g_' + Date.now(),
-      username: name || (email ? email.split('@')[0] : 'Vali Alashrafov'),
-      email: email || 'alialashrafov0708@gmail.com',
+      username: cleanName,
+      email: cleanEmail,
       avatar: '🍿',
       isGoogle: true
     };
