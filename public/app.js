@@ -5339,53 +5339,185 @@ function setupMobileAppAndDrawer() {
     });
   }
 
-  // 4.2 Mobil Kult Kino Vitrini (İnteraktiv Obraz Lentası)
+  // 4.2 Mobil Kult Kino Vitrini & Menyudakı Hərəkətli Obraz Başları
   const mobCharMeta = {
-    heisenberg: { name: 'Heisenberg', nick: 'Heisenberg', img: 'assets/characters/heisenberg.png', theme: 'theme-breaking-bad' },
-    godfather: { name: 'Don Corleone', nick: 'Don_Corleone', img: 'assets/characters/godfather.png', theme: 'theme-netflix' },
-    batman: { name: 'Dark Knight', nick: 'Dark_Knight', img: 'assets/characters/batman.png', theme: 'theme-batman' },
-    cyberpunk: { name: 'Cyber Runner', nick: 'Cyber_Warrior', img: 'assets/characters/cyberpunk.png', theme: 'theme-matrix' },
-    detective: { name: 'Noir Detective', nick: 'Noir_Detective', img: 'assets/characters/detective.png', theme: 'theme-interstellar' }
+    heisenberg: {
+      name: 'Heisenberg',
+      fullTitle: 'WALTER WHITE',
+      filmTag: 'BREAKING BAD • CRIME DRAMA',
+      quote: '"I am not in danger, Skyler. I am the danger."',
+      nick: 'Heisenberg',
+      img: 'assets/characters/heisenberg.jpg',
+      audio: 'assets/heisenberg.mp3',
+      theme: 'theme-breaking-bad'
+    },
+    godfather: {
+      name: 'Don Corleone',
+      fullTitle: 'DON VITO CORLEONE',
+      filmTag: 'THE GODFATHER • CULT CLASSIC',
+      quote: '"I\'m gonna make him an offer he can\'t refuse."',
+      nick: 'Don_Corleone',
+      img: 'assets/characters/godfather.jpg',
+      audio: 'assets/godfather.mp3',
+      theme: 'theme-netflix'
+    },
+    batman: {
+      name: 'Batman',
+      fullTitle: 'THE DARK KNIGHT',
+      filmTag: 'GOTHAM NOIR • DC CINEMA',
+      quote: '"I am vengeance. I am the night."',
+      nick: 'Dark_Knight',
+      img: 'assets/characters/batman.jpg',
+      audio: 'assets/batman.mp3',
+      theme: 'theme-batman'
+    },
+    cyberpunk: {
+      name: 'Neo',
+      fullTitle: 'NEO • THE ONE',
+      filmTag: 'THE MATRIX • CYBERPUNK',
+      quote: '"There is no spoon. Free your mind."',
+      nick: 'Neo_Matrix',
+      img: 'assets/characters/cyberpunk.jpg',
+      audio: 'assets/cyberpunk.mp3',
+      theme: 'theme-matrix'
+    },
+    detective: {
+      name: 'Rust Cohle',
+      fullTitle: 'RUST COHLE',
+      filmTag: 'TRUE DETECTIVE • MYSTERY NOIR',
+      quote: '"Time is a flat circle."',
+      nick: 'Rust_Cohle',
+      img: 'assets/characters/detective.jpg',
+      audio: 'assets/detective.mp3',
+      theme: 'theme-interstellar'
+    }
   };
+
+  let currentMobCharKey = 'heisenberg';
+  let mobCharVoiceAudio = null;
+
+  function playMobCharVoice(charKey) {
+    const info = mobCharMeta[charKey] || mobCharMeta.heisenberg;
+    if (!info || !info.audio) return;
+    try {
+      if (mobCharVoiceAudio) {
+        mobCharVoiceAudio.pause();
+        mobCharVoiceAudio.currentTime = 0;
+      }
+      mobCharVoiceAudio = new Audio(info.audio);
+      mobCharVoiceAudio.volume = 0.85;
+      document.querySelectorAll('.drawer-head-orb, #btn-mob-hero-voice, #btn-drawer-char-voice').forEach(el => el.classList.remove('speaking'));
+      const activeOrb = document.querySelector(`.drawer-head-orb[data-drawer-char="${charKey}"]`);
+      const heroVoiceBtn = document.getElementById('btn-mob-hero-voice');
+      const drawerVoiceBtn = document.getElementById('btn-drawer-char-voice');
+      if (activeOrb) activeOrb.classList.add('speaking');
+      if (heroVoiceBtn) heroVoiceBtn.classList.add('speaking');
+      if (drawerVoiceBtn) drawerVoiceBtn.classList.add('speaking');
+
+      mobCharVoiceAudio.onended = () => {
+        if (activeOrb) activeOrb.classList.remove('speaking');
+        if (heroVoiceBtn) heroVoiceBtn.classList.remove('speaking');
+        if (drawerVoiceBtn) drawerVoiceBtn.classList.remove('speaking');
+      };
+      mobCharVoiceAudio.play().catch(() => {});
+    } catch (e) {}
+  }
+
+  function selectMobileCharacter(charKey, opts = {}) {
+    const info = mobCharMeta[charKey];
+    if (!info) return;
+    currentMobCharKey = charKey;
+
+    // 1. Ana ekrandakı medalyonları və menyudakı hərəkətli başları aktivləşdir
+    document.querySelectorAll('.mob-strip-card').forEach(b => {
+      b.classList.toggle('active', b.getAttribute('data-mob-char') === charKey);
+    });
+    document.querySelectorAll('.drawer-head-orb').forEach(b => {
+      b.classList.toggle('active', b.getAttribute('data-drawer-char') === charKey);
+    });
+
+    // 2. Ana ekrandakı Böyük Kino Afişasını yenilə
+    const heroImg = document.getElementById('mob-hero-backdrop-img');
+    const heroTag = document.getElementById('mob-hero-film-tag');
+    const heroTitle = document.getElementById('mob-hero-char-title');
+    const heroQuote = document.getElementById('mob-hero-char-quote');
+    if (heroImg) heroImg.src = info.img;
+    if (heroTag) heroTag.textContent = info.filmTag;
+    if (heroTitle) heroTitle.textContent = info.fullTitle;
+    if (heroQuote) heroQuote.textContent = info.quote;
+
+    // 3. Menyudakı canlı sitat sətirini yenilə
+    const drawerLiveName = document.getElementById('drawer-char-live-name');
+    const drawerLiveQuote = document.getElementById('drawer-char-live-quote');
+    if (drawerLiveName) drawerLiveName.textContent = `${info.fullTitle} • ${info.name.toUpperCase()}`;
+    if (drawerLiveQuote) drawerLiveQuote.textContent = info.quote;
+
+    // 4. İstifadəçi avatarını HD portret şəkli ilə yenilə
+    const avatarHtml = `<img src="${info.img}" alt="${info.name}">`;
+    selectedAvatarChoice = avatarHtml;
+
+    const mobAvatarDisplay = document.getElementById('mob-avatar-display');
+    const mainAvatarPreview = document.getElementById('input-avatar-preview');
+    const drawerAvatar = document.getElementById('drawer-user-avatar');
+    if (mobAvatarDisplay) mobAvatarDisplay.innerHTML = avatarHtml;
+    if (mainAvatarPreview) mainAvatarPreview.innerHTML = avatarHtml;
+    if (drawerAvatar) drawerAvatar.innerHTML = avatarHtml;
+
+    const charPill = document.getElementById('mob-selected-char-pill');
+    if (charPill) charPill.textContent = info.name;
+
+    const knownDefaultNicks = Object.values(mobCharMeta).map(m => m.nick);
+    if (mobUsernameInput) {
+      const curVal = mobUsernameInput.value.trim();
+      if (!curVal || knownDefaultNicks.includes(curVal)) {
+        mobUsernameInput.value = info.nick;
+        if (usernameInput) usernameInput.value = info.nick;
+      }
+    }
+
+    if (typeof applyTheme === 'function') {
+      applyTheme(info.theme, false);
+    }
+
+    if (opts.playVoice) {
+      playMobCharVoice(charKey);
+    }
+  }
 
   document.querySelectorAll('.mob-strip-card').forEach(stripBtn => {
     stripBtn.addEventListener('click', () => {
       const charKey = stripBtn.getAttribute('data-mob-char');
-      const info = mobCharMeta[charKey];
-      if (!info) return;
-
-      document.querySelectorAll('.mob-strip-card').forEach(b => b.classList.toggle('active', b === stripBtn));
-      const avatarHtml = `<img src="${info.img}" alt="${info.name}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
-      selectedAvatarChoice = avatarHtml;
-
-      const mobAvatarDisplay = document.getElementById('mob-avatar-display');
-      const mainAvatarPreview = document.getElementById('input-avatar-preview');
-      if (mobAvatarDisplay) mobAvatarDisplay.innerHTML = avatarHtml;
-      if (mainAvatarPreview) mainAvatarPreview.innerHTML = avatarHtml;
-
-      const charPill = document.getElementById('mob-selected-char-pill');
-      if (charPill) charPill.textContent = info.name;
-
-      // Əgər istifadəçi adı boşdursa və ya əvvəlki obraz adıdırsa, avtomatik yenilə
-      const knownDefaultNicks = Object.values(mobCharMeta).map(m => m.nick);
-      if (mobUsernameInput) {
-        const curVal = mobUsernameInput.value.trim();
-        if (!curVal || knownDefaultNicks.includes(curVal)) {
-          mobUsernameInput.value = info.nick;
-          if (usernameInput) usernameInput.value = info.nick;
-        }
-      }
-
-      if (typeof applyTheme === 'function') {
-        applyTheme(info.theme, false);
-      }
-      showNotice(`🎭 ${info.name} obrazı seçildi!`);
+      selectMobileCharacter(charKey, { playVoice: false });
     });
   });
 
+  document.querySelectorAll('.drawer-head-orb').forEach(orbBtn => {
+    orbBtn.addEventListener('click', () => {
+      const charKey = orbBtn.getAttribute('data-drawer-char');
+      selectMobileCharacter(charKey, { playVoice: true });
+    });
+  });
+
+  const btnMobHeroVoice = document.getElementById('btn-mob-hero-voice');
+  const btnDrawerCharVoice = document.getElementById('btn-drawer-char-voice');
+  if (btnMobHeroVoice) {
+    btnMobHeroVoice.addEventListener('click', (e) => {
+      e.stopPropagation();
+      playMobCharVoice(currentMobCharKey);
+    });
+  }
+  if (btnDrawerCharVoice) {
+    btnDrawerCharVoice.addEventListener('click', (e) => {
+      e.stopPropagation();
+      playMobCharVoice(currentMobCharKey);
+    });
+  }
+
   // Ad və Otaq kodu sahələrini əsas inputlarla iki-tərəfli sinxronlaşdır
   if (mobUsernameInput && usernameInput) {
-    mobUsernameInput.value = usernameInput.value || '';
+    if (!usernameInput.value) usernameInput.value = mobUsernameInput.value || 'Heisenberg';
+    else mobUsernameInput.value = usernameInput.value;
+
     mobUsernameInput.addEventListener('input', () => {
       usernameInput.value = mobUsernameInput.value;
     });
@@ -5415,7 +5547,7 @@ function setupMobileAppAndDrawer() {
         if (text) {
           mobRoomInput.value = text.trim();
           if (roomInput) roomInput.value = text.trim();
-          showNotice('📋 Otaq kodu yapışdırıldı!');
+          showNotice('Otaq kodu yapışdırıldı');
         }
       } catch (e) {
         mobRoomInput.focus();
@@ -5460,16 +5592,11 @@ function setupMobileAppAndDrawer() {
     });
   }
 
-  // Mobil Üst Sağ Düymə (Standalone APK-dırsa Hesab, Brauzerdirsə APK Yüklə)
-  const isStandaloneApp = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  // Mobil Üst Sağ Düymə (Hesab / Giriş)
   if (mobTopActionBtn) {
     mobTopActionBtn.addEventListener('click', () => {
-      if (isStandaloneApp) {
-        if (currentUser && currentUser.isGoogle) openLeftDrawer();
-        else if (typeof openAuthModal === 'function') openAuthModal();
-      } else {
-        handleInstallAppClick();
-      }
+      if (currentUser && currentUser.isGoogle) openLeftDrawer();
+      else if (typeof openAuthModal === 'function') openAuthModal();
     });
   }
 
@@ -5498,7 +5625,7 @@ function setupMobileAppAndDrawer() {
     });
   }
 
-  // 5. Mobil Otaq Tabları (💬 Canlı Çat | 🎬 Video Qoş | 👥 Otaqdakılar)
+  // 5. Mobil Otaq Tabları (Canlı Çat | Video Qoş | Otaqdakılar)
   const roomScr = document.getElementById('room-screen');
   document.querySelectorAll('.mob-room-tab').forEach(tabBtn => {
     tabBtn.addEventListener('click', () => {
@@ -5508,7 +5635,6 @@ function setupMobileAppAndDrawer() {
     });
   });
 
-  // Boş pleyerdəki kartlardan birinə basıldıqda mobildə avtomatik "🎬 Video Qoş" tabını aç
   document.querySelectorAll('.empty-opt-card').forEach(card => {
     card.addEventListener('click', () => {
       if (window.innerWidth <= 768 && roomScr) {
@@ -5612,10 +5738,10 @@ function setupMobileAppAndDrawer() {
     const drawerUserCard = document.getElementById('drawer-user-card');
     const isLogged = !!(currentUser && currentUser.isGoogle);
 
-    // Mobil Open Page üzərindəki Avatar yalnız dəyişibsə yenilə (DOM donmasının qarşısını alır)
+    // Mobil Open Page üzərindəki Avatar yalnız real şəkil olduqda sinxronlaşdır (kartoon 👤 emojisi ilə əvəzləmə!)
     const mobAvatarDisplay = document.getElementById('mob-avatar-display');
     const mainAvatarPreview = document.getElementById('input-avatar-preview');
-    if (mobAvatarDisplay && mainAvatarPreview && mainAvatarPreview.innerHTML) {
+    if (mobAvatarDisplay && mainAvatarPreview && mainAvatarPreview.innerHTML.includes('<img')) {
       if (mobAvatarDisplay.innerHTML !== mainAvatarPreview.innerHTML) {
         mobAvatarDisplay.innerHTML = mainAvatarPreview.innerHTML;
       }
@@ -5627,16 +5753,14 @@ function setupMobileAppAndDrawer() {
     const mobCreateBtnText = document.getElementById('mob-create-btn-text');
     if (mobHostAuthStatus && mobCreateBtnText) {
       const nextStatusHtml = isLogged
-        ? `<span class="mob-auth-active-text">🟢 Google Hesabı Aktivdir (${escapeHtml(currentUser.username)})</span>`
-        : `<span>🔒 Otaq yaratmaq üçün 1 toxunuşla Google girişi:</span>`;
-      const nextBtnText = isLogged ? '👑 Özəl Kino Zalını Başlat' : 'G Google ilə Daxil Ol & Zal Aç';
+        ? `<span class="mob-auth-active-text">Google Hesabı Aktivdir (${escapeHtml(currentUser.username)})</span>`
+        : `<span>Otaq yaratmaq üçün Google hesabınızla təsdiqləyin</span>`;
+      const nextBtnText = isLogged ? 'ÖZƏL KİNO ZALINI BAŞLAT' : 'GOOGLE İLƏ DAXİL OL & ZAL AÇ';
       if (mobHostAuthStatus.innerHTML !== nextStatusHtml) mobHostAuthStatus.innerHTML = nextStatusHtml;
       if (mobCreateBtnText.textContent !== nextBtnText) mobCreateBtnText.textContent = nextBtnText;
     }
-    const mobTopIcon = document.getElementById('mob-top-action-icon');
     const mobTopLabel = document.getElementById('mob-top-action-label');
-    if (mobTopIcon && mobTopLabel && isStandaloneApp) {
-      mobTopIcon.textContent = isLogged ? '🟢' : '👤';
+    if (mobTopLabel) {
       mobTopLabel.textContent = isLogged ? (currentUser.username.split(' ')[0] || 'Profil') : 'Giriş';
     }
 
@@ -5644,10 +5768,8 @@ function setupMobileAppAndDrawer() {
       if (isLogged) {
         drawerBtnGoogle.classList.add('hidden');
         drawerUserCard.classList.remove('hidden');
-        const dAvatar = document.getElementById('drawer-user-avatar');
         const dName = document.getElementById('drawer-user-name');
         const dEmail = document.getElementById('drawer-user-email');
-        if (dAvatar) dAvatar.textContent = currentUser.avatar || '🍿';
         if (dName) dName.textContent = currentUser.username || 'İstifadəçi';
         if (dEmail) dEmail.textContent = currentUser.email || 'Google Hesabı Aktivdir';
       } else {
@@ -5661,15 +5783,15 @@ function setupMobileAppAndDrawer() {
       drawerThemeSelect.value = mainThemeSelect.value;
     }
     const isLight = document.documentElement.getAttribute('data-mode') === 'light' || document.body.classList.contains('light-mode');
-    const dModeIcon = document.getElementById('drawer-mode-icon');
     const dModeText = document.getElementById('drawer-mode-text');
-    if (dModeIcon && dModeText) {
-      dModeIcon.textContent = isLight ? '🌙' : '☀️';
-      dModeText.textContent = isLight ? 'Dark Rejim' : 'Light Rejim';
+    if (dModeText) {
+      dModeText.textContent = isLight ? 'Gecə Rejimi' : 'Gündüz Rejimi';
     }
-    const mobQuickModeIcon = document.getElementById('mob-quick-mode-icon');
-    if (mobQuickModeIcon) {
-      mobQuickModeIcon.textContent = isLight ? '🌙' : '☀️';
+    const mobQuickModeSvg = document.getElementById('mob-quick-mode-svg');
+    if (mobQuickModeSvg) {
+      mobQuickModeSvg.innerHTML = isLight
+        ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
+        : '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
     }
     if (typeof currentLang !== 'undefined') {
       document.querySelectorAll('.drawer-lang-btn').forEach(b => {
@@ -5678,6 +5800,8 @@ function setupMobileAppAndDrawer() {
     }
   }
 
+  // Başlanğıcda Heisenberg obrazını HD portretlə aktiv et
+  selectMobileCharacter('heisenberg', { playVoice: false });
   window.syncMobileUI = syncDrawerUIWithMain;
   syncDrawerUIWithMain();
 

@@ -12,10 +12,10 @@
   <link rel="icon" type="image/svg+xml" href="assets/icon-vector.svg">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
   <link rel="manifest" href="/manifest.json">
-  <link rel="stylesheet" href="style.css?v=11.0">
+  <link rel="stylesheet" href="style.css?v=12.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Cinzel:wght@600;700&family=Fira+Code:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;600&family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Google Identity Services (Google ilə 1 Kliklə Giriş) -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <!-- Socket.io Client -->
@@ -24,43 +24,8 @@
   <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body class="theme-netflix">
-  <!-- 🌟 MOBİL TƏTBİQ ÜÇÜN KRISTAL DƏQİQLİKLİ VEKTOR AÇILIŞ EKRANI (VECTOR HD SPLASH) -->
-  <div id="mobile-splash-screen" class="mobile-splash-screen">
-    <div class="splash-brand-box">
-      <div class="splash-icon-ring">
-        <svg viewBox="0 0 256 256" class="splash-hd-logo" aria-label="OneCouch Vector Logo">
-          <defs>
-            <linearGradient id="spBg" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#161824"/>
-              <stop offset="100%" stop-color="#07080d"/>
-            </linearGradient>
-            <linearGradient id="spCrim" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#ff2a44"/>
-              <stop offset="55%" stop-color="#e50914"/>
-              <stop offset="100%" stop-color="#f59e0b"/>
-            </linearGradient>
-            <linearGradient id="spCyan" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#38bdf8"/>
-              <stop offset="100%" stop-color="#6366f1"/>
-            </linearGradient>
-          </defs>
-          <rect x="6" y="6" width="244" height="244" rx="54" fill="url(#spBg)" stroke="url(#spCrim)" stroke-width="5"/>
-          <rect x="42" y="48" width="108" height="72" rx="12" fill="#0d111d" stroke="url(#spCyan)" stroke-width="6"/>
-          <polygon points="86,72 86,96 106,84" fill="#38bdf8"/>
-          <rect x="106" y="66" width="108" height="72" rx="12" fill="#140d18" stroke="url(#spCrim)" stroke-width="6"/>
-          <polygon points="150,90 150,114 170,102" fill="#ff2a44"/>
-          <path d="M64,132 C64,118 76,110 92,110 L164,110 C180,110 192,118 192,132 L192,158 L64,158 Z" fill="url(#spCrim)"/>
-          <path d="M52,138 C43,138 38,144 38,153 C38,160 43,165 48,167 L48,182 C48,189 54,194 62,194 L194,194 C202,194 208,189 208,182 L208,167 C213,165 218,160 218,153 C218,144 213,138 204,138 C196,138 191,143 191,151 L191,164 L65,164 L65,151 C65,143 60,138 52,138 Z" fill="#181b28" stroke="#fbbf24" stroke-width="5" stroke-linejoin="round"/>
-          <line x1="128" y1="114" x2="128" y2="162" stroke="#090a10" stroke-width="4" stroke-linecap="round"/>
-          <path d="M72,220 L98,220 L106,208 L116,230 L128,200 L140,230 L150,208 L158,220 L184,220" fill="none" stroke="#fbbf24" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <div class="splash-badge-tag">IMAX PRIVATE LOUNGE</div>
-      <h1 class="splash-title">OneCouch</h1>
-      <p class="splash-subtitle">TWO SCREENS • ONE COUCH</p>
-      <div class="splash-loader-bar"><span></span></div>
-    </div>
-  </div>
+  <!-- İkinci təkrarlanan splash ekran ləğv edildi ki, girişdə iki fərqli loqo çıxmasın -->
+  <div id="mobile-splash-screen" class="mobile-splash-screen splash-hidden" style="display:none !important;"></div>
 
   <!-- Arxa fon dinamik kətan (Canvas Parıltısı & Torlar/Qar/Duman) -->
   <div id="theme-ambient-container" class="theme-ambient-container">
@@ -79,7 +44,7 @@
     <section id="mobile-open-page" class="mobile-open-page" aria-label="Mobil Ana Səhifə">
       <div class="mob-cinema-ambient"></div>
 
-      <!-- 1. Mobil Üst App Bar: Sol Üst Menyu + Kristal Vektor Loqo + Gündüz/Gecə & Tətbiq -->
+      <!-- 1. Arxitektural Üst Bar (Minimal, Ciddi, Vektor İkonlu) -->
       <header class="mob-app-topbar">
         <button type="button" id="btn-mob-open-drawer" class="mob-ham-btn" aria-label="Menyunu aç">
           <span></span>
@@ -87,106 +52,115 @@
           <span></span>
         </button>
 
-        <div class="mob-brand-pill">
+        <div class="mob-brand-arch">
           <img src="assets/icon-vector.svg" alt="OneCouch" class="mob-brand-icon">
           <div class="mob-brand-text">
-            <strong>One<span>Couch</span></strong>
-            <span><i class="mob-live-dot"></i> VIP CINEMA LOUNGE</span>
+            <strong>ONE<span>COUCH</span></strong>
+            <small>PRIVATE CINEMA</small>
           </div>
         </div>
 
         <div class="mob-topbar-right">
           <button type="button" id="btn-mob-quick-mode" class="mob-mode-icon-btn" title="Gündüz / Gecə Rejimi" aria-label="Görünüş rejimini dəyiş">
-            <span id="mob-quick-mode-icon">☀️</span>
+            <svg id="mob-quick-mode-svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
           </button>
           <button type="button" id="btn-mob-top-action" class="mob-top-action-btn">
-            <span id="mob-top-action-icon">📲</span>
-            <span id="mob-top-action-label">App</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span id="mob-top-action-label">Hesab</span>
           </button>
         </div>
       </header>
 
-      <!-- 2. KULT KİNO VİTRİNİ (İnteraktiv Sağa-Sola Çevrilən Obraz & Film Lentası) -->
+      <!-- 2. KİNO VİTRİNİ: Geniş Ekran Obraz Afişası + İnteraktiv Canlı Portret Seçimi -->
       <div class="mob-cinema-showcase">
-        <div class="mob-showcase-header">
-          <div class="mob-showcase-title-group">
-            <span class="mob-NowShowing-dot"></span>
-            <span class="mob-showcase-eyebrow">KULT KİNO OBRAZLARI</span>
+        <!-- Böyük Kino Afişa Səhnəsi -->
+        <div class="mob-hero-stage" id="mob-hero-stage">
+          <img src="assets/characters/heisenberg.jpg" alt="Heisenberg" class="mob-hero-backdrop-img" id="mob-hero-backdrop-img">
+          <div class="mob-hero-vignette"></div>
+
+          <div class="mob-hero-top-row">
+            <span class="mob-hero-film-tag" id="mob-hero-film-tag">BREAKING BAD • CRIME DRAMA</span>
+            <button type="button" id="btn-mob-open-char-gallery" class="mob-showcase-more-btn">
+              <span>Tam Qalereya</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
           </div>
-          <button type="button" id="btn-mob-open-char-gallery" class="mob-showcase-more-btn">
-            <span>Tam Ekran Seç</span>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
+
+          <div class="mob-hero-bottom-row">
+            <div class="mob-hero-info">
+              <h2 class="mob-hero-char-title" id="mob-hero-char-title">WALTER WHITE</h2>
+              <p class="mob-hero-char-quote" id="mob-hero-char-quote">"I am not in danger, Skyler. I am the danger."</p>
+            </div>
+            <button type="button" class="mob-hero-voice-btn" id="btn-mob-hero-voice" title="Obrazın səsini dinlə">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>Səs</span>
+            </button>
+          </div>
         </div>
 
+        <!-- 5 Kult Obrazın Canlı Portret Medalyonları -->
         <div class="mob-char-strip" id="mob-char-strip">
           <button type="button" class="mob-strip-card active" data-mob-char="heisenberg">
-            <img src="assets/characters/heisenberg.png" alt="Heisenberg" loading="eager">
-            <div class="msc-overlay">
-              <span class="msc-tag">CRIME • DRAMA</span>
-              <strong>Heisenberg</strong>
-              <small>Breaking Bad</small>
+            <div class="msc-avatar-ring">
+              <img src="assets/characters/heisenberg.jpg" alt="Heisenberg">
             </div>
+            <span class="msc-name">Heisenberg</span>
           </button>
           <button type="button" class="mob-strip-card" data-mob-char="godfather">
-            <img src="assets/characters/godfather.png" alt="The Godfather" loading="eager">
-            <div class="msc-overlay">
-              <span class="msc-tag">MAFIA • CULT</span>
-              <strong>Don Corleone</strong>
-              <small>The Godfather</small>
+            <div class="msc-avatar-ring">
+              <img src="assets/characters/godfather.jpg" alt="Don Corleone">
             </div>
+            <span class="msc-name">Corleone</span>
           </button>
           <button type="button" class="mob-strip-card" data-mob-char="batman">
-            <img src="assets/characters/batman.png" alt="The Dark Knight" loading="eager">
-            <div class="msc-overlay">
-              <span class="msc-tag">DC • NOIR</span>
-              <strong>Dark Knight</strong>
-              <small>Gotham City</small>
+            <div class="msc-avatar-ring">
+              <img src="assets/characters/batman.jpg" alt="Dark Knight">
             </div>
+            <span class="msc-name">Batman</span>
           </button>
           <button type="button" class="mob-strip-card" data-mob-char="cyberpunk">
-            <img src="assets/characters/cyberpunk.png" alt="Cyber Warrior" loading="lazy">
-            <div class="msc-overlay">
-              <span class="msc-tag">SCI-FI • 2049</span>
-              <strong>Cyber Runner</strong>
-              <small>Blade Runner</small>
+            <div class="msc-avatar-ring">
+              <img src="assets/characters/cyberpunk.jpg" alt="Neo">
             </div>
+            <span class="msc-name">Neo</span>
           </button>
           <button type="button" class="mob-strip-card" data-mob-char="detective">
-            <img src="assets/characters/detective.png" alt="Noir Detective" loading="lazy">
-            <div class="msc-overlay">
-              <span class="msc-tag">MYSTERY</span>
-              <strong>Noir Detective</strong>
-              <small>Sin City</small>
+            <div class="msc-avatar-ring">
+              <img src="assets/characters/detective.jpg" alt="Rust Cohle">
             </div>
+            <span class="msc-name">Cohle</span>
           </button>
         </div>
       </div>
 
-      <!-- 3. VIP KİNO BİLETİ — İSTİFADƏÇİ PROFİLİ VƏ LƏQƏBİ -->
-      <div class="mob-identity-card">
-        <button type="button" id="mob-avatar-picker-btn" class="mob-avatar-circle" title="Obrazını dəyiş">
-          <span id="mob-avatar-display">🍿</span>
-          <span class="mob-avatar-edit-tag">🎭</span>
-        </button>
-        <div class="mob-identity-input-col">
-          <div class="mob-id-label-row">
-            <label for="mob-username-input">KİNO BİLETİ • LƏQƏBİNİZ</label>
-            <span class="mob-id-status-pill" id="mob-selected-char-pill">Heisenberg</span>
-          </div>
-          <input type="text" id="mob-username-input" placeholder="Adınızı və ya ləqəbinizi yazın..." maxlength="20" autocomplete="off">
-        </div>
-      </div>
-
-      <!-- 4. KİNO ZALI İDARƏETMƏ KONSOLU (Qoşul / Yeni Zal Aç) -->
+      <!-- 3. VAHİD ARXİTEKTURAL KONSOL: İstifadəçi Kimliyi + Otaq İdarəetməsi -->
       <div class="mob-main-card">
+        <!-- İنتeqrasiya olunmuş İstifadəçi Kimlik Sətri -->
+        <div class="mob-identity-card">
+          <button type="button" id="mob-avatar-picker-btn" class="mob-avatar-circle" title="Obrazını dəyiş">
+            <span id="mob-avatar-display">
+              <img src="assets/characters/heisenberg.jpg" alt="Heisenberg">
+            </span>
+          </button>
+          <div class="mob-identity-input-col">
+            <div class="mob-id-label-row">
+              <label for="mob-username-input">İŞTİRAKÇI LƏQƏBİ</label>
+              <span class="mob-id-status-pill" id="mob-selected-char-pill">Heisenberg</span>
+            </div>
+            <input type="text" id="mob-username-input" placeholder="Ləqəbinizi daxil edin..." value="Heisenberg" maxlength="20" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="mob-console-divider"></div>
+
+        <!-- Rejim Seçimi: Otağa Qoşul / Yeni Zal Yarat -->
         <div class="mob-seg-tabs" role="tablist">
           <button type="button" class="mob-seg-btn active" data-mob-pane="join" id="mob-tab-join">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
             <span>Otağa Qoşul</span>
           </button>
           <button type="button" class="mob-seg-btn" data-mob-pane="create" id="mob-tab-create">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10 9 15 12 10 15 10 9"/></svg>
             <span>Yeni Zal Yarat</span>
           </button>
         </div>
@@ -194,48 +168,51 @@
         <!-- PANE A: OTAĞA QOŞUL (DEFAULT) -->
         <div class="mob-seg-pane active" id="mob-pane-join">
           <div class="mob-code-input-row">
-            <input type="text" id="mob-room-input" placeholder="Otaq kodu və ya dəvət linki (məs: kino-101)..." autocomplete="off">
-            <button type="button" id="btn-mob-paste" class="mob-paste-btn" title="Kopyalanmış kodu yapışdır">📋 Yapışdır</button>
+            <input type="text" id="mob-room-input" placeholder="Otaq kodu və ya dəvət linki..." autocomplete="off">
+            <button type="button" id="btn-mob-paste" class="mob-paste-btn" title="Kopyalanmış kodu yapışdır">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <span>Yapışdır</span>
+            </button>
           </div>
           <button type="button" id="btn-mob-join-room" class="mob-cta-btn mob-cta-crimson">
-            <span>🎙️ Seansa Daxil Ol &amp; Canlı Qoşul</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            <span>SEANSA DAXİL OL</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
         </div>
 
         <!-- PANE B: YENİ OTAQ YARAT -->
         <div class="mob-seg-pane" id="mob-pane-create">
           <div class="mob-create-perks">
-            <div class="mob-perk-pill"><strong>1080p HD</strong><span>Sinxron Yayım</span></div>
-            <div class="mob-perk-pill"><strong>Kristal Səs</strong><span>Auto-Ducking</span></div>
-            <div class="mob-perk-pill"><strong>VIP Zal</strong><span>Tam İdarəetmə</span></div>
+            <div class="mob-perk-pill"><strong>1080P 60FPS</strong><span>Sinxron Yayım</span></div>
+            <div class="mob-perk-pill"><strong>DOLBY VOICE</strong><span>Canlı Akustika</span></div>
+            <div class="mob-perk-pill"><strong>PRIVATE</strong><span>Tam Nəzarət</span></div>
           </div>
           <div id="mob-host-auth-status" class="mob-host-auth-status">
-            <span>🔒 Otaq yaratmaq üçün 1 toxunuşla Google girişi:</span>
+            <span>Otaq yaratmaq üçün Google hesabınızla təsdiqləyin</span>
           </div>
           <button type="button" id="btn-mob-create-room" class="mob-cta-btn mob-cta-gold">
-            <span id="mob-create-btn-text">👑 Özəl Kino Zalını Başlat</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            <span id="mob-create-btn-text">ÖZƏL KİNO ZALINI BAŞLAT</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
           </button>
         </div>
       </div>
 
-      <!-- 5. Alt Naviqasiya Dok-u (Peşəkar Streaming App Barı) -->
+      <!-- 4. Alt Naviqasiya Dok-u (Minimal Vektor İkonlu) -->
       <nav class="mob-quick-dock" aria-label="Sürətli Naviqasiya">
         <button type="button" class="mob-dock-tile" id="mob-dock-menu">
-          <svg class="mdt-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/></svg>
+          <svg class="mdt-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/></svg>
           <span class="mdt-label">Menyu</span>
         </button>
         <button type="button" class="mob-dock-tile" id="mob-dock-chars">
-          <svg class="mdt-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          <svg class="mdt-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
           <span class="mdt-label">Obrazlar</span>
         </button>
         <button type="button" class="mob-dock-tile" id="mob-dock-wheel">
-          <svg class="mdt-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="3" x2="12" y2="10"/><line x1="18.36" y1="5.64" x2="13.41" y2="10.59"/><line x1="21" y1="12" x2="14" y2="12"/></svg>
+          <svg class="mdt-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="3" x2="12" y2="10"/><line x1="18.36" y1="5.64" x2="13.41" y2="10.59"/></svg>
           <span class="mdt-label">Ruletka</span>
         </button>
         <button type="button" class="mob-dock-tile" id="mob-dock-history">
-          <svg class="mdt-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+          <svg class="mdt-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
           <span class="mdt-label">Arxiv</span>
         </button>
       </nav>
@@ -1746,69 +1723,138 @@
       <div class="drawer-brand-group">
         <img src="assets/icon-vector.svg" alt="OneCouch" class="drawer-logo-img">
         <div class="drawer-brand-titles">
-          <strong>OneCouch</strong>
-          <span>Two screens. One couch.</span>
+          <strong>ONECOUCH</strong>
+          <span>PRIVATE CINEMA CLUB</span>
         </div>
       </div>
-      <button type="button" id="btn-close-left-drawer" class="drawer-close-btn" aria-label="Menyunu bağla">◀ Geri</button>
+      <button type="button" id="btn-close-left-drawer" class="drawer-close-btn" aria-label="Menyunu bağla">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>Geri</span>
+      </button>
     </div>
 
     <div class="drawer-scroll-body">
       <!-- 1. İSTİFADƏÇİ PROFİLİ VƏ GOOGLE GİRİŞİ -->
       <div class="drawer-section">
-        <div class="drawer-section-label">👤 HESABIM</div>
+        <div class="drawer-section-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>HESAB VƏ PROFİL</span>
+        </div>
         <button type="button" id="drawer-btn-google-login" class="drawer-auth-btn">
-          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
           <span>Google ilə Daxil Ol</span>
         </button>
 
         <div id="drawer-user-card" class="drawer-user-card hidden">
           <div class="drawer-user-info">
-            <span id="drawer-user-avatar" class="drawer-avatar">🍿</span>
+            <span id="drawer-user-avatar" class="drawer-avatar">
+              <img src="assets/characters/heisenberg.jpg" alt="Avatar">
+            </span>
             <div class="drawer-user-meta">
               <strong id="drawer-user-name">İstifadəçi</strong>
               <span id="drawer-user-email">Google Hesabı Aktivdir</span>
             </div>
           </div>
-          <button type="button" id="drawer-btn-logout" class="drawer-logout-btn">Hesabdan Çıx</button>
+          <button type="button" id="drawer-btn-logout" class="drawer-logout-btn">Çıxış</button>
         </div>
       </div>
 
-      <!-- 2. MOBİL TƏTBİQİ YÜKLƏ (APK / iOS) -->
-      <div class="drawer-section">
-        <div class="drawer-section-label">📱 MOBİL TƏTBİQ (APK &amp; iOS)</div>
-        <button type="button" id="drawer-btn-install-app" class="drawer-install-apk-card">
-          <span class="drawer-apk-badge">📲</span>
-          <div class="drawer-apk-text">
-            <strong>Tətbiqi Telefona Yüklə (APK)</strong>
-            <span>Tam ekran, sürətli və kəsintisiz səs</span>
+      <!-- 2. HƏRƏKƏTLİ VƏ SƏSLİ KULT KİNO OBRAZLARI VİTRİNİ -->
+      <div class="drawer-section drawer-anim-chars-section">
+        <div class="drawer-section-header-row">
+          <div class="drawer-section-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            <span>CANLI KİNO OBRAZLARI</span>
           </div>
-          <span class="drawer-apk-arrow">⬇</span>
-        </button>
+          <span class="drawer-anim-hint">Toxun &amp; Dinlə</span>
+        </div>
+
+        <div class="drawer-floating-heads" id="drawer-floating-heads">
+          <button type="button" class="drawer-head-orb active" data-drawer-char="heisenberg" style="--float-delay: 0s;">
+            <div class="dho-avatar-wrap">
+              <img src="assets/characters/heisenberg.jpg" alt="Heisenberg">
+              <span class="dho-pulse-ring"></span>
+            </div>
+            <span class="dho-name">Heisenberg</span>
+          </button>
+
+          <button type="button" class="drawer-head-orb" data-drawer-char="godfather" style="--float-delay: -0.7s;">
+            <div class="dho-avatar-wrap">
+              <img src="assets/characters/godfather.jpg" alt="Corleone">
+              <span class="dho-pulse-ring"></span>
+            </div>
+            <span class="dho-name">Corleone</span>
+          </button>
+
+          <button type="button" class="drawer-head-orb" data-drawer-char="batman" style="--float-delay: -1.4s;">
+            <div class="dho-avatar-wrap">
+              <img src="assets/characters/batman.jpg" alt="Batman">
+              <span class="dho-pulse-ring"></span>
+            </div>
+            <span class="dho-name">Batman</span>
+          </button>
+
+          <button type="button" class="drawer-head-orb" data-drawer-char="cyberpunk" style="--float-delay: -2.1s;">
+            <div class="dho-avatar-wrap">
+              <img src="assets/characters/cyberpunk.jpg" alt="Neo">
+              <span class="dho-pulse-ring"></span>
+            </div>
+            <span class="dho-name">Neo</span>
+          </button>
+
+          <button type="button" class="drawer-head-orb" data-drawer-char="detective" style="--float-delay: -2.8s;">
+            <div class="dho-avatar-wrap">
+              <img src="assets/characters/detective.jpg" alt="Cohle">
+              <span class="dho-pulse-ring"></span>
+            </div>
+            <span class="dho-name">Cohle</span>
+          </button>
+        </div>
+
+        <div class="drawer-char-quote-bar" id="drawer-char-quote-bar">
+          <div class="dcqb-text">
+            <strong id="drawer-char-live-name">WALTER WHITE • BREAKING BAD</strong>
+            <span id="drawer-char-live-quote">"I am the one who knocks."</span>
+          </div>
+          <button type="button" class="dcqb-play-btn" id="btn-drawer-char-voice" title="Replikaya qulaq as">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </button>
+        </div>
       </div>
 
-      <!-- 3. BÖLMƏLƏR VƏ ƏYLƏNCƏ -->
+      <!-- 3. KİNOTEATR BÖLMƏLƏRİ (Vektor İkonlu) -->
       <div class="drawer-section">
-        <div class="drawer-section-label">🎬 KİNOTEATR BÖLMƏLƏRİ</div>
+        <div class="drawer-section-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <span>KİNOTEATR BÖLMƏLƏRİ</span>
+        </div>
         <nav class="drawer-nav-list">
           <button type="button" class="drawer-nav-item" id="drawer-link-characters">
-            <span class="dn-icon">🎭</span>
-            <span class="dn-text">Kino Xarakterləri &amp; Avatarlar</span>
+            <span class="dn-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            </span>
+            <span class="dn-text">Kino Obrazları Dosyesi</span>
             <span class="dn-chevron">›</span>
           </button>
           <button type="button" class="drawer-nav-item" id="drawer-link-watchlist">
-            <span class="dn-icon">🎡</span>
-            <span class="dn-text">Nəyə Baxaq? (Çarxıfələk)</span>
+            <span class="dn-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="3" x2="12" y2="10"/><line x1="18.36" y1="5.64" x2="13.41" y2="10.59"/></svg>
+            </span>
+            <span class="dn-text">Nəyə Baxaq? (Ruletka)</span>
             <span class="dn-chevron">›</span>
           </button>
           <button type="button" class="drawer-nav-item" id="drawer-link-history">
-            <span class="dn-icon">📜</span>
+            <span class="dn-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+            </span>
             <span class="dn-text">Baxılmış Filmlər Arxivi</span>
             <span class="dn-chevron">›</span>
           </button>
           <button type="button" class="drawer-nav-item" id="drawer-link-how">
-            <span class="dn-icon">❓</span>
-            <span class="dn-text">Necə İşləyir? (3 Addım)</span>
+            <span class="dn-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </span>
+            <span class="dn-text">Sistem Bələdçisi (3 Addım)</span>
             <span class="dn-chevron">›</span>
           </button>
         </nav>
@@ -1816,39 +1862,42 @@
 
       <!-- 4. GÖRÜNÜŞ, TEMA VƏ DİL TƏNZİMLƏMƏLƏRİ -->
       <div class="drawer-section">
-        <div class="drawer-section-label">⚙️ TƏNZİMLƏMƏLƏR</div>
+        <div class="drawer-section-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>TƏNZİMLƏMƏLƏR</span>
+        </div>
 
         <!-- Gecə / Gündüz Rejimi -->
         <div class="drawer-setting-row">
-          <span class="ds-label">🌓 Görünüş Rejimi:</span>
+          <span class="ds-label">Görünüş Rejimi</span>
           <button type="button" id="drawer-btn-mode-toggle" class="drawer-mode-switch">
-            <span id="drawer-mode-icon">☀️</span>
-            <span id="drawer-mode-text">Dark Rejim</span>
+            <span id="drawer-mode-icon"></span>
+            <span id="drawer-mode-text">Gecə Rejimi</span>
           </button>
         </div>
 
         <!-- Kinoteatr Teması -->
         <div class="drawer-setting-col">
-          <span class="ds-label">🎨 Kinoteatr Mövzusu (Tema):</span>
+          <span class="ds-label">Kinoteatr Atmosferi</span>
           <select id="drawer-theme-select" class="drawer-theme-select">
-            <option value="theme-netflix">🎬 Cinema Premier (Netflix)</option>
-            <option value="theme-batman">🦇 The Dark Knight (Gotham)</option>
-            <option value="theme-interstellar">🌌 Interstellar (Gargantua)</option>
-            <option value="theme-matrix">🕶️ The Matrix (Cyber Terminal)</option>
-            <option value="theme-breaking-bad">🧪 Breaking Bad (Heisenberg)</option>
-            <option value="theme-got">❄️ Winterfell (Game of Thrones)</option>
-            <option value="theme-spiderman">🕷️ Marvel MCU (Stark Tech)</option>
+            <option value="theme-netflix">Cinema Premier (Crimson)</option>
+            <option value="theme-batman">The Dark Knight (Gotham)</option>
+            <option value="theme-interstellar">Interstellar (Gargantua)</option>
+            <option value="theme-matrix">The Matrix (Cyber Terminal)</option>
+            <option value="theme-breaking-bad">Breaking Bad (Heisenberg)</option>
+            <option value="theme-got">Winterfell (North)</option>
+            <option value="theme-spiderman">Stark Tech (Clean)</option>
           </select>
         </div>
 
         <!-- Dil Seçimi -->
         <div class="drawer-setting-col">
-          <span class="ds-label">🌐 Dil Seçimi (Language):</span>
+          <span class="ds-label">İnterfeys Dili</span>
           <div class="drawer-lang-grid">
-            <button type="button" class="drawer-lang-btn" data-lang="az">🇦🇿 AZ</button>
-            <button type="button" class="drawer-lang-btn" data-lang="tr">🇹🇷 TR</button>
-            <button type="button" class="drawer-lang-btn" data-lang="en">🇬🇧 EN</button>
-            <button type="button" class="drawer-lang-btn" data-lang="ru">🇷🇺 RU</button>
+            <button type="button" class="drawer-lang-btn" data-lang="az">AZ</button>
+            <button type="button" class="drawer-lang-btn" data-lang="tr">TR</button>
+            <button type="button" class="drawer-lang-btn" data-lang="en">EN</button>
+            <button type="button" class="drawer-lang-btn" data-lang="ru">RU</button>
           </div>
         </div>
       </div>
@@ -1867,7 +1916,7 @@
         <div class="install-modal-brand">
           <img src="assets/icon-vector.svg" alt="OneCouch App" class="install-modal-icon">
           <div>
-            <h2>📲 Mobil Tətbiq</h2>
+            <h2>Mobil Tətbiq</h2>
             <span class="install-modal-sub">Android (.APK) &amp; iPhone (iOS)</span>
           </div>
         </div>
@@ -1876,19 +1925,19 @@
 
       <div class="install-modal-body">
         <div class="install-perks-grid">
-          <div class="install-perk"><span>🎙️</span> <strong>Kəsintisiz Səs</strong></div>
-          <div class="install-perk"><span>🎬</span> <strong>Tam Ekran</strong></div>
-          <div class="install-perk"><span>⚡</span> <strong>0ms Açılış</strong></div>
+          <div class="install-perk"><strong>Kəsintisiz Səs</strong></div>
+          <div class="install-perk"><strong>Tam Ekran</strong></div>
+          <div class="install-perk"><strong>Sürətli Açılış</strong></div>
         </div>
 
         <!-- Birbaşa Quraşdır Düyməsi (Android / Chrome WebAPK) -->
         <button type="button" id="btn-trigger-native-install" class="btn-install-primary-action">
-          <span>📥 Tətbiqi İndi Quraşdır (APK)</span>
+          <span>Tətbiqi İndi Quraşdır (APK)</span>
         </button>
 
         <div class="install-guides-box">
           <div class="install-guide-card">
-            <h4>🤖 Android Telefonlarda (Chrome / Samsung):</h4>
+            <h4>Android Telefonlarda (Chrome / Samsung):</h4>
             <ol>
               <li>Yuxarıdakı <strong>"Tətbiqi İndi Quraşdır (APK)"</strong> düyməsinə toxunun.</li>
               <li>Və ya brauzerin sağ üst <strong>⋮ (Üç nöqtə)</strong> menyusundan <strong>"Tətbiqi quraşdır"</strong> seçin.</li>
@@ -1896,10 +1945,10 @@
           </div>
 
           <div class="install-guide-card">
-            <h4>🍏 iPhone / iPad (Safari):</h4>
+            <h4>iPhone / iPad (Safari):</h4>
             <ol>
-              <li>Safari-nin aşağısındakı <strong>Paylaş (Share ⬆️)</strong> düyməsinə toxunun.</li>
-              <li><strong>"Ana Ekrana Əlavə Et" (Add to Home Screen ➕)</strong> seçib <strong>"Add"</strong> basın.</li>
+              <li>Safari-nin aşağısındakı <strong>Paylaş (Share)</strong> düyməsinə toxunun.</li>
+              <li><strong>"Ana Ekrana Əlavə Et" (Add to Home Screen)</strong> seçib <strong>"Add"</strong> basın.</li>
             </ol>
           </div>
         </div>
@@ -1916,7 +1965,7 @@
         <button type="button" class="btn-modal-back" onclick="closeModal('modal-how-it-works')">
           <span>◀ Geri</span>
         </button>
-        <h2>❓ Necə İşləyir?</h2>
+        <h2>Sistem Bələdçisi</h2>
         <button class="modal-close" onclick="closeModal('modal-how-it-works')">✕</button>
       </div>
       <div class="how-modal-steps">
@@ -1930,14 +1979,14 @@
         <div class="how-modal-step">
           <span class="hms-num">02</span>
           <div>
-            <h4>Səsli Danışığı Aktivləşdirin 🎙️</h4>
+            <h4>Səsli Danışığı Aktivləşdirin</h4>
             <p>Otaqda <strong>"Səsli Danışığa Qoşul"</strong> düyməsinə toxunun — filmin səsi boğulmadan dostlarınızla canlı danışın.</p>
           </div>
         </div>
         <div class="how-modal-step">
           <span class="hms-num">03</span>
           <div>
-            <h4>Birlikdə Sinxron İzləyin 🍿</h4>
+            <h4>Birlikdə Sinxron İzləyin</h4>
             <p>YouTube, birbaşa film linki və ya ekran paylaşımı ilə eyni saniyədə birlikdə izləyin və çatda yazışın.</p>
           </div>
         </div>
@@ -1949,6 +1998,6 @@
   <audio id="remote-voice-audio" autoplay playsinline></audio>
 
   <!-- Əsas Tətbiq Skripti -->
-  <script src="app.js?v=11.0"></script>
+  <script src="app.js?v=12.0"></script>
 </body>
 </html>
