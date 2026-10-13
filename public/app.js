@@ -281,7 +281,92 @@ const I18N = {
     noticeLogin: '👤 Xoş gəldiniz',
     noticeRoomReq: '⚠️ Zəhmət olmasa otaq kodunu daxil edin!',
     noticeReturnLobby: '🛋️ Əsas ekrana qayıtdınız',
-    confirmLeave: 'Kino otağından çıxıb əsas ekrana (Lobby) qayıtmaq istəyirsiniz?'
+    confirmLeave: 'Kino otağından çıxıb əsas ekrana (Lobby) qayıtmaq istəyirsiniz?',
+    mobTopActionAccount: 'Hesab',
+    mobTopActionLogin: 'Giriş',
+    mobApkBtn: 'Tətbiqi Yüklə (APK)',
+    mobFullGallery: 'Tam Qalereya',
+    mobVoiceBtn: 'Səs',
+    mobUserLabel: 'İŞTİRAKÇI LƏQƏBİ',
+    mobUserPlaceholder: 'Ləqəbinizi daxil edin...',
+    mobTabJoin: 'Otağa Qoşul',
+    mobTabCreate: 'Yeni Zal Yarat',
+    mobRoomPlaceholder: 'Otaq kodu və ya dəvət linki...',
+    mobBtnPaste: 'Yapışdır',
+    mobBtnJoin: 'SEANSA DAXİL OL',
+    mobPerkStream: 'Sinxron Yayım',
+    mobPerkVoice: 'Canlı Akustika',
+    mobPerkPrivate: 'Tam Nəzarət',
+    mobHostPrompt: 'Otaq yaratmaq üçün Google hesabınızla təsdiqləyin',
+    mobHostActive: 'Google Hesabı Aktivdir',
+    mobBtnCreateHost: 'ÖZƏL KİNO ZALINI BAŞLAT',
+    mobBtnCreateGuest: 'GOOGLE İLƏ DAXİL OL & ZAL AÇ',
+    dockMenu: 'Menyu',
+    dockChars: 'Obrazlar',
+    dockWheel: 'Ruletka',
+    dockHistory: 'Arxiv',
+    drawerClose: 'Geri',
+    drawerAuthLabel: 'HESAB VƏ PROFİL',
+    drawerGoogleBtn: 'Google ilə Daxil Ol',
+    drawerLogoutBtn: 'Çıxış',
+    drawerSecChars: 'CANLI KİNO OBRAZLARI',
+    drawerAnimHint: 'Toxun & Dinlə',
+    drawerSecNav: 'KİNOTEATR BÖLMƏLƏRİ',
+    drawerLinkChars: 'Kino Obrazları Dosyesi',
+    drawerLinkWheel: 'Nəyə Baxaq? (Ruletka)',
+    drawerLinkHistory: 'Baxılmış Filmlər Arxivi',
+    drawerLinkHow: 'Sistem Bələdçisi (3 Addım)',
+    drawerSecSettings: 'TƏNZİMLƏMƏLƏR',
+    drawerModeLabel: 'Görünüş Rejimi',
+    drawerModeNight: 'Gecə Rejimi',
+    drawerModeDay: 'Gündüz Rejimi',
+    drawerThemeLabel: 'Kinoteatr Atmosferi',
+    drawerLangLabel: 'İnterfeys Dili',
+    roomTabChat: '💬 Canlı Çat',
+    roomTabSource: '🎬 Video Qoş',
+    roomTabUsers: '👥 Otaqdakılar',
+    modalBack: '◀ Geri',
+    modalWheelTitle: '🎡 Nəyə Baxaq?',
+    modalWheelDesc: 'Filmləri əlavə edin və çarxı fırladaraq şansınızı sınayın!',
+    modalWheelPlaceholder: 'Film adı yazın (məs: Avengers)',
+    modalWheelAdd: '+ Əlavə Et',
+    modalWheelSpin: '🎯 ÇARXI FIRLAT!',
+    modalHistoryTitle: '📜 Baxdığımız Filmlər',
+    modalHistoryDesc: 'İzlədiyiniz filmləri və verdiyiniz qiymətləri arxivdə qeyd edin.',
+    modalHistoryAdd: 'Arxivə Əlavə Et',
+    modalAuthTitle: 'Google ilə Giriş',
+    modalAuthDesc: 'Yeni kino otağı yaratmaq üçün Google hesabı tələb olunur. Qeydiyyatsız yalnız mövcud otaqlara qoşula bilərsiniz.',
+    modalAuthContinue: 'Google ilə Davam Et',
+    modalInstallTitle: 'Mobil Tətbiq',
+    modalInstallSub: 'Android (.APK) & iPhone (iOS)',
+    modalInstallBtn: 'Tətbiqi İndi Quraşdır (APK)',
+    mobChars: {
+      heisenberg: {
+        title: 'WALTER WHITE',
+        filmTag: 'BREAKING BAD • KRİMİNAL DRAM',
+        quote: '«Mən təhlükədə deyiləm, Skayler. Təhlükənin özü mənəm.»'
+      },
+      godfather: {
+        title: 'DON VİTO CORLEONE',
+        filmTag: 'XAÇ ATASI • KULT KLASSİKA',
+        quote: '«Ona rədd edə bilməyəcəyi bir təklif edəcəyəm.»'
+      },
+      batman: {
+        title: 'QARANLIQ CƏNGAVƏR',
+        filmTag: 'QOTEM NOİR • DC KİNOSU',
+        quote: '«Mən qisasam. Mən gecəyəm. Mən Batmanəm.»'
+      },
+      cyberpunk: {
+        title: 'NEO • SEÇİLMİŞ',
+        filmTag: 'MATRIX • KİBERPANK',
+        quote: '«Qaşıq əslində yoxdur. Zəhnini azad et.»'
+      },
+      detective: {
+        title: 'RUST COHLE',
+        filmTag: 'TRUE DETECTIVE • MİSTİK NOİR',
+        quote: '«Zaman düz bir çevrədir. Hər şey təkrarlanır.»'
+      }
+    }
   },
   tr: {
     langLabel: 'TR',
@@ -393,7 +478,92 @@ const I18N = {
     noticeLogin: '👤 Hoş geldiniz',
     noticeRoomReq: '⚠️ Lütfen oda kodunu girin!',
     noticeReturnLobby: '🛋️ Ana ekrana dönüldü',
-    confirmLeave: 'Sinema odasından çıkıp ana ekrana (Lobi) dönmek istiyor musunuz?'
+    confirmLeave: 'Sinema odasından çıkıp ana ekrana (Lobi) dönmek istiyor musunuz?',
+    mobTopActionAccount: 'Hesap',
+    mobTopActionLogin: 'Giriş',
+    mobApkBtn: 'Uygulamayı İndir (APK)',
+    mobFullGallery: 'Tüm Galeri',
+    mobVoiceBtn: 'Ses',
+    mobUserLabel: 'KATILIMCI NİCKİ',
+    mobUserPlaceholder: 'Takma adınızı girin...',
+    mobTabJoin: 'Odaya Katıl',
+    mobTabCreate: 'Yeni Salon Aç',
+    mobRoomPlaceholder: 'Oda kodu veya davet linki...',
+    mobBtnPaste: 'Yapıştır',
+    mobBtnJoin: 'SEANSA KATIL',
+    mobPerkStream: 'Senkron Yayın',
+    mobPerkVoice: 'Canlı Akustik',
+    mobPerkPrivate: 'Tam Kontrol',
+    mobHostPrompt: 'Oda oluşturmak için Google hesabınızla giriş yapın',
+    mobHostActive: 'Google Hesabı Aktif',
+    mobBtnCreateHost: 'ÖZEL SİNEMA SALONUNU BAŞLAT',
+    mobBtnCreateGuest: 'GOOGLE İLE GİRİŞ YAP VE ODA AÇ',
+    dockMenu: 'Menü',
+    dockChars: 'Karakterler',
+    dockWheel: 'Rulet',
+    dockHistory: 'Geçmiş',
+    drawerClose: 'Geri',
+    drawerAuthLabel: 'HESAP VE PROFİL',
+    drawerGoogleBtn: 'Google ile Giriş Yap',
+    drawerLogoutBtn: 'Çıkış Yap',
+    drawerSecChars: 'CANLI SİNEMA KARAKTERLERİ',
+    drawerAnimHint: 'Dokun & Dinle',
+    drawerSecNav: 'SİNEMA BÖLÜMLERİ',
+    drawerLinkChars: 'Sinema Karakterleri Dosyası',
+    drawerLinkWheel: 'Ne İzlesek? (Rulet)',
+    drawerLinkHistory: 'İzlenen Filmler Arşivi',
+    drawerLinkHow: 'Sistem Rehberi (3 Adım)',
+    drawerSecSettings: 'AYARLAR',
+    drawerModeLabel: 'Görünüm Modu',
+    drawerModeNight: 'Gece Modu',
+    drawerModeDay: 'Gündüz Modu',
+    drawerThemeLabel: 'Sinema Atmosferi',
+    drawerLangLabel: 'Arayüz Dili',
+    roomTabChat: '💬 Canlı Sohbet',
+    roomTabSource: '🎬 Video Ekle',
+    roomTabUsers: '👥 Odadakiler',
+    modalBack: '◀ Geri',
+    modalWheelTitle: '🎡 Ne İzlesek?',
+    modalWheelDesc: 'Filmleri ekleyin ve çarkı çevirerek şansınızı deneyin!',
+    modalWheelPlaceholder: 'Film adı yazın (örn: Avengers)',
+    modalWheelAdd: '+ Ekle',
+    modalWheelSpin: '🎯 ÇARKI ÇEVİR!',
+    modalHistoryTitle: '📜 İzlediğimiz Filmler',
+    modalHistoryDesc: 'İzlediğiniz filmleri ve verdiğiniz puanları arşivde saklayın.',
+    modalHistoryAdd: 'Arşive Ekle',
+    modalAuthTitle: 'Google ile Giriş',
+    modalAuthDesc: 'Yeni sinema odası açmak için Google hesabı gereklidir. Kayıtsız yalnızca mevcut odalara katılabilirsiniz.',
+    modalAuthContinue: 'Google ile Devam Et',
+    modalInstallTitle: 'Mobil Uygulama',
+    modalInstallSub: 'Android (.APK) & iPhone (iOS)',
+    modalInstallBtn: 'Uygulamayı Şimdi Yükle (APK)',
+    mobChars: {
+      heisenberg: {
+        title: 'WALTER WHITE',
+        filmTag: 'BREAKING BAD • SUÇ VE DRAMA',
+        quote: '«Ben tehlikede değilim, Skyler. Tehlikenin ta kendisiyim.»'
+      },
+      godfather: {
+        title: 'DON VITO CORLEONE',
+        filmTag: 'BABA • KÜLT KLASİK',
+        quote: '«Ona reddedemeyeceği bir teklif yapacağım.»'
+      },
+      batman: {
+        title: 'KARA ŞÖVALYE',
+        filmTag: 'GOTHAM NOIR • DC SİNEMA',
+        quote: '«Ben intikamım. Ben geceyim. Ben Batman\'im.»'
+      },
+      cyberpunk: {
+        title: 'NEO • SEÇİLMİŞ KİŞİ',
+        filmTag: 'MATRIX • SİBERPANK',
+        quote: '«Aslında kaşık yok. Zihnini özgür bırak.»'
+      },
+      detective: {
+        title: 'RUST COHLE',
+        filmTag: 'TRUE DETECTIVE • GİZEMLİ NOİR',
+        quote: '«Zaman düz bir çemberdir. Yaşananlar tekrarlanır.»'
+      }
+    }
   },
   en: {
     langLabel: 'EN',
@@ -505,7 +675,92 @@ const I18N = {
     noticeLogin: '👤 Welcome',
     noticeRoomReq: '⚠️ Please enter room code!',
     noticeReturnLobby: '🛋️ Returned to Lobby',
-    confirmLeave: 'Do you want to leave the cinema room and return to the lobby?'
+    confirmLeave: 'Do you want to leave the cinema room and return to the lobby?',
+    mobTopActionAccount: 'Account',
+    mobTopActionLogin: 'Sign In',
+    mobApkBtn: 'Download App (APK)',
+    mobFullGallery: 'Full Gallery',
+    mobVoiceBtn: 'Voice',
+    mobUserLabel: 'PARTICIPANT NICKNAME',
+    mobUserPlaceholder: 'Enter your nickname...',
+    mobTabJoin: 'Join Room',
+    mobTabCreate: 'Create Room',
+    mobRoomPlaceholder: 'Room code or invite link...',
+    mobBtnPaste: 'Paste',
+    mobBtnJoin: 'ENTER SESSION',
+    mobPerkStream: 'Sync Stream',
+    mobPerkVoice: 'Crystal Voice',
+    mobPerkPrivate: 'Full Control',
+    mobHostPrompt: 'Sign in with Google to create a cinema room',
+    mobHostActive: 'Google Account Active',
+    mobBtnCreateHost: 'LAUNCH PRIVATE CINEMA',
+    mobBtnCreateGuest: 'SIGN IN WITH GOOGLE & CREATE',
+    dockMenu: 'Menu',
+    dockChars: 'Characters',
+    dockWheel: 'Roulette',
+    dockHistory: 'History',
+    drawerClose: 'Back',
+    drawerAuthLabel: 'ACCOUNT & PROFILE',
+    drawerGoogleBtn: 'Sign in with Google',
+    drawerLogoutBtn: 'Sign Out',
+    drawerSecChars: 'LIVE CINEMA ICONS',
+    drawerAnimHint: 'Tap & Listen',
+    drawerSecNav: 'CINEMA SECTIONS',
+    drawerLinkChars: 'Cinema Character Dossier',
+    drawerLinkWheel: 'What to Watch? (Roulette)',
+    drawerLinkHistory: 'Watched Movies Archive',
+    drawerLinkHow: 'How It Works (3 Steps)',
+    drawerSecSettings: 'SETTINGS',
+    drawerModeLabel: 'Display Mode',
+    drawerModeNight: 'Dark Mode',
+    drawerModeDay: 'Light Mode',
+    drawerThemeLabel: 'Cinema Atmosphere',
+    drawerLangLabel: 'Interface Language',
+    roomTabChat: '💬 Live Chat',
+    roomTabSource: '🎬 Add Video',
+    roomTabUsers: '👥 In Room',
+    modalBack: '◀ Back',
+    modalWheelTitle: '🎡 What to Watch?',
+    modalWheelDesc: 'Add movies and spin the wheel to test your luck!',
+    modalWheelPlaceholder: 'Enter movie name (e.g. Avengers)',
+    modalWheelAdd: '+ Add',
+    modalWheelSpin: '🎯 SPIN THE WHEEL!',
+    modalHistoryTitle: '📜 Watched Movies',
+    modalHistoryDesc: 'Keep track of watched movies and ratings in your archive.',
+    modalHistoryAdd: 'Add to Archive',
+    modalAuthTitle: 'Sign in with Google',
+    modalAuthDesc: 'Google account is required to create a cinema room. Without signing in, you can only join existing rooms.',
+    modalAuthContinue: 'Continue with Google',
+    modalInstallTitle: 'Mobile App',
+    modalInstallSub: 'Android (.APK) & iPhone (iOS)',
+    modalInstallBtn: 'Install App Now (APK)',
+    mobChars: {
+      heisenberg: {
+        title: 'WALTER WHITE',
+        filmTag: 'BREAKING BAD • CRIME DRAMA',
+        quote: '"I am not in danger, Skyler. I am the danger."'
+      },
+      godfather: {
+        title: 'DON VITO CORLEONE',
+        filmTag: 'THE GODFATHER • CULT CLASSIC',
+        quote: '"I\'m gonna make him an offer he can\'t refuse."'
+      },
+      batman: {
+        title: 'THE DARK KNIGHT',
+        filmTag: 'GOTHAM NOIR • DC CINEMA',
+        quote: '"I am vengeance. I am the night."'
+      },
+      cyberpunk: {
+        title: 'NEO • THE ONE',
+        filmTag: 'THE MATRIX • CYBERPUNK',
+        quote: '"There is no spoon. Free your mind."'
+      },
+      detective: {
+        title: 'RUST COHLE',
+        filmTag: 'TRUE DETECTIVE • MYSTERY NOIR',
+        quote: '"Time is a flat circle."'
+      }
+    }
   },
   ru: {
     langLabel: 'RU',
@@ -617,7 +872,92 @@ const I18N = {
     noticeLogin: '👤 Добро пожаловать',
     noticeRoomReq: '⚠️ Пожалуйста, введите код комнаты!',
     noticeReturnLobby: '🛋️ Возврат на главный экран',
-    confirmLeave: 'Вы действительно хотите покинуть кинокомнату и вернуться в лобби?'
+    confirmLeave: 'Вы действительно хотите покинуть кинокомнату и вернуться в лобби?',
+    mobTopActionAccount: 'Аккаунт',
+    mobTopActionLogin: 'Вход',
+    mobApkBtn: 'Скачать Приложение (APK)',
+    mobFullGallery: 'Вся Галерея',
+    mobVoiceBtn: 'Голос',
+    mobUserLabel: 'НИКНЕЙМ УЧАСТНИКА',
+    mobUserPlaceholder: 'Введите ваш никнейм...',
+    mobTabJoin: 'Войти в Комнату',
+    mobTabCreate: 'Создать Комнату',
+    mobRoomPlaceholder: 'Код комнаты или ссылка...',
+    mobBtnPaste: 'Вставить',
+    mobBtnJoin: 'ВОЙТИ В СЕАНС',
+    mobPerkStream: 'Синхронный Стрим',
+    mobPerkVoice: 'Живая Связь',
+    mobPerkPrivate: 'Полный Контроль',
+    mobHostPrompt: 'Войдите через Google, чтобы создать комнату',
+    mobHostActive: 'Google Аккаунт Активен',
+    mobBtnCreateHost: 'ЗАПУСТИТЬ КИНОЗАЛ',
+    mobBtnCreateGuest: 'ВОЙТИ ЧЕРЕЗ GOOGLE И СОЗДАТЬ',
+    dockMenu: 'Меню',
+    dockChars: 'Герои',
+    dockWheel: 'Рулетка',
+    dockHistory: 'Архив',
+    drawerClose: 'Назад',
+    drawerAuthLabel: 'АККАУНТ И ПРОФИЛЬ',
+    drawerGoogleBtn: 'Войти через Google',
+    drawerLogoutBtn: 'Выйти',
+    drawerSecChars: 'ЖИВЫЕ КИНОГЕРОИ',
+    drawerAnimHint: 'Нажми и Слушай',
+    drawerSecNav: 'РАЗДЕЛЫ КИНОТЕАТРА',
+    drawerLinkChars: 'Досье Киногероев',
+    drawerLinkWheel: 'Что посмотреть? (Рулетка)',
+    drawerLinkHistory: 'Архив Просмотренных Фильмов',
+    drawerLinkHow: 'Как это работает (3 Шага)',
+    drawerSecSettings: 'НАСТРОЙКИ',
+    drawerModeLabel: 'Режим Отображения',
+    drawerModeNight: 'Ночной Режим',
+    drawerModeDay: 'Дневной Режим',
+    drawerThemeLabel: 'Атмосфера Кинозала',
+    drawerLangLabel: 'Язык Интерфейса',
+    roomTabChat: '💬 Живой Чат',
+    roomTabSource: '🎬 Источник',
+    roomTabUsers: '👥 Участники',
+    modalBack: '◀ Назад',
+    modalWheelTitle: '🎡 Что посмотреть?',
+    modalWheelDesc: 'Добавьте фильмы и крутите колесо удачи!',
+    modalWheelPlaceholder: 'Название фильма (напр: Мстители)',
+    modalWheelAdd: '+ Добавить',
+    modalWheelSpin: '🎯 КРУТИТЬ КОЛЕСО!',
+    modalHistoryTitle: '📜 Просмотренные Фильмы',
+    modalHistoryDesc: 'Сохраняйте просмотренные фильмы и оценки в архиве.',
+    modalHistoryAdd: 'В Архив',
+    modalAuthTitle: 'Вход через Google',
+    modalAuthDesc: 'Для создания комнаты требуется аккаунт Google. Без входа можно подключаться только к существующим комнатам.',
+    modalAuthContinue: 'Продолжить через Google',
+    modalInstallTitle: 'Мобильное Приложение',
+    modalInstallSub: 'Android (.APK) & iPhone (iOS)',
+    modalInstallBtn: 'Установить Приложение (APK)',
+    mobChars: {
+      heisenberg: {
+        title: 'УОЛТЕР УАЙТ',
+        filmTag: 'BREAKING BAD • КРИМИНАЛЬНАЯ ДРАМА',
+        quote: '«Я не в опасности, Скайлер. Я сам опасность.»'
+      },
+      godfather: {
+        title: 'ДОН ВИТО КОРЛЕОНЕ',
+        filmTag: 'КРЁСТНЫЙ ОТЕЦ • КУЛЬТОВАЯ КЛАССИКА',
+        quote: '«Я сделаю ему предложение, от которого он не сможет отказаться.»'
+      },
+      batman: {
+        title: 'ТЁМНЫЙ РЫЦАРЬ',
+        filmTag: 'ГОТЭМ НУАР • КИНОВСЕЛЕННАЯ DC',
+        quote: '«Я — возмездие. Я — ночь. Я — Бэтмен.»'
+      },
+      cyberpunk: {
+        title: 'НЕО • ИЗБРАННЫЙ',
+        filmTag: 'МАТРИЦА • КИБЕРПANK',
+        quote: '«Ложки не существует. Освободи свой разум.»'
+      },
+      detective: {
+        title: 'РАСТ КОУЛ',
+        filmTag: 'НАСТОЯЩИЙ ДЕТЕКТИВ • НУАР',
+        quote: '«Время — это плоский круг. Всё повторяется вновь.»'
+      }
+    }
   }
 };
 
@@ -796,12 +1136,222 @@ function setLanguage(lang) {
     if (span && t.leaveRoomBtn) span.textContent = t.leaveRoomBtn;
   }
 
-  document.querySelectorAll('.lang-option').forEach(opt => {
-    if (opt.getAttribute('data-lang') === lang) {
-      opt.classList.add('active');
-    } else {
-      opt.classList.remove('active');
+  // APK Buttons (Desktop + Mobile)
+  if (el('top-apk-btn-text') && t.mobApkBtn) el('top-apk-btn-text').textContent = t.mobApkBtn;
+
+  // ================= MOBILE & DRAWER TRANSLATIONS =================
+  // Topbar
+  if (el('mob-top-action-label')) {
+    const isLogged = !!(currentUser && currentUser.isGoogle);
+    el('mob-top-action-label').textContent = isLogged
+      ? (currentUser.username.split(' ')[0] || t.mobTopActionAccount || 'Hesab')
+      : (t.mobTopActionLogin || 'Giriş');
+  }
+  const btnMobQuickMode = el('btn-mob-quick-mode');
+  if (btnMobQuickMode && t.drawerModeLabel) {
+    btnMobQuickMode.title = t.drawerModeLabel;
+  }
+
+  // Mobile Showcase
+  const mobGalleryBtn = el('btn-mob-open-char-gallery');
+  if (mobGalleryBtn) {
+    const span = mobGalleryBtn.querySelector('span');
+    if (span && t.mobFullGallery) span.textContent = t.mobFullGallery;
+  }
+  const mobVoiceBtn = el('btn-mob-hero-voice');
+  if (mobVoiceBtn) {
+    const span = mobVoiceBtn.querySelector('span');
+    if (span && t.mobVoiceBtn) span.textContent = t.mobVoiceBtn;
+  }
+
+  // Active Hero Showcase Quote & Tag update based on language
+  if (typeof currentMobCharKey !== 'undefined' && t.mobChars && t.mobChars[currentMobCharKey]) {
+    const cData = t.mobChars[currentMobCharKey];
+    if (el('mob-hero-film-tag') && cData.filmTag) el('mob-hero-film-tag').textContent = cData.filmTag;
+    if (el('mob-hero-char-title') && cData.title) el('mob-hero-char-title').textContent = cData.title;
+    if (el('mob-hero-char-quote') && cData.quote) el('mob-hero-char-quote').textContent = cData.quote;
+    if (el('drawer-char-live-name') && cData.title) el('drawer-char-live-name').textContent = `${cData.title} • ${currentMobCharKey.toUpperCase()}`;
+    if (el('drawer-char-live-quote') && cData.quote) el('drawer-char-live-quote').textContent = cData.quote;
+  }
+
+  // Unified console card
+  const mobUserLabel = document.querySelector('label[for="mob-username-input"]');
+  if (mobUserLabel && t.mobUserLabel) mobUserLabel.textContent = t.mobUserLabel;
+  if (el('mob-username-input') && t.mobUserPlaceholder) el('mob-username-input').placeholder = t.mobUserPlaceholder;
+
+  // Segment Tabs
+  if (el('mob-tab-join')) {
+    const span = el('mob-tab-join').querySelector('span');
+    if (span && t.mobTabJoin) span.textContent = t.mobTabJoin;
+  }
+  if (el('mob-tab-create')) {
+    const span = el('mob-tab-create').querySelector('span');
+    if (span && t.mobTabCreate) span.textContent = t.mobTabCreate;
+  }
+
+  // Pane A (Join)
+  if (el('mob-room-input') && t.mobRoomPlaceholder) el('mob-room-input').placeholder = t.mobRoomPlaceholder;
+  if (el('btn-mob-paste')) {
+    const span = el('btn-mob-paste').querySelector('span');
+    if (span && t.mobBtnPaste) span.textContent = t.mobBtnPaste;
+  }
+  if (el('btn-mob-join-room')) {
+    const span = el('btn-mob-join-room').querySelector('span');
+    if (span && t.mobBtnJoin) span.textContent = t.mobBtnJoin;
+  }
+
+  // Pane B (Create) Perks
+  const perkPills = document.querySelectorAll('.mob-perk-pill');
+  if (perkPills && perkPills.length >= 3) {
+    if (t.mobPerkStream) {
+      const span = perkPills[0].querySelector('span');
+      if (span) span.textContent = t.mobPerkStream;
     }
+    if (t.mobPerkVoice) {
+      const span = perkPills[1].querySelector('span');
+      if (span) span.textContent = t.mobPerkVoice;
+    }
+    if (t.mobPerkPrivate) {
+      const span = perkPills[2].querySelector('span');
+      if (span) span.textContent = t.mobPerkPrivate;
+    }
+  }
+
+  // Create Auth Status & Button text
+  const isLogged = !!(currentUser && currentUser.isGoogle);
+  if (el('mob-host-auth-status')) {
+    el('mob-host-auth-status').innerHTML = isLogged
+      ? `<span class="mob-auth-active-text">${t.mobHostActive || 'Google Hesabı Aktivdir'} (${escapeHtml(currentUser.username)})</span>`
+      : `<span>${t.mobHostPrompt || 'Otaq yaratmaq üçün Google hesabınızla təsdiqləyin'}</span>`;
+  }
+  if (el('mob-create-btn-text')) {
+    el('mob-create-btn-text').textContent = isLogged ? (t.mobBtnCreateHost || 'ÖZƏL KİNO ZALINI BAŞLAT') : (t.mobBtnCreateGuest || 'GOOGLE İLƏ DAXİL OL & ZAL AÇ');
+  }
+
+  // Quick Dock
+  if (el('mob-dock-menu')) {
+    const label = el('mob-dock-menu').querySelector('.mdt-label');
+    if (label && t.dockMenu) label.textContent = t.dockMenu;
+  }
+  if (el('mob-dock-chars')) {
+    const label = el('mob-dock-chars').querySelector('.mdt-label');
+    if (label && t.dockChars) label.textContent = t.dockChars;
+  }
+  if (el('mob-dock-wheel')) {
+    const label = el('mob-dock-wheel').querySelector('.mdt-label');
+    if (label && t.dockWheel) label.textContent = t.dockWheel;
+  }
+  if (el('mob-dock-history')) {
+    const label = el('mob-dock-history').querySelector('.mdt-label');
+    if (label && t.dockHistory) label.textContent = t.dockHistory;
+  }
+
+  // Drawer Translations
+  if (el('btn-close-left-drawer')) {
+    const span = el('btn-close-left-drawer').querySelector('span');
+    if (span && t.drawerClose) span.textContent = t.drawerClose;
+  }
+  const drawerSectionLabels = document.querySelectorAll('.drawer-section-label span');
+  if (drawerSectionLabels && drawerSectionLabels.length >= 4) {
+    if (t.drawerAuthLabel) drawerSectionLabels[0].textContent = t.drawerAuthLabel;
+    if (t.drawerSecChars) drawerSectionLabels[1].textContent = t.drawerSecChars;
+    if (t.drawerSecNav) drawerSectionLabels[2].textContent = t.drawerSecNav;
+    if (t.drawerSecSettings) drawerSectionLabels[3].textContent = t.drawerSecSettings;
+  }
+  if (el('drawer-btn-google-login')) {
+    const span = el('drawer-btn-google-login').querySelector('span');
+    if (span && t.drawerGoogleBtn) span.textContent = t.drawerGoogleBtn;
+  }
+  if (el('drawer-btn-logout') && t.drawerLogoutBtn) {
+    el('drawer-btn-logout').textContent = t.drawerLogoutBtn;
+  }
+  const drawerAnimHint = document.querySelector('.drawer-anim-hint');
+  if (drawerAnimHint && t.drawerAnimHint) drawerAnimHint.textContent = t.drawerAnimHint;
+
+  if (el('drawer-link-characters')) {
+    const txt = el('drawer-link-characters').querySelector('.dn-text');
+    if (txt && t.drawerLinkChars) txt.textContent = t.drawerLinkChars;
+  }
+  if (el('drawer-link-watchlist')) {
+    const txt = el('drawer-link-watchlist').querySelector('.dn-text');
+    if (txt && t.drawerLinkWheel) txt.textContent = t.drawerLinkWheel;
+  }
+  if (el('drawer-link-history')) {
+    const txt = el('drawer-link-history').querySelector('.dn-text');
+    if (txt && t.drawerLinkHistory) txt.textContent = t.drawerLinkHistory;
+  }
+  if (el('drawer-link-how')) {
+    const txt = el('drawer-link-how').querySelector('.dn-text');
+    if (txt && t.drawerLinkHow) txt.textContent = t.drawerLinkHow;
+  }
+
+  const drawerSettingLabels = document.querySelectorAll('.drawer-setting-row .ds-label, .drawer-setting-col .ds-label');
+  if (drawerSettingLabels && drawerSettingLabels.length >= 3) {
+    if (t.drawerModeLabel) drawerSettingLabels[0].textContent = t.drawerModeLabel;
+    if (t.drawerThemeLabel) drawerSettingLabels[1].textContent = t.drawerThemeLabel;
+    if (t.drawerLangLabel) drawerSettingLabels[2].textContent = t.drawerLangLabel;
+  }
+  const isLight = document.documentElement.getAttribute('data-mode') === 'light' || document.body.classList.contains('light-mode');
+  if (el('drawer-mode-text')) {
+    el('drawer-mode-text').textContent = isLight ? (t.drawerModeNight || 'Gecə Rejimi') : (t.drawerModeDay || 'Gündüz Rejimi');
+  }
+
+  // Room Mobile Tabs
+  const rTabChat = document.querySelector('.mob-room-tab[data-mob-room-tab="chat"] span');
+  if (rTabChat && t.roomTabChat) rTabChat.textContent = t.roomTabChat;
+  const rTabSource = document.querySelector('.mob-room-tab[data-mob-room-tab="source"] span');
+  if (rTabSource && t.roomTabSource) rTabSource.textContent = t.roomTabSource;
+  const rTabUsers = document.querySelector('.mob-room-tab[data-mob-room-tab="users"] span');
+  if (rTabUsers && t.roomTabUsers) rTabUsers.textContent = t.roomTabUsers;
+
+  // Modals Back Buttons
+  document.querySelectorAll('.btn-modal-back span').forEach(sp => {
+    if (t.modalBack) sp.textContent = t.modalBack;
+  });
+
+  // Watchlist Modal
+  const wlCard = el('modal-watchlist');
+  if (wlCard) {
+    const h2 = wlCard.querySelector('.modal-header h2');
+    if (h2 && t.modalWheelTitle) h2.textContent = t.modalWheelTitle;
+    const desc = wlCard.querySelector('.modal-desc');
+    if (desc && t.modalWheelDesc) desc.textContent = t.modalWheelDesc;
+    const input = el('input-watchlist-movie');
+    if (input && t.modalWheelPlaceholder) input.placeholder = t.modalWheelPlaceholder;
+    const addBtn = wlCard.querySelector('.btn-add-movie');
+    if (addBtn && t.modalWheelAdd) addBtn.textContent = t.modalWheelAdd;
+    const spinSpan = el('btn-spin-roulette')?.querySelector('span');
+    if (spinSpan && t.modalWheelSpin) spinSpan.textContent = t.modalWheelSpin;
+  }
+
+  // History Modal
+  const histCard = el('modal-history');
+  if (histCard) {
+    const h2 = histCard.querySelector('.modal-header h2');
+    if (h2 && t.modalHistoryTitle) h2.textContent = t.modalHistoryTitle;
+    const desc = histCard.querySelector('.modal-desc');
+    if (desc && t.modalHistoryDesc) desc.textContent = t.modalHistoryDesc;
+    const submitBtn = histCard.querySelector('button[type="submit"]');
+    if (submitBtn && t.modalHistoryAdd) submitBtn.textContent = t.modalHistoryAdd;
+  }
+
+  // Install Modal
+  const instCard = el('modal-app-install');
+  if (instCard) {
+    const h2 = instCard.querySelector('.install-modal-brand h2');
+    if (h2 && t.modalInstallTitle) h2.textContent = t.modalInstallTitle;
+    const sub = instCard.querySelector('.install-modal-sub');
+    if (sub && t.modalInstallSub) sub.textContent = t.modalInstallSub;
+    const trigBtn = el('btn-trigger-native-install')?.querySelector('span');
+    if (trigBtn && t.modalInstallBtn) trigBtn.textContent = t.modalInstallBtn;
+  }
+
+  // Active sync for ALL language buttons (desktop and drawer)
+  document.querySelectorAll('.lang-option').forEach(opt => {
+    opt.classList.toggle('active', opt.getAttribute('data-lang') === lang);
+  });
+  document.querySelectorAll('.drawer-lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
   });
 
   updateUserUI();
@@ -5512,15 +6062,20 @@ function setupMobileAppAndDrawer() {
     });
 
     // 2. Ana ekrandakı Böyük Kino Afişasını axıcı (smooth) keçidlə yenilə
+    const localizedChar = (I18N[currentLang] && I18N[currentLang].mobChars && I18N[currentLang].mobChars[charKey]) || null;
+    const displayTitle = localizedChar ? localizedChar.title : info.fullTitle;
+    const displayFilmTag = localizedChar ? localizedChar.filmTag : info.filmTag;
+    const displayQuote = localizedChar ? localizedChar.quote : info.quote;
+
     const heroStage = document.getElementById('mob-hero-stage');
     const heroImg = document.getElementById('mob-hero-backdrop-img');
     const heroTag = document.getElementById('mob-hero-film-tag');
     const heroTitle = document.getElementById('mob-hero-char-title');
     const heroQuote = document.getElementById('mob-hero-char-quote');
     if (heroImg) heroImg.src = info.img;
-    if (heroTag) heroTag.textContent = info.filmTag;
-    if (heroTitle) heroTitle.textContent = info.fullTitle;
-    if (heroQuote) heroQuote.textContent = info.quote;
+    if (heroTag) heroTag.textContent = displayFilmTag;
+    if (heroTitle) heroTitle.textContent = displayTitle;
+    if (heroQuote) heroQuote.textContent = displayQuote;
 
     if (heroStage && prevKey !== charKey) {
       heroStage.style.transition = '';
@@ -5535,8 +6090,8 @@ function setupMobileAppAndDrawer() {
     const drawerLiveBar = document.getElementById('drawer-char-live-bar');
     const drawerLiveName = document.getElementById('drawer-char-live-name');
     const drawerLiveQuote = document.getElementById('drawer-char-live-quote');
-    if (drawerLiveName) drawerLiveName.textContent = `${info.fullTitle} • ${info.name.toUpperCase()}`;
-    if (drawerLiveQuote) drawerLiveQuote.textContent = info.quote;
+    if (drawerLiveName) drawerLiveName.textContent = `${displayTitle} • ${info.name.toUpperCase()}`;
+    if (drawerLiveQuote) drawerLiveQuote.textContent = displayQuote;
     if (drawerLiveBar && prevKey !== charKey) {
       drawerLiveBar.classList.remove('drawer-quote-glide');
       void drawerLiveBar.offsetWidth;
@@ -5908,13 +6463,14 @@ function setupMobileAppAndDrawer() {
   document.querySelectorAll('.drawer-lang-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const lang = btn.getAttribute('data-lang');
-      const mainLangOpt = document.querySelector(`.lang-option[data-lang="${lang}"]`);
-      if (mainLangOpt) mainLangOpt.click();
-      document.querySelectorAll('.drawer-lang-btn').forEach(b => b.classList.toggle('active', b === btn));
+      if (lang) {
+        setLanguage(lang);
+      }
     });
   });
 
   function syncDrawerUIWithMain() {
+    const t = I18N[currentLang] || I18N.az;
     const drawerUserCard = document.getElementById('drawer-user-card');
     const isLogged = !!(currentUser && currentUser.isGoogle);
 
@@ -5933,15 +6489,15 @@ function setupMobileAppAndDrawer() {
     const mobCreateBtnText = document.getElementById('mob-create-btn-text');
     if (mobHostAuthStatus && mobCreateBtnText) {
       const nextStatusHtml = isLogged
-        ? `<span class="mob-auth-active-text">Google Hesabı Aktivdir (${escapeHtml(currentUser.username)})</span>`
-        : `<span>Otaq yaratmaq üçün Google hesabınızla təsdiqləyin</span>`;
-      const nextBtnText = isLogged ? 'ÖZƏL KİNO ZALINI BAŞLAT' : 'GOOGLE İLƏ DAXİL OL & ZAL AÇ';
+        ? `<span class="mob-auth-active-text">${t.mobHostActive || 'Google Hesabı Aktivdir'} (${escapeHtml(currentUser.username)})</span>`
+        : `<span>${t.mobHostPrompt || 'Otaq yaratmaq üçün Google hesabınızla təsdiqləyin'}</span>`;
+      const nextBtnText = isLogged ? (t.mobBtnCreateHost || 'ÖZƏL KİNO ZALINI BAŞLAT') : (t.mobBtnCreateGuest || 'GOOGLE İLƏ DAXİL OL & ZAL AÇ');
       if (mobHostAuthStatus.innerHTML !== nextStatusHtml) mobHostAuthStatus.innerHTML = nextStatusHtml;
       if (mobCreateBtnText.textContent !== nextBtnText) mobCreateBtnText.textContent = nextBtnText;
     }
     const mobTopLabel = document.getElementById('mob-top-action-label');
     if (mobTopLabel) {
-      mobTopLabel.textContent = isLogged ? (currentUser.username.split(' ')[0] || 'Profil') : 'Giriş';
+      mobTopLabel.textContent = isLogged ? (currentUser.username.split(' ')[0] || t.mobTopActionAccount || 'Hesab') : (t.mobTopActionLogin || 'Giriş');
     }
 
     if (drawerBtnGoogle && drawerUserCard) {
@@ -5951,7 +6507,7 @@ function setupMobileAppAndDrawer() {
         const dName = document.getElementById('drawer-user-name');
         const dEmail = document.getElementById('drawer-user-email');
         if (dName) dName.textContent = currentUser.username || 'İstifadəçi';
-        if (dEmail) dEmail.textContent = currentUser.email || 'Google Hesabı Aktivdir';
+        if (dEmail) dEmail.textContent = currentUser.email || t.mobHostActive || 'Google Hesabı Aktivdir';
       } else {
         drawerBtnGoogle.classList.remove('hidden');
         drawerUserCard.classList.add('hidden');
@@ -5965,7 +6521,7 @@ function setupMobileAppAndDrawer() {
     const isLight = document.documentElement.getAttribute('data-mode') === 'light' || document.body.classList.contains('light-mode');
     const dModeText = document.getElementById('drawer-mode-text');
     if (dModeText) {
-      dModeText.textContent = isLight ? 'Gecə Rejimi' : 'Gündüz Rejimi';
+      dModeText.textContent = isLight ? (t.drawerModeNight || 'Gecə Rejimi') : (t.drawerModeDay || 'Gündüz Rejimi');
     }
     const mobQuickModeSvg = document.getElementById('mob-quick-mode-svg');
     if (mobQuickModeSvg) {
@@ -5980,8 +6536,9 @@ function setupMobileAppAndDrawer() {
     }
   }
 
-  // Başlanğıcda Heisenberg obrazını HD portretlə aktiv et
+  // Başlanğıcda Heisenberg obrazını HD portretlə aktiv et və menyunu bağlı vəziyyətdə saxla
   selectMobileCharacter('heisenberg', { playVoice: false });
+  closeLeftDrawer();
   window.syncMobileUI = syncDrawerUIWithMain;
   syncDrawerUIWithMain();
 

@@ -7564,9 +7564,25 @@ body.theme-netflix .tab-btn.active {
     -webkit-backdrop-filter: none !important;
     background: rgba(5, 6, 11, 0.88) !important;
   }
+  .left-drawer-backdrop.hidden,
+  .modal-backdrop.hidden {
+    display: none !important;
+    pointer-events: none !important;
+  }
 
-  /* GPU Hardware Acceleration bütün hərəkət edən qatlara verilir */
-  .left-side-drawer,
+  /* Sol Menyu (Drawer) - YALNIZ .open olduqda ekrana daxil olur, adi halda solda (-105%) gizlidir */
+  .left-side-drawer {
+    transform: translate3d(-105%, 0, 0) !important;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    will-change: transform;
+  }
+  .left-side-drawer.open {
+    transform: translate3d(0, 0, 0) !important;
+  }
+
+  /* GPU Hardware Acceleration mobil kartlar və afişa üçün */
   .modal-card,
   .mob-hero-stage,
   .mob-hero-backdrop-img,
