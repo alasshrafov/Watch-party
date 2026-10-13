@@ -484,7 +484,7 @@ body.theme-spiderman .spidey-hanging-mascot {
 .nav-menu-link {
   color: #94a3b8 !important;
   text-decoration: none;
-  font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif !important;
+  font-family: 'Inter', 'Plus Jakarta Sans', sans-serif !important;
   font-size: 0.85rem;
   font-weight: 600;
   padding: 7px 16px;
@@ -1480,7 +1480,7 @@ body.theme-spiderman .spidey-hanging-mascot {
   justify-content: center;
 }
 .feature-name {
-  font-family: 'Outfit', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 0.85rem;
   font-weight: 700;
   color: #ffffff !important;
@@ -3669,7 +3669,7 @@ body.theme-breaking-bad .btn-spin { color: #050a07; }
   border: 1px solid rgba(255, 255, 255, 0.4) !important;
   border-radius: 12px;
   color: #0f172a !important;
-  font-family: 'Outfit', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 0.98rem;
   font-weight: 700;
   cursor: pointer;
@@ -3791,7 +3791,7 @@ body.theme-breaking-bad .btn-spin { color: #050a07; }
   margin: 8px 0 4px 0;
   font-size: 1.32rem;
   font-weight: 800;
-  font-family: 'Outfit', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   letter-spacing: -0.02em;
   color: #ffffff !important;
 }
@@ -3809,7 +3809,7 @@ body.theme-breaking-bad .btn-spin { color: #050a07; }
   gap: 8px;
 }
 .action-badge {
-  font-family: 'Outfit', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -3844,7 +3844,7 @@ body.theme-breaking-bad .btn-spin { color: #050a07; }
   justify-content: center;
   text-align: center;
   color: #94a3b8;
-  font-family: 'Outfit', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 0.74rem;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -3919,7 +3919,7 @@ body.theme-breaking-bad .btn-spin { color: #050a07; }
   padding: 13px 22px;
   font-size: 0.98rem;
   font-weight: 800;
-  font-family: 'Outfit', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   background: linear-gradient(135deg, #e50914 0%, #b80710 100%) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
   color: #ffffff !important;
@@ -3947,7 +3947,7 @@ body.theme-breaking-bad .btn-spin { color: #050a07; }
   align-items: center;
   justify-content: center;
   gap: 10px;
-  font-family: 'Outfit', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   letter-spacing: 0.04em;
   box-shadow: 0 6px 22px rgba(229, 9, 20, 0.45);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -4660,7 +4660,7 @@ body.lights-dimmed .player-section {
   font-weight: 900;
   line-height: 1.06;
   letter-spacing: -0.035em;
-  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
   color: #ffffff;
   margin: 0;
   background: linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 50%, #94A3B8 100%);
@@ -4681,7 +4681,7 @@ body.lights-dimmed .player-section {
   text-transform: uppercase;
   color: #e50914;
   margin: 4px 0 2px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 .lobby-hero-subtitle {
   font-size: 1.05rem;
@@ -4701,7 +4701,7 @@ body.lights-dimmed .player-section {
   padding: 14px 28px;
   font-size: 0.96rem;
   border-radius: 12px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   letter-spacing: 0.01em;
 }
 
@@ -5016,11 +5016,17 @@ body.lights-dimmed .player-section {
   margin-bottom: 8px;
   text-transform: uppercase;
 }
+.cine-how-it-works-section,
+.cine-how-it-works-section *,
+.how-modal-steps,
+.how-modal-steps * {
+  font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
 .how-section-title {
   font-size: 2.2rem;
   font-weight: 900;
   letter-spacing: -0.03em;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   color: #ffffff;
   margin: 0 0 8px;
 }
@@ -5064,7 +5070,7 @@ body.lights-dimmed .player-section {
 .step-title {
   font-size: 1.18rem;
   font-weight: 800;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   color: #ffffff;
   margin: 0 0 8px;
 }
@@ -5363,7 +5369,13 @@ body.lights-dimmed .player-section {
 }
 
 /* 7. How It Works Cards in Light Mode */
-[data-mode="light"] #lobby-screen .how-section-title {
+[data-mode="light"] #lobby-screen .cine-how-it-works-section,
+.cine-how-it-works-section *,
+.how-modal-steps,
+.how-modal-steps * {
+  font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+.how-section-title {
   color: #0f172a !important;
 }
 [data-mode="light"] #lobby-screen .how-section-sub {
@@ -5595,7 +5607,7 @@ body.theme-interstellar .btn-primary:hover {
 /* 4. GAME OF THRONES (WINTERFELL) BUTTONS */
 body.theme-got .btn-primary,
 body.theme-got .tab-btn.active {
-  font-family: 'Cinzel', serif !important;
+  font-family: 'Inter', sans-serif !important;
   border-radius: 8px !important;
   background: rgba(14, 165, 233, 0.18) !important;
   backdrop-filter: blur(12px) !important;
@@ -7748,7 +7760,7 @@ body.theme-netflix .tab-btn.active {
     text-align: left;
   }
   .mob-brand-text strong {
-    font-family: 'Cinzel', serif !important;
+    font-family: 'Inter', sans-serif !important;
     font-size: 0.94rem;
     font-weight: 700;
     color: #f8fafc !important;
@@ -8003,7 +8015,7 @@ body.theme-netflix .tab-btn.active {
   }
   .mob-hero-char-title {
     margin: 0;
-    font-family: 'Cinzel', serif;
+    font-family: 'Inter', sans-serif;
     font-size: 1.15rem;
     font-weight: 700;
     letter-spacing: 0.06em;

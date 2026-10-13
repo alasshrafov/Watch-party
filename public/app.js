@@ -6781,7 +6781,50 @@ if (document.readyState === 'loading') {
       setTimeout(syncUserProfile, 500);
     });
   }
+
+  // Rəhbər üçün Gizli Jest (OneCouch loqosuna 5 dəfə sürətli toxunuş)
+  let logoTapCount = 0;
+  let lastLogoTap = 0;
+
+  function onSecretLogoTap() {
+    const now = Date.now();
+    if (now - lastLogoTap < 700) {
+      logoTapCount++;
+    } else {
+      logoTapCount = 1;
+    }
+    lastLogoTap = now;
+
+    if (logoTapCount >= 5) {
+      logoTapCount = 0;
+      const code = prompt('👑 OneCouch Rəhbər Konsolu — Təsdiq Kodunu daxil edin:');
+      if (code) {
+        fetch('/api/admin/verify-secret', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: code.trim() })
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success && data.redirectUrl) {
+            if (data.token) localStorage.setItem('onecouch_admin_token', data.token);
+            window.location.href = data.redirectUrl;
+          } else {
+            alert(data.error || '❌ Keçərsiz rəhbər kodu!');
+          }
+        })
+        .catch(() => {
+          alert('❌ Şəbəkə xətası!');
+        });
+      }
+    }
+  }
+
+  document.querySelectorAll('.brand-logo, .mob-brand-pill, .admin-logo').forEach(el => {
+    el.addEventListener('click', onSecretLogoTap);
+  });
 })();
+
 
 
 

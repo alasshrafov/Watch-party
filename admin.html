@@ -3,25 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>OneCouch Admin Dashboard — İdarəetmə və Statistika</title>
-  <link rel="icon" type="image/svg+xml" href="assets/icon-vector.svg?v=15">
+  <title>OneCouch Rəhbər — İdarəetmə və Dərin Statistika</title>
+  <link rel="icon" type="image/png" href="assets/icon-admin-192.png?v=2">
+  <link rel="apple-touch-icon" href="assets/icon-admin-192.png?v=2">
+  <link rel="manifest" href="/admin-manifest.json?v=2">
+  <meta name="theme-color" content="#080914">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #080914;
-      --bg-card: rgba(14, 18, 36, 0.85);
-      --bg-card-hover: rgba(22, 28, 56, 0.95);
-      --bg-input: rgba(10, 13, 26, 0.9);
-      --border-color: rgba(124, 58, 237, 0.22);
-      --border-glow: rgba(124, 58, 237, 0.45);
+      --bg-dark: #070815;
+      --bg-card: rgba(14, 18, 38, 0.88);
+      --bg-card-hover: rgba(22, 28, 58, 0.95);
+      --bg-input: rgba(10, 13, 28, 0.95);
+      --border-color: rgba(124, 58, 237, 0.25);
+      --border-glow: rgba(124, 58, 237, 0.5);
       --primary: #7c3aed;
       --primary-hover: #9061f9;
       --cyan: #06b6d4;
       --emerald: #10b981;
       --rose: #f43f5e;
-      --amber: #f59e0b;
+      --gold: #f59e0b;
+      --gold-light: #fbbf24;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -35,23 +41,57 @@
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
     }
-    /* Arxa fon radial parlaqlıq */
     .bg-ambient {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       pointer-events: none;
       z-index: 0;
-      background: radial-gradient(circle at 15% 15%, rgba(124, 58, 237, 0.14) 0%, transparent 45%),
-                  radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.12) 0%, transparent 50%),
-                  radial-gradient(circle at 50% 50%, rgba(244, 63, 94, 0.05) 0%, transparent 60%);
+      background: radial-gradient(circle at 10% 10%, rgba(124, 58, 237, 0.16) 0%, transparent 45%),
+                  radial-gradient(circle at 90% 90%, rgba(6, 182, 212, 0.14) 0%, transparent 50%),
+                  radial-gradient(circle at 50% 40%, rgba(245, 158, 11, 0.08) 0%, transparent 60%);
     }
     .app-wrapper {
       position: relative;
       z-index: 1;
-      max-width: 1400px;
+      max-width: 1440px;
       margin: 0 auto;
-      padding: 16px 20px 40px 20px;
+      padding: 14px 18px 40px 18px;
     }
+
+    /* PWA Quraşdırma Zolağı */
+    .admin-install-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 18px;
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.18), rgba(124, 58, 237, 0.22));
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      border-radius: 14px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 20px rgba(245, 158, 11, 0.15);
+    }
+    .aib-text {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: #fef3c7;
+    }
+    .btn-install-admin {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border: none;
+      color: #000;
+      font-weight: 800;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 2px 10px rgba(245, 158, 11, 0.4);
+    }
+
     /* Üst Başlıq */
     .admin-header {
       display: flex;
@@ -61,9 +101,9 @@
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 16px;
-      backdrop-filter: blur(12px);
-      margin-bottom: 20px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      backdrop-filter: blur(14px);
+      margin-bottom: 18px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.45);
     }
     .header-left {
       display: flex;
@@ -71,15 +111,16 @@
       gap: 14px;
     }
     .admin-logo {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #7c3aed, #06b6d4);
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f59e0b, #7c3aed);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.3rem;
-      box-shadow: 0 0 16px rgba(124, 58, 237, 0.5);
+      font-size: 1.4rem;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+      flex-shrink: 0;
     }
     .admin-title-col h1 {
       font-size: 1.15rem;
@@ -92,15 +133,15 @@
     }
     .admin-title-col h1 span.badge {
       font-size: 0.65rem;
-      font-weight: 700;
-      padding: 2px 7px;
+      font-weight: 800;
+      padding: 2px 8px;
       border-radius: 6px;
-      background: rgba(124, 58, 237, 0.25);
-      border: 1px solid var(--border-glow);
-      color: #c4b5fd;
+      background: rgba(245, 158, 11, 0.2);
+      border: 1px solid rgba(245, 158, 11, 0.5);
+      color: var(--gold-light);
     }
     .admin-title-col p {
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       color: var(--text-muted);
     }
     .header-right {
@@ -115,7 +156,7 @@
       padding: 6px 12px;
       border-radius: 20px;
       background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.3);
+      border: 1px solid rgba(16, 185, 129, 0.35);
       font-size: 0.78rem;
       font-weight: 700;
       color: #34d399;
@@ -152,31 +193,27 @@
       background: rgba(124, 58, 237, 0.25);
       border-color: var(--border-glow);
     }
-    .btn-home {
-      background: linear-gradient(135deg, #7c3aed, #06b6d4);
-      border: none;
-      color: #fff;
-    }
+
     /* Tab Menyusu */
     .admin-nav-tabs {
       display: flex;
       gap: 8px;
-      background: rgba(12, 16, 32, 0.7);
+      background: rgba(12, 16, 32, 0.75);
       padding: 6px;
       border-radius: 12px;
       border: 1px solid var(--border-color);
-      margin-bottom: 22px;
+      margin-bottom: 20px;
       overflow-x: auto;
     }
     .nav-tab-btn {
       flex: 1;
-      min-width: 160px;
-      padding: 10px 16px;
+      min-width: 150px;
+      padding: 10px 14px;
       border-radius: 8px;
       background: transparent;
       border: none;
       color: var(--text-muted);
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       font-weight: 700;
       cursor: pointer;
       display: flex;
@@ -185,6 +222,7 @@
       gap: 8px;
       transition: all 0.2s ease;
       font-family: inherit;
+      white-space: nowrap;
     }
     .nav-tab-btn:hover {
       color: #fff;
@@ -195,22 +233,21 @@
       background: linear-gradient(135deg, rgba(124, 58, 237, 0.85), rgba(6, 182, 212, 0.75));
       box-shadow: 0 4px 16px rgba(124, 58, 237, 0.35);
     }
-    /* Tab Məzmunu */
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* KPI Grid */
+    /* 8 Əsas KPI Kartı */
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
     }
     .kpi-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 16px;
-      padding: 18px 20px;
+      padding: 16px 18px;
       backdrop-filter: blur(10px);
       position: relative;
       overflow: hidden;
@@ -230,49 +267,47 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     .kpi-card-title {
-      font-size: 0.78rem;
+      font-size: 0.74rem;
       font-weight: 700;
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
     .kpi-card-icon {
-      font-size: 1.3rem;
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
+      font-size: 1.25rem;
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
       background: rgba(255, 255, 255, 0.05);
       display: flex;
       align-items: center;
       justify-content: center;
     }
     .kpi-card-value {
-      font-size: 2rem;
+      font-size: 1.85rem;
       font-weight: 900;
       letter-spacing: -0.02em;
       color: #fff;
       margin-bottom: 4px;
     }
     .kpi-card-subtitle {
-      font-size: 0.74rem;
+      font-size: 0.72rem;
       color: var(--text-muted);
       display: flex;
       align-items: center;
       gap: 4px;
     }
-    .kpi-card-subtitle strong {
-      color: #34d399;
-    }
+    .kpi-card-subtitle strong { color: #34d399; }
 
-    /* İcmal Qrafik / Detal Kartları */
+    /* Qrafik və Detal Panelləri */
     .dashboard-split-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-bottom: 24px;
+      gap: 18px;
+      margin-bottom: 20px;
     }
     @media (max-width: 900px) {
       .dashboard-split-row { grid-template-columns: 1fr; }
@@ -285,7 +320,7 @@
       backdrop-filter: blur(10px);
     }
     .data-panel-title {
-      font-size: 1rem;
+      font-size: 0.98rem;
       font-weight: 800;
       margin-bottom: 14px;
       display: flex;
@@ -293,35 +328,66 @@
       justify-content: space-between;
       color: #fff;
     }
-    .device-bar-wrap {
-      margin-bottom: 16px;
+
+    /* 24 Saatlıq Pik Fəallıq Qrafiki */
+    .peak-hours-grid {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 110px;
+      padding-top: 10px;
+      margin-bottom: 8px;
     }
-    .device-bar-label {
+    .peak-bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+      position: relative;
+    }
+    .peak-bar-fill {
+      width: 100%;
+      min-height: 4px;
+      border-radius: 3px 3px 0 0;
+      background: linear-gradient(180deg, #06b6d4, #7c3aed);
+      transition: height 0.5s ease;
+    }
+    .peak-bar-col:hover .peak-bar-fill {
+      background: linear-gradient(180deg, #f59e0b, #f43f5e);
+    }
+    .peak-bar-label {
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Tərəqqi Zolaqları */
+    .metric-progress-item {
+      margin-bottom: 12px;
+    }
+    .mpi-header {
       display: flex;
       justify-content: space-between;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
-    .device-progress-track {
-      height: 10px;
+    .mpi-track {
+      height: 8px;
       border-radius: 6px;
       background: rgba(255, 255, 255, 0.08);
       overflow: hidden;
-      display: flex;
     }
-    .device-progress-fill-mob {
-      background: linear-gradient(90deg, #7c3aed, #06b6d4);
+    .mpi-fill {
       height: 100%;
-      transition: width 0.6s ease;
-    }
-    .device-progress-fill-desk {
-      background: linear-gradient(90deg, #f59e0b, #f43f5e);
-      height: 100%;
+      border-radius: 6px;
       transition: width 0.6s ease;
     }
 
-    /* Axtarış Xanası */
+    /* Cədvəllər */
     .search-filter-box {
       display: flex;
       gap: 12px;
@@ -341,10 +407,8 @@
     }
     .search-input:focus {
       border-color: var(--primary-hover);
-      box-shadow: 0 0 12px rgba(124, 58, 237, 0.3);
+      box-shadow: 0 0 12px rgba(124, 58, 237, 0.35);
     }
-
-    /* Cədvəl Dizaynı */
     .table-container {
       overflow-x: auto;
       border-radius: 12px;
@@ -359,7 +423,7 @@
     }
     table.admin-table th {
       background: rgba(18, 23, 46, 0.9);
-      padding: 12px 16px;
+      padding: 12px 14px;
       color: #cbd5e1;
       font-weight: 700;
       text-transform: uppercase;
@@ -368,7 +432,7 @@
       border-bottom: 1px solid var(--border-color);
     }
     table.admin-table td {
-      padding: 12px 16px;
+      padding: 11px 14px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       color: #e2e8f0;
       vertical-align: middle;
@@ -467,7 +531,7 @@
     #admin-lock-screen {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: #080914;
+      background: #070815;
       z-index: 9999;
       display: flex;
       align-items: center;
@@ -477,18 +541,18 @@
     .lock-card {
       max-width: 380px;
       width: 100%;
-      background: rgba(16, 21, 44, 0.95);
+      background: rgba(16, 21, 46, 0.96);
       border: 1px solid var(--border-glow);
       border-radius: 20px;
       padding: 32px 26px;
       text-align: center;
-      box-shadow: 0 16px 60px rgba(0,0,0,0.8), 0 0 30px rgba(124, 58, 237, 0.25);
+      box-shadow: 0 16px 60px rgba(0,0,0,0.8), 0 0 30px rgba(124, 58, 237, 0.3);
     }
     .lock-icon {
       width: 60px;
       height: 60px;
       border-radius: 16px;
-      background: linear-gradient(135deg, #7c3aed, #06b6d4);
+      background: linear-gradient(135deg, #f59e0b, #7c3aed);
       margin: 0 auto 16px auto;
       display: flex;
       align-items: center;
@@ -509,7 +573,7 @@
     .lock-input {
       width: 100%;
       padding: 12px 16px;
-      background: #0a0d1a;
+      background: #090b18;
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 10px;
       color: #fff;
@@ -521,13 +585,13 @@
       letter-spacing: 0.1em;
     }
     .lock-input:focus {
-      border-color: #7c3aed;
-      box-shadow: 0 0 14px rgba(124, 58, 237, 0.4);
+      border-color: #f59e0b;
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.4);
     }
     .btn-unlock {
       width: 100%;
       padding: 12px;
-      background: linear-gradient(135deg, #7c3aed, #06b6d4);
+      background: linear-gradient(135deg, #f59e0b, #7c3aed);
       border: none;
       border-radius: 10px;
       color: #fff;
@@ -554,9 +618,9 @@
     <div class="lock-card">
       <div class="lock-icon">👑</div>
       <h2>OneCouch Rəhbər Girişi</h2>
-      <p>Statistika və idarəetmə panelinə daxil olmaq üçün təyin edilmiş admin şifrənizi daxil edin.</p>
+      <p>Özəl idarəetmə və analitika panelinə daxil olmaq üçün rəhbər şifrənizi daxil edin.</p>
       <form id="lock-form" onsubmit="handleAdminLogin(event)">
-        <input type="password" id="admin-password-input" class="lock-input" placeholder="Admin Şifrəsi..." autofocus required>
+        <input type="password" id="admin-password-input" class="lock-input" placeholder="Rəhbər Şifrəsi..." autofocus required>
         <button type="submit" class="btn-unlock">Daxil Ol 🔓</button>
         <div id="lock-error" class="lock-error">Şifrə yalnışdır! Yenidən cəhd edin.</div>
       </form>
@@ -564,13 +628,22 @@
   </div>
 
   <div class="app-wrapper">
+    <!-- PWA Quraşdırma Zolağı (Telefonda ayrıca tətbiq kimi yükləmək üçün) -->
+    <div class="admin-install-banner" id="admin-install-banner">
+      <div class="aib-text">
+        <span style="font-size:1.3rem;">📲</span>
+        <span>Bu Rəhbər Konsolunu telefonunuza <strong>ayrıca tətbiq kimi</strong> quraşdırın!</span>
+      </div>
+      <button type="button" class="btn-install-admin" id="btn-pwa-install">Telefona Yüklə</button>
+    </div>
+
     <!-- Başlıq -->
     <header class="admin-header">
       <div class="header-left">
-        <div class="admin-logo">🛋️</div>
+        <div class="admin-logo">👑</div>
         <div class="admin-title-col">
-          <h1>OneCouch Dashboard <span class="badge">RƏHBƏR</span></h1>
-          <p>İstifadəçilər, Otaqlar və Canlı Statistika İdarəetmə Mərkəzi</p>
+          <h1>OneCouch Rəhbər <span class="badge">KONSOL</span></h1>
+          <p>Dərin Analitika, İstifadəçi Hesabları və Canlı Hadisələr</p>
         </div>
       </div>
       <div class="header-right">
@@ -578,12 +651,9 @@
           <div class="pulse-dot"></div>
           <span>Onlayn: <strong id="header-online-count">0</strong></span>
         </div>
-        <button type="button" class="btn-header" onclick="loadDashboardData()" title="Məlumatları dərhal yenilə">
+        <button type="button" class="btn-header" onclick="loadDashboardData()" title="Məlumatları yenilə">
           <span id="refresh-icon">🔄</span> Yenilə
         </button>
-        <a href="/" class="btn-header btn-home" style="text-decoration:none;">
-          <span>🌐 Sayta Keç</span>
-        </a>
         <button type="button" class="btn-header" onclick="adminLogout()" title="Çıxış et">
           <span>🚪 Çıxış</span>
         </button>
@@ -593,21 +663,24 @@
     <!-- Nav Tabları -->
     <nav class="admin-nav-tabs">
       <button type="button" class="nav-tab-btn active" data-tab="tab-stats">
-        <span>📊 Ümumi Statistika</span>
+        <span>📊 Dərin Statistika</span>
       </button>
       <button type="button" class="nav-tab-btn" data-tab="tab-users">
-        <span>👥 Qeydiyyatlı İstifadəçilər (<span id="tab-users-count">0</span>)</span>
+        <span>👥 İstifadəçi Hesabları (<span id="tab-users-count">0</span>)</span>
       </button>
       <button type="button" class="nav-tab-btn" data-tab="tab-rooms">
-        <span>🎬 Otaqlar və Fəaliyyət (<span id="tab-rooms-count">0</span>)</span>
+        <span>🎬 Otaqlar və Seanslar (<span id="tab-rooms-count">0</span>)</span>
+      </button>
+      <button type="button" class="nav-tab-btn" data-tab="tab-activity">
+        <span>⚡ Canlı Fəaliyyət Lenti</span>
       </button>
     </nav>
 
     <!-- ==========================================
-         TAB 1: STATİSTİKA VƏ İCMAL
+         TAB 1: DƏRİN STATİSTİKA VƏ ANALİTİKA
          ========================================== -->
     <section id="tab-stats" class="tab-content active">
-      <!-- 6 Əsas KPI Kartı -->
+      <!-- 8 Əsas KPI Kartı -->
       <div class="kpi-grid">
         <div class="kpi-card" style="--card-color: #06b6d4;">
           <div class="kpi-card-header">
@@ -615,20 +688,16 @@
             <div class="kpi-card-icon">📲</div>
           </div>
           <div class="kpi-card-value" id="kpi-installs">0</div>
-          <div class="kpi-card-subtitle">
-            <span>PWA & Mobil APK Quraşdırmaları</span>
-          </div>
+          <div class="kpi-card-subtitle"><span>Mobil PWA Quraşdırmaları</span></div>
         </div>
 
         <div class="kpi-card" style="--card-color: #7c3aed;">
           <div class="kpi-card-header">
-            <span class="kpi-card-title">Qeydiyyatlı İstifadəçilər</span>
+            <span class="kpi-card-title">Qeydiyyatlı Hesablar</span>
             <div class="kpi-card-icon">👤</div>
           </div>
           <div class="kpi-card-value" id="kpi-users">0</div>
-          <div class="kpi-card-subtitle">
-            <span>Google və Qeydiyyatlı Hesablar</span>
-          </div>
+          <div class="kpi-card-subtitle"><span>Google & Profil Sahibləri</span></div>
         </div>
 
         <div class="kpi-card" style="--card-color: #10b981;">
@@ -637,98 +706,131 @@
             <div class="kpi-card-icon">🌐</div>
           </div>
           <div class="kpi-card-value" id="kpi-visits">0</div>
-          <div class="kpi-card-subtitle">
-            <span>Unikal Ziyarətçilər: <strong id="kpi-unique-visitors">0</strong></span>
-          </div>
+          <div class="kpi-card-subtitle"><span>Unikal Qonaqlar: <strong id="kpi-unique-visitors">0</strong></span></div>
         </div>
 
         <div class="kpi-card" style="--card-color: #f59e0b;">
           <div class="kpi-card-header">
-            <span class="kpi-card-title">Ortalama İstifadə Vaxtı</span>
+            <span class="kpi-card-title">Qayıdan Ziyarətçilər</span>
+            <div class="kpi-card-icon">🔄</div>
+          </div>
+          <div class="kpi-card-value" id="kpi-returning">0</div>
+          <div class="kpi-card-subtitle"><span>Təkrar Ziyarət Nisbəti: <strong id="kpi-returning-pct">0%</strong></span></div>
+        </div>
+
+        <div class="kpi-card" style="--card-color: #ec4899;">
+          <div class="kpi-card-header">
+            <span class="kpi-card-title">Orta Seans Vaxtı</span>
             <div class="kpi-card-icon">⏱️</div>
           </div>
           <div class="kpi-card-value" id="kpi-avg-time">0 dəq</div>
-          <div class="kpi-card-subtitle">
-            <span>Hər seans üçün orta müddət</span>
+          <div class="kpi-card-subtitle"><span>Hər istifadəçi üçün ortalama</span></div>
+        </div>
+
+        <div class="kpi-card" style="--card-color: #8b5cf6;">
+          <div class="kpi-card-header">
+            <span class="kpi-card-title">Ümumi Seans Saatları</span>
+            <div class="kpi-card-icon">⏳</div>
           </div>
+          <div class="kpi-card-value" id="kpi-total-hours">0 saat</div>
+          <div class="kpi-card-subtitle"><span>Platformada keçirilən ümumi vaxt</span></div>
         </div>
 
         <div class="kpi-card" style="--card-color: #f43f5e;">
           <div class="kpi-card-header">
-            <span class="kpi-card-title">Hazırda Canlı Onlayn</span>
+            <span class="kpi-card-title">Canlı Onlayn</span>
             <div class="kpi-card-icon">🟢</div>
           </div>
           <div class="kpi-card-value" id="kpi-live-online">0</div>
-          <div class="kpi-card-subtitle">
-            <span>Real-vaxtda aktiv istifadəçilər</span>
-          </div>
+          <div class="kpi-card-subtitle"><span>Hazırda saytda olan aktivlər</span></div>
         </div>
 
-        <div class="kpi-card" style="--card-color: #8b5cf6;">
+        <div class="kpi-card" style="--card-color: #3b82f6;">
           <div class="kpi-card-header">
             <span class="kpi-card-title">Açılan Otaqlar</span>
             <div class="kpi-card-icon">🎬</div>
           </div>
           <div class="kpi-card-value" id="kpi-total-rooms">0</div>
-          <div class="kpi-card-subtitle">
-            <span>Aktiv: <strong id="kpi-active-rooms">0</strong></span>
+          <div class="kpi-card-subtitle"><span>Aktiv: <strong id="kpi-active-rooms">0</strong> zal</span></div>
+        </div>
+      </div>
+
+      <!-- Günün 24 Saatı Üzrə Pik Fəallıq Qrafiki -->
+      <div class="data-panel" style="margin-bottom:20px;">
+        <div class="data-panel-title">
+          <span>📈 Günün 24 Saatı Üzrə Pik Ziyarət Saatları</span>
+          <span style="font-size:0.75rem; color:var(--text-muted);">Ziyarətçilərin ən çox daxil olduğu vaxtlar</span>
+        </div>
+        <div class="peak-hours-grid" id="peak-hours-chart">
+          <!-- Dinamik 24 Sütun -->
+        </div>
+      </div>
+
+      <!-- İkiqat Detal Panelləri: Əməliyyat Sistemləri & Brauzerlər -->
+      <div class="dashboard-split-row">
+        <!-- Əməliyyat Sistemləri -->
+        <div class="data-panel">
+          <div class="data-panel-title">
+            <span>💻 Əməliyyat Sistemləri (OS)</span>
+          </div>
+          <div id="os-breakdown-container">
+            <!-- Dinamik OS Tərəqqi Zolaqları -->
+          </div>
+        </div>
+
+        <!-- Brauzerlər və Cihazlar -->
+        <div class="data-panel">
+          <div class="data-panel-title">
+            <span>🌐 Brauzerlər və Platforma</span>
+          </div>
+          <div id="browser-breakdown-container">
+            <!-- Dinamik Brauzer Tərəqqi Zolaqları -->
           </div>
         </div>
       </div>
 
-      <!-- Detallı Qrafik və İcmal Paneli -->
+      <!-- Populyar Videolar və Ruletka Qalibləri -->
       <div class="dashboard-split-row">
-        <!-- Cihaz Bölgüsü -->
+        <!-- Ən Çox Baxılan Videolar -->
         <div class="data-panel">
           <div class="data-panel-title">
-            <span>📱 Cihaz Növləri Bölgüsü</span>
-            <span style="font-size:0.75rem; color:var(--text-muted);">Ziyarətçilərin istifadə etdiyi platformalar</span>
+            <span>🔥 Ən Çox İzlənən Videolar</span>
           </div>
-          <div class="device-bar-wrap">
-            <div class="device-bar-label">
-              <span>Mobil Tətbiq & Telefon</span>
-              <span id="label-mob-pct">50%</span>
-            </div>
-            <div class="device-progress-track">
-              <div class="device-progress-fill-mob" id="bar-mob" style="width: 50%;"></div>
-            </div>
-          </div>
-          <div class="device-bar-wrap">
-            <div class="device-bar-label">
-              <span>Masaüstü Kompüter (Desktop)</span>
-              <span id="label-desk-pct">50%</span>
-            </div>
-            <div class="device-progress-track">
-              <div class="device-progress-fill-desk" id="bar-desk" style="width: 50%;"></div>
-            </div>
-          </div>
-          <div style="margin-top:20px; padding:12px; background:rgba(255,255,255,0.03); border-radius:10px; font-size:0.78rem; color:var(--text-muted); line-height:1.5;">
-            💡 <strong>Qeyd:</strong> Mobil tətbiq (PWA / WebAPK) quraşdıran istifadəçilər birbaşa telefonun ana ekranından daxil olduqda sistem avtomatik olaraq tətbiq sessiyası kimi qeydə alır.
+          <div class="table-container" style="max-height:300px; overflow-y:auto;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Video URL / Mənbə</th>
+                  <th>Növ</th>
+                  <th>Baxış Sayı</th>
+                </tr>
+              </thead>
+              <tbody id="popular-videos-body">
+                <tr><td colspan="3" style="text-align:center; padding:15px; color:var(--text-muted);">Məlumat yoxdur.</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <!-- Fəallıq Sayğacları -->
+        <!-- Ruletka Qalibləri -->
         <div class="data-panel">
           <div class="data-panel-title">
-            <span>🎬 Platforma Fəallıq Göstəriciləri</span>
+            <span>🎡 Ruletka (Çarxıfələk) Qalibləri</span>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
-            <div style="padding:14px; background:rgba(255,255,255,0.04); border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
-              <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">İzlənən Videolar</div>
-              <div style="font-size:1.5rem; font-weight:800; color:#06b6d4;" id="stat-videos-played">0</div>
-            </div>
-            <div style="padding:14px; background:rgba(255,255,255,0.04); border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
-              <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Yazılan Mesajlar</div>
-              <div style="font-size:1.5rem; font-weight:800; color:#34d399;" id="stat-chat-messages">0</div>
-            </div>
-            <div style="padding:14px; background:rgba(255,255,255,0.04); border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
-              <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Canlı Otaqlar</div>
-              <div style="font-size:1.5rem; font-weight:800; color:#f43f5e;" id="stat-active-rooms-count">0</div>
-            </div>
-            <div style="padding:14px; background:rgba(255,255,255,0.04); border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
-              <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Orta Seans</div>
-              <div style="font-size:1.5rem; font-weight:800; color:#f59e0b;" id="stat-avg-session">0 dəq</div>
-            </div>
+          <div class="table-container" style="max-height:300px; overflow-y:auto;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Seçilən Film</th>
+                  <th>Otaq</th>
+                  <th>Fırladan</th>
+                  <th>Vaxt</th>
+                </tr>
+              </thead>
+              <tbody id="roulette-wins-body">
+                <tr><td colspan="4" style="text-align:center; padding:15px; color:var(--text-muted);">Hələ çarx fırladılmayıb.</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -745,7 +847,7 @@
         </div>
         
         <div class="search-filter-box">
-          <input type="text" id="users-search-input" class="search-input" placeholder="🔍 İstifadəçi adı və ya e-poçt ilə axtar..." oninput="filterUsersTable()">
+          <input type="text" id="users-search-input" class="search-input" placeholder="🔍 İstifadəçi adı, e-poçt və ya cihaz ilə axtar..." oninput="filterUsersTable()">
         </div>
 
         <div class="table-container">
@@ -754,7 +856,7 @@
               <tr>
                 <th>İstifadəçi</th>
                 <th>E-poçt</th>
-                <th>Giriş Metodu</th>
+                <th>Giriş Növü</th>
                 <th>İlk Görünmə</th>
                 <th>Son Fəallıq</th>
                 <th>Giriş Sayı</th>
@@ -772,10 +874,9 @@
     </section>
 
     <!-- ==========================================
-         TAB 3: OTAQLAR VƏ CANLI FƏALİYYƏT
+         TAB 3: OTAQLAR VƏ SEANSLAR
          ========================================== -->
     <section id="tab-rooms" class="tab-content">
-      <!-- Hazırda Canlı Otaqlar -->
       <div class="data-panel" style="margin-bottom:20px;">
         <div class="data-panel-title">
           <span>🟢 Hazırda Aktiv Otaqlar (<span id="live-rooms-count-title">0</span>)</span>
@@ -789,7 +890,7 @@
                 <th>Rəhbər (Host)</th>
                 <th>İştirakçılar</th>
                 <th>Baxılan Video</th>
-                <th>Vəziyyət</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody id="active-rooms-table-body">
@@ -801,42 +902,42 @@
         </div>
       </div>
 
-      <!-- Bölünmüş Blok: Otaq Tarixçəsi və Canlı Fəaliyyət Lenti -->
-      <div class="dashboard-split-row">
-        <!-- Otaq Tarixçəsi -->
-        <div class="data-panel">
-          <div class="data-panel-title">
-            <span>📜 Bütün Açılmış Otaqların Tarixçəsi</span>
-          </div>
-          <div class="table-container" style="max-height: 480px; overflow-y: auto;">
-            <table class="admin-table">
-              <thead>
-                <tr>
-                  <th>Otaq Kodu</th>
-                  <th>Yaradan</th>
-                  <th>Tarix</th>
-                  <th>İştirakçı</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="rooms-history-table-body">
-                <tr>
-                  <td colspan="5" style="text-align:center; padding:20px; color:var(--text-muted);">Tarixçə yüklənir...</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+      <div class="data-panel">
+        <div class="data-panel-title">
+          <span>📜 Bütün Açılmış Otaqların Tarixçəsi</span>
         </div>
+        <div class="table-container" style="max-height: 480px; overflow-y: auto;">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Otaq Kodu</th>
+                <th>Yaradan</th>
+                <th>Tarix</th>
+                <th>İştirakçı</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="rooms-history-table-body">
+              <tr>
+                <td colspan="5" style="text-align:center; padding:20px; color:var(--text-muted);">Tarixçə yüklənir...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
 
-        <!-- Canlı Fəaliyyət Lenti -->
-        <div class="data-panel">
-          <div class="data-panel-title">
-            <span>⚡ Canlı Hadisələr Lenti (Activity Feed)</span>
-            <span style="font-size:0.75rem; color:var(--text-muted);">Real-vaxt hərəkətləri</span>
-          </div>
-          <div class="activity-feed-list" id="activity-feed-container">
-            <div style="text-align:center; padding:30px; color:var(--text-muted);">Fəaliyyət lenti yüklənir...</div>
-          </div>
+    <!-- ==========================================
+         TAB 4: CANLI FƏALİYYƏT LENTİ
+         ========================================== -->
+    <section id="tab-activity" class="tab-content">
+      <div class="data-panel">
+        <div class="data-panel-title">
+          <span>⚡ Real-Vaxt Hadisələr Lenti (Audit Stream)</span>
+          <span style="font-size:0.75rem; color:var(--text-muted);">İstifadəçilərin etdiyi bütün hərəkətlər</span>
+        </div>
+        <div class="activity-feed-list" id="activity-feed-container">
+          <div style="text-align:center; padding:30px; color:var(--text-muted);">Fəaliyyət lenti yüklənir...</div>
         </div>
       </div>
     </section>
@@ -846,8 +947,29 @@
     let adminToken = localStorage.getItem('onecouch_admin_token') || '';
     let dashboardRawData = null;
     let autoRefreshTimer = null;
+    let deferredPrompt = null;
 
-    // Səhifə Açıldıqda
+    // PWA Quraşdırma Dəstəyi (Rəhbər Tətbiqi Üçün)
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const banner = document.getElementById('admin-install-banner');
+      if (banner) banner.style.display = 'flex';
+    });
+
+    document.getElementById('btn-pwa-install')?.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          document.getElementById('admin-install-banner').style.display = 'none';
+        }
+        deferredPrompt = null;
+      } else {
+        alert('Bu səhifəni telefonunuza tətbiq kimi əlavə etmək üçün brauzerin menyusundan "Ana ekrana əlavə et" (Add to Home screen) seçin.');
+      }
+    });
+
     document.addEventListener('DOMContentLoaded', () => {
       setupTabNavigation();
       if (adminToken) {
@@ -855,7 +977,6 @@
       } else {
         showLockScreen();
       }
-      // Hər 12 saniyədən bir avtomatik məlumat yeniləməsi
       autoRefreshTimer = setInterval(() => {
         if (adminToken && document.getElementById('admin-lock-screen').style.display === 'none') {
           loadDashboardData(true);
@@ -903,6 +1024,7 @@
           hideLockScreen();
           loadDashboardData();
         } else {
+          errBox.textContent = data.error || 'Şifrə yalnışdır!';
           errBox.style.display = 'block';
         }
       } catch (err) {
@@ -959,39 +1081,177 @@
       document.getElementById('tab-users-count').textContent = (data.registeredUsers || []).length;
       document.getElementById('tab-rooms-count').textContent = stats.totalRoomsCreated || 0;
 
-      // 6 Əsas KPI Kartı
+      // 8 KPI Kartı
       document.getElementById('kpi-installs').textContent = stats.appInstalls || 0;
       document.getElementById('kpi-users').textContent = stats.registeredUsersCount || (data.registeredUsers || []).length;
       document.getElementById('kpi-visits').textContent = stats.totalVisits || 0;
       document.getElementById('kpi-unique-visitors').textContent = stats.uniqueVisitorsCount || 0;
+      document.getElementById('kpi-returning').textContent = stats.returningVisitorsCount || 0;
+
+      const retPct = stats.uniqueVisitorsCount > 0 
+        ? Math.round((stats.returningVisitorsCount / stats.uniqueVisitorsCount) * 100)
+        : 0;
+      document.getElementById('kpi-returning-pct').textContent = retPct + '%';
+
       document.getElementById('kpi-avg-time').textContent = (stats.avgSessionMinutes || 0) + ' dəq';
+      document.getElementById('kpi-total-hours').textContent = (stats.totalSessionHours || 0) + ' saat';
       document.getElementById('kpi-live-online').textContent = stats.activeOnlineNow || 0;
       document.getElementById('kpi-total-rooms').textContent = stats.totalRoomsCreated || 0;
       document.getElementById('kpi-active-rooms').textContent = stats.activeRoomsCount || 0;
 
-      // Fəallıq Göstəriciləri
-      document.getElementById('stat-videos-played').textContent = stats.totalVideosPlayed || 0;
-      document.getElementById('stat-chat-messages').textContent = stats.totalChatMessages || 0;
-      document.getElementById('stat-active-rooms-count').textContent = stats.activeRoomsCount || 0;
-      document.getElementById('stat-avg-session').textContent = (stats.avgSessionMinutes || 0) + ' dəq';
+      // 24 Saatlıq Pik Qrafiki
+      renderPeakHoursChart(stats.peakHours || []);
 
-      // Cihaz Bölgüsü
-      const mob = stats.deviceCounts?.mobile || 0;
-      const desk = stats.deviceCounts?.desktop || 0;
-      const totalDev = Math.max(1, mob + desk);
-      const mobPct = Math.round((mob / totalDev) * 100);
-      const deskPct = 100 - mobPct;
+      // OS və Brauzer Bölüşmələri
+      renderOSBreakdown(stats.osCounts || {});
+      renderBrowserBreakdown(stats.browserCounts || {}, stats.deviceCounts || {});
 
-      document.getElementById('label-mob-pct').textContent = `${mobPct}% (${mob})`;
-      document.getElementById('label-desk-pct').textContent = `${deskPct}% (${desk})`;
-      document.getElementById('bar-mob').style.width = `${mobPct}%`;
-      document.getElementById('bar-desk').style.width = `${deskPct}%`;
+      // Populyar Videolar və Ruletka Qalibləri
+      renderPopularVideos(stats.popularVideos || []);
+      renderRouletteWins(stats.rouletteWins || []);
 
       // Cədvəllər
       renderUsersTable(data.registeredUsers || []);
       renderActiveRoomsTable(data.activeRooms || []);
       renderRoomsHistoryTable(data.roomsHistory || []);
       renderActivityFeed(data.activityLogs || []);
+    }
+
+    function renderPeakHoursChart(hours) {
+      const container = document.getElementById('peak-hours-chart');
+      if (!hours || hours.length !== 24) return;
+      const maxVal = Math.max(1, ...hours);
+
+      container.innerHTML = hours.map((count, h) => {
+        const pct = Math.max(6, Math.round((count / maxVal) * 100));
+        const hourStr = h.toString().padStart(2, '0');
+        return `
+          <div class="peak-bar-col" title="${hourStr}:00 - ${count} ziyarət">
+            <div class="peak-bar-fill" style="height: ${pct}%;"></div>
+            <span class="peak-bar-label">${h % 4 === 0 ? hourStr : ''}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderOSBreakdown(osCounts) {
+      const container = document.getElementById('os-breakdown-container');
+      const entries = Object.entries(osCounts);
+      const total = Math.max(1, entries.reduce((acc, [, val]) => acc + val, 0));
+
+      const colors = {
+        'Android': '#10b981',
+        'iOS': '#06b6d4',
+        'Windows': '#3b82f6',
+        'macOS': '#8b5cf6',
+        'Linux': '#f59e0b',
+        'Digər': '#94a3b8'
+      };
+
+      if (entries.length === 0) {
+        container.innerHTML = '<div style="color:var(--text-muted); padding:10px; font-size:0.8rem;">Hələ məlumat toplanır...</div>';
+        return;
+      }
+
+      container.innerHTML = entries.map(([os, count]) => {
+        const pct = Math.round((count / total) * 100);
+        const col = colors[os] || '#7c3aed';
+        return `
+          <div class="metric-progress-item">
+            <div class="mpi-header">
+              <span>${escapeHtml(os)}</span>
+              <span>${pct}% (${count})</span>
+            </div>
+            <div class="mpi-track">
+              <div class="mpi-fill" style="width: ${pct}%; background: ${col};"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderBrowserBreakdown(browserCounts, deviceCounts) {
+      const container = document.getElementById('browser-breakdown-container');
+      const entries = Object.entries(browserCounts);
+      const total = Math.max(1, entries.reduce((acc, [, val]) => acc + val, 0));
+
+      const colors = {
+        'Chrome': '#06b6d4',
+        'Safari': '#ec4899',
+        'Edge': '#3b82f6',
+        'Firefox': '#f59e0b',
+        'Digər': '#94a3b8'
+      };
+
+      let html = '';
+      if (entries.length > 0) {
+        html += entries.map(([b, count]) => {
+          const pct = Math.round((count / total) * 100);
+          const col = colors[b] || '#7c3aed';
+          return `
+            <div class="metric-progress-item">
+              <div class="mpi-header">
+                <span>${escapeHtml(b)}</span>
+                <span>${pct}% (${count})</span>
+              </div>
+              <div class="mpi-track">
+                <div class="mpi-fill" style="width: ${pct}%; background: ${col};"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Cihaz tipi xülasəsi
+      const mob = deviceCounts.mobile || 0;
+      const desk = deviceCounts.desktop || 0;
+      const devTotal = Math.max(1, mob + desk);
+      const mobPct = Math.round((mob / devTotal) * 100);
+
+      html += `
+        <div style="margin-top:16px; padding:10px 12px; background:rgba(255,255,255,0.03); border-radius:10px; font-size:0.75rem; color:var(--text-muted); display:flex; justify-content:space-between;">
+          <span>📱 Mobil: <strong>${mobPct}%</strong> (${mob})</span>
+          <span>💻 Masaüstü: <strong>${100 - mobPct}%</strong> (${desk})</span>
+        </div>
+      `;
+
+      container.innerHTML = html;
+    }
+
+    function renderPopularVideos(videos) {
+      const tbody = document.getElementById('popular-videos-body');
+      if (!videos || videos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:15px; color:var(--text-muted);">İzlənən video qeydə alınmayıb.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = videos.map(v => {
+        const shortUrl = v.url.length > 40 ? v.url.substring(0, 38) + '...' : v.url;
+        return `
+          <tr>
+            <td><a href="${escapeHtml(v.url)}" target="_blank" style="color:#06b6d4; text-decoration:none;">${escapeHtml(shortUrl)}</a></td>
+            <td><span class="badge-pill badge-google">${escapeHtml((v.type || 'video').toUpperCase())}</span></td>
+            <td><strong>${v.count || 1}</strong> dəfə</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderRouletteWins(wins) {
+      const tbody = document.getElementById('roulette-wins-body');
+      if (!wins || wins.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:15px; color:var(--text-muted);">Hələ çarx fırladılmayıb.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = wins.map(w => {
+        return `
+          <tr>
+            <td><strong>🎉 ${escapeHtml(w.title)}</strong></td>
+            <td><span style="font-family:'JetBrains Mono'; color:#c4b5fd;">${escapeHtml(w.room || '-')}</span></td>
+            <td>${escapeHtml(w.spinner || 'Qonaq')}</td>
+            <td style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(w.time || '')}</td>
+          </tr>
+        `;
+      }).join('');
     }
 
     function renderUsersTable(users) {

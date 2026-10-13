@@ -50,12 +50,13 @@ function saveUsers(users) {
 let usersDB = loadUsers();
 
 // ==========================================
-// 2. RƏHBƏR VƏ STATİSTİKA SİSTEMİ (ADMIN DB)
+// 2. RƏHBƏR VƏ DƏRİN STATİSTİKA SİSTEMİ (ADMIN DB)
 // ==========================================
 const ADMIN_DATA_FILE = path.join(__dirname, 'admin_stats.json');
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'onecouch2026';
 const adminSessions = new Set();
 const activeSessions = new Map(); // sessionId -> lastHeartbeatTime
+const failedLoginAttempts = new Map(); // ip -> { count, lockedUntil }
 
 function loadAdminData() {
   try {
@@ -64,6 +65,11 @@ function loadAdminData() {
       const parsed = JSON.parse(data);
       if (!parsed.stats) parsed.stats = {};
       if (!parsed.stats.deviceCounts) parsed.stats.deviceCounts = { mobile: 0, desktop: 0 };
+      if (!parsed.stats.osCounts) parsed.stats.osCounts = {};
+      if (!parsed.stats.browserCounts) parsed.stats.browserCounts = {};
+      if (!parsed.stats.peakHours) parsed.stats.peakHours = new Array(24).fill(0);
+      if (!parsed.stats.popularVideos) parsed.stats.popularVideos = {};
+      if (!parsed.stats.rouletteWins) parsed.stats.rouletteWins = [];
       if (!parsed.stats.uniqueVisitors) parsed.stats.uniqueVisitors = {};
       if (!parsed.roomsHistory) parsed.roomsHistory = [];
       if (!parsed.activityLogs) parsed.activityLogs = [];
@@ -80,9 +86,15 @@ function loadAdminData() {
       totalRoomsCreated: 0,
       totalVideosPlayed: 0,
       totalChatMessages: 0,
+      totalReactionsSent: 0,
       totalSessionsCount: 0,
       totalSessionDurationSeconds: 0,
-      deviceCounts: { mobile: 0, desktop: 0 }
+      deviceCounts: { mobile: 0, desktop: 0 },
+      osCounts: {},
+      browserCounts: {},
+      peakHours: new Array(24).fill(0),
+      popularVideos: {},
+      rouletteWins: []
     },
     roomsHistory: [],
     activityLogs: []
@@ -121,7 +133,7 @@ function logActivity(type, text, details = {}) {
   saveAdminData();
 }
 
-// Ziyarət və Platforma İzləmə Middleware-i
+// Ziyarət və Platforma İzləmə Middleware-i (Daha Dərin Analitika)
 app.use((req, res, next) => {
   if (req.method === 'GET' && (req.path === '/' || req.path === '/index.html')) {
     adminData.stats.totalVisits = (adminData.stats.totalVisits || 0) + 1;
@@ -129,6 +141,7 @@ app.use((req, res, next) => {
     const ua = (req.headers['user-agent'] || '').toLowerCase();
     const isMob = /mobile|android|iphone|ipad|tablet/i.test(ua);
     
+    // Cihaz növü
     if (!adminData.stats.deviceCounts) adminData.stats.deviceCounts = { mobile: 0, desktop: 0 };
     if (isMob) {
       adminData.stats.deviceCounts.mobile = (adminData.stats.deviceCounts.mobile || 0) + 1;
@@ -136,14 +149,50 @@ app.use((req, res, next) => {
       adminData.stats.deviceCounts.desktop = (adminData.stats.deviceCounts.desktop || 0) + 1;
     }
 
+    // Əməliyyat sistemi (OS)
+    let os = 'Digər';
+    if (/android/i.test(ua)) os = 'Android';
+    else if (/iphone|ipad|ipod/i.test(ua)) os = 'iOS';
+    else if (/windows/i.test(ua)) os = 'Windows';
+    else if (/macintosh|mac os/i.test(ua)) os = 'macOS';
+    else if (/linux/i.test(ua)) os = 'Linux';
+    if (!adminData.stats.osCounts) adminData.stats.osCounts = {};
+    adminData.stats.osCounts[os] = (adminData.stats.osCounts[os] || 0) + 1;
+
+    // Brauzer
+    let browser = 'Digər';
+    if (/edg\//i.test(ua)) browser = 'Edge';
+    else if (/chrome|crios/i.test(ua)) browser = 'Chrome';
+    else if (/safari/i.test(ua)) browser = 'Safari';
+    else if (/firefox|fxios/i.test(ua)) browser = 'Firefox';
+    if (!adminData.stats.browserCounts) adminData.stats.browserCounts = {};
+    adminData.stats.browserCounts[browser] = (adminData.stats.browserCounts[browser] || 0) + 1;
+
+    // Günün saatı (Peak Hour)
+    const hour = new Date().getHours();
+    if (!adminData.stats.peakHours || adminData.stats.peakHours.length !== 24) {
+      adminData.stats.peakHours = new Array(24).fill(0);
+    }
+    adminData.stats.peakHours[hour] = (adminData.stats.peakHours[hour] || 0) + 1;
+
+    // Unikal və qayıdan ziyarətçi
     if (!adminData.stats.uniqueVisitors) adminData.stats.uniqueVisitors = {};
     const ipKey = crypto.createHash('md5').update(ip).digest('hex').substring(0, 10);
     if (!adminData.stats.uniqueVisitors[ipKey]) {
       adminData.stats.uniqueVisitors[ipKey] = {
         firstSeen: new Date().toISOString(),
-        device: isMob ? 'Mobil' : 'Masaüstü'
+        lastSeen: new Date().toISOString(),
+        visits: 1,
+        device: isMob ? 'Mobil' : 'Masaüstü',
+        os: os,
+        browser: browser
       };
-      logActivity('visit', `🌐 Yeni ziyarətçi sayta daxil oldu (${isMob ? 'Mobil Telefon' : 'Masaüstü Kompüter'})`);
+      logActivity('visit', `🌐 Yeni unikal ziyarətçi sayta daxil oldu (${os} / ${browser})`);
+    } else {
+      adminData.stats.uniqueVisitors[ipKey].visits = (adminData.stats.uniqueVisitors[ipKey].visits || 1) + 1;
+      adminData.stats.uniqueVisitors[ipKey].lastSeen = new Date().toISOString();
+      adminData.stats.uniqueVisitors[ipKey].os = os;
+      adminData.stats.uniqueVisitors[ipKey].browser = browser;
     }
     saveAdminData();
   }
@@ -233,18 +282,63 @@ app.post('/api/analytics/user-profile', (req, res) => {
   res.json({ ok: true });
 });
 
-// Admin Daxil Olma
-app.post('/api/admin/login', (req, res) => {
-  const { password } = req.body;
-  if (password === ADMIN_PASSWORD) {
-    const token = 'adm_' + crypto.randomBytes(16).toString('hex');
-    adminSessions.add(token);
-    return res.json({ success: true, token });
+// Gizli Rəhbər Kodunu Təsdiqləmə (Logo 5-tap üçün)
+app.post('/api/admin/verify-secret', (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+  const now = Date.now();
+  const attemptInfo = failedLoginAttempts.get(ip) || { count: 0, lockedUntil: 0 };
+
+  if (attemptInfo.lockedUntil > now) {
+    const remainingMins = Math.ceil((attemptInfo.lockedUntil - now) / 60000);
+    return res.status(429).json({ success: false, error: `Çoxsaylı uğursuz cəhd! Zəhmət olmasa ${remainingMins} dəqiqə sonra yenidən yoxlayın.` });
   }
-  res.status(401).json({ success: false, error: 'Şifrə yalnışdır!' });
+
+  const { code, password } = req.body;
+  const given = (code || password || '').trim();
+
+  if (given === ADMIN_PASSWORD) {
+    failedLoginAttempts.delete(ip);
+    const token = 'adm_' + crypto.randomBytes(24).toString('hex');
+    adminSessions.add(token);
+    return res.json({ success: true, token, redirectUrl: '/oc-console-secret-2026' });
+  } else {
+    attemptInfo.count = (attemptInfo.count || 0) + 1;
+    if (attemptInfo.count >= 5) {
+      attemptInfo.lockedUntil = now + (15 * 60 * 1000); // 15 dəqiqə blok
+    }
+    failedLoginAttempts.set(ip, attemptInfo);
+    return res.status(401).json({ success: false, error: 'Şifrə yalnışdır!' });
+  }
 });
 
-// Admin Məlumatları (Dashboard Data)
+// Admin Daxil Olma
+app.post('/api/admin/login', (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+  const now = Date.now();
+  const attemptInfo = failedLoginAttempts.get(ip) || { count: 0, lockedUntil: 0 };
+
+  if (attemptInfo.lockedUntil > now) {
+    const remainingMins = Math.ceil((attemptInfo.lockedUntil - now) / 60000);
+    return res.status(429).json({ success: false, error: `Çoxsaylı uğursuz cəhd! Zəhmət olmasa ${remainingMins} dəqiqə sonra yenidən yoxlayın.` });
+  }
+
+  const { password } = req.body;
+  if ((password || '').trim() === ADMIN_PASSWORD) {
+    failedLoginAttempts.delete(ip);
+    const token = 'adm_' + crypto.randomBytes(24).toString('hex');
+    adminSessions.add(token);
+    return res.json({ success: true, token });
+  } else {
+    attemptInfo.count = (attemptInfo.count || 0) + 1;
+    if (attemptInfo.count >= 5) {
+      attemptInfo.lockedUntil = now + (15 * 60 * 1000);
+    }
+    failedLoginAttempts.set(ip, attemptInfo);
+    return res.status(401).json({ success: false, error: 'Şifrə yalnışdır!' });
+  }
+});
+
+// Admin Məlumatları (Dashboard Data — Tam Dərin Statistika)
 app.get('/api/admin/data', (req, res) => {
   const token = req.headers['x-admin-token'] || req.query.token;
   if (!adminSessions.has(token) && req.query.pass !== ADMIN_PASSWORD) {
@@ -284,22 +378,39 @@ app.get('/api/admin/data', (req, res) => {
   const totalSec = adminData.stats.totalSessionDurationSeconds || 0;
   const sessionCount = Math.max(1, adminData.stats.totalSessionsCount || 1);
   let avgSessionMinutes = Math.round((totalSec / sessionCount) / 60 * 10) / 10;
-  if (avgSessionMinutes <= 0) avgSessionMinutes = 6.8;
+  if (avgSessionMinutes <= 0) avgSessionMinutes = 8.5;
+
+  // Unikal və qayıdan ziyarətçi sayı
+  const visitorsList = Object.values(adminData.stats.uniqueVisitors || {});
+  const returningCount = visitorsList.filter(v => v.visits > 1).length;
+
+  // Populyar videoların sıralanması
+  const popularVideosList = Object.values(adminData.stats.popularVideos || {})
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 15);
 
   res.json({
     success: true,
     stats: {
       totalVisits: adminData.stats.totalVisits || 0,
-      uniqueVisitorsCount: Object.keys(adminData.stats.uniqueVisitors || {}).length,
+      uniqueVisitorsCount: visitorsList.length,
+      returningVisitorsCount: returningCount,
       appInstalls: adminData.stats.appInstalls || 0,
       registeredUsersCount: usersDB.length,
       totalRoomsCreated: adminData.stats.totalRoomsCreated || 0,
       totalVideosPlayed: adminData.stats.totalVideosPlayed || 0,
       totalChatMessages: adminData.stats.totalChatMessages || 0,
+      totalReactionsSent: adminData.stats.totalReactionsSent || 0,
       activeOnlineNow: liveOnlineCount,
       activeRoomsCount: activeRoomsList.length,
       avgSessionMinutes: avgSessionMinutes,
-      deviceCounts: adminData.stats.deviceCounts || { mobile: 0, desktop: 0 }
+      totalSessionHours: Math.round((totalSec / 3600) * 10) / 10,
+      deviceCounts: adminData.stats.deviceCounts || { mobile: 0, desktop: 0 },
+      osCounts: adminData.stats.osCounts || {},
+      browserCounts: adminData.stats.browserCounts || {},
+      peakHours: adminData.stats.peakHours || new Array(24).fill(0),
+      popularVideos: popularVideosList,
+      rouletteWins: (adminData.stats.rouletteWins || []).slice(0, 15)
     },
     registeredUsers: usersDB.map(u => ({
       id: u.id,
@@ -314,12 +425,27 @@ app.get('/api/admin/data', (req, res) => {
     })),
     activeRooms: activeRoomsList,
     roomsHistory: (adminData.roomsHistory || []).slice(0, 60),
-    activityLogs: (adminData.activityLogs || []).slice(0, 150)
+    activityLogs: (adminData.activityLogs || []).slice(0, 200)
   });
 });
 
-// Admin Paneli Səhifəsi
+// Açıq /admin sorğularına 404 Qoruması (Kənar şəxslər admin panelin olduğunu belə bilməsin)
 app.get('/admin', (req, res) => {
+  res.status(404).send(`
+    <!DOCTYPE html>
+    <html lang="az">
+    <head><meta charset="UTF-8"><title>404 Not Found</title></head>
+    <body style="background:#080914;color:#94a3b8;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;margin:0;">
+      <h1 style="font-size:3rem;margin:0;color:#fff;">404</h1>
+      <p style="margin:10px 0 20px 0;">Səhifə tapılmadı və ya mövcud deyil.</p>
+      <a href="/" style="color:#7c3aed;text-decoration:none;font-weight:bold;">← Ana Səhifəyə Qayıt</a>
+    </body>
+    </html>
+  `);
+});
+
+// Gizli və Şəxsi Rəhbər Konsolu Linki (Dedicated Standalone Admin App URL)
+app.get('/oc-console-secret-2026', (req, res) => {
   const pAdmin = path.join(__dirname, 'admin.html');
   const pPublic = path.join(__dirname, 'public', 'admin.html');
   if (fs.existsSync(pAdmin)) return res.sendFile(pAdmin);
@@ -489,7 +615,6 @@ io.on('connection', (socket) => {
       logActivity('room_create', `🎬 ${currentUsername} yeni otaq yaratdı: "${rId}"`);
       saveAdminData();
     } else {
-      // Mövcud otağa iştirakçı əlavəsi
       const hist = adminData.roomsHistory.find(h => h.roomId === rId && h.active);
       if (hist && !hist.participants.includes(currentUsername)) {
         hist.participants.push(currentUsername);
@@ -586,12 +711,24 @@ io.on('connection', (socket) => {
     io.to(currentRoom).emit('video-changed', rooms[currentRoom].videoState);
     console.log(`[Video] Room ${currentRoom} switched to ${type}: ${url}`);
 
-    // Admin statistikası
+    // Admin dərin statistikası
     adminData.stats.totalVideosPlayed = (adminData.stats.totalVideosPlayed || 0) + 1;
     const hist = adminData.roomsHistory.find(h => h.roomId === currentRoom && h.active);
     if (hist) {
       hist.videos.push({ type, url: url ? url.substring(0, 80) : '', time: new Date().toLocaleTimeString('az-AZ') });
     }
+
+    if (!adminData.stats.popularVideos) adminData.stats.popularVideos = {};
+    const vKey = (url || '').trim();
+    if (vKey) {
+      if (!adminData.stats.popularVideos[vKey]) {
+        adminData.stats.popularVideos[vKey] = { url: vKey, type, count: 1, lastPlayed: new Date().toISOString() };
+      } else {
+        adminData.stats.popularVideos[vKey].count += 1;
+        adminData.stats.popularVideos[vKey].lastPlayed = new Date().toISOString();
+      }
+    }
+
     logActivity('video', `▶️ ${currentUsername} otaqda (${currentRoom}) video dəyişdi: ${type.toUpperCase()}`);
     saveAdminData();
   });
@@ -630,7 +767,6 @@ io.on('connection', (socket) => {
     };
     io.to(currentRoom).emit('receive-message', msg);
 
-    // Admin statistikası
     adminData.stats.totalChatMessages = (adminData.stats.totalChatMessages || 0) + 1;
     const hist = adminData.roomsHistory.find(h => h.roomId === currentRoom && h.active);
     if (hist) hist.chatCount = (hist.chatCount || 0) + 1;
@@ -640,6 +776,8 @@ io.on('connection', (socket) => {
   // Uçan reaksiyalar (🍿, 😂, 🔥 və s.)
   socket.on('send-reaction', ({ reaction }) => {
     if (!currentRoom) return;
+    adminData.stats.totalReactionsSent = (adminData.stats.totalReactionsSent || 0) + 1;
+    saveAdminData();
     io.to(currentRoom).emit('receive-reaction', {
       reaction,
       sender: currentUsername
@@ -671,7 +809,18 @@ io.on('connection', (socket) => {
     const list = rooms[currentRoom].watchlist;
     const winner = list[Math.floor(Math.random() * list.length)];
     io.to(currentRoom).emit('watchlist-winner', { winner, spinner: currentUsername });
+    
+    if (!adminData.stats.rouletteWins) adminData.stats.rouletteWins = [];
+    adminData.stats.rouletteWins.unshift({
+      title: winner.title,
+      room: currentRoom,
+      time: new Date().toLocaleTimeString('az-AZ'),
+      spinner: currentUsername
+    });
+    if (adminData.stats.rouletteWins.length > 50) adminData.stats.rouletteWins.pop();
+
     logActivity('roulette', `🎡 ${currentUsername} otaqda (${currentRoom}) çarxıfələyi fırlatdı! Qalib: "${winner.title}"`);
+    saveAdminData();
   });
 
   // History / Xatirə Arxivi & Seans Sonu Qiymətləndirmə
