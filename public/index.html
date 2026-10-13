@@ -12,7 +12,7 @@
   <link rel="icon" type="image/png" href="assets/logo.png">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
   <link rel="manifest" href="/manifest.json">
-  <link rel="stylesheet" href="style.css?v=9.0">
+  <link rel="stylesheet" href="style.css?v=10.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Cinzel:wght@600;700&family=Fira+Code:wght@500;700&display=swap" rel="stylesheet">
@@ -1234,118 +1234,144 @@
   <div id="modal-characters" class="modal-backdrop hidden">
     <div class="modal-card modal-characters-card">
       
-      <!-- 1. ƏSAS GÖRÜNÜŞ: KULT KİNO QALEREYASI -->
+      <!-- 1. ƏSAS GÖRÜNÜŞ: MƏRKƏZDƏ TƏK XARAKTER KARUSELİ (SAĞA-SOLA ÇEVRİLƏN) -->
       <div id="char-modal-gallery-view" class="char-modal-view">
         <div class="modal-header">
+          <button type="button" class="btn-modal-back" onclick="closeModal('modal-characters')">
+            <span>◀ Geri</span>
+          </button>
           <div class="modal-title-wrap">
             <span class="modal-icon-badge">🎭</span>
             <div>
-              <h2 id="modal-char-title">Kult Kino Xarakterləri & Avatar Qalereyası</h2>
-              <span class="modal-char-sub" id="modal-char-sub">Personajınızı seçin: səsi, sitatları və VIP kino biletini kəşf edin!</span>
+              <h2 id="modal-char-title">Kino Xarakterləri</h2>
+              <span class="modal-char-sub" id="modal-char-sub">Sağa-sola çevirərək xarakterini seç!</span>
             </div>
           </div>
           <div class="modal-header-actions">
             <button type="button" class="btn-char-quiz-pill" id="btn-open-char-quiz">
-              <span>🎯 Hansı Qəhrəmansan? (Test)</span>
+              <span>🎯 Test</span>
             </button>
             <button class="modal-close" onclick="closeModal('modal-characters')">✕</button>
           </div>
         </div>
 
-        <div class="characters-gallery-grid">
-          <!-- 1. Walter White / Heisenberg -->
-          <div class="char-gallery-card" data-char="heisenberg" data-nickname="Heisenberg" data-theme="theme-breaking-bad" data-emoji="🧪">
-            <div class="char-gallery-img-wrap">
-              <img src="assets/characters/heisenberg.jpg" alt="Walter White Heisenberg" loading="lazy">
-              <span class="char-badge emerald">ZƏKA OYUNÇUSU</span>
-              <div class="char-gallery-emoji-tag">🧪</div>
+        <!-- Mərkəzdə Tək Xarakter Səhnəsi (Sağa / Sola Çevirmə) -->
+        <div class="char-carousel-stage" id="char-carousel-stage">
+          <button type="button" class="char-carousel-arrow prev" id="btn-char-gallery-prev" aria-label="Əvvəlki Xarakter" title="Əvvəlki Xarakter">
+            <span>◀</span>
+          </button>
+
+          <div class="characters-gallery-grid" id="characters-gallery-grid">
+            <!-- 1. Walter White / Heisenberg -->
+            <div class="char-gallery-card active-slide" data-char="heisenberg" data-nickname="Heisenberg" data-theme="theme-breaking-bad" data-emoji="🧪">
+              <div class="char-gallery-img-wrap">
+                <img src="assets/characters/heisenberg.jpg" alt="Walter White Heisenberg" loading="lazy">
+                <span class="char-badge emerald">ZƏKA OYUNÇUSU</span>
+                <div class="char-gallery-emoji-tag">🧪</div>
+              </div>
+              <div class="char-gallery-body">
+                <h4 class="char-card-name">Walter White • Heisenberg</h4>
+                <span class="char-card-source">Breaking Bad • Albuquerque</span>
+                <p class="char-card-quote">"I am the one who knocks."</p>
+                <button type="button" class="btn-select-character">
+                  <span>🧪 Heisenberg Ol &amp; Kəşf Et</span>
+                </button>
+              </div>
             </div>
-            <div class="char-gallery-body">
-              <h4 class="char-card-name">Walter White • Heisenberg</h4>
-              <span class="char-card-source">Breaking Bad • Albuquerque</span>
-              <p class="char-card-quote">"I am the one who knocks."</p>
-              <button type="button" class="btn-select-character">
-                <span>🧪 Heisenberg Ol & Kəşf Et</span>
-              </button>
+
+            <!-- 2. The Dark Knight / Batman -->
+            <div class="char-gallery-card" data-char="batman" data-nickname="Batman" data-theme="theme-batman" data-emoji="🦇">
+              <div class="char-gallery-img-wrap">
+                <img src="assets/characters/batman.jpg" alt="The Dark Knight Batman" loading="lazy">
+                <span class="char-badge gold">QƏHRƏMAN</span>
+                <div class="char-gallery-emoji-tag">🦇</div>
+              </div>
+              <div class="char-gallery-body">
+                <h4 class="char-card-name">Bruce Wayne • Batman</h4>
+                <span class="char-card-source">The Dark Knight • Gotham</span>
+                <p class="char-card-quote">"It's not who I am underneath, but what I do that defines me."</p>
+                <button type="button" class="btn-select-character">
+                  <span>🦇 Batman Ol &amp; Kəşf Et</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 3. The Godfather / Vito Corleone -->
+            <div class="char-gallery-card" data-char="godfather" data-nickname="Don Corleone" data-theme="theme-netflix" data-emoji="🌹">
+              <div class="char-gallery-img-wrap">
+                <img src="assets/characters/godfather.jpg" alt="Don Vito Corleone" loading="lazy">
+                <span class="char-badge crimson">AİLƏ &amp; GÜC</span>
+                <div class="char-gallery-emoji-tag">🌹</div>
+              </div>
+              <div class="char-gallery-body">
+                <h4 class="char-card-name">Don Vito Corleone</h4>
+                <span class="char-card-source">The Godfather • Siciliya</span>
+                <p class="char-card-quote">"I'm gonna make him an offer he can't refuse."</p>
+                <button type="button" class="btn-select-character">
+                  <span>🌹 Don Corleone Ol &amp; Kəşf Et</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 4. Cyber Warrior / Neo -->
+            <div class="char-gallery-card" data-char="cyberpunk" data-nickname="Neo" data-theme="theme-matrix" data-emoji="⚡">
+              <div class="char-gallery-img-wrap">
+                <img src="assets/characters/cyberpunk.jpg" alt="Neo Cyber Warrior" loading="lazy">
+                <span class="char-badge cyan">SCI-FI MATRIX</span>
+                <div class="char-gallery-emoji-tag">⚡</div>
+              </div>
+              <div class="char-gallery-body">
+                <h4 class="char-card-name">Neo • Matrix Terminal</h4>
+                <span class="char-card-source">The Matrix • Gələcək</span>
+                <p class="char-card-quote">"There is no spoon. Free your mind."</p>
+                <button type="button" class="btn-select-character">
+                  <span>⚡ Neo Ol &amp; Kəşf Et</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 5. Sirli Detektiv / Rust Cohle -->
+            <div class="char-gallery-card" data-char="detective" data-nickname="Rust Cohle" data-theme="theme-matrix" data-emoji="🕶️">
+              <div class="char-gallery-img-wrap">
+                <img src="assets/characters/detective.jpg" alt="Rust Cohle Detective" loading="lazy">
+                <span class="char-badge violet">NOIR DETEKTİV</span>
+                <div class="char-gallery-emoji-tag">🕶️</div>
+              </div>
+              <div class="char-gallery-body">
+                <h4 class="char-card-name">Rust Cohle</h4>
+                <span class="char-card-source">True Detective • Qaranlıq</span>
+                <p class="char-card-quote">"Time is a flat circle."</p>
+                <button type="button" class="btn-select-character">
+                  <span>🕶️ Rust Cohle Ol &amp; Kəşf Et</span>
+                </button>
+              </div>
             </div>
           </div>
 
-          <!-- 2. The Dark Knight / Batman -->
-          <div class="char-gallery-card" data-char="batman" data-nickname="Batman" data-theme="theme-batman" data-emoji="🦇">
-            <div class="char-gallery-img-wrap">
-              <img src="assets/characters/batman.jpg" alt="The Dark Knight Batman" loading="lazy">
-              <span class="char-badge gold">QƏHRƏMAN</span>
-              <div class="char-gallery-emoji-tag">🦇</div>
-            </div>
-            <div class="char-gallery-body">
-              <h4 class="char-card-name">Bruce Wayne • Batman</h4>
-              <span class="char-card-source">The Dark Knight • Gotham</span>
-              <p class="char-card-quote">"It's not who I am underneath, but what I do that defines me."</p>
-              <button type="button" class="btn-select-character">
-                <span>🦇 Batman Ol & Kəşf Et</span>
-              </button>
-            </div>
-          </div>
+          <button type="button" class="char-carousel-arrow next" id="btn-char-gallery-next" aria-label="Növbəti Xarakter" title="Növbəti Xarakter">
+            <span>▶</span>
+          </button>
+        </div>
 
-          <!-- 3. The Godfather / Vito Corleone -->
-          <div class="char-gallery-card" data-char="godfather" data-nickname="Don Corleone" data-theme="theme-netflix" data-emoji="🌹">
-            <div class="char-gallery-img-wrap">
-              <img src="assets/characters/godfather.jpg" alt="Don Vito Corleone" loading="lazy">
-              <span class="char-badge crimson">AİLƏ & GÜC</span>
-              <div class="char-gallery-emoji-tag">🌹</div>
-            </div>
-            <div class="char-gallery-body">
-              <h4 class="char-card-name">Don Vito Corleone</h4>
-              <span class="char-card-source">The Godfather • Siciliya</span>
-              <p class="char-card-quote">"I'm gonna make him an offer he can't refuse."</p>
-              <button type="button" class="btn-select-character">
-                <span>🌹 Don Corleone Ol & Kəşf Et</span>
-              </button>
-            </div>
+        <!-- Karusel İndikatorları və Sayğac -->
+        <div class="char-carousel-StatusBar">
+          <div class="char-carousel-dots" id="char-carousel-dots">
+            <button type="button" class="char-dot active" data-index="0" title="Heisenberg">🧪</button>
+            <button type="button" class="char-dot" data-index="1" title="Batman">🦇</button>
+            <button type="button" class="char-dot" data-index="2" title="Don Corleone">🌹</button>
+            <button type="button" class="char-dot" data-index="3" title="Neo">⚡</button>
+            <button type="button" class="char-dot" data-index="4" title="Rust Cohle">🕶️</button>
           </div>
-
-          <!-- 4. Cyber Warrior / Neo -->
-          <div class="char-gallery-card" data-char="cyberpunk" data-nickname="Neo" data-theme="theme-matrix" data-emoji="⚡">
-            <div class="char-gallery-img-wrap">
-              <img src="assets/characters/cyberpunk.jpg" alt="Neo Cyber Warrior" loading="lazy">
-              <span class="char-badge cyan">SCI-FI MATRIX</span>
-              <div class="char-gallery-emoji-tag">⚡</div>
-            </div>
-            <div class="char-gallery-body">
-              <h4 class="char-card-name">Neo • Matrix Terminal</h4>
-              <span class="char-card-source">The Matrix • Gələcək</span>
-              <p class="char-card-quote">"There is no spoon. Free your mind."</p>
-              <button type="button" class="btn-select-character">
-                <span>⚡ Neo Ol & Kəşf Et</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- 5. Sirli Detektiv / Rust Cohle -->
-          <div class="char-gallery-card" data-char="detective" data-nickname="Rust Cohle" data-theme="theme-matrix" data-emoji="🕶️">
-            <div class="char-gallery-img-wrap">
-              <img src="assets/characters/detective.jpg" alt="Rust Cohle Detective" loading="lazy">
-              <span class="char-badge violet">NOIR DETEKTİV</span>
-              <div class="char-gallery-emoji-tag">🕶️</div>
-            </div>
-            <div class="char-gallery-body">
-              <h4 class="char-card-name">Rust Cohle</h4>
-              <span class="char-card-source">True Detective • Qaranlıq</span>
-              <p class="char-card-quote">"Time is a flat circle."</p>
-              <button type="button" class="btn-select-character">
-                <span>🕶️ Rust Cohle Ol & Kəşf Et</span>
-              </button>
-            </div>
-          </div>
+          <span class="char-carousel-counter" id="char-gallery-counter">1 / 5 • Sağa-sola sürüşdür</span>
         </div>
 
         <!-- Alt Tez Keçid Zolağı -->
         <div class="modal-char-footer">
           <button type="button" class="btn-char-random" id="btn-char-pick-random">
-            <span>🎲 Təsadüfi Xarakter Seç</span>
+            <span>🎲 Təsadüfi Seç</span>
           </button>
           <button type="button" class="btn-char-skip-join" id="btn-char-skip-join">
-            <span>🔑 Yalnız Koda ilə Otağa Qoşul</span>
+            <span>🔑 Kodla Otağa Qoşul</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
         </div>
@@ -1355,7 +1381,7 @@
       <div id="char-modal-showcase-view" class="char-modal-view hidden">
         <div class="showcase-top-bar">
           <button type="button" class="btn-showcase-back" id="btn-showcase-back">
-            <span>◀ Bütün Xarakterlər</span>
+            <span>◀ Geri (Xarakterlər)</span>
           </button>
           <div class="showcase-nav-arrows">
             <button type="button" class="btn-showcase-nav" id="btn-showcase-prev" title="Əvvəlki Xarakter">◀</button>
@@ -1365,20 +1391,20 @@
           <button class="modal-close" onclick="closeModal('modal-characters')">✕</button>
         </div>
 
-        <div class="showcase-main-layout">
+        <div class="showcase-main-layout" id="showcase-main-layout">
           <!-- Sol: Afişa, Canlı Aura & Səs Replikasiyası -->
           <div class="showcase-poster-box">
             <div class="showcase-image-wrapper" id="showcase-img-wrap">
               <img id="showcase-char-img" src="assets/characters/godfather.jpg" alt="Kino Qəhrəmanı">
               <div class="showcase-ambient-aura" id="showcase-ambient-aura"></div>
-              <span class="char-badge" id="showcase-badge">AİLƏ & GÜC</span>
+              <span class="char-badge" id="showcase-badge">AİLƏ &amp; GÜC</span>
               <div class="showcase-emoji-stamp" id="showcase-emoji-stamp">🌹</div>
             </div>
 
             <!-- Canlı Replikasiya Səs Pleyeri -->
             <button type="button" class="btn-showcase-voice-play" id="btn-showcase-voice-play">
               <span class="voice-icon-play">▶️</span>
-              <span class="voice-label" id="showcase-voice-label">Replikasiyanı Dinlə</span>
+              <span class="voice-label" id="showcase-voice-label">Səsi Dinlə</span>
               <div class="voice-bars-animation" id="showcase-voice-bars">
                 <span></span><span></span><span></span><span></span>
               </div>
@@ -1444,7 +1470,7 @@
       <div id="char-modal-quiz-view" class="char-modal-view hidden">
         <div class="showcase-top-bar">
           <button type="button" class="btn-showcase-back" id="btn-quiz-back">
-            <span>◀ Qalereyaya Qayıt</span>
+            <span>◀ Geri</span>
           </button>
           <span class="quiz-step-title" id="quiz-step-title">Sual 1 / 3</span>
           <button class="modal-close" onclick="closeModal('modal-characters')">✕</button>
@@ -1472,13 +1498,16 @@
   <div id="modal-watchlist" class="modal-backdrop hidden">
     <div class="modal-card modal-wheel-card">
       <div class="modal-header">
-        <h2>🎡 Nəyə Baxaq? (Çarxıfələk)</h2>
+        <button type="button" class="btn-modal-back" onclick="closeModal('modal-watchlist')">
+          <span>◀ Geri</span>
+        </button>
+        <h2>🎡 Nəyə Baxaq?</h2>
         <button class="modal-close" onclick="closeModal('modal-watchlist')">✕</button>
       </div>
-      <p class="modal-desc">Baxmaq istədiyiniz filmləri əlavə edin və çarxı fırladaraq şansınızı sınayın!</p>
+      <p class="modal-desc">Filmləri əlavə edin və çarxı fırladaraq şansınızı sınayın!</p>
 
       <form id="watchlist-form" class="modal-input-row">
-        <input type="text" id="input-watchlist-movie" placeholder="Film adı yazın (məs: Avengers, Breaking Bad)" required>
+        <input type="text" id="input-watchlist-movie" placeholder="Film adı yazın (məs: Avengers)" required>
         <button type="submit" class="btn-primary btn-add-movie">+ Əlavə Et</button>
       </form>
 
@@ -1508,7 +1537,10 @@
   <div id="modal-history" class="modal-backdrop hidden">
     <div class="modal-card">
       <div class="modal-header">
-        <h2>📜 Birlikdə Baxdığımız Filmlər</h2>
+        <button type="button" class="btn-modal-back" onclick="closeModal('modal-history')">
+          <span>◀ Geri</span>
+        </button>
+        <h2>📜 Baxdığımız Filmlər</h2>
         <button class="modal-close" onclick="closeModal('modal-history')">✕</button>
       </div>
       <p class="modal-desc">İzlədiyiniz filmləri və verdiyiniz qiymətləri arxivdə qeyd edin.</p>
@@ -1519,7 +1551,7 @@
           <label>Qiymət (⭐ 1-10):</label>
           <input type="number" id="input-history-rating" min="1" max="10" value="10" required>
         </div>
-        <input type="text" id="input-history-note" placeholder="Fikriniz və ya xatirəniz (istəyə görə)...">
+        <input type="text" id="input-history-note" placeholder="Qısa fikriniz və ya xatirəniz...">
         <button type="submit" class="btn-primary">Arxivə Əlavə Et</button>
       </form>
 
@@ -1535,9 +1567,12 @@
   <div id="modal-auth" class="modal-backdrop hidden">
     <div class="modal-card modal-auth-card">
       <div class="modal-header">
+        <button type="button" class="btn-modal-back" onclick="closeModal('modal-auth')">
+          <span>◀ Geri</span>
+        </button>
         <div class="google-modal-brand">
-          <svg width="24" height="24" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-          <h2>Google ilə Daxil Ol</h2>
+          <svg width="22" height="22" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          <h2>Google ilə Giriş</h2>
         </div>
         <button class="modal-close" onclick="closeModal('modal-auth')">✕</button>
       </div>
@@ -1583,7 +1618,10 @@
   <div id="modal-review" class="modal-backdrop hidden">
     <div class="modal-card modal-review-card">
       <div class="modal-header">
-        <h2>⭐ Seans Bitdi! Filmi Qiymətləndirin</h2>
+        <button type="button" class="btn-modal-back" onclick="closeModal('modal-review')">
+          <span>◀ Geri</span>
+        </button>
+        <h2>⭐ Filmi Qiymətləndir</h2>
         <button class="modal-close" onclick="closeModal('modal-review')">✕</button>
       </div>
       <p class="modal-desc">Birlikdə baxdığınız filmə qiymət verin və xatirələr arxivinə qeyd edin.</p>
@@ -1610,7 +1648,7 @@
           </div>
         </div>
 
-        <textarea id="review-movie-note" rows="3" placeholder="Fikirləriniz, ən sevdiyiniz an və ya xatirəniz..."></textarea>
+        <textarea id="review-movie-note" rows="2" placeholder="Fikirləriniz, ən sevdiyiniz an və ya xatirəniz..."></textarea>
         <button type="submit" class="btn-primary">🌟 Arxivə Əlavə Et</button>
       </form>
     </div>
@@ -1629,7 +1667,7 @@
           <span>Two screens. One couch.</span>
         </div>
       </div>
-      <button type="button" id="btn-close-left-drawer" class="drawer-close-btn" aria-label="Menyunu bağla">✕</button>
+      <button type="button" id="btn-close-left-drawer" class="drawer-close-btn" aria-label="Menyunu bağla">◀ Geri</button>
     </div>
 
     <div class="drawer-scroll-body">
@@ -1655,12 +1693,12 @@
 
       <!-- 2. MOBİL TƏTBİQİ YÜKLƏ (APK / iOS) -->
       <div class="drawer-section">
-        <div class="drawer-section-label">📱 MOBİL TƏTBİQ (APK & iOS)</div>
+        <div class="drawer-section-label">📱 MOBİL TƏTBİQ (APK &amp; iOS)</div>
         <button type="button" id="drawer-btn-install-app" class="drawer-install-apk-card">
           <span class="drawer-apk-badge">📲</span>
           <div class="drawer-apk-text">
             <strong>Tətbiqi Telefona Yüklə (APK)</strong>
-            <span>Tam ekran, sürətli və kəsintisiz səsli danışıq</span>
+            <span>Tam ekran, sürətli və kəsintisiz səs</span>
           </div>
           <span class="drawer-apk-arrow">⬇</span>
         </button>
@@ -1672,7 +1710,7 @@
         <nav class="drawer-nav-list">
           <button type="button" class="drawer-nav-item" id="drawer-link-characters">
             <span class="dn-icon">🎭</span>
-            <span class="dn-text">Kino Xarakterləri & Avatarlar</span>
+            <span class="dn-text">Kino Xarakterləri &amp; Avatarlar</span>
             <span class="dn-chevron">›</span>
           </button>
           <button type="button" class="drawer-nav-item" id="drawer-link-watchlist">
@@ -1740,11 +1778,14 @@
   <div id="modal-app-install" class="modal-backdrop hidden">
     <div class="modal-card modal-install-card">
       <div class="modal-header">
+        <button type="button" class="btn-modal-back" onclick="closeModal('modal-app-install')">
+          <span>◀ Geri</span>
+        </button>
         <div class="install-modal-brand">
           <img src="assets/icon-192.png" alt="OneCouch App" class="install-modal-icon">
           <div>
-            <h2>📲 OneCouch Mobil Tətbiqi</h2>
-            <span class="install-modal-sub">Android (.APK) & iPhone (iOS) üçün rəsmi tətbiq</span>
+            <h2>📲 Mobil Tətbiq</h2>
+            <span class="install-modal-sub">Android (.APK) &amp; iPhone (iOS)</span>
           </div>
         </div>
         <button class="modal-close" onclick="closeModal('modal-app-install')">✕</button>
@@ -1752,9 +1793,9 @@
 
       <div class="install-modal-body">
         <div class="install-perks-grid">
-          <div class="install-perk"><span>🎙️</span> <strong>Kəsintisiz Səsli Danışıq</strong></div>
-          <div class="install-perk"><span>🎬</span> <strong>Tam Ekran Kino Rejimi</strong></div>
-          <div class="install-perk"><span>⚡</span> <strong>0ms Anında Açılış</strong></div>
+          <div class="install-perk"><span>🎙️</span> <strong>Kəsintisiz Səs</strong></div>
+          <div class="install-perk"><span>🎬</span> <strong>Tam Ekran</strong></div>
+          <div class="install-perk"><span>⚡</span> <strong>0ms Açılış</strong></div>
         </div>
 
         <!-- Birbaşa Quraşdır Düyməsi (Android / Chrome WebAPK) -->
@@ -1767,8 +1808,7 @@
             <h4>🤖 Android Telefonlarda (Chrome / Samsung):</h4>
             <ol>
               <li>Yuxarıdakı <strong>"Tətbiqi İndi Quraşdır (APK)"</strong> düyməsinə toxunun.</li>
-              <li>Və ya brauzerin sağ üst küncündəki <strong>⋮ (Üç nöqtə)</strong> menyusunu açın.</li>
-              <li><strong>"Tətbiqi quraşdır" (Install app / Ana ekrana əlavə et)</strong> seçiminə toxunun — tətbiq birbaşa telefonunuza APK kimi quraşdırılacaq!</li>
+              <li>Və ya brauzerin sağ üst <strong>⋮ (Üç nöqtə)</strong> menyusundan <strong>"Tətbiqi quraşdır"</strong> seçin.</li>
             </ol>
           </div>
 
@@ -1776,8 +1816,7 @@
             <h4>🍏 iPhone / iPad (Safari):</h4>
             <ol>
               <li>Safari-nin aşağısındakı <strong>Paylaş (Share ⬆️)</strong> düyməsinə toxunun.</li>
-              <li>Siyahıdan <strong>"Ana Ekrana Əlavə Et" (Add to Home Screen ➕)</strong> seçin.</li>
-              <li>Sağ üstdə <strong>"Əlavə et" (Add)</strong> basın — OneCouch tətbiqi ana ekranınıza düşəcək!</li>
+              <li><strong>"Ana Ekrana Əlavə Et" (Add to Home Screen ➕)</strong> seçib <strong>"Add"</strong> basın.</li>
             </ol>
           </div>
         </div>
@@ -1791,7 +1830,10 @@
   <div id="modal-how-it-works" class="modal-backdrop hidden">
     <div class="modal-card">
       <div class="modal-header">
-        <h2>❓ OneCouch Necə İşləyir?</h2>
+        <button type="button" class="btn-modal-back" onclick="closeModal('modal-how-it-works')">
+          <span>◀ Geri</span>
+        </button>
+        <h2>❓ Necə İşləyir?</h2>
         <button class="modal-close" onclick="closeModal('modal-how-it-works')">✕</button>
       </div>
       <div class="how-modal-steps">
@@ -1824,6 +1866,6 @@
   <audio id="remote-voice-audio" autoplay playsinline></audio>
 
   <!-- Əsas Tətbiq Skripti -->
-  <script src="app.js?v=9.0"></script>
+  <script src="app.js?v=10.0"></script>
 </body>
 </html>

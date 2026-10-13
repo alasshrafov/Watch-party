@@ -1030,6 +1030,127 @@ function setupMiniMovieFigures() {
     }
   }
 
+  let currentGalleryIndex = 0;
+  const galleryCards = Array.from(document.querySelectorAll('.char-gallery-card'));
+  const galleryDots = Array.from(document.querySelectorAll('#char-carousel-dots .char-dot'));
+  const galleryCounter = document.getElementById('char-gallery-counter');
+
+  function setGallerySlide(newIndex, dir = 'next') {
+    if (!galleryCards.length) return;
+    const total = galleryCards.length;
+    currentGalleryIndex = ((newIndex % total) + total) % total;
+
+    galleryCards.forEach((card, idx) => {
+      card.classList.remove('active-slide', 'slide-from-right', 'slide-from-left');
+      if (idx === currentGalleryIndex) {
+        card.classList.add('active-slide', dir === 'prev' ? 'slide-from-left' : 'slide-from-right');
+      }
+    });
+
+    galleryDots.forEach((dot, idx) => {
+      dot.classList.toggle('active', idx === currentGalleryIndex);
+    });
+
+    if (galleryCounter) {
+      const activeCard = galleryCards[currentGalleryIndex];
+      const charKey = activeCard ? activeCard.getAttribute('data-char') : charKeysList[currentGalleryIndex];
+      const charObj = CULT_CHARACTERS[charKey];
+      const shortName = charObj ? charObj.name.split('•')[0].trim() : '';
+      galleryCounter.textContent = `${currentGalleryIndex + 1} / ${total}${shortName ? ' • ' + shortName : ''}`;
+    }
+  }
+
+  // İlkin olaraq 1-ci xarakteri mərkəzdə göstər
+  setGallerySlide(0, 'next');
+
+  const btnGalleryPrev = document.getElementById('btn-char-gallery-prev');
+  const btnGalleryNext = document.getElementById('btn-char-gallery-next');
+  if (btnGalleryPrev) {
+    btnGalleryPrev.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setGallerySlide(currentGalleryIndex - 1, 'prev');
+    });
+  }
+  if (btnGalleryNext) {
+    btnGalleryNext.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setGallerySlide(currentGalleryIndex + 1, 'next');
+    });
+  }
+  galleryDots.forEach(dot => {
+    dot.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = parseInt(dot.getAttribute('data-index') || '0', 10);
+      const dir = idx < currentGalleryIndex ? 'prev' : 'next';
+      setGallerySlide(idx, dir);
+    });
+  });
+
+  // Mobil & Sensorlu Ekranlar üçün Sağa-Sola Barmaqla Sürüşdürmə (Touch Swipe)
+  function attachHorizontalSwipe(el, onSwipeLeft, onSwipeRight) {
+    if (!el) return;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    el.addEventListener('touchstart', (e) => {
+      if (!e.touches || !e.touches.length) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    el.addEventListener('touchend', (e) => {
+      if (!e.changedTouches || !e.changedTouches.length) return;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dx) > 36 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx < 0) onSwipeLeft(); // Sola çəkdi -> Növbəti
+        else onSwipeRight();       // Sağa çəkdi -> Əvvəlki
+      }
+    }, { passive: true });
+  }
+
+  const carouselStage = document.getElementById('char-carousel-stage');
+  attachHorizontalSwipe(
+    carouselStage,
+    () => setGallerySlide(currentGalleryIndex + 1, 'next'),
+    () => setGallerySlide(currentGalleryIndex - 1, 'prev')
+  );
+
+  const showcaseLayout = document.getElementById('showcase-main-layout');
+  attachHorizontalSwipe(
+    showcaseLayout,
+    () => {
+      currentShowcaseIndex = (currentShowcaseIndex + 1) % charKeysList.length;
+      openCharacterShowcase(charKeysList[currentShowcaseIndex], true);
+    },
+    () => {
+      currentShowcaseIndex = (currentShowcaseIndex - 1 + charKeysList.length) % charKeysList.length;
+      openCharacterShowcase(charKeysList[currentShowcaseIndex], true);
+    }
+  );
+
+  // Klaviatura Ox Düymələri (Sol / Sağ) ilə Xarakter Dəyişmə
+  document.addEventListener('keydown', (e) => {
+    const modalChars = document.getElementById('modal-characters');
+    if (!modalChars || modalChars.classList.contains('hidden')) return;
+    const galleryView = document.getElementById('char-modal-gallery-view');
+    const showcaseView = document.getElementById('char-modal-showcase-view');
+    if (e.key === 'ArrowLeft') {
+      if (galleryView && !galleryView.classList.contains('hidden')) {
+        setGallerySlide(currentGalleryIndex - 1, 'prev');
+      } else if (showcaseView && !showcaseView.classList.contains('hidden')) {
+        currentShowcaseIndex = (currentShowcaseIndex - 1 + charKeysList.length) % charKeysList.length;
+        openCharacterShowcase(charKeysList[currentShowcaseIndex], true);
+      }
+    } else if (e.key === 'ArrowRight') {
+      if (galleryView && !galleryView.classList.contains('hidden')) {
+        setGallerySlide(currentGalleryIndex + 1, 'next');
+      } else if (showcaseView && !showcaseView.classList.contains('hidden')) {
+        currentShowcaseIndex = (currentShowcaseIndex + 1) % charKeysList.length;
+        openCharacterShowcase(charKeysList[currentShowcaseIndex], true);
+      }
+    }
+  });
+
   function showGalleryView() {
     window.stopCharacterAudio();
     const galleryView = document.getElementById('char-modal-gallery-view');
@@ -1038,6 +1159,7 @@ function setupMiniMovieFigures() {
     if (galleryView) galleryView.classList.remove('hidden');
     if (showcaseView) showcaseView.classList.add('hidden');
     if (quizView) quizView.classList.add('hidden');
+    setGallerySlide(currentGalleryIndex, 'next');
   }
 
   function openCharacterShowcase(charKey, autoPlaySound = true) {
@@ -1045,6 +1167,7 @@ function setupMiniMovieFigures() {
     activeShowcaseChar = charKey;
     currentShowcaseIndex = charKeysList.indexOf(charKey);
     if (currentShowcaseIndex < 0) currentShowcaseIndex = 0;
+    currentGalleryIndex = currentShowcaseIndex;
 
     const galleryView = document.getElementById('char-modal-gallery-view');
     const showcaseView = document.getElementById('char-modal-showcase-view');
@@ -1140,12 +1263,17 @@ function setupMiniMovieFigures() {
   if (btnShowcaseCreate) {
     btnShowcaseCreate.addEventListener('click', () => {
       const data = CULT_CHARACTERS[activeShowcaseChar] || CULT_CHARACTERS.godfather;
+      const cleanNick = data.name.split('•')[0].trim();
       
-      // Avatar & Ləqəb təyin et
+      // Avatar & Ləqəb təyin et (Həm Desktop, həm Mobil Open Page üçün)
       if (typeof selectedAvatarChoice !== 'undefined') selectedAvatarChoice = data.emoji;
       const avatarPreview = document.getElementById('input-avatar-preview');
       if (avatarPreview) avatarPreview.textContent = data.emoji;
-      if (usernameInput) usernameInput.value = data.name.split('•')[0].trim();
+      const mobAvatarDisp = document.getElementById('mob-avatar-display');
+      if (mobAvatarDisp) mobAvatarDisp.textContent = data.emoji;
+      if (usernameInput) usernameInput.value = cleanNick;
+      const mobUserInp = document.getElementById('mob-username-input');
+      if (mobUserInp) mobUserInp.value = cleanNick;
       
       // Temanı yadda saxla
       localStorage.setItem('watchparty-theme', data.theme);
@@ -1153,10 +1281,14 @@ function setupMiniMovieFigures() {
       closeModal('modal-characters');
       showNotice(`👑 ${data.name} mövzusunda otaq başladılır...`);
 
-      // Otaq yaratma sahəsinə yönləndir
-      const hostConsole = document.getElementById('action-console');
-      if (hostConsole) {
-        hostConsole.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const mobCreateTab = document.getElementById('mob-tab-create');
+      if (window.innerWidth <= 768 && mobCreateTab) {
+        mobCreateTab.click();
+      } else {
+        const hostConsole = document.getElementById('action-console');
+        if (hostConsole) {
+          hostConsole.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
       }
 
       setTimeout(() => {
@@ -1168,7 +1300,7 @@ function setupMiniMovieFigures() {
             btnCreateRoom.click();
           }
         }
-      }, 500);
+      }, 400);
     });
   }
 
@@ -1177,6 +1309,7 @@ function setupMiniMovieFigures() {
   if (btnShowcaseJoin) {
     btnShowcaseJoin.addEventListener('click', () => {
       const data = CULT_CHARACTERS[activeShowcaseChar] || CULT_CHARACTERS.godfather;
+      const cleanNick = data.name.split('•')[0].trim();
       
       if (typeof selectedAvatarChoice !== 'undefined') selectedAvatarChoice = data.emoji;
       const avatarPreview = document.getElementById('input-avatar-preview');
@@ -1185,19 +1318,32 @@ function setupMiniMovieFigures() {
         avatarPreview.style.transform = 'scale(1.4)';
         setTimeout(() => { avatarPreview.style.transform = ''; }, 350);
       }
-      if (usernameInput) usernameInput.value = data.name.split('•')[0].trim();
+      const mobAvatarDisp = document.getElementById('mob-avatar-display');
+      if (mobAvatarDisp) mobAvatarDisp.textContent = data.emoji;
+      if (usernameInput) usernameInput.value = cleanNick;
+      const mobUserInp = document.getElementById('mob-username-input');
+      if (mobUserInp) mobUserInp.value = cleanNick;
       localStorage.setItem('watchparty-theme', data.theme);
 
       closeModal('modal-characters');
       showNotice(`🎟️ ${data.name} ləqəbi qəbul olundu. Otaq kodunu daxil edin!`);
 
-      const consoleEl = document.getElementById('action-console');
-      if (consoleEl) {
-        consoleEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (window.innerWidth <= 768) {
+        const mobJoinTab = document.getElementById('mob-tab-join');
+        if (mobJoinTab) mobJoinTab.click();
+        setTimeout(() => {
+          const mobRoomInp = document.getElementById('mob-room-input');
+          if (mobRoomInp) mobRoomInp.focus();
+        }, 300);
+      } else {
+        const consoleEl = document.getElementById('action-console');
+        if (consoleEl) {
+          consoleEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        setTimeout(() => {
+          if (roomInput) roomInput.focus();
+        }, 450);
       }
-      setTimeout(() => {
-        if (roomInput) roomInput.focus();
-      }, 450);
     });
   }
 
@@ -1371,13 +1517,22 @@ function setupMiniMovieFigures() {
   if (btnSkipJoin) {
     btnSkipJoin.addEventListener('click', () => {
       closeModal('modal-characters');
-      const consoleEl = document.getElementById('action-console');
-      if (consoleEl) {
-        consoleEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (window.innerWidth <= 768) {
+        const mobJoinTab = document.getElementById('mob-tab-join');
+        if (mobJoinTab) mobJoinTab.click();
+        setTimeout(() => {
+          const mobRoomInp = document.getElementById('mob-room-input');
+          if (mobRoomInp) mobRoomInp.focus();
+        }, 250);
+      } else {
+        const consoleEl = document.getElementById('action-console');
+        if (consoleEl) {
+          consoleEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        setTimeout(() => {
+          if (roomInput) roomInput.focus();
+        }, 400);
       }
-      setTimeout(() => {
-        if (roomInput) roomInput.focus();
-      }, 400);
     });
   }
 
