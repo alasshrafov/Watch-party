@@ -3286,6 +3286,16 @@ body.theme-breaking-bad .chat-msg.msg-self .chat-msg-bubble {
   justify-content: center;
   z-index: 1000;
   padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.22s ease;
+  will-change: opacity;
+}
+.modal-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
 }
 .modal-card {
   background: var(--bg-card);
@@ -3296,6 +3306,12 @@ body.theme-breaking-bad .chat-msg.msg-self .chat-msg-bubble {
   width: 100%;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(24px);
+  transform: translate3d(0, 14px, 0) scale(0.97);
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+.modal-backdrop.open .modal-card {
+  transform: translate3d(0, 0, 0) scale(1);
 }
 .modal-wheel-card { max-width: 440px; text-align: center; }
 .modal-header {
@@ -5812,7 +5828,7 @@ body.theme-netflix .tab-btn.active {
   flex-direction: column;
   cursor: pointer;
   position: relative;
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.65), 0 0 28px rgba(255, 46, 77, 0.18);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55), 0 0 16px rgba(255, 46, 77, 0.14);
   will-change: transform, opacity;
 }
 
@@ -5822,21 +5838,21 @@ body.theme-netflix .tab-btn.active {
 
 .char-gallery-card.slide-from-right,
 .showcase-main-layout.slide-from-right {
-  animation: charSlideFromRight 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: charSlideFromRight 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .char-gallery-card.slide-from-left,
 .showcase-main-layout.slide-from-left {
-  animation: charSlideFromLeft 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: charSlideFromLeft 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes charSlideFromRight {
-  0% { opacity: 0; transform: translate3d(44px, 0, 0) scale(0.95); }
+  0% { opacity: 0; transform: translate3d(24px, 0, 0) scale(0.97); }
   100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
 }
 
 @keyframes charSlideFromLeft {
-  0% { opacity: 0; transform: translate3d(-44px, 0, 0) scale(0.95); }
+  0% { opacity: 0; transform: translate3d(-24px, 0, 0) scale(0.97); }
   100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
 }
 
@@ -6737,7 +6753,16 @@ body.theme-netflix .tab-btn.active {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 9998;
-  transition: opacity 0.28s ease;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.26s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.26s ease;
+  will-change: opacity;
+}
+.left-drawer-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
 }
 .left-drawer-backdrop.hidden {
   display: none !important;
@@ -6752,14 +6777,16 @@ body.theme-netflix .tab-btn.active {
   max-width: 86vw;
   background: #0b0c10;
   border-right: 1px solid rgba(255, 255, 255, 0.09);
-  box-shadow: 24px 0 60px rgba(0, 0, 0, 0.85);
+  box-shadow: 20px 0 50px rgba(0, 0, 0, 0.75);
   z-index: 9999;
   display: flex;
   flex-direction: column;
   transform: translate3d(-105%, 0, 0);
-  transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
   touch-action: pan-y;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 .left-side-drawer.open {
@@ -7572,14 +7599,14 @@ body.theme-netflix .tab-btn.active {
 
   /* Sol Menyu (Drawer) - YALNIZ .open olduqda ekrana daxil olur, adi halda solda (-105%) gizlidir */
   .left-side-drawer {
-    transform: translate3d(-105%, 0, 0) !important;
-    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    transform: translate3d(-105%, 0, 0);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     will-change: transform;
   }
   .left-side-drawer.open {
-    transform: translate3d(0, 0, 0) !important;
+    transform: translate3d(0, 0, 0);
   }
 
   /* GPU Hardware Acceleration mobil kartlar və afişa üçün */
@@ -7846,37 +7873,37 @@ body.theme-netflix .tab-btn.active {
     will-change: transform, opacity;
   }
   .mob-hero-stage.hero-glide-next .mob-hero-backdrop-img {
-    animation: heroStageImgNext 0.48s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: heroStageImgNext 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .mob-hero-stage.hero-glide-prev .mob-hero-backdrop-img {
-    animation: heroStageImgPrev 0.48s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: heroStageImgPrev 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .mob-hero-stage.hero-glide-next .mob-hero-info,
   .mob-hero-stage.hero-glide-next .mob-hero-film-tag {
-    animation: heroTextGlideNext 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: heroTextGlideNext 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .mob-hero-stage.hero-glide-prev .mob-hero-info,
   .mob-hero-stage.hero-glide-prev .mob-hero-film-tag {
-    animation: heroTextGlidePrev 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: heroTextGlidePrev 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
   @keyframes heroStageImgNext {
-    0% { opacity: 0.35; transform: translate3d(26px, 0, 0) scale(1.06); }
+    0% { opacity: 0.4; transform: translate3d(18px, 0, 0) scale(1.04); }
     100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
   }
   @keyframes heroStageImgPrev {
-    0% { opacity: 0.35; transform: translate3d(-26px, 0, 0) scale(1.06); }
+    0% { opacity: 0.4; transform: translate3d(-18px, 0, 0) scale(1.04); }
     100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
   }
   @keyframes heroTextGlideNext {
-    0% { opacity: 0; transform: translate3d(18px, 0, 0); }
+    0% { opacity: 0; transform: translate3d(14px, 0, 0); }
     100% { opacity: 1; transform: translate3d(0, 0, 0); }
   }
   @keyframes heroTextGlidePrev {
-    0% { opacity: 0; transform: translate3d(-18px, 0, 0); }
+    0% { opacity: 0; transform: translate3d(-14px, 0, 0); }
     100% { opacity: 1; transform: translate3d(0, 0, 0); }
   }
   .drawer-quote-glide {
-    animation: heroTextGlideNext 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: heroTextGlideNext 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   /* Ana ekran Kino Afişası üzərində Sol/Sağ Ox Düymələri */
@@ -7888,9 +7915,7 @@ body.theme-netflix .tab-btn.active {
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: rgba(10, 12, 18, 0.68);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: rgba(14, 16, 26, 0.92);
     border: 1px solid rgba(212, 175, 55, 0.38);
     color: #f8fafc;
     display: flex;
@@ -7899,7 +7924,7 @@ body.theme-netflix .tab-btn.active {
     cursor: pointer;
     padding: 0;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.25s ease, border-color 0.25s ease;
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, border-color 0.2s ease;
     -webkit-tap-highlight-color: transparent;
   }
   .mob-hero-nav-arrow.prev {
@@ -9289,9 +9314,51 @@ body.theme-netflix .tab-btn.active {
     overflow: hidden !important;
   }
 
+  .wheel-stage-wrapper,
   .wheel-stage {
-    transform: scale(0.72) !important;
-    margin: -32px auto !important;
+    width: 250px !important;
+    height: 250px !important;
+    max-width: 250px !important;
+    max-height: 250px !important;
+    margin: 0 auto 6px auto !important;
+    transform: scale(0.78) !important;
+    transform-origin: center center !important;
+  }
+
+  .room-tools-menu-box {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: #11131c !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75) !important;
+  }
+
+  .mob-dock-tile,
+  .mob-seg-btn,
+  .drawer-nav-item,
+  .drawer-head-orb,
+  .btn-tool,
+  .mob-room-tab {
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.14s cubic-bezier(0.16, 1, 0.3, 1), background 0.14s ease !important;
+  }
+  .mob-dock-tile:active,
+  .drawer-nav-item:active,
+  .btn-tool:active {
+    transform: scale(0.93) !important;
+  }
+  .mob-seg-btn:active,
+  .mob-room-tab:active {
+    transform: scale(0.96) !important;
+  }
+
+  .drawer-scroll-body,
+  .watchlist-items,
+  .history-list,
+  .how-modal-steps,
+  .install-modal-body,
+  .chat-messages {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 }
 

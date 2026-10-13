@@ -1596,9 +1596,7 @@ function setupMiniMovieFigures() {
       card.style.opacity = '';
       card.classList.remove('active-slide', 'slide-from-right', 'slide-from-left');
       if (idx === currentGalleryIndex) {
-        card.classList.add('active-slide');
-        void card.offsetWidth;
-        card.classList.add(dir === 'prev' ? 'slide-from-left' : 'slide-from-right');
+        card.classList.add('active-slide', dir === 'prev' ? 'slide-from-left' : 'slide-from-right');
       }
     });
 
@@ -4861,13 +4859,16 @@ function renderHistory(list) {
 window.openModal = function(modalId) {
   const el = document.getElementById(modalId);
   if (!el) return;
-  const wasHidden = el.classList.contains('hidden');
+  const wasHidden = el.classList.contains('hidden') || !el.classList.contains('open');
   el.classList.remove('hidden');
   const card = el.querySelector('.modal-card');
   if (card) {
     card.style.transform = '';
     card.style.transition = '';
   }
+  requestAnimationFrame(() => {
+    el.classList.add('open');
+  });
   if (wasHidden && window.history && window.history.pushState) {
     try {
       window.history.pushState({ uiLayer: modalId }, '');
@@ -4878,12 +4879,17 @@ window.openModal = function(modalId) {
 window.closeModal = function(modalId) {
   const el = document.getElementById(modalId);
   if (el) {
+    el.classList.remove('open');
     const card = el.querySelector('.modal-card');
     if (card) {
       card.style.transform = '';
       card.style.transition = '';
     }
-    el.classList.add('hidden');
+    setTimeout(() => {
+      if (el && !el.classList.contains('open')) {
+        el.classList.add('hidden');
+      }
+    }, 240);
   }
   if (modalId === 'modal-characters' && typeof window.stopCharacterAudio === 'function') {
     window.stopCharacterAudio();
@@ -5723,32 +5729,54 @@ function setupMobileAppAndDrawer() {
   const btnOpenRoom = document.getElementById('btn-open-drawer-room');
   const btnCloseDrawer = document.getElementById('btn-close-left-drawer');
 
+  let drawerCloseTimer = null;
   function openLeftDrawer() {
+    if (drawerCloseTimer) {
+      clearTimeout(drawerCloseTimer);
+      drawerCloseTimer = null;
+    }
+    if (backdrop) {
+      backdrop.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        backdrop.classList.add('open');
+      });
+    }
     if (drawer) {
       drawer.style.transition = '';
       drawer.style.transform = '';
       drawer.classList.remove('hidden');
       const wasOpen = drawer.classList.contains('open');
-      drawer.classList.add('open');
+      requestAnimationFrame(() => {
+        drawer.classList.add('open');
+      });
       if (!wasOpen && window.history && window.history.pushState) {
         try {
           window.history.pushState({ uiLayer: 'left-drawer' }, '');
         } catch (e) {}
       }
     }
-    if (backdrop) backdrop.classList.remove('hidden');
     requestAnimationFrame(() => {
       syncDrawerUIWithMain();
     });
   }
 
   function closeLeftDrawer() {
+    if (drawerCloseTimer) clearTimeout(drawerCloseTimer);
     if (drawer) {
       drawer.style.transition = '';
       drawer.style.transform = '';
       drawer.classList.remove('open');
     }
-    if (backdrop) backdrop.classList.add('hidden');
+    if (backdrop) {
+      backdrop.style.opacity = '';
+      backdrop.classList.remove('open');
+    }
+    drawerCloseTimer = setTimeout(() => {
+      if (backdrop && !backdrop.classList.contains('open')) {
+        backdrop.classList.add('hidden');
+      }
+      drawerCloseTimer = null;
+    }, 280);
   }
 
   if (btnOpenLobby) btnOpenLobby.addEventListener('click', openLeftDrawer);
@@ -5764,6 +5792,7 @@ function setupMobileAppAndDrawer() {
     let dStartY = 0;
     let dCurrentX = 0;
     let dDragging = false;
+    let dRafId = null;
 
     const onDrawerTouchStart = (e) => {
       if (!drawer.classList.contains('open') || !e.touches || e.touches.length !== 1) return;
@@ -5782,9 +5811,10 @@ function setupMobileAppAndDrawer() {
 
       if (!dDragging) {
         // Sola sürüşdürmə üfüqi istiqamətdədirsə aktivləşdir
-        if (dx < -10 && Math.abs(dx) > Math.abs(dy) * 1.15) {
+        if (dx < -8 && Math.abs(dx) > Math.abs(dy) * 1.1) {
           dDragging = true;
           drawer.style.transition = 'none';
+          if (backdrop) backdrop.style.transition = 'none';
         } else {
           return;
         }
@@ -5792,15 +5822,31 @@ function setupMobileAppAndDrawer() {
 
       if (dDragging) {
         dCurrentX = x;
-        const clampedDx = Math.min(0, dx);
-        drawer.style.transform = `translate3d(${clampedDx}px, 0, 0)`;
+        if (dRafId) cancelAnimationFrame(dRafId);
+        dRafId = requestAnimationFrame(() => {
+          const clampedDx = Math.min(0, dx);
+          drawer.style.transform = `translate3d(${clampedDx}px, 0, 0)`;
+          if (backdrop) {
+            const drawerWidth = drawer.offsetWidth || 300;
+            const progress = Math.max(0, Math.min(1, 1 + clampedDx / drawerWidth));
+            backdrop.style.opacity = String(progress);
+          }
+        });
       }
     };
 
     const onDrawerTouchEnd = () => {
+      if (dRafId) {
+        cancelAnimationFrame(dRafId);
+        dRafId = null;
+      }
       if (!dDragging) return;
       dDragging = false;
       drawer.style.transition = '';
+      if (backdrop) {
+        backdrop.style.transition = '';
+        backdrop.style.opacity = '';
+      }
       const totalDx = dCurrentX - dStartX;
       if (totalDx < -50) {
         closeLeftDrawer();
@@ -5862,6 +5908,7 @@ function setupMobileAppAndDrawer() {
     let mStartY = 0;
     let mCurrentY = 0;
     let mDraggingDown = false;
+    let mRafId = null;
 
     card.addEventListener('touchstart', (e) => {
       if (!e.touches || e.touches.length !== 1) return;
@@ -5879,7 +5926,7 @@ function setupMobileAppAndDrawer() {
       const dy = y - mStartY;
 
       if (!mDraggingDown) {
-        if (dy > 16 && dy > Math.abs(dx) * 1.35) {
+        if (dy > 14 && dy > Math.abs(dx) * 1.25) {
           mDraggingDown = true;
           card.style.transition = 'none';
         } else {
@@ -5889,17 +5936,24 @@ function setupMobileAppAndDrawer() {
 
       if (mDraggingDown) {
         mCurrentY = y;
-        const clampedDy = Math.max(0, dy * 0.75);
-        card.style.transform = `translate3d(0, ${clampedDy}px, 0)`;
+        if (mRafId) cancelAnimationFrame(mRafId);
+        mRafId = requestAnimationFrame(() => {
+          const clampedDy = Math.max(0, dy * 0.72);
+          card.style.transform = `translate3d(0, ${clampedDy}px, 0)`;
+        });
       }
     }, { passive: true });
 
     card.addEventListener('touchend', (e) => {
+      if (mRafId) {
+        cancelAnimationFrame(mRafId);
+        mRafId = null;
+      }
       if (mDraggingDown) {
         mDraggingDown = false;
-        card.style.transition = 'transform 0.22s ease';
+        card.style.transition = 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)';
         const totalDy = mCurrentY - mStartY;
-        if (totalDy > 68 && modalEl.id) {
+        if (totalDy > 65 && modalEl.id) {
           closeModal(modalEl.id);
         } else {
           card.style.transform = '';
@@ -5911,7 +5965,7 @@ function setupMobileAppAndDrawer() {
       if (e.changedTouches && e.changedTouches.length > 0) {
         const dx = e.changedTouches[0].clientX - mStartX;
         const dy = e.changedTouches[0].clientY - mStartY;
-        if (mStartX <= 42 && dx > 65 && Math.abs(dx) > Math.abs(dy) * 1.4 && modalEl.id) {
+        if (mStartX <= 42 && dx > 60 && Math.abs(dx) > Math.abs(dy) * 1.3 && modalEl.id) {
           closeModal(modalEl.id);
         }
       }
@@ -6338,9 +6392,11 @@ function setupMobileAppAndDrawer() {
   // Mobil Obraz / Çarxıfələk / Arxiv qısa yolları
   const openCharsHandler = () => {
     closeLeftDrawer();
-    const navChars = document.getElementById('nav-link-characters');
-    if (navChars) navChars.click();
-    else openModal('modal-characters');
+    setTimeout(() => {
+      const navChars = document.getElementById('nav-link-characters');
+      if (navChars) navChars.click();
+      else openModal('modal-characters');
+    }, 70);
   };
   if (mobAvatarPickerBtn) mobAvatarPickerBtn.addEventListener('click', openCharsHandler);
   if (mobOpenCharGalleryBtn) mobOpenCharGalleryBtn.addEventListener('click', openCharsHandler);
@@ -6392,23 +6448,29 @@ function setupMobileAppAndDrawer() {
   if (linkWatchlist) {
     linkWatchlist.addEventListener('click', () => {
       closeLeftDrawer();
-      const btnWl = document.getElementById('btn-open-watchlist');
-      if (btnWl) btnWl.click();
-      else openModal('modal-watchlist');
+      setTimeout(() => {
+        const btnWl = document.getElementById('btn-open-watchlist');
+        if (btnWl) btnWl.click();
+        else openModal('modal-watchlist');
+      }, 70);
     });
   }
   if (linkHistory) {
     linkHistory.addEventListener('click', () => {
       closeLeftDrawer();
-      const btnHist = document.getElementById('btn-open-history');
-      if (btnHist) btnHist.click();
-      else openModal('modal-history');
+      setTimeout(() => {
+        const btnHist = document.getElementById('btn-open-history');
+        if (btnHist) btnHist.click();
+        else openModal('modal-history');
+      }, 70);
     });
   }
   if (linkHow) {
     linkHow.addEventListener('click', () => {
       closeLeftDrawer();
-      openModal('modal-how-it-works');
+      setTimeout(() => {
+        openModal('modal-how-it-works');
+      }, 70);
     });
   }
   if (btnCloseHowModal) {
@@ -6424,12 +6486,14 @@ function setupMobileAppAndDrawer() {
   if (drawerBtnGoogle) {
     drawerBtnGoogle.addEventListener('click', () => {
       closeLeftDrawer();
-      if (typeof openAuthModal === 'function') {
-        openAuthModal();
-      } else {
-        const mainGoogleBtn = document.getElementById('btn-open-auth-lobby');
-        if (mainGoogleBtn) mainGoogleBtn.click();
-      }
+      setTimeout(() => {
+        if (typeof openAuthModal === 'function') {
+          openAuthModal();
+        } else {
+          const mainGoogleBtn = document.getElementById('btn-open-auth-lobby');
+          if (mainGoogleBtn) mainGoogleBtn.click();
+        }
+      }, 70);
     });
   }
   if (drawerBtnLogout) {
