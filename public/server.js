@@ -429,8 +429,15 @@ app.get('/api/admin/data', (req, res) => {
   });
 });
 
-// Açıq /admin sorğularına 404 Qoruması (Kənar şəxslər admin panelin olduğunu belə bilməsin)
+// Açıq /admin sorğularına 404 Qoruması (Yalnız gizli açarla daxil olunduqda açılır)
 app.get('/admin', (req, res) => {
+  const queryKey = ((req.query.key || req.query.pass || req.query.secret) || '').trim();
+  if (queryKey === ADMIN_PASSWORD) {
+    const pAdmin = path.join(__dirname, 'admin.html');
+    const pPublic = path.join(__dirname, 'public', 'admin.html');
+    if (fs.existsSync(pAdmin)) return res.sendFile(pAdmin);
+    if (fs.existsSync(pPublic)) return res.sendFile(pPublic);
+  }
   res.status(404).send(`
     <!DOCTYPE html>
     <html lang="az">
@@ -444,14 +451,19 @@ app.get('/admin', (req, res) => {
   `);
 });
 
-// Gizli və Şəxsi Rəhbər Konsolu Linki (Dedicated Standalone Admin App URL)
-app.get('/oc-console-secret-2026', (req, res) => {
+// Gizli və Şəxsi Rəhbər Konsolu Linkləri (Dedicated Standalone Admin App URLs)
+const serveAdminConsole = (req, res) => {
   const pAdmin = path.join(__dirname, 'admin.html');
   const pPublic = path.join(__dirname, 'public', 'admin.html');
   if (fs.existsSync(pAdmin)) return res.sendFile(pAdmin);
   if (fs.existsSync(pPublic)) return res.sendFile(pPublic);
   res.sendFile(path.join(__dirname, 'index.html'));
-});
+};
+
+app.get('/oc-console-secret-2026', serveAdminConsole);
+app.get('/oc-console', serveAdminConsole);
+app.get('/boss', serveAdminConsole);
+app.get('/dashboard', serveAdminConsole);
 
 // Otağın Mövcudluğunu Yoxlamaq (API)
 app.get('/api/rooms/check/:roomId', (req, res) => {

@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>OneCouch Rəhbər — İdarəetmə və Dərin Statistika</title>
-  <link rel="icon" type="image/png" href="assets/icon-admin-192.png?v=2">
-  <link rel="apple-touch-icon" href="assets/icon-admin-192.png?v=2">
+  <link rel="icon" type="image/png" href="/assets/icon-admin-192.png?v=2">
+  <link rel="apple-touch-icon" href="/assets/icon-admin-192.png?v=2">
   <link rel="manifest" href="/admin-manifest.json?v=2">
   <meta name="theme-color" content="#080914">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -972,17 +972,56 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       setupTabNavigation();
-      if (adminToken) {
+
+      // URL parametrindən avtomatik açar yoxlanışı (?key=onecouch2026 və ya ?pass=...)
+      const urlParams = new URLSearchParams(window.location.search);
+      const autoKey = (urlParams.get('key') || urlParams.get('pass') || urlParams.get('secret') || '').trim();
+
+      if (autoKey) {
+        const passInput = document.getElementById('admin-password-input');
+        if (passInput) passInput.value = autoKey;
+        attemptLoginWithKey(autoKey);
+      } else if (adminToken) {
         checkTokenAndLoad();
       } else {
         showLockScreen();
       }
+
       autoRefreshTimer = setInterval(() => {
         if (adminToken && document.getElementById('admin-lock-screen').style.display === 'none') {
           loadDashboardData(true);
         }
       }, 12000);
     });
+
+    async function attemptLoginWithKey(pass) {
+      const errBox = document.getElementById('lock-error');
+      if (errBox) errBox.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: pass })
+        });
+        const data = await res.json();
+        if (data.success && data.token) {
+          adminToken = data.token;
+          localStorage.setItem('onecouch_admin_token', adminToken);
+          hideLockScreen();
+          loadDashboardData();
+        } else {
+          showLockScreen();
+          if (errBox) {
+            errBox.textContent = data.error || 'Şifrə yalnışdır!';
+            errBox.style.display = 'block';
+          }
+        }
+      } catch (err) {
+        console.error('Auto login error:', err);
+        showLockScreen();
+      }
+    }
 
     function setupTabNavigation() {
       const tabBtns = document.querySelectorAll('.nav-tab-btn');
