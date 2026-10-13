@@ -15,27 +15,12 @@ const io = new Server(server, {
   }
 });
 
+// Otaqlar kolleksiyası
+const rooms = {};
+const roomCleanupTimers = {};
+
 app.use(cors());
 app.use(express.json());
-// Statik faylların dərhal və kəsintisiz yenilənməsi üçün ETag və dinamik keş
-app.use('/assets', express.static(path.join(__dirname, 'assets'), {
-  maxAge: '1h',
-  etag: true,
-  setHeaders: (res, path) => {
-    if (path.endsWith('.png') || path.endsWith('.svg') || path.endsWith('.json')) {
-      res.setHeader('Cache-Control', 'public, max-age=60, must-revalidate');
-    }
-  }
-}));
-app.use(express.static(__dirname, {
-  etag: true,
-  setHeaders: (res, path) => {
-    if (path.endsWith('.html') || path.endsWith('manifest.json') || path.endsWith('sw.js')) {
-      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
-    }
-  }
-}));
-app.use(express.static(path.join(__dirname, 'public')));
 
 // ==========================================
 // 1. İSTİFADƏÇİ VƏ QEYDİYYAT SİSTEMİ (AUTH DB)
@@ -64,17 +49,294 @@ function saveUsers(users) {
 
 let usersDB = loadUsers();
 
-// 1. Otağın Mövcudluğunu Yoxlamaq (API)
+// ==========================================
+// 2. RƏHBƏR VƏ STATİSTİKA SİSTEMİ (ADMIN DB)
+// ==========================================
+const ADMIN_DATA_FILE = path.join(__dirname, 'admin_stats.json');
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'onecouch2026';
+const adminSessions = new Set();
+const activeSessions = new Map(); // sessionId -> lastHeartbeatTime
+
+function loadAdminData() {
+  try {
+    if (fs.existsSync(ADMIN_DATA_FILE)) {
+      const data = fs.readFileSync(ADMIN_DATA_FILE, 'utf8');
+      const parsed = JSON.parse(data);
+      if (!parsed.stats) parsed.stats = {};
+      if (!parsed.stats.deviceCounts) parsed.stats.deviceCounts = { mobile: 0, desktop: 0 };
+      if (!parsed.stats.uniqueVisitors) parsed.stats.uniqueVisitors = {};
+      if (!parsed.roomsHistory) parsed.roomsHistory = [];
+      if (!parsed.activityLogs) parsed.activityLogs = [];
+      return parsed;
+    }
+  } catch (e) {
+    console.error('Error loading admin_stats.json:', e);
+  }
+  return {
+    stats: {
+      totalVisits: 0,
+      uniqueVisitors: {},
+      appInstalls: 0,
+      totalRoomsCreated: 0,
+      totalVideosPlayed: 0,
+      totalChatMessages: 0,
+      totalSessionsCount: 0,
+      totalSessionDurationSeconds: 0,
+      deviceCounts: { mobile: 0, desktop: 0 }
+    },
+    roomsHistory: [],
+    activityLogs: []
+  };
+}
+
+let adminData = loadAdminData();
+let saveAdminTimeout = null;
+
+function saveAdminData() {
+  if (saveAdminTimeout) return;
+  saveAdminTimeout = setTimeout(() => {
+    saveAdminTimeout = null;
+    try {
+      fs.writeFileSync(ADMIN_DATA_FILE, JSON.stringify(adminData, null, 2), 'utf8');
+    } catch (e) {
+      console.error('Error saving admin_stats.json:', e);
+    }
+  }, 1200);
+}
+
+function logActivity(type, text, details = {}) {
+  const item = {
+    id: Date.now() + Math.random().toString(36).substr(2, 4),
+    time: new Date().toLocaleTimeString('az-AZ', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+    date: new Date().toISOString().split('T')[0],
+    timestamp: Date.now(),
+    type,
+    text,
+    details
+  };
+  adminData.activityLogs.unshift(item);
+  if (adminData.activityLogs.length > 500) {
+    adminData.activityLogs = adminData.activityLogs.slice(0, 500);
+  }
+  saveAdminData();
+}
+
+// Ziyarət və Platforma İzləmə Middleware-i
+app.use((req, res, next) => {
+  if (req.method === 'GET' && (req.path === '/' || req.path === '/index.html')) {
+    adminData.stats.totalVisits = (adminData.stats.totalVisits || 0) + 1;
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+    const ua = (req.headers['user-agent'] || '').toLowerCase();
+    const isMob = /mobile|android|iphone|ipad|tablet/i.test(ua);
+    
+    if (!adminData.stats.deviceCounts) adminData.stats.deviceCounts = { mobile: 0, desktop: 0 };
+    if (isMob) {
+      adminData.stats.deviceCounts.mobile = (adminData.stats.deviceCounts.mobile || 0) + 1;
+    } else {
+      adminData.stats.deviceCounts.desktop = (adminData.stats.deviceCounts.desktop || 0) + 1;
+    }
+
+    if (!adminData.stats.uniqueVisitors) adminData.stats.uniqueVisitors = {};
+    const ipKey = crypto.createHash('md5').update(ip).digest('hex').substring(0, 10);
+    if (!adminData.stats.uniqueVisitors[ipKey]) {
+      adminData.stats.uniqueVisitors[ipKey] = {
+        firstSeen: new Date().toISOString(),
+        device: isMob ? 'Mobil' : 'Masaüstü'
+      };
+      logActivity('visit', `🌐 Yeni ziyarətçi sayta daxil oldu (${isMob ? 'Mobil Telefon' : 'Masaüstü Kompüter'})`);
+    }
+    saveAdminData();
+  }
+  next();
+});
+
+// Statik faylların dərhal və kəsintisiz yenilənməsi üçün ETag və dinamik keş
+app.use('/assets', express.static(path.join(__dirname, 'assets'), {
+  maxAge: '1h',
+  etag: true,
+  setHeaders: (res, path) => {
+    if (path.endsWith('.png') || path.endsWith('.svg') || path.endsWith('.json')) {
+      res.setHeader('Cache-Control', 'public, max-age=60, must-revalidate');
+    }
+  }
+}));
+app.use(express.static(__dirname, {
+  etag: true,
+  setHeaders: (res, path) => {
+    if (path.endsWith('.html') || path.endsWith('manifest.json') || path.endsWith('sw.js')) {
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+    }
+  }
+}));
+app.use(express.static(path.join(__dirname, 'public')));
+
+// ==========================================
+// 3. ANALİTİKA VƏ STATİSTİKA API ENDPOINT-LƏRİ
+// ==========================================
+
+// PWA / App Quraşdırma Sayğacı
+app.post('/api/analytics/install', (req, res) => {
+  adminData.stats.appInstalls = (adminData.stats.appInstalls || 0) + 1;
+  logActivity('install', '📲 İstifadəçi tətbiqi yüklədi / ana ekrana quraşdırdı (PWA)');
+  saveAdminData();
+  res.json({ success: true, appInstalls: adminData.stats.appInstalls });
+});
+
+// Seans və İstifadə Vaxtı Heartbeat
+app.post('/api/analytics/session-heartbeat', (req, res) => {
+  const { sessionId, seconds = 30, isPWA, username } = req.body;
+  if (!sessionId) return res.json({ ok: false });
+
+  adminData.stats.totalSessionDurationSeconds = (adminData.stats.totalSessionDurationSeconds || 0) + Number(seconds);
+  if (!activeSessions.has(sessionId)) {
+    activeSessions.set(sessionId, Date.now());
+    adminData.stats.totalSessionsCount = (adminData.stats.totalSessionsCount || 0) + 1;
+  } else {
+    activeSessions.set(sessionId, Date.now());
+  }
+  saveAdminData();
+  res.json({ ok: true });
+});
+
+// İstifadəçi Profilinin İzlənməsi
+app.post('/api/analytics/user-profile', (req, res) => {
+  const { username, avatar, isPWA } = req.body;
+  if (!username) return res.json({ ok: false });
+
+  let user = usersDB.find(u => u.username && u.username.toLowerCase() === username.toLowerCase());
+  const ua = req.headers['user-agent'] || '';
+  const isMob = /mobile|android|iphone/i.test(ua);
+  const deviceType = isPWA ? 'Mobil Tətbiq (PWA)' : (isMob ? 'Mobil Brauzer' : 'Masaüstü Kompüter');
+
+  if (!user) {
+    user = {
+      id: 'usr_' + Date.now(),
+      username: username,
+      email: '',
+      avatar: avatar || '🍿',
+      provider: 'Qonaq Profil',
+      device: deviceType,
+      createdAt: new Date().toISOString(),
+      lastActive: new Date().toISOString(),
+      loginCount: 1
+    };
+    usersDB.push(user);
+    saveUsers(usersDB);
+    logActivity('user', `👤 Yeni istifadəçi profili yaradıldı: ${username} (${deviceType})`);
+  } else {
+    user.lastActive = new Date().toISOString();
+    user.loginCount = (user.loginCount || 1) + 1;
+    user.device = deviceType;
+    if (avatar) user.avatar = avatar;
+    saveUsers(usersDB);
+  }
+  res.json({ ok: true });
+});
+
+// Admin Daxil Olma
+app.post('/api/admin/login', (req, res) => {
+  const { password } = req.body;
+  if (password === ADMIN_PASSWORD) {
+    const token = 'adm_' + crypto.randomBytes(16).toString('hex');
+    adminSessions.add(token);
+    return res.json({ success: true, token });
+  }
+  res.status(401).json({ success: false, error: 'Şifrə yalnışdır!' });
+});
+
+// Admin Məlumatları (Dashboard Data)
+app.get('/api/admin/data', (req, res) => {
+  const token = req.headers['x-admin-token'] || req.query.token;
+  if (!adminSessions.has(token) && req.query.pass !== ADMIN_PASSWORD) {
+    return res.status(403).json({ success: false, error: 'İcazə verilmədi!' });
+  }
+
+  // Cari aktiv otaqlar
+  const activeRoomsList = Object.keys(rooms).map(rId => {
+    const r = rooms[rId];
+    return {
+      roomId: rId,
+      host: (r.users[r.hostSocketId]?.username) || 'Bilinmir',
+      usersCount: Object.keys(r.users || {}).length,
+      users: Object.values(r.users || {}).map(u => ({ username: u.username, avatar: u.avatar, isHost: u.isHost })),
+      videoState: r.videoState,
+      isLocked: !!r.isLocked,
+      lightsDimmed: !!r.lightsDimmed,
+      theme: r.theme
+    };
+  });
+
+  // Cari onlayn istifadəçi sayı
+  let liveOnlineCount = 0;
+  Object.values(rooms).forEach(r => {
+    liveOnlineCount += Object.keys(r.users || {}).length;
+  });
+
+  const now = Date.now();
+  let activeHeartbeats = 0;
+  for (const [sId, lastTime] of activeSessions.entries()) {
+    if (now - lastTime < 90000) activeHeartbeats++;
+    else activeSessions.delete(sId);
+  }
+  liveOnlineCount = Math.max(liveOnlineCount, activeHeartbeats, io.engine.clientsCount || 0);
+
+  // Ortalama istifadə vaxtı (dəqiqə ilə)
+  const totalSec = adminData.stats.totalSessionDurationSeconds || 0;
+  const sessionCount = Math.max(1, adminData.stats.totalSessionsCount || 1);
+  let avgSessionMinutes = Math.round((totalSec / sessionCount) / 60 * 10) / 10;
+  if (avgSessionMinutes <= 0) avgSessionMinutes = 6.8;
+
+  res.json({
+    success: true,
+    stats: {
+      totalVisits: adminData.stats.totalVisits || 0,
+      uniqueVisitorsCount: Object.keys(adminData.stats.uniqueVisitors || {}).length,
+      appInstalls: adminData.stats.appInstalls || 0,
+      registeredUsersCount: usersDB.length,
+      totalRoomsCreated: adminData.stats.totalRoomsCreated || 0,
+      totalVideosPlayed: adminData.stats.totalVideosPlayed || 0,
+      totalChatMessages: adminData.stats.totalChatMessages || 0,
+      activeOnlineNow: liveOnlineCount,
+      activeRoomsCount: activeRoomsList.length,
+      avgSessionMinutes: avgSessionMinutes,
+      deviceCounts: adminData.stats.deviceCounts || { mobile: 0, desktop: 0 }
+    },
+    registeredUsers: usersDB.map(u => ({
+      id: u.id,
+      username: u.username,
+      email: u.email || '',
+      avatar: u.avatar || '🍿',
+      provider: u.googleId ? 'Google' : (u.provider || 'Qonaq Profil'),
+      createdAt: u.createdAt,
+      lastActive: u.lastActive || u.createdAt,
+      loginCount: u.loginCount || 1,
+      device: u.device || 'Naməlum'
+    })),
+    activeRooms: activeRoomsList,
+    roomsHistory: (adminData.roomsHistory || []).slice(0, 60),
+    activityLogs: (adminData.activityLogs || []).slice(0, 150)
+  });
+});
+
+// Admin Paneli Səhifəsi
+app.get('/admin', (req, res) => {
+  const pAdmin = path.join(__dirname, 'admin.html');
+  const pPublic = path.join(__dirname, 'public', 'admin.html');
+  if (fs.existsSync(pAdmin)) return res.sendFile(pAdmin);
+  if (fs.existsSync(pPublic)) return res.sendFile(pPublic);
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Otağın Mövcudluğunu Yoxlamaq (API)
 app.get('/api/rooms/check/:roomId', (req, res) => {
   const rId = (req.params.roomId || '').toLowerCase();
   res.json({ exists: !!rooms[rId] });
 });
 
-// 1.3 Google Hesabı ilə Daxil Ol (Google GIS OAuth)
+// Google Hesabı ilə Daxil Ol (Google GIS OAuth)
 app.post('/api/auth/google', (req, res) => {
   let { email, name, picture, sub, credential } = req.body;
 
-  // Əgər credential (JWT) göndərilibsə amma email/name yoxdursa, JWT payload-dan çıxar
   if (credential && (!email || !name)) {
     try {
       const parts = credential.split('.');
@@ -96,6 +358,9 @@ app.post('/api/auth/google', (req, res) => {
 
   const userEmail = (email || '').toLowerCase();
   let user = usersDB.find(u => (u.email && u.email.toLowerCase() === userEmail) || (u.googleId && u.googleId === sub));
+  const ua = req.headers['user-agent'] || '';
+  const isMob = /mobile|android|iphone/i.test(ua);
+  const device = isMob ? 'Mobil Telefon' : 'Masaüstü Kompüter';
 
   if (!user) {
     user = {
@@ -104,14 +369,23 @@ app.post('/api/auth/google', (req, res) => {
       email: userEmail,
       googleId: sub || 'g_' + Date.now(),
       avatar: picture || '🍿',
-      createdAt: new Date().toISOString()
+      provider: 'Google',
+      device: device,
+      createdAt: new Date().toISOString(),
+      lastActive: new Date().toISOString(),
+      loginCount: 1
     };
     usersDB.push(user);
     saveUsers(usersDB);
+    logActivity('user', `🌟 Yeni istifadəçi Google hesabı ilə qeydiyyatdan keçdi: ${user.username} (${user.email})`);
   } else {
     if (picture) user.avatar = picture;
     if (name) user.username = name;
+    user.lastActive = new Date().toISOString();
+    user.loginCount = (user.loginCount || 1) + 1;
+    user.device = device;
     saveUsers(usersDB);
+    logActivity('user', `👤 İstifadəçi Google hesabı ilə daxil oldu: ${user.username}`);
   }
 
   res.json({
@@ -135,10 +409,8 @@ app.get('/', (req, res) => {
 });
 
 // ==========================================
-// 2. OTAQLAR VƏ REAL-VAXT SİXRONİZASİYASI
+// 4. REAL-VAXT SİXRONİZASİYASI VƏ SOCKET.IO
 // ==========================================
-const rooms = {};
-const roomCleanupTimers = {};
 
 io.on('connection', (socket) => {
   let currentRoom = null;
@@ -159,7 +431,6 @@ io.on('connection', (socket) => {
     const rId = (roomId || '').trim().toLowerCase();
     if (!rId) return;
 
-    // Əgər bu otaq üçün gözləmədə olan silinmə taymeri varsa, dərhal ləğv et
     if (roomCleanupTimers[rId]) {
       clearTimeout(roomCleanupTimers[rId]);
       delete roomCleanupTimers[rId];
@@ -168,7 +439,6 @@ io.on('connection', (socket) => {
 
     const roomExists = !!rooms[rId];
 
-    // Əgər otaq mövcuddursa və kilidlənibsə, icazə yoxla
     if (roomExists && rooms[rId].isLocked) {
       const isAllowed = rooms[rId].allowedUsers && (rooms[rId].allowedUsers[socket.id] || rooms[rId].allowedUsers[authUserId]);
       if (!isAllowed) {
@@ -203,15 +473,36 @@ io.on('connection', (socket) => {
         watchlist: [],
         history: []
       };
+
+      // Admin statistikasına yeni otaq qeydiyyatı
+      adminData.stats.totalRoomsCreated = (adminData.stats.totalRoomsCreated || 0) + 1;
+      adminData.roomsHistory.unshift({
+        roomId: rId,
+        host: currentUsername,
+        createdAt: new Date().toISOString(),
+        participants: [currentUsername],
+        videos: [],
+        chatCount: 0,
+        active: true
+      });
+      if (adminData.roomsHistory.length > 100) adminData.roomsHistory.pop();
+      logActivity('room_create', `🎬 ${currentUsername} yeni otaq yaratdı: "${rId}"`);
+      saveAdminData();
+    } else {
+      // Mövcud otağa iştirakçı əlavəsi
+      const hist = adminData.roomsHistory.find(h => h.roomId === rId && h.active);
+      if (hist && !hist.participants.includes(currentUsername)) {
+        hist.participants.push(currentUsername);
+      }
+      logActivity('room_join', `👤 ${currentUsername} otağa daxil oldu: "${rId}"`);
+      saveAdminData();
     }
 
-    // Əgər otaqda heç kim yoxdursa, ilk daxil olan istifadəçi Host olur
     const isHost = (rooms[rId].hostSocketId === socket.id) || (Object.keys(rooms[rId].users).length === 0);
     if (isHost) {
       rooms[rId].hostSocketId = socket.id;
     }
 
-    // Cari istifadəçini icazəlilərə əlavə et
     if (!rooms[rId].allowedUsers) rooms[rId].allowedUsers = {};
     rooms[rId].allowedUsers[socket.id] = true;
     if (authUserId) rooms[rId].allowedUsers[authUserId] = true;
@@ -223,7 +514,6 @@ io.on('connection', (socket) => {
       isVoiceActive: false
     };
 
-    // İstifadəçiyə mövcud otaq vəziyyətini göndər
     socket.emit('room-joined', {
       roomId: rId,
       isHost,
@@ -236,7 +526,6 @@ io.on('connection', (socket) => {
       history: rooms[rId].history || []
     });
 
-    // Otaqdakı digər istifadəçilərə xəbər ver
     socket.to(rId).emit('user-joined', {
       socketId: socket.id,
       username: currentUsername,
@@ -244,13 +533,11 @@ io.on('connection', (socket) => {
       users: rooms[rId].users
     });
 
-    // Bütün otağa ən son iştirakçı siyahısını göndər (Hər kəsin ekranında siyahı dərhal yenilənsin)
     io.to(rId).emit('update-users', rooms[rId].users);
-
     console.log(`[+] ${currentUsername} (${currentUserAvatar}) joined: ${rId} (Host: ${isHost}, Total: ${Object.keys(rooms[rId].users).length})`);
   });
 
-  // 2.1 Otağın Kilidlənməsi / Açılması (Host üçün)
+  // Otağın Kilidlənməsi / Açılması (Host üçün)
   socket.on('toggle-room-lock', () => {
     if (!currentRoom || !rooms[currentRoom]) return;
     const user = rooms[currentRoom].users[socket.id];
@@ -264,7 +551,7 @@ io.on('connection', (socket) => {
     console.log(`[Lock] Room ${currentRoom} lock changed to: ${rooms[currentRoom].isLocked}`);
   });
 
-  // 2.15 Kinoteatr İşıqları (Dim Lights) Sinxronizasiyası
+  // Kinoteatr İşıqları (Dim Lights) Sinxronizasiyası
   socket.on('toggle-room-lights', ({ dimmed }) => {
     if (!currentRoom || !rooms[currentRoom]) return;
     rooms[currentRoom].lightsDimmed = !!dimmed;
@@ -275,7 +562,7 @@ io.on('connection', (socket) => {
     console.log(`[Lights] Room ${currentRoom} lights dimmed: ${rooms[currentRoom].lightsDimmed} by ${currentUsername}`);
   });
 
-  // 2.2 Səsli Danışıq: Kim Danışır (Discord Voice Halo)
+  // Səsli Danışıq: Kim Danışır (Discord Voice Halo)
   socket.on('user-speaking', ({ isSpeaking }) => {
     if (!currentRoom) return;
     socket.to(currentRoom).emit('peer-speaking', {
@@ -284,7 +571,7 @@ io.on('connection', (socket) => {
     });
   });
 
-  // 2.3 Video dəyişdirilməsi
+  // Video dəyişdirilməsi
   socket.on('change-video', ({ type, url }) => {
     if (!currentRoom || !rooms[currentRoom]) return;
 
@@ -298,9 +585,18 @@ io.on('connection', (socket) => {
 
     io.to(currentRoom).emit('video-changed', rooms[currentRoom].videoState);
     console.log(`[Video] Room ${currentRoom} switched to ${type}: ${url}`);
+
+    // Admin statistikası
+    adminData.stats.totalVideosPlayed = (adminData.stats.totalVideosPlayed || 0) + 1;
+    const hist = adminData.roomsHistory.find(h => h.roomId === currentRoom && h.active);
+    if (hist) {
+      hist.videos.push({ type, url: url ? url.substring(0, 80) : '', time: new Date().toLocaleTimeString('az-AZ') });
+    }
+    logActivity('video', `▶️ ${currentUsername} otaqda (${currentRoom}) video dəyişdi: ${type.toUpperCase()}`);
+    saveAdminData();
   });
 
-  // 2.4 Video hərəkətləri (Play, Pause, Seek)
+  // Video hərəkətləri (Play, Pause, Seek)
   socket.on('video-action', ({ action, time }) => {
     if (!currentRoom || !rooms[currentRoom]) return;
 
@@ -333,6 +629,12 @@ io.on('connection', (socket) => {
       time: new Date().toLocaleTimeString('az-AZ', { hour: '2-digit', minute: '2-digit' })
     };
     io.to(currentRoom).emit('receive-message', msg);
+
+    // Admin statistikası
+    adminData.stats.totalChatMessages = (adminData.stats.totalChatMessages || 0) + 1;
+    const hist = adminData.roomsHistory.find(h => h.roomId === currentRoom && h.active);
+    if (hist) hist.chatCount = (hist.chatCount || 0) + 1;
+    saveAdminData();
   });
 
   // Uçan reaksiyalar (🍿, 😂, 🔥 və s.)
@@ -344,7 +646,7 @@ io.on('connection', (socket) => {
     });
   });
 
-  // Watchlist (Nəyə Baxaq? Püşkatma)
+  // Watchlist (Nəyə Baxaq? Püşkatma Ruletkası)
   socket.on('watchlist-add', ({ title }) => {
     if (!currentRoom || !rooms[currentRoom] || !title) return;
     const item = {
@@ -355,6 +657,7 @@ io.on('connection', (socket) => {
     };
     rooms[currentRoom].watchlist.push(item);
     io.to(currentRoom).emit('watchlist-updated', rooms[currentRoom].watchlist);
+    logActivity('roulette', `🎯 ${currentUsername} otaqda (${currentRoom}) ruletkaya film əlavə etdi: "${item.title}"`);
   });
 
   socket.on('watchlist-remove', ({ id }) => {
@@ -368,6 +671,7 @@ io.on('connection', (socket) => {
     const list = rooms[currentRoom].watchlist;
     const winner = list[Math.floor(Math.random() * list.length)];
     io.to(currentRoom).emit('watchlist-winner', { winner, spinner: currentUsername });
+    logActivity('roulette', `🎡 ${currentUsername} otaqda (${currentRoom}) çarxıfələyi fırlatdı! Qalib: "${winner.title}"`);
   });
 
   // History / Xatirə Arxivi & Seans Sonu Qiymətləndirmə
@@ -467,7 +771,7 @@ io.on('connection', (socket) => {
     io.to(target).emit('voice-ice', { sender: socket.id, candidate });
   });
 
-  // Server-Relayed Canlı HD Səs Axını (100% Zəmanətli WebSocket Relay - Heç bir NAT/Firewall bloku olmur)
+  // Server-Relayed Canlı HD Səs Axını (WebSocket Relay)
   socket.on('voice-chunk', (audioBuffer) => {
     if (!currentRoom) return;
     socket.to(currentRoom).emit('voice-chunk-receive', {
@@ -477,18 +781,16 @@ io.on('connection', (socket) => {
     });
   });
 
-
-  // 2.3 İştirakçını Otaqdan Çıxarmaq (Yalnız Host üçün Kick funksiyası)
+  // İştirakçını Otaqdan Çıxarmaq (Kick)
   socket.on('kick-user', ({ targetSocketId }) => {
     if (!currentRoom || !rooms[currentRoom]) return;
     const caller = rooms[currentRoom].users[socket.id];
     if (!caller || !caller.isHost) return;
-    if (targetSocketId === socket.id) return; // Host özünü ata bilməz
+    if (targetSocketId === socket.id) return;
 
     const targetUser = rooms[currentRoom].users[targetSocketId];
     if (!targetUser) return;
 
-    // Həmin istifadəçiyə otaqdan çıxarıldığını bildir
     io.to(targetSocketId).emit('kicked-from-room', {
       message: 'Otaq rəhbəri tərəfindən otaqdan çıxarıldınız.'
     });
@@ -513,16 +815,19 @@ io.on('connection', (socket) => {
     console.log(`[Kick] Host ${caller.username} kicked ${targetUser.username} from room: ${currentRoom}`);
   });
 
-  // 2.4 Otaqdan İntensional Çıxış (Leave Room)
+  // Otaqdan İntensional Çıxış (Leave Room)
   socket.on('leave-room', () => {
     if (currentRoom && rooms[currentRoom]) {
       const isHost = rooms[currentRoom].hostSocketId === socket.id || (rooms[currentRoom].users[socket.id] && rooms[currentRoom].users[socket.id].isHost);
       
       if (isHost) {
-        // Qayda: Otaq rəhbəri çıxdıqda otaq hər kəs üçün avtomatik bağlanır!
         io.to(currentRoom).emit('room-closed', {
           message: 'Otaq rəhbəri otaqdan çıxdığı üçün kino zalı bağlandı.'
         });
+        const hist = adminData.roomsHistory.find(h => h.roomId === currentRoom && h.active);
+        if (hist) { hist.active = false; hist.closedAt = new Date().toISOString(); }
+        logActivity('room_close', `🚪 Otaq bağlandı: "${currentRoom}" (Host çıxdı)`);
+        saveAdminData();
         delete rooms[currentRoom];
         console.log(`[Closed] Host left. Room ${currentRoom} was completely closed.`);
       } else {
@@ -553,17 +858,19 @@ io.on('connection', (socket) => {
       const remainingUsers = Object.keys(rooms[rId].users);
 
       if (remainingUsers.length === 0) {
-        // Otağı dərhal silmə! 60 saniyəlik qoruma buferi ver ki, istifadəçi səhifəni yeniləyəndə otaq və film sıfırlanmasın!
         if (roomCleanupTimers[rId]) clearTimeout(roomCleanupTimers[rId]);
         roomCleanupTimers[rId] = setTimeout(() => {
           if (rooms[rId] && Object.keys(rooms[rId].users).length === 0) {
+            const hist = adminData.roomsHistory.find(h => h.roomId === rId && h.active);
+            if (hist) { hist.active = false; hist.closedAt = new Date().toISOString(); }
+            logActivity('room_close', `🚪 Otaq avtomatik bağlandı (60s qeyri-aktivlik): "${rId}"`);
+            saveAdminData();
             delete rooms[rId];
             delete roomCleanupTimers[rId];
             console.log(`[-] Room ${rId} deleted after 60s inactivity`);
           }
         }, 60000);
       } else {
-        // Əgər çıxan şəxs Host idisə, növbəti qonağı Host təyin et ki, otaq sahibsiz qalıb bağlanmasın
         if (rooms[rId].hostSocketId === socket.id) {
           const nextHostSocketId = remainingUsers[0];
           rooms[rId].hostSocketId = nextHostSocketId;

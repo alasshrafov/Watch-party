@@ -25,16 +25,16 @@ body.theme-netflix, body {
   --border-hover: rgba(229, 9, 20, 0.5);
   --radius: 16px;
   --radius-sm: 10px;
-  --brand-font: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --brand-font: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-heading: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
   --theme-ambient-glow: rgba(229, 9, 20, 0.12);
 }
 
-/* 1.1.1 LOBBY 2-COLOR DESIGN & FONT SHIELD (Always Obsidian & Crimson Red with Outfit) */
+/* 1.1.1 LOBBY 2-COLOR DESIGN & FONT SHIELD (Inter & Plus Jakarta Sans with flawless Azerbaijani glyphs) */
 #lobby-screen, #lobby-screen * {
-  --brand-font: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
-  --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  --brand-font: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  --font-heading: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace !important;
   --primary: #e50914 !important;
   --primary-hover: #ff1925 !important;
@@ -49,7 +49,7 @@ body.theme-netflix, body {
 }
 
 #lobby-screen {
-  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif !important;
+  font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
 }
 
 /* 1.2 MARVEL / AVENGERS / SPIDER-MAN (MCU) */
@@ -213,7 +213,7 @@ html, body {
 }
 
 body {
-  font-family: var(--brand-font, 'Outfit', 'Plus Jakarta Sans', sans-serif);
+  font-family: var(--brand-font, 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
   background-color: var(--bg-dark);
   color: var(--text-main);
   min-height: 100vh;
@@ -5056,7 +5056,7 @@ body.lights-dimmed .player-section {
 .step-num {
   font-size: 2.2rem;
   font-weight: 900;
-  font-family: 'JetBrains Mono', 'Space Grotesk', monospace;
+  font-family: 'JetBrains Mono', 'Inter', monospace;
   color: #e50914;
   line-height: 1;
   margin-bottom: 14px;
@@ -6844,7 +6844,7 @@ body.theme-netflix .tab-btn.active {
   line-height: 1.1;
 }
 .drawer-brand-titles span {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.56rem;
   font-weight: 600;
   letter-spacing: 0.16em;
@@ -6894,7 +6894,7 @@ body.theme-netflix .tab-btn.active {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -6905,7 +6905,7 @@ body.theme-netflix .tab-btn.active {
   color: #d4af37;
 }
 .drawer-anim-hint {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.58rem;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -7104,7 +7104,7 @@ body.theme-netflix .tab-btn.active {
   flex: 1;
 }
 .dcqb-text strong {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -7231,7 +7231,7 @@ body.theme-netflix .tab-btn.active {
   background: #12151f;
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: #94a3b8;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -7767,7 +7767,7 @@ body.theme-netflix .tab-btn.active {
     color: #b91c1c !important;
   }
   .mob-brand-text small {
-    font-family: 'Space Grotesk', sans-serif !important;
+    font-family: 'Inter', sans-serif !important;
     font-size: 0.52rem;
     font-weight: 600;
     letter-spacing: 0.22em;
@@ -7962,7 +7962,7 @@ body.theme-netflix .tab-btn.active {
     align-items: flex-end;
   }
   .mob-hero-film-tag {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 0.58rem;
     font-weight: 700;
     letter-spacing: 0.14em;
@@ -8029,7 +8029,7 @@ body.theme-netflix .tab-btn.active {
     background: rgba(229, 9, 20, 0.88);
     border: 1px solid rgba(255, 255, 255, 0.22);
     color: #ffffff;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 0.64rem;
     font-weight: 700;
     letter-spacing: 0.06em;
@@ -8206,7 +8206,7 @@ body.theme-netflix .tab-btn.active {
     gap: 6px;
   }
   .mob-identity-input-col label {
-    font-family: 'Space Grotesk', sans-serif !important;
+    font-family: 'Inter', sans-serif !important;
     font-size: 0.56rem;
     font-weight: 700;
     color: #94a3b8 !important;
@@ -8217,7 +8217,7 @@ body.theme-netflix .tab-btn.active {
     color: #64748b !important;
   }
   .mob-id-status-pill {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 0.56rem;
     font-weight: 700;
     letter-spacing: 0.06em;
@@ -8378,7 +8378,7 @@ body.theme-netflix .tab-btn.active {
     border-radius: 8px;
     border: none !important;
     color: #ffffff !important;
-    font-family: 'Space Grotesk', sans-serif !important;
+    font-family: 'Inter', sans-serif !important;
     font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -8422,7 +8422,7 @@ body.theme-netflix .tab-btn.active {
     text-align: center;
   }
   .mob-perk-pill strong {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 0.6rem;
     font-weight: 700;
     letter-spacing: 0.04em;
@@ -9307,11 +9307,12 @@ body.theme-netflix .tab-btn.active {
     font-size: 0.8rem !important;
   }
 
-  /* İzləmə Siyahım, Tarixçə, Çarx və digər modallarda scroll-suz yığcam görünüş */
-  .watchlist-items-container,
-  .history-items-container {
-    max-height: 48dvh !important;
-    overflow: hidden !important;
+  /* İzləmə Siyahım, Tarixçə, Çarx və digər modallarda yığcam mobil görünüş */
+  .modal-wheel-card {
+    max-height: 90dvh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 14px 12px !important;
   }
 
   .wheel-stage-wrapper,
@@ -9320,9 +9321,33 @@ body.theme-netflix .tab-btn.active {
     height: 250px !important;
     max-width: 250px !important;
     max-height: 250px !important;
-    margin: 0 auto 6px auto !important;
-    transform: scale(0.78) !important;
-    transform-origin: center center !important;
+    margin: 4px auto 10px auto !important;
+    transform: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  #wheel-canvas {
+    width: 240px !important;
+    height: 240px !important;
+    max-width: 100% !important;
+  }
+
+  .roulette-action-box {
+    margin-bottom: 12px !important;
+  }
+
+  .btn-spin {
+    padding: 13px 20px !important;
+    font-size: 0.95rem !important;
+    border-radius: 10px !important;
+  }
+
+  .watchlist-items {
+    max-height: 160px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
   }
 
   .room-tools-menu-box {

@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>OneCouch Admin Dashboard — İdarəetmə və Statistika</title>
+  <link rel="icon" type="image/svg+xml" href="assets/icon-vector.svg?v=15">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #080914;
+      --bg-card: rgba(14, 18, 36, 0.85);
+      --bg-card-hover: rgba(22, 28, 56, 0.95);
+      --bg-input: rgba(10, 13, 26, 0.9);
+      --border-color: rgba(124, 58, 237, 0.22);
+      --border-glow: rgba(124, 58, 237, 0.45);
+      --primary: #7c3aed;
+      --primary-hover: #9061f9;
+      --cyan: #06b6d4;
+      --emerald: #10b981;
+      --rose: #f43f5e;
+      --amber: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    /* Arxa fon radial parlaqlıq */
+    .bg-ambient {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(circle at 15% 15%, rgba(124, 58, 237, 0.14) 0%, transparent 45%),
+                  radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.12) 0%, transparent 50%),
+                  radial-gradient(circle at 50% 50%, rgba(244, 63, 94, 0.05) 0%, transparent 60%);
+    }
+    .app-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 16px 20px 40px 20px;
+    }
+    /* Üst Başlıq */
+    .admin-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      backdrop-filter: blur(12px);
+      margin-bottom: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .admin-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #7c3aed, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: 0 0 16px rgba(124, 58, 237, 0.5);
+    }
+    .admin-title-col h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .admin-title-col h1 span.badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: rgba(124, 58, 237, 0.25);
+      border: 1px solid var(--border-glow);
+      color: #c4b5fd;
+    }
+    .admin-title-col p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .live-pulse-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #34d399;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.9); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(0.9); opacity: 0.8; }
+    }
+    .btn-header {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #f1f5f9;
+      padding: 7px 13px;
+      border-radius: 9px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .btn-header:hover {
+      background: rgba(124, 58, 237, 0.25);
+      border-color: var(--border-glow);
+    }
+    .btn-home {
+      background: linear-gradient(135deg, #7c3aed, #06b6d4);
+      border: none;
+      color: #fff;
+    }
+    /* Tab Menyusu */
+    .admin-nav-tabs {
+      display: flex;
+      gap: 8px;
+      background: rgba(12, 16, 32, 0.7);
+      padding: 6px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 22px;
+      overflow-x: auto;
+    }
+    .nav-tab-btn {
+      flex: 1;
+      min-width: 160px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .nav-tab-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .nav-tab-btn.active {
+      color: #fff;
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.85), rgba(6, 182, 212, 0.75));
+      box-shadow: 0 4px 16px rgba(124, 58, 237, 0.35);
+    }
+    /* Tab Məzmunu */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 18px 20px;
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-glow);
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--card-color, #7c3aed), transparent);
+    }
+    .kpi-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .kpi-card-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .kpi-card-icon {
+      font-size: 1.3rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .kpi-card-value {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .kpi-card-subtitle {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .kpi-card-subtitle strong {
+      color: #34d399;
+    }
+
+    /* İcmal Qrafik / Detal Kartları */
+    .dashboard-split-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 900px) {
+      .dashboard-split-row { grid-template-columns: 1fr; }
+    }
+    .data-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+    }
+    .data-panel-title {
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #fff;
+    }
+    .device-bar-wrap {
+      margin-bottom: 16px;
+    }
+    .device-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .device-progress-track {
+      height: 10px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      display: flex;
+    }
+    .device-progress-fill-mob {
+      background: linear-gradient(90deg, #7c3aed, #06b6d4);
+      height: 100%;
+      transition: width 0.6s ease;
+    }
+    .device-progress-fill-desk {
+      background: linear-gradient(90deg, #f59e0b, #f43f5e);
+      height: 100%;
+      transition: width 0.6s ease;
+    }
+
+    /* Axtarış Xanası */
+    .search-filter-box {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .search-input {
+      flex: 1;
+      padding: 11px 16px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 0.86rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus {
+      border-color: var(--primary-hover);
+      box-shadow: 0 0 12px rgba(124, 58, 237, 0.3);
+    }
+
+    /* Cədvəl Dizaynı */
+    .table-container {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background: rgba(10, 13, 26, 0.6);
+    }
+    table.admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.82rem;
+    }
+    table.admin-table th {
+      background: rgba(18, 23, 46, 0.9);
+      padding: 12px 16px;
+      color: #cbd5e1;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid var(--border-color);
+    }
+    table.admin-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #e2e8f0;
+      vertical-align: middle;
+    }
+    table.admin-table tr:hover td {
+      background: rgba(124, 58, 237, 0.06);
+    }
+    .user-profile-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .user-avatar-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(124, 58, 237, 0.2);
+      border: 1px solid rgba(124, 58, 237, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .user-avatar-badge img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .badge-pill {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+    .badge-google {
+      background: rgba(66, 133, 244, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(66, 133, 244, 0.3);
+    }
+    .badge-guest {
+      background: rgba(148, 163, 184, 0.12);
+      color: #cbd5e1;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+    .badge-live {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+    .badge-closed {
+      background: rgba(244, 63, 94, 0.12);
+      color: #fb7185;
+      border: 1px solid rgba(244, 63, 94, 0.25);
+    }
+
+    /* Canlı Hadisələr Lenti */
+    .activity-feed-list {
+      max-height: 480px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-right: 4px;
+    }
+    .activity-feed-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 14px;
+      background: rgba(14, 18, 36, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      font-size: 0.82rem;
+      transition: border-color 0.15s;
+    }
+    .activity-feed-item:hover {
+      border-color: rgba(124, 58, 237, 0.3);
+    }
+    .activity-time {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      padding-top: 1px;
+      flex-shrink: 0;
+    }
+    .activity-text {
+      flex: 1;
+      color: #f1f5f9;
+      line-height: 1.4;
+    }
+
+    /* Giriş Parol Modalı */
+    #admin-lock-screen {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #080914;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .lock-card {
+      max-width: 380px;
+      width: 100%;
+      background: rgba(16, 21, 44, 0.95);
+      border: 1px solid var(--border-glow);
+      border-radius: 20px;
+      padding: 32px 26px;
+      text-align: center;
+      box-shadow: 0 16px 60px rgba(0,0,0,0.8), 0 0 30px rgba(124, 58, 237, 0.25);
+    }
+    .lock-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #7c3aed, #06b6d4);
+      margin: 0 auto 16px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+    }
+    .lock-card h2 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .lock-card p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+    .lock-input {
+      width: 100%;
+      padding: 12px 16px;
+      background: #0a0d1a;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1rem;
+      text-align: center;
+      font-family: inherit;
+      outline: none;
+      margin-bottom: 14px;
+      letter-spacing: 0.1em;
+    }
+    .lock-input:focus {
+      border-color: #7c3aed;
+      box-shadow: 0 0 14px rgba(124, 58, 237, 0.4);
+    }
+    .btn-unlock {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #7c3aed, #06b6d4);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 4px 18px rgba(124, 58, 237, 0.4);
+    }
+    .lock-error {
+      color: #f43f5e;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-top: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-ambient"></div>
+
+  <!-- Parol Qoruma Ekranı -->
+  <div id="admin-lock-screen">
+    <div class="lock-card">
+      <div class="lock-icon">👑</div>
+      <h2>OneCouch Rəhbər Girişi</h2>
+      <p>Statistika və idarəetmə panelinə daxil olmaq üçün təyin edilmiş admin şifrənizi daxil edin.</p>
+      <form id="lock-form" onsubmit="handleAdminLogin(event)">
+        <input type="password" id="admin-password-input" class="lock-input" placeholder="Admin Şifrəsi..." autofocus required>
+        <button type="submit" class="btn-unlock">Daxil Ol 🔓</button>
+        <div id="lock-error" class="lock-error">Şifrə yalnışdır! Yenidən cəhd edin.</div>
+      </form>
+    </div>
+  </div>
+
+  <div class="app-wrapper">
+    <!-- Başlıq -->
+    <header class="admin-header">
+      <div class="header-left">
+        <div class="admin-logo">🛋️</div>
+        <div class="admin-title-col">
+          <h1>OneCouch Dashboard <span class="badge">RƏHBƏR</span></h1>
+          <p>İstifadəçilər, Otaqlar və Canlı Statistika İdarəetmə Mərkəzi</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="live-pulse-badge">
+          <div class="pulse-dot"></div>
+          <span>Onlayn: <strong id="header-online-count">0</strong></span>
+        </div>
+        <button type="button" class="btn-header" onclick="loadDashboardData()" title="Məlumatları dərhal yenilə">
+          <span id="refresh-icon">🔄</span> Yenilə
+        </button>
+        <a href="/" class="btn-header btn-home" style="text-decoration:none;">
+          <span>🌐 Sayta Keç</span>
+        </a>
+        <button type="button" class="btn-header" onclick="adminLogout()" title="Çıxış et">
+          <span>🚪 Çıxış</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Nav Tabları -->
+    <nav class="admin-nav-tabs">
+      <button type="button" class="nav-tab-btn active" data-tab="tab-stats">
+        <span>📊 Ümumi Statistika</span>
+      </button>
+      <button type="button" class="nav-tab-btn" data-tab="tab-users">
+        <span>👥 Qeydiyyatlı İstifadəçilər (<span id="tab-users-count">0</span>)</span>
+      </button>
+      <button type="button" class="nav-tab-btn" data-tab="tab-rooms">
+        <span>🎬 Otaqlar və Fəaliyyət (<span id="tab-rooms-count">0</span>)</span>
+      </button>
+    </nav>
+
+    <!-- ==========================================
+         TAB 1: STATİSTİKA VƏ İCMAL
+         ========================================== -->
+    <section id="tab-stats" class="tab-content active">
+      <!-- 6 Əsas KPI Kartı -->
+      <div class="kpi-grid">
+        <div class="kpi-card" style="--card-color: #06b6d4;">
+          <div class="kpi-card-header">
+            <span class="kpi-card-title">Tətbiqi Yükləyənlər</span>
+            <div class="kpi-card-icon">📲</div>
+          </div>
+          <div class="kpi-card-value" id="kpi-installs">0</div>
+          <div class="kpi-card-subtitle">
+            <span>PWA & Mobil APK Quraşdırmaları</span>
+          </div>
+        </div>
+
+        <div class="kpi-card" style="--card-color: #7c3aed;">
+          <div class="kpi-card-header">
+            <span class="kpi-card-title">Qeydiyyatlı İstifadəçilər</span>
+            <div class="kpi-card-icon">👤</div>
+          </div>
+          <div class="kpi-card-value" id="kpi-users">0</div>
+          <div class="kpi-card-subtitle">
+            <span>Google və Qeydiyyatlı Hesablar</span>
+          </div>
+        </div>
+
+        <div class="kpi-card" style="--card-color: #10b981;">
+          <div class="kpi-card-header">
+            <span class="kpi-card-title">Sayta Daxil Olmalar</span>
+            <div class="kpi-card-icon">🌐</div>
+          </div>
+          <div class="kpi-card-value" id="kpi-visits">0</div>
+          <div class="kpi-card-subtitle">
+            <span>Unikal Ziyarətçilər: <strong id="kpi-unique-visitors">0</strong></span>
+          </div>
+        </div>
+
+        <div class="kpi-card" style="--card-color: #f59e0b;">
+          <div class="kpi-card-header">
+            <span class="kpi-card-title">Ortalama İstifadə Vaxtı</span>
+            <div class="kpi-card-icon">⏱️</div>
+          </div>
+          <div class="kpi-card-value" id="kpi-avg-time">0 dəq</div>
+          <div class="kpi-card-subtitle">
+            <span>Hər seans üçün orta müddət</span>
+          </div>
+        </div>
+
+        <div class="kpi-card" style="--card-color: #f43f5e;">
+          <div class="kpi-card-header">
+            <span class="kpi-card-title">Hazırda Canlı Onlayn</span>
+            <div class="kpi-card-icon">🟢</div>
+          </div>
+          <div class="kpi-card-value" id="kpi-live-online">0</div>
+          <div class="kpi-card-subtitle">
+            <span>Real-vaxtda aktiv istifadəçilər</span>
+          </div>
+        </div>
+
+        <div class="kpi-card" style="--card-color: #8b5cf6;">
+          <div class="kpi-card-header">
+            <span class="kpi-card-title">Açılan Otaqlar</span>
+            <div class="kpi-card-icon">🎬</div>
+          </div>
+          <div class="kpi-card-value" id="kpi-total-rooms">0</div>
+          <div class="kpi-card-subtitle">
+            <span>Aktiv: <strong id="kpi-active-rooms">0</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detallı Qrafik və İcmal Paneli -->
+      <div class="dashboard-split-row">
+        <!-- Cihaz Bölgüsü -->
+        <div class="data-panel">
+          <div class="data-panel-title">
+            <span>📱 Cihaz Növləri Bölgüsü</span>
+            <span style="font-size:0.75rem; color:var(--text-muted);">Ziyarətçilərin istifadə etdiyi platformalar</span>
+          </div>
+          <div class="device-bar-wrap">
+            <div class="device-bar-label">
+              <span>Mobil Tətbiq & Telefon</span>
+              <span id="label-mob-pct">50%</span>
+            </div>
+            <div class="device-progress-track">
+              <div class="device-progress-fill-mob" id="bar-mob" style="width: 50%;"></div>
+            </div>
+          </div>
+          <div class="device-bar-wrap">
+            <div class="device-bar-label">
+              <span>Masaüstü Kompüter (Desktop)</span>
+              <span id="label-desk-pct">50%</span>
+            </div>
+            <div class="device-progress-track">
+              <div class="device-progress-fill-desk" id="bar-desk" style="width: 50%;"></div>
+            </div>
+          </div>
+          <div style="margin-top:20px; padding:12px; background:rgba(255,255,255,0.03); border-radius:10px; font-size:0.78rem; color:var(--text-muted); line-height:1.5;">
+            💡 <strong>Qeyd:</strong> Mobil tətbiq (PWA / WebAPK) quraşdıran istifadəçilər birbaşa telefonun ana ekranından daxil olduqda sistem avtomatik olaraq tətbiq sessiyası kimi qeydə alır.
+          </div>
+        </div>
+
+        <!-- Fəallıq Sayğacları -->
+        <div class="data-panel">
+          <div class="data-panel-title">
+            <span>🎬 Platforma Fəallıq Göstəriciləri</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
+            <div style="padding:14px; background:rgba(255,255,255,0.04); border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">İzlənən Videolar</div>
+              <div style="font-size:1.5rem; font-weight:800; color:#06b6d4;" id="stat-videos-played">0</div>
+            </div>
+            <div style="padding:14px; background:rgba(255,255,255,0.04); border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Yazılan Mesajlar</div>
+              <div style="font-size:1.5rem; font-weight:800; color:#34d399;" id="stat-chat-messages">0</div>
+            </div>
+            <div style="padding:14px; background:rgba(255,255,255,0.04); border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Canlı Otaqlar</div>
+              <div style="font-size:1.5rem; font-weight:800; color:#f43f5e;" id="stat-active-rooms-count">0</div>
+            </div>
+            <div style="padding:14px; background:rgba(255,255,255,0.04); border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Orta Seans</div>
+              <div style="font-size:1.5rem; font-weight:800; color:#f59e0b;" id="stat-avg-session">0 dəq</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         TAB 2: İSTİFADƏÇİ HESABLARI
+         ========================================== -->
+    <section id="tab-users" class="tab-content">
+      <div class="data-panel">
+        <div class="data-panel-title">
+          <span>👥 Qeydiyyatdan Keçən və Aktiv İstifadəçilər</span>
+          <span style="font-size:0.8rem; color:var(--text-muted);">Cəmi: <strong id="total-users-badge">0</strong> nəfər</span>
+        </div>
+        
+        <div class="search-filter-box">
+          <input type="text" id="users-search-input" class="search-input" placeholder="🔍 İstifadəçi adı və ya e-poçt ilə axtar..." oninput="filterUsersTable()">
+        </div>
+
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>İstifadəçi</th>
+                <th>E-poçt</th>
+                <th>Giriş Metodu</th>
+                <th>İlk Görünmə</th>
+                <th>Son Fəallıq</th>
+                <th>Giriş Sayı</th>
+                <th>Cihaz Növü</th>
+              </tr>
+            </thead>
+            <tbody id="users-table-body">
+              <tr>
+                <td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);">Məlumatlar yüklənir...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         TAB 3: OTAQLAR VƏ CANLI FƏALİYYƏT
+         ========================================== -->
+    <section id="tab-rooms" class="tab-content">
+      <!-- Hazırda Canlı Otaqlar -->
+      <div class="data-panel" style="margin-bottom:20px;">
+        <div class="data-panel-title">
+          <span>🟢 Hazırda Aktiv Otaqlar (<span id="live-rooms-count-title">0</span>)</span>
+          <span style="font-size:0.75rem; color:#34d399;">Real-vaxtda açıq olan kino zalları</span>
+        </div>
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Otaq Kodu</th>
+                <th>Rəhbər (Host)</th>
+                <th>İştirakçılar</th>
+                <th>Baxılan Video</th>
+                <th>Vəziyyət</th>
+              </tr>
+            </thead>
+            <tbody id="active-rooms-table-body">
+              <tr>
+                <td colspan="5" style="text-align:center; padding:20px; color:var(--text-muted);">Hazırda aktiv otaq yoxdur.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Bölünmüş Blok: Otaq Tarixçəsi və Canlı Fəaliyyət Lenti -->
+      <div class="dashboard-split-row">
+        <!-- Otaq Tarixçəsi -->
+        <div class="data-panel">
+          <div class="data-panel-title">
+            <span>📜 Bütün Açılmış Otaqların Tarixçəsi</span>
+          </div>
+          <div class="table-container" style="max-height: 480px; overflow-y: auto;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Otaq Kodu</th>
+                  <th>Yaradan</th>
+                  <th>Tarix</th>
+                  <th>İştirakçı</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="rooms-history-table-body">
+                <tr>
+                  <td colspan="5" style="text-align:center; padding:20px; color:var(--text-muted);">Tarixçə yüklənir...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Canlı Fəaliyyət Lenti -->
+        <div class="data-panel">
+          <div class="data-panel-title">
+            <span>⚡ Canlı Hadisələr Lenti (Activity Feed)</span>
+            <span style="font-size:0.75rem; color:var(--text-muted);">Real-vaxt hərəkətləri</span>
+          </div>
+          <div class="activity-feed-list" id="activity-feed-container">
+            <div style="text-align:center; padding:30px; color:var(--text-muted);">Fəaliyyət lenti yüklənir...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    let adminToken = localStorage.getItem('onecouch_admin_token') || '';
+    let dashboardRawData = null;
+    let autoRefreshTimer = null;
+
+    // Səhifə Açıldıqda
+    document.addEventListener('DOMContentLoaded', () => {
+      setupTabNavigation();
+      if (adminToken) {
+        checkTokenAndLoad();
+      } else {
+        showLockScreen();
+      }
+      // Hər 12 saniyədən bir avtomatik məlumat yeniləməsi
+      autoRefreshTimer = setInterval(() => {
+        if (adminToken && document.getElementById('admin-lock-screen').style.display === 'none') {
+          loadDashboardData(true);
+        }
+      }, 12000);
+    });
+
+    function setupTabNavigation() {
+      const tabBtns = document.querySelectorAll('.nav-tab-btn');
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tabId = btn.getAttribute('data-tab');
+          tabBtns.forEach(b => b.classList.toggle('active', b === btn));
+          document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.toggle('active', content.id === tabId);
+          });
+        });
+      });
+    }
+
+    function showLockScreen() {
+      document.getElementById('admin-lock-screen').style.display = 'flex';
+    }
+
+    function hideLockScreen() {
+      document.getElementById('admin-lock-screen').style.display = 'none';
+    }
+
+    async function handleAdminLogin(e) {
+      e.preventDefault();
+      const pass = document.getElementById('admin-password-input').value.trim();
+      const errBox = document.getElementById('lock-error');
+      errBox.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: pass })
+        });
+        const data = await res.json();
+        if (data.success && data.token) {
+          adminToken = data.token;
+          localStorage.setItem('onecouch_admin_token', adminToken);
+          hideLockScreen();
+          loadDashboardData();
+        } else {
+          errBox.style.display = 'block';
+        }
+      } catch (err) {
+        console.error('Login error:', err);
+        errBox.textContent = 'Serverlə əlaqə xətası!';
+        errBox.style.display = 'block';
+      }
+    }
+
+    function adminLogout() {
+      localStorage.removeItem('onecouch_admin_token');
+      adminToken = '';
+      showLockScreen();
+    }
+
+    async function checkTokenAndLoad() {
+      hideLockScreen();
+      loadDashboardData();
+    }
+
+    async function loadDashboardData(silent = false) {
+      const refreshIcon = document.getElementById('refresh-icon');
+      if (!silent && refreshIcon) refreshIcon.style.transform = 'rotate(360deg)';
+
+      try {
+        const res = await fetch('/api/admin/data', {
+          headers: { 'x-admin-token': adminToken }
+        });
+        if (res.status === 401 || res.status === 403) {
+          adminLogout();
+          return;
+        }
+        const data = await res.json();
+        if (data.success) {
+          dashboardRawData = data;
+          renderDashboard(data);
+        }
+      } catch (err) {
+        console.error('Error loading dashboard data:', err);
+      } finally {
+        if (!silent && refreshIcon) {
+          setTimeout(() => { refreshIcon.style.transform = ''; }, 400);
+        }
+      }
+    }
+
+    function renderDashboard(data) {
+      const stats = data.stats || {};
+
+      // Header Onlayn
+      document.getElementById('header-online-count').textContent = stats.activeOnlineNow || 0;
+
+      // Tab Sayğacları
+      document.getElementById('tab-users-count').textContent = (data.registeredUsers || []).length;
+      document.getElementById('tab-rooms-count').textContent = stats.totalRoomsCreated || 0;
+
+      // 6 Əsas KPI Kartı
+      document.getElementById('kpi-installs').textContent = stats.appInstalls || 0;
+      document.getElementById('kpi-users').textContent = stats.registeredUsersCount || (data.registeredUsers || []).length;
+      document.getElementById('kpi-visits').textContent = stats.totalVisits || 0;
+      document.getElementById('kpi-unique-visitors').textContent = stats.uniqueVisitorsCount || 0;
+      document.getElementById('kpi-avg-time').textContent = (stats.avgSessionMinutes || 0) + ' dəq';
+      document.getElementById('kpi-live-online').textContent = stats.activeOnlineNow || 0;
+      document.getElementById('kpi-total-rooms').textContent = stats.totalRoomsCreated || 0;
+      document.getElementById('kpi-active-rooms').textContent = stats.activeRoomsCount || 0;
+
+      // Fəallıq Göstəriciləri
+      document.getElementById('stat-videos-played').textContent = stats.totalVideosPlayed || 0;
+      document.getElementById('stat-chat-messages').textContent = stats.totalChatMessages || 0;
+      document.getElementById('stat-active-rooms-count').textContent = stats.activeRoomsCount || 0;
+      document.getElementById('stat-avg-session').textContent = (stats.avgSessionMinutes || 0) + ' dəq';
+
+      // Cihaz Bölgüsü
+      const mob = stats.deviceCounts?.mobile || 0;
+      const desk = stats.deviceCounts?.desktop || 0;
+      const totalDev = Math.max(1, mob + desk);
+      const mobPct = Math.round((mob / totalDev) * 100);
+      const deskPct = 100 - mobPct;
+
+      document.getElementById('label-mob-pct').textContent = `${mobPct}% (${mob})`;
+      document.getElementById('label-desk-pct').textContent = `${deskPct}% (${desk})`;
+      document.getElementById('bar-mob').style.width = `${mobPct}%`;
+      document.getElementById('bar-desk').style.width = `${deskPct}%`;
+
+      // Cədvəllər
+      renderUsersTable(data.registeredUsers || []);
+      renderActiveRoomsTable(data.activeRooms || []);
+      renderRoomsHistoryTable(data.roomsHistory || []);
+      renderActivityFeed(data.activityLogs || []);
+    }
+
+    function renderUsersTable(users) {
+      const tbody = document.getElementById('users-table-body');
+      document.getElementById('total-users-badge').textContent = users.length;
+      if (!users || users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-muted);">Qeydiyyatdan keçən istifadəçi tapılmadı.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = users.map(u => {
+        const isGoogle = (u.provider === 'Google') || !!u.email;
+        const avatarHtml = (u.avatar && u.avatar.startsWith('http')) 
+          ? `<img src="${escapeHtml(u.avatar)}" alt="Avatar">`
+          : `<span>${escapeHtml(u.avatar || '🍿')}</span>`;
+        const regDate = u.createdAt ? new Date(u.createdAt).toLocaleDateString('az-AZ') : '-';
+        const lastActive = u.lastActive ? new Date(u.lastActive).toLocaleString('az-AZ', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '-';
+
+        return `
+          <tr>
+            <td>
+              <div class="user-profile-cell">
+                <div class="user-avatar-badge">${avatarHtml}</div>
+                <strong>${escapeHtml(u.username || 'Qonaq')}</strong>
+              </div>
+            </td>
+            <td>${escapeHtml(u.email || '-')}</td>
+            <td>
+              <span class="badge-pill ${isGoogle ? 'badge-google' : 'badge-guest'}">
+                ${isGoogle ? 'Google Hesabı' : 'Profil'}
+              </span>
+            </td>
+            <td>${regDate}</td>
+            <td>${lastActive}</td>
+            <td><strong>${u.loginCount || 1}</strong> dəfə</td>
+            <td>${escapeHtml(u.device || 'Naməlum')}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterUsersTable() {
+      const q = (document.getElementById('users-search-input').value || '').toLowerCase();
+      if (!dashboardRawData || !dashboardRawData.registeredUsers) return;
+      const filtered = dashboardRawData.registeredUsers.filter(u => {
+        return (u.username && u.username.toLowerCase().includes(q)) ||
+               (u.email && u.email.toLowerCase().includes(q)) ||
+               (u.device && u.device.toLowerCase().includes(q));
+      });
+      renderUsersTable(filtered);
+    }
+
+    function renderActiveRoomsTable(activeRooms) {
+      const tbody = document.getElementById('active-rooms-table-body');
+      document.getElementById('live-rooms-count-title').textContent = activeRooms.length;
+      if (!activeRooms || activeRooms.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-muted);">Hazırda aktiv otaq yoxdur.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = activeRooms.map(r => {
+        const usersList = (r.users || []).map(u => `${u.avatar || ''} ${u.username}`).join(', ');
+        const videoTitle = (r.videoState && r.videoState.url) ? r.videoState.url.substring(0, 45) + '...' : 'Seçilməyib';
+        return `
+          <tr>
+            <td><strong style="color:#06b6d4; font-family:'JetBrains Mono';">${escapeHtml(r.roomId.toUpperCase())}</strong></td>
+            <td>${escapeHtml(r.host || 'Bilinmir')}</td>
+            <td>${r.usersCount || 0} nəfər <small style="opacity:0.7">(${escapeHtml(usersList)})</small></td>
+            <td>${escapeHtml(videoTitle)}</td>
+            <td><span class="badge-pill badge-live">🟢 Aktiv</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderRoomsHistoryTable(history) {
+      const tbody = document.getElementById('rooms-history-table-body');
+      if (!history || history.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-muted);">Tarixçə hələ boşdur.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = history.map(h => {
+        const dateStr = h.createdAt ? new Date(h.createdAt).toLocaleString('az-AZ', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '-';
+        const isLive = !!h.active;
+        const pCount = (h.participants || []).length;
+        return `
+          <tr>
+            <td><strong style="font-family:'JetBrains Mono';">${escapeHtml(h.roomId.toUpperCase())}</strong></td>
+            <td>${escapeHtml(h.host || 'Bilinmir')}</td>
+            <td>${dateStr}</td>
+            <td>${pCount} nəfər</td>
+            <td><span class="badge-pill ${isLive ? 'badge-live' : 'badge-closed'}">${isLive ? '🟢 Aktiv' : '⚪ Bağlandı'}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderActivityFeed(logs) {
+      const container = document.getElementById('activity-feed-container');
+      if (!logs || logs.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-muted);">Hələ heç bir hadisə qeydə alınmayıb.</div>';
+        return;
+      }
+      container.innerHTML = logs.map(l => {
+        return `
+          <div class="activity-feed-item">
+            <span class="activity-time">${escapeHtml(l.time || '')}</span>
+            <span class="activity-text">${escapeHtml(l.text || '')}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+  </script>
+</body>
+</html>

@@ -4414,20 +4414,46 @@ function getThemeName(theme) {
 // 8. WATCHLIST, ÇARXIFƏLƏK & XATİRƏ ARXİVİ
 // ==========================================
 
-let currentWatchlist = [];
+function loadLocalWatchlist() {
+  try {
+    const raw = localStorage.getItem('onecouch_watchlist');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {}
+  return [
+    { id: 'w1', title: 'Inception', addedBy: 'OneCouch' },
+    { id: 'w2', title: 'Interstellar', addedBy: 'OneCouch' },
+    { id: 'w3', title: 'The Dark Knight', addedBy: 'OneCouch' },
+    { id: 'w4', title: 'Gladiator', addedBy: 'OneCouch' }
+  ];
+}
+
+function saveLocalWatchlist() {
+  try {
+    localStorage.setItem('onecouch_watchlist', JSON.stringify(currentWatchlist));
+  } catch (e) {}
+}
+
+let currentWatchlist = loadLocalWatchlist();
 let wheelAngle = 0;
 let isWheelSpinning = false;
 let wheelColors = [
-  '#e50914', '#1f2937', '#b91c1c', '#111827', 
-  '#dc2626', '#374151', '#f59e0b', '#10b981'
+  '#7c3aed', '#06b6d4', '#e50914', '#10b981', 
+  '#f59e0b', '#3b82f6', '#ec4899', '#8b5cf6'
 ];
 
 function setupModalsAndFeatures() {
-  btnOpenWatchlist.addEventListener('click', () => {
-    openModal('modal-watchlist');
-    drawWheel();
-  });
-  btnOpenHistory.addEventListener('click', () => openModal('modal-history'));
+  if (btnOpenWatchlist) {
+    btnOpenWatchlist.addEventListener('click', () => {
+      openModal('modal-watchlist');
+      setTimeout(drawWheel, 60);
+    });
+  }
+  if (btnOpenHistory) {
+    btnOpenHistory.addEventListener('click', () => openModal('modal-history'));
+  }
 
   // Bütün modallarda backdrop-a klikləndikdə bağlanma
   document.querySelectorAll('.modal-backdrop').forEach(modal => {
@@ -4441,52 +4467,100 @@ function setupModalsAndFeatures() {
     });
   });
 
-  // Watchlist Əlavə Et
-  watchlistForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const title = inputWatchlistMovie.value.trim();
-    if (!title || !socket) return;
-    socket.emit('watchlist-add', { title });
-    inputWatchlistMovie.value = '';
-  });
+  // Watchlist Əlavə Et (Həm lokal həm də otaqda dərhal işləyir)
+  if (watchlistForm) {
+    watchlistForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = inputWatchlistMovie.value.trim();
+      if (!title) return;
 
-  // Çarxıfələyi Fırlat
-  btnSpinRoulette.addEventListener('click', () => {
-    if (!socket || isWheelSpinning) return;
-    if (currentWatchlist.length === 0) {
-      alert('Zəhmət olmasa əvvəlcə ən azı 1 film əlavə edin!');
-      return;
-    }
-    btnSpinRoulette.textContent = '🎡 Çarx Fırlanır...';
-    btnSpinRoulette.disabled = true;
-    socket.emit('watchlist-spin');
-  });
+      const item = {
+        id: Date.now() + Math.random().toString(36).substr(2, 4),
+        title: title,
+        addedBy: currentUsername || 'Sən'
+      };
+      currentWatchlist.push(item);
+      saveLocalWatchlist();
+      renderWatchlist(currentWatchlist);
+      drawWheel();
+      inputWatchlistMovie.value = '';
+
+      if (socket && currentRoom) {
+        socket.emit('watchlist-add', { title });
+      }
+    });
+  }
+
+  // Çarxıfələyi Fırlat (Lobbide və mobil appdə heç vaxt ilişmir)
+  if (btnSpinRoulette) {
+    btnSpinRoulette.addEventListener('click', () => {
+      if (isWheelSpinning) return;
+
+      if (!currentWatchlist || currentWatchlist.length === 0) {
+        currentWatchlist = [
+          { id: 'w1', title: 'Inception', addedBy: 'OneCouch' },
+          { id: 'w2', title: 'Interstellar', addedBy: 'OneCouch' },
+          { id: 'w3', title: 'The Dark Knight', addedBy: 'OneCouch' },
+          { id: 'w4', title: 'Gladiator', addedBy: 'OneCouch' }
+        ];
+        saveLocalWatchlist();
+        renderWatchlist(currentWatchlist);
+        drawWheel();
+      }
+
+      btnSpinRoulette.textContent = '🎡 Çarx Fırlanır...';
+      btnSpinRoulette.disabled = true;
+
+      if (socket && currentRoom) {
+        socket.emit('watchlist-spin');
+      } else {
+        // Təkbaşına / Mobil App / Lobbide offline fırlatma
+        const winner = currentWatchlist[Math.floor(Math.random() * currentWatchlist.length)];
+        spinWheelAnimation(winner, () => {
+          showWinnerAnnouncement(winner, currentUsername || 'Sən');
+        });
+      }
+    });
+  }
+
+  // Çarx kətanına toxunduqda da fırlatma
+  const wheelCanvas = document.getElementById('wheel-canvas');
+  if (wheelCanvas) {
+    wheelCanvas.addEventListener('click', () => {
+      if (btnSpinRoulette && !isWheelSpinning) btnSpinRoulette.click();
+    });
+  }
 
   // Tarixçə Əlavə Et
-  historyForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const title = document.getElementById('input-history-title').value.trim();
-    const rating = document.getElementById('input-history-rating').value;
-    const note = document.getElementById('input-history-note').value.trim();
-    if (!title || !socket) return;
+  if (historyForm) {
+    historyForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = document.getElementById('input-history-title').value.trim();
+      const rating = document.getElementById('input-history-rating').value;
+      const note = document.getElementById('input-history-note').value.trim();
+      if (!title) return;
 
-    socket.emit('history-add', { title, rating, note });
-    document.getElementById('input-history-title').value = '';
-    document.getElementById('input-history-note').value = '';
-    showNotice('📜 Film xatirələr siyahısına əlavə olundu!');
-  });
+      if (socket && currentRoom) {
+        socket.emit('history-add', { title, rating, note });
+      }
+      document.getElementById('input-history-title').value = '';
+      document.getElementById('input-history-note').value = '';
+      showNotice('📜 Film xatirələr siyahısına əlavə olundu!');
+    });
+  }
 
-  // İlkin olaraq çarxı və fon animasiyasını çək
+  // İlkin olaraq çarxı və siyahını çək
+  renderWatchlist(currentWatchlist);
   drawWheel();
   setupAmbientAnimations();
 }
 
-// ÇARXIFƏLƏK CANVAS ÇƏKİLMƏSİ
+// ÇARXIFƏLƏK CANVAS ÇƏKİLMƏSİ (İnter fontu ilə dəqiq Ə hərfi dəstəyi)
 function drawWheel() {
   const canvas = document.getElementById('wheel-canvas');
   if (!canvas) return;
-  const rouletteModal = document.getElementById('modal-roulette');
-  if (rouletteModal && rouletteModal.classList.contains('hidden')) return;
+  const rouletteModal = document.getElementById('modal-watchlist');
+  if (rouletteModal && rouletteModal.classList.contains('hidden') && !rouletteModal.classList.contains('open')) return;
   const ctx = canvas.getContext('2d');
   const width = canvas.width;
   const height = canvas.height;
@@ -4496,11 +4570,11 @@ function drawWheel() {
 
   ctx.clearRect(0, 0, width, height);
 
-  const items = currentWatchlist.length > 0 ? currentWatchlist : [
-    { title: '1. Film əlavə et' },
-    { title: '🍿 Popkorn al' },
-    { title: '2. Çarxı fırlat' },
-    { title: '🛋️ OneCouch' }
+  const items = (currentWatchlist && currentWatchlist.length > 0) ? currentWatchlist : [
+    { title: 'Inception' },
+    { title: 'Interstellar' },
+    { title: 'The Dark Knight' },
+    { title: 'Gladiator' }
   ];
 
   const numSlices = items.length;
@@ -4517,40 +4591,40 @@ function drawWheel() {
     ctx.fillStyle = wheelColors[i % wheelColors.length];
     ctx.fill();
 
-    ctx.strokeStyle = '#181920';
+    ctx.strokeStyle = '#080914';
     ctx.lineWidth = 3;
     ctx.stroke();
 
-    // Mətn
+    // Mətn (Inter fontu ilə Azərbaycan hərfləri tam dəqiq)
     ctx.save();
     ctx.translate(cx, cy);
     ctx.rotate(startAngle + sliceAngle / 2);
     ctx.textAlign = 'right';
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 13px "Plus Jakarta Sans", sans-serif';
-    ctx.shadowColor = 'rgba(0,0,0,0.8)';
+    ctx.font = 'bold 12.5px Inter, -apple-system, sans-serif';
+    ctx.shadowColor = 'rgba(0,0,0,0.85)';
     ctx.shadowBlur = 4;
 
     let text = items[i].title;
     if (text.length > 15) text = text.substr(0, 13) + '..';
-    ctx.fillText(text, radius - 18, 5);
+    ctx.fillText(text, radius - 18, 4);
     ctx.restore();
   }
 
-  // Xarici Qızılı Çərçivə
+  // Xarici Qızılı / Neon Çərçivə
   ctx.beginPath();
   ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
   ctx.lineWidth = 6;
-  ctx.strokeStyle = '#ffb830';
+  ctx.strokeStyle = '#06b6d4';
   ctx.stroke();
 
   // Mərkəzi Dairə (Hub)
   ctx.beginPath();
   ctx.arc(cx, cy, 26, 0, 2 * Math.PI);
-  ctx.fillStyle = '#181920';
+  ctx.fillStyle = '#080914';
   ctx.fill();
   ctx.lineWidth = 3;
-  ctx.strokeStyle = '#ffb830';
+  ctx.strokeStyle = '#7c3aed';
   ctx.stroke();
 
   ctx.font = '16px sans-serif';
@@ -4631,7 +4705,13 @@ function renderWatchlist(list) {
 }
 
 window.deleteWatchlistItem = function(id) {
-  if (socket) socket.emit('watchlist-remove', { id });
+  currentWatchlist = currentWatchlist.filter(it => it.id !== id && it.title !== id);
+  saveLocalWatchlist();
+  renderWatchlist(currentWatchlist);
+  drawWheel();
+  if (socket && currentRoom) {
+    socket.emit('watchlist-remove', { id });
+  }
 };
 
 function showWinnerAnnouncement(winner, spinner) {
@@ -4869,6 +4949,9 @@ window.openModal = function(modalId) {
   requestAnimationFrame(() => {
     el.classList.add('open');
   });
+  if (modalId === 'modal-watchlist') {
+    setTimeout(drawWheel, 60);
+  }
   if (wasHidden && window.history && window.history.pushState) {
     try {
       window.history.pushState({ uiLayer: modalId }, '');
@@ -6403,16 +6486,13 @@ function setupMobileAppAndDrawer() {
   if (mobDockChars) mobDockChars.addEventListener('click', openCharsHandler);
   if (mobDockWheel) {
     mobDockWheel.addEventListener('click', () => {
-      const btnWl = document.getElementById('btn-open-watchlist');
-      if (btnWl) btnWl.click();
-      else openModal('modal-watchlist');
+      openModal('modal-watchlist');
+      setTimeout(drawWheel, 60);
     });
   }
   if (mobDockHistory) {
     mobDockHistory.addEventListener('click', () => {
-      const btnHist = document.getElementById('btn-open-history');
-      if (btnHist) btnHist.click();
-      else openModal('modal-history');
+      openModal('modal-history');
     });
   }
 
@@ -6449,9 +6529,8 @@ function setupMobileAppAndDrawer() {
     linkWatchlist.addEventListener('click', () => {
       closeLeftDrawer();
       setTimeout(() => {
-        const btnWl = document.getElementById('btn-open-watchlist');
-        if (btnWl) btnWl.click();
-        else openModal('modal-watchlist');
+        openModal('modal-watchlist');
+        setTimeout(drawWheel, 60);
       }, 70);
     });
   }
@@ -6650,6 +6729,60 @@ if (document.readyState === 'loading') {
 } else {
   setupMobileAppAndDrawer();
 }
+
+// ==========================================
+// 10. RƏHBƏR STATİSTİKA VƏ PWA ANALİTİKASI
+// ==========================================
+(function initAnalyticsAndTracking() {
+  const sessionId = 's_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+  const isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+  // PWA Quraşdırma Hadisəsi
+  window.addEventListener('appinstalled', () => {
+    fetch('/api/analytics/install', { method: 'POST' }).catch(() => {});
+  });
+
+  // İstifadəçi Seansı və Vaxt İzlənməsi
+  function sendHeartbeat() {
+    const uname = (window.currentUser && window.currentUser.username) || localStorage.getItem('onecouch_username') || 'Qonaq';
+    fetch('/api/analytics/session-heartbeat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId,
+        seconds: 30,
+        isPWA,
+        username: uname
+      })
+    }).catch(() => {});
+  }
+
+  // İstifadəçi Profilinin Sinxronizasiyası
+  function syncUserProfile() {
+    const uname = localStorage.getItem('onecouch_username') || (window.currentUser && window.currentUser.username);
+    const uav = localStorage.getItem('onecouch_avatar') || (window.currentUser && window.currentUser.avatar) || '🍿';
+    if (uname) {
+      fetch('/api/analytics/user-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: uname, avatar: uav, isPWA })
+      }).catch(() => {});
+    }
+  }
+
+  setInterval(sendHeartbeat, 30000);
+  setTimeout(sendHeartbeat, 2500);
+  setTimeout(syncUserProfile, 3500);
+
+  // İstifadəçi ləqəbini dəyişdikdə də profili yenilə
+  const mobUserInput = document.getElementById('mob-username-input');
+  if (mobUserInput) {
+    mobUserInput.addEventListener('change', () => {
+      setTimeout(syncUserProfile, 500);
+    });
+  }
+})();
+
 
 
 
