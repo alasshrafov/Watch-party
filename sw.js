@@ -1,8 +1,7 @@
-const CACHE_NAME = 'onecouch-mobile-v1';
+const CACHE_NAME = 'onecouch-mobile-v3';
 const STATIC_ASSETS = [
-  '/assets/logo.png',
-  '/assets/icon-192.png',
-  '/assets/icon-512.png',
+  '/assets/icon-192.png?v=2',
+  '/assets/icon-512.png?v=2',
   '/manifest.json'
 ];
 
@@ -29,7 +28,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Network-first strategy: həmişə ən son versiyanı gətirir, internet zəif olduqda keşdən oxuyur
+// Network-first strategy: həmişə ən son dizayn və skripti gətirir
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);

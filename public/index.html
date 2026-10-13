@@ -12,7 +12,7 @@
   <link rel="icon" type="image/png" href="assets/logo.png">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
   <link rel="manifest" href="/manifest.json">
-  <link rel="stylesheet" href="style.css?v=8.0">
+  <link rel="stylesheet" href="style.css?v=9.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Cinzel:wght@600;700&family=Fira+Code:wght@500;700&display=swap" rel="stylesheet">
@@ -24,6 +24,19 @@
   <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body class="theme-netflix">
+  <!-- 🌟 MOBİL TƏTBİQ ÜÇÜN 4K ANİMASİYALI AÇILIŞ EKRANI (HD SPLASH SCREEN) -->
+  <div id="mobile-splash-screen" class="mobile-splash-screen">
+    <div class="splash-glow-orb"></div>
+    <div class="splash-brand-box">
+      <div class="splash-icon-ring">
+        <img src="assets/icon-512.png" alt="OneCouch HD" class="splash-hd-logo">
+      </div>
+      <h1 class="splash-title">OneCouch</h1>
+      <p class="splash-subtitle">Two screens. One couch.</p>
+      <div class="splash-loader-bar"><span></span></div>
+    </div>
+  </div>
+
   <!-- Arxa fon dinamik kətan (Canvas Parıltısı & Torlar/Qar/Duman) -->
   <div id="theme-ambient-container" class="theme-ambient-container">
     <canvas id="ambient-canvas"></canvas>
@@ -36,6 +49,116 @@
        1. GİRİŞ & OTAQ SEÇİMİ (LOBBY - CINEVERSE 4K REALISTIC UI)
        ======================================================== -->
   <div id="lobby-screen" class="screen active">
+
+    <!-- 📱 YALNIZ TELEFON / APK ÜÇÜN XÜSUSİ TƏK SƏHİFƏLİK "OPEN PAGE" DİZAYNI -->
+    <section id="mobile-open-page" class="mobile-open-page" aria-label="Mobil Ana Səhifə">
+      <div class="mob-aurora-bg">
+        <span class="aurora-blob blob-violet"></span>
+        <span class="aurora-blob blob-cyan"></span>
+        <span class="aurora-blob blob-coral"></span>
+      </div>
+
+      <!-- 1. Mobil Üst App Bar: Sol Üst ☰ Menyu + Loqo + Hesab/APK -->
+      <header class="mob-app-topbar">
+        <button type="button" id="btn-mob-open-drawer" class="mob-ham-btn" aria-label="Menyunu aç">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <div class="mob-brand-pill">
+          <img src="assets/icon-192.png" alt="OneCouch" class="mob-brand-icon">
+          <div class="mob-brand-text">
+            <strong>OneCouch</strong>
+            <span><i class="mob-live-dot"></i> Canlı Səs & Kino</span>
+          </div>
+        </div>
+
+        <button type="button" id="btn-mob-top-action" class="mob-top-action-btn">
+          <span id="mob-top-action-icon">📲</span>
+          <span id="mob-top-action-label">Yüklə</span>
+        </button>
+      </header>
+
+      <!-- 2. Mobil Qarşılama & İstifadəçi Obrazı Kartı -->
+      <div class="mob-hero-welcome">
+        <span class="mob-tag-chip">✨ YENİ NƏSİL SƏSLİ KİNO OTAĞI</span>
+        <h2 class="mob-welcome-title">Dostlarınla Danış &amp; Birgə İzlə</h2>
+      </div>
+
+      <div class="mob-identity-card">
+        <button type="button" id="mob-avatar-picker-btn" class="mob-avatar-circle" title="Obrazını dəyiş">
+          <span id="mob-avatar-display">🍿</span>
+          <span class="mob-avatar-edit-tag">🎭</span>
+        </button>
+        <div class="mob-identity-input-col">
+          <label for="mob-username-input">Sənin Adın / Ləqəbin</label>
+          <input type="text" id="mob-username-input" placeholder="Adını yaz (məs: Əli)..." maxlength="20" autocomplete="off">
+        </div>
+      </div>
+
+      <!-- 3. Tək Səhifədə İnteraktiv Keçid: Otağa Qoşul / Yeni Otaq Aç -->
+      <div class="mob-main-card">
+        <div class="mob-seg-tabs" role="tablist">
+          <button type="button" class="mob-seg-btn active" data-mob-pane="join" id="mob-tab-join">
+            <span>🚀 Otağa Qoşul</span>
+          </button>
+          <button type="button" class="mob-seg-btn" data-mob-pane="create" id="mob-tab-create">
+            <span>➕ Yeni Otaq Aç</span>
+          </button>
+        </div>
+
+        <!-- PANE A: OTAĞA QOŞUL (DEFAULT) -->
+        <div class="mob-seg-pane active" id="mob-pane-join">
+          <p class="mob-pane-desc">Dostunun göndərdiyi otaq kodunu və ya linki daxil edib dərhal səsli otağa qoşul:</p>
+          <div class="mob-code-input-row">
+            <input type="text" id="mob-room-input" placeholder="Otaq kodu və ya link (məs: a1b2c3)..." autocomplete="off">
+            <button type="button" id="btn-mob-paste" class="mob-paste-btn" title="Kopyalanmış kodu yapışdır">📋 Yapışdır</button>
+          </div>
+          <button type="button" id="btn-mob-join-room" class="mob-cta-btn mob-cta-cyan">
+            <span>🎙️ Otağa Daxil Ol &amp; Qoşul</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <!-- PANE B: YENİ OTAQ YARAT -->
+        <div class="mob-seg-pane" id="mob-pane-create">
+          <div class="mob-create-perks">
+            <div class="mob-perk-pill"><span>🎙️</span><span>Kəsintisiz Səs</span></div>
+            <div class="mob-perk-pill"><span>🎬</span><span>Sinxron Video</span></div>
+            <div class="mob-perk-pill"><span>🔒</span><span>Özəl Otaq</span></div>
+          </div>
+          <div id="mob-host-auth-status" class="mob-host-auth-status">
+            <span>🔒 Otaq yaratmaq üçün 1 toxunuşla Google girişi:</span>
+          </div>
+          <button type="button" id="btn-mob-create-room" class="mob-cta-btn mob-cta-violet">
+            <span id="mob-create-btn-text">✨ Yeni Kino Otağı Başlat</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 4. Alt Sürətli Keçid Dok-u (Menyu & Əyləncə) -->
+      <div class="mob-quick-dock">
+        <button type="button" class="mob-dock-tile" id="mob-dock-menu">
+          <span class="mdt-icon">☰</span>
+          <span class="mdt-label">Bütün Menyu</span>
+        </button>
+        <button type="button" class="mob-dock-tile" id="mob-dock-chars">
+          <span class="mdt-icon">🎭</span>
+          <span class="mdt-label">Obraz Seç</span>
+        </button>
+        <button type="button" class="mob-dock-tile" id="mob-dock-wheel">
+          <span class="mdt-icon">🎡</span>
+          <span class="mdt-label">Çarxıfələk</span>
+        </button>
+        <button type="button" class="mob-dock-tile" id="mob-dock-history">
+          <span class="mdt-icon">📜</span>
+          <span class="mdt-label">Arxiv</span>
+        </button>
+      </div>
+    </section>
+
     <!-- 1.1 YUXARI HİSSƏ: SOL YUXARI KÜNC ☰ MENYU + LOQO VƏ SAĞ TƏRƏF NAVİQASİYA TABI -->
     <div class="lobby-top-header-row">
       <div class="lobby-top-left-group">
@@ -928,6 +1051,19 @@
           </div>
         </div>
 
+        <!-- 📱 MOBİL OTAQ SEGMENLƏRİ (ÇAT / VİDEO QOŞ / OTAQDAKILAR) -->
+        <div class="mobile-room-tabs" id="mobile-room-tabs">
+          <button type="button" class="mob-room-tab active" data-mob-room-tab="chat">
+            <span>💬 Canlı Çat</span>
+          </button>
+          <button type="button" class="mob-room-tab" data-mob-room-tab="source">
+            <span>🎬 Video Qoş</span>
+          </button>
+          <button type="button" class="mob-room-tab" data-mob-room-tab="users">
+            <span>👥 Otaqdakılar</span>
+          </button>
+        </div>
+
         <!-- Nəzarət və Mənbə Paneli -->
         <div class="source-control-bar">
           <div class="source-tabs">
@@ -1487,7 +1623,7 @@
   <aside id="left-side-drawer" class="left-side-drawer" aria-label="Yan Menyu">
     <div class="drawer-header">
       <div class="drawer-brand-group">
-        <img src="assets/logo.png" alt="OneCouch" class="drawer-logo-img">
+        <img src="assets/icon-192.png" alt="OneCouch" class="drawer-logo-img">
         <div class="drawer-brand-titles">
           <strong>OneCouch</strong>
           <span>Two screens. One couch.</span>
@@ -1688,6 +1824,6 @@
   <audio id="remote-voice-audio" autoplay playsinline></audio>
 
   <!-- Əsas Tətbiq Skripti -->
-  <script src="app.js?v=8.0"></script>
+  <script src="app.js?v=9.0"></script>
 </body>
 </html>

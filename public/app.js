@@ -4845,6 +4845,14 @@ let deferredInstallPrompt = null;
 let mobileWakeLock = null;
 
 function setupMobileAppAndDrawer() {
+  // 0. 4K HD Mobil Açılış Ekranı (Splash Screen) - 750ms sonra hamar şəkildə açılır
+  const splashScreen = document.getElementById('mobile-splash-screen');
+  if (splashScreen) {
+    setTimeout(() => {
+      splashScreen.classList.add('splash-hidden');
+    }, 750);
+  }
+
   // 1. Service Worker qeydiyyatı (APK / WebAPK quraşdırılması üçün)
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -4863,7 +4871,7 @@ function setupMobileAppAndDrawer() {
   window.addEventListener('appinstalled', () => {
     deferredInstallPrompt = null;
     closeModal('modal-app-install');
-    showNotice('🎉 CineParty Tətbiqi telefonunuza uğurla quraşdırıldı!');
+    showNotice('🎉 OneCouch Tətbiqi telefonunuza uğurla quraşdırıldı!');
   });
 
   // Quraşdırma düyməsi funksiyası
@@ -4910,6 +4918,8 @@ function setupMobileAppAndDrawer() {
   const drawer = document.getElementById('left-side-drawer');
   const backdrop = document.getElementById('left-drawer-backdrop');
   const btnOpenLobby = document.getElementById('btn-open-left-drawer');
+  const btnMobOpenDrawer = document.getElementById('btn-mob-open-drawer');
+  const btnMobDockMenu = document.getElementById('mob-dock-menu');
   const btnOpenRoom = document.getElementById('btn-open-drawer-room');
   const btnCloseDrawer = document.getElementById('btn-close-left-drawer');
 
@@ -4928,25 +4938,168 @@ function setupMobileAppAndDrawer() {
   }
 
   if (btnOpenLobby) btnOpenLobby.addEventListener('click', openLeftDrawer);
+  if (btnMobOpenDrawer) btnMobOpenDrawer.addEventListener('click', openLeftDrawer);
+  if (btnMobDockMenu) btnMobDockMenu.addEventListener('click', openLeftDrawer);
   if (btnOpenRoom) btnOpenRoom.addEventListener('click', openLeftDrawer);
   if (btnCloseDrawer) btnCloseDrawer.addEventListener('click', closeLeftDrawer);
   if (backdrop) backdrop.addEventListener('click', closeLeftDrawer);
 
-  // 4. Menyudakı Bölmə Keçidləri (Modallar və Bölmələr)
+  // 4. Mobil Tək Səhifəlik "Open Page" İdarəetməsi (#mobile-open-page)
+  const mobUsernameInput = document.getElementById('mob-username-input');
+  const mobRoomInput = document.getElementById('mob-room-input');
+  const mobPasteBtn = document.getElementById('btn-mob-paste');
+  const mobJoinBtn = document.getElementById('btn-mob-join-room');
+  const mobCreateBtn = document.getElementById('btn-mob-create-room');
+  const mobAvatarPickerBtn = document.getElementById('mob-avatar-picker-btn');
+  const mobTopActionBtn = document.getElementById('btn-mob-top-action');
+  const mobDockChars = document.getElementById('mob-dock-chars');
+  const mobDockWheel = document.getElementById('mob-dock-wheel');
+  const mobDockHistory = document.getElementById('mob-dock-history');
+
+  // Ad və Otaq kodu sahələrini əsas inputlarla iki-tərəfli sinxronlaşdır
+  if (mobUsernameInput && usernameInput) {
+    mobUsernameInput.value = usernameInput.value || '';
+    mobUsernameInput.addEventListener('input', () => {
+      usernameInput.value = mobUsernameInput.value;
+    });
+    usernameInput.addEventListener('input', () => {
+      if (mobUsernameInput.value !== usernameInput.value) {
+        mobUsernameInput.value = usernameInput.value;
+      }
+    });
+  }
+  if (mobRoomInput && roomInput) {
+    mobRoomInput.value = roomInput.value || '';
+    mobRoomInput.addEventListener('input', () => {
+      roomInput.value = mobRoomInput.value;
+    });
+    roomInput.addEventListener('input', () => {
+      if (mobRoomInput.value !== roomInput.value) {
+        mobRoomInput.value = roomInput.value;
+      }
+    });
+  }
+
+  // "Yapışdır" düyməsi (Clipboard-dan otaq kodunu/linkini oxuyur)
+  if (mobPasteBtn && mobRoomInput) {
+    mobPasteBtn.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          mobRoomInput.value = text.trim();
+          if (roomInput) roomInput.value = text.trim();
+          showNotice('📋 Otaq kodu yapışdırıldı!');
+        }
+      } catch (e) {
+        mobRoomInput.focus();
+      }
+    });
+  }
+
+  // Mobil Tab Keçidi: 🚀 Otağa Qoşul / ➕ Yeni Otaq Aç
+  document.querySelectorAll('.mob-seg-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetPane = btn.getAttribute('data-mob-pane');
+      document.querySelectorAll('.mob-seg-btn').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('.mob-seg-pane').forEach(p => {
+        p.classList.toggle('active', p.id === `mob-pane-${targetPane}`);
+      });
+      syncDrawerUIWithMain();
+    });
+  });
+
+  // Mobil "Otağa Daxil Ol & Qoşul" düyməsi
+  if (mobJoinBtn) {
+    mobJoinBtn.addEventListener('click', () => {
+      if (mobUsernameInput && usernameInput) usernameInput.value = mobUsernameInput.value.trim();
+      if (mobRoomInput && roomInput) roomInput.value = mobRoomInput.value.trim();
+      const mainEnterBtn = document.getElementById('btn-enter-room');
+      if (mainEnterBtn) mainEnterBtn.click();
+    });
+  }
+
+  // Mobil "Yeni Kino Otağı Başlat" düyməsi
+  if (mobCreateBtn) {
+    mobCreateBtn.addEventListener('click', () => {
+      if (mobUsernameInput && usernameInput && mobUsernameInput.value.trim()) {
+        usernameInput.value = mobUsernameInput.value.trim();
+      }
+      if (currentUser && currentUser.isGoogle) {
+        const mainCreateBtn = document.getElementById('btn-create-room');
+        if (mainCreateBtn) mainCreateBtn.click();
+      } else {
+        if (typeof openAuthModal === 'function') openAuthModal();
+      }
+    });
+  }
+
+  // Mobil Üst Sağ Düymə (Standalone APK-dırsa Hesab, Brauzerdirsə APK Yüklə)
+  const isStandaloneApp = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  if (mobTopActionBtn) {
+    mobTopActionBtn.addEventListener('click', () => {
+      if (isStandaloneApp) {
+        if (currentUser && currentUser.isGoogle) openLeftDrawer();
+        else if (typeof openAuthModal === 'function') openAuthModal();
+      } else {
+        handleInstallAppClick();
+      }
+    });
+  }
+
+  // Mobil Obraz / Çarxıfələk / Arxiv qısa yolları
+  const openCharsHandler = () => {
+    closeLeftDrawer();
+    const navChars = document.getElementById('nav-link-characters');
+    if (navChars) navChars.click();
+    else openModal('modal-characters');
+  };
+  if (mobAvatarPickerBtn) mobAvatarPickerBtn.addEventListener('click', openCharsHandler);
+  if (mobDockChars) mobDockChars.addEventListener('click', openCharsHandler);
+  if (mobDockWheel) {
+    mobDockWheel.addEventListener('click', () => {
+      const btnWl = document.getElementById('btn-open-watchlist');
+      if (btnWl) btnWl.click();
+      else openModal('modal-watchlist');
+    });
+  }
+  if (mobDockHistory) {
+    mobDockHistory.addEventListener('click', () => {
+      const btnHist = document.getElementById('btn-open-history');
+      if (btnHist) btnHist.click();
+      else openModal('modal-history');
+    });
+  }
+
+  // 5. Mobil Otaq Tabları (💬 Canlı Çat | 🎬 Video Qoş | 👥 Otaqdakılar)
+  const roomScr = document.getElementById('room-screen');
+  document.querySelectorAll('.mob-room-tab').forEach(tabBtn => {
+    tabBtn.addEventListener('click', () => {
+      const tabName = tabBtn.getAttribute('data-mob-room-tab');
+      if (roomScr) roomScr.setAttribute('data-mob-tab', tabName);
+      document.querySelectorAll('.mob-room-tab').forEach(b => b.classList.toggle('active', b === tabBtn));
+    });
+  });
+
+  // Boş pleyerdəki kartlardan birinə basıldıqda mobildə avtomatik "🎬 Video Qoş" tabını aç
+  document.querySelectorAll('.empty-opt-card').forEach(card => {
+    card.addEventListener('click', () => {
+      if (window.innerWidth <= 768 && roomScr) {
+        roomScr.setAttribute('data-mob-tab', 'source');
+        document.querySelectorAll('.mob-room-tab').forEach(b => {
+          b.classList.toggle('active', b.getAttribute('data-mob-room-tab') === 'source');
+        });
+      }
+    });
+  });
+
+  // 6. Menyudakı Bölmə Keçidləri (Modallar və Bölmələr)
   const linkCharacters = document.getElementById('drawer-link-characters');
   const linkWatchlist = document.getElementById('drawer-link-watchlist');
   const linkHistory = document.getElementById('drawer-link-history');
   const linkHow = document.getElementById('drawer-link-how');
   const btnCloseHowModal = document.getElementById('btn-close-how-modal');
 
-  if (linkCharacters) {
-    linkCharacters.addEventListener('click', () => {
-      closeLeftDrawer();
-      const navChars = document.getElementById('nav-link-characters');
-      if (navChars) navChars.click();
-      else openModal('modal-characters');
-    });
-  }
+  if (linkCharacters) linkCharacters.addEventListener('click', openCharsHandler);
   if (linkWatchlist) {
     linkWatchlist.addEventListener('click', () => {
       closeLeftDrawer();
@@ -4974,7 +5127,7 @@ function setupMobileAppAndDrawer() {
     btnCloseHowModal.addEventListener('click', () => closeModal('modal-how-it-works'));
   }
 
-  // 5. Menyudakı Profil / Google Giriş, Tema, İşıq və Dil düymələrinin sinxronizasiyası
+  // 7. Menyudakı Profil / Google Giriş, Tema, İşıq və Dil düymələrinin sinxronizasiyası
   const drawerBtnGoogle = document.getElementById('drawer-btn-google-login');
   const drawerBtnLogout = document.getElementById('drawer-btn-logout');
   const drawerBtnMode = document.getElementById('drawer-btn-mode-toggle');
@@ -5000,6 +5153,7 @@ function setupMobileAppAndDrawer() {
         const mainLogoutBtn = document.getElementById('btn-lobby-logout');
         if (mainLogoutBtn) mainLogoutBtn.click();
       }
+      syncDrawerUIWithMain();
     });
   }
   if (drawerBtnMode) {
@@ -5030,6 +5184,33 @@ function setupMobileAppAndDrawer() {
   function syncDrawerUIWithMain() {
     const drawerUserCard = document.getElementById('drawer-user-card');
     const isLogged = !!(currentUser && currentUser.isGoogle);
+
+    // Mobil Open Page üzərindəki Avatar, Ad, Google Status və Üst Düyməni yenilə
+    const mobAvatarDisplay = document.getElementById('mob-avatar-display');
+    const mainAvatarPreview = document.getElementById('input-avatar-preview');
+    if (mobAvatarDisplay && mainAvatarPreview) {
+      mobAvatarDisplay.innerHTML = mainAvatarPreview.innerHTML;
+    }
+    if (mobUsernameInput && usernameInput && usernameInput.value && !mobUsernameInput.value) {
+      mobUsernameInput.value = usernameInput.value;
+    }
+    const mobHostAuthStatus = document.getElementById('mob-host-auth-status');
+    const mobCreateBtnText = document.getElementById('mob-create-btn-text');
+    if (mobHostAuthStatus && mobCreateBtnText) {
+      if (isLogged) {
+        mobHostAuthStatus.innerHTML = `<span style="color:#34d399;">🟢 Google Hesabı Aktivdir (${escapeHtml(currentUser.username)})</span>`;
+        mobCreateBtnText.textContent = '✨ Yeni Kino Otağı Başlat';
+      } else {
+        mobHostAuthStatus.innerHTML = `<span>🔒 Otaq yaratmaq üçün 1 toxunuşla Google girişi:</span>`;
+        mobCreateBtnText.textContent = 'G Google ilə Daxil Ol & Otaq Aç';
+      }
+    }
+    const mobTopIcon = document.getElementById('mob-top-action-icon');
+    const mobTopLabel = document.getElementById('mob-top-action-label');
+    if (mobTopIcon && mobTopLabel && isStandaloneApp) {
+      mobTopIcon.textContent = isLogged ? '🟢' : '👤';
+      mobTopLabel.textContent = isLogged ? (currentUser.username.split(' ')[0] || 'Profil') : 'Giriş';
+    }
 
     if (drawerBtnGoogle && drawerUserCard) {
       if (isLogged) {
@@ -5065,7 +5246,10 @@ function setupMobileAppAndDrawer() {
     }
   }
 
-  // 6. Mobil Ekran Yuxu Kilidi (Wake Lock) & Mobil Səs Qoruyucusu (Audio Watchdog)
+  // İlk açılışda və hər 1 saniyədə mobil UI-ı sinxron saxla
+  syncDrawerUIWithMain();
+
+  // 8. Mobil Ekran Yuxu Kilidi (Wake Lock) & Mobil Səs Qoruyucusu (Audio Watchdog)
   async function requestMobileWakeLock() {
     if ('wakeLock' in navigator) {
       try {
@@ -5088,8 +5272,9 @@ function setupMobileAppAndDrawer() {
     }
   });
 
-  // Hər 1.5 saniyədə bir mobil səs mühərriklərini yoxla ki, telefonda səs heç vaxt kəsilməsin
+  // Hər 1.5 saniyədə bir mobil səs mühərriklərini və mobil profil görünüşünü yoxla
   setInterval(() => {
+    syncDrawerUIWithMain();
     if (currentRoomId) {
       if (!mobileWakeLock && document.visibilityState === 'visible') {
         requestMobileWakeLock();
@@ -5110,5 +5295,6 @@ if (document.readyState === 'loading') {
 } else {
   setupMobileAppAndDrawer();
 }
+
 
 
