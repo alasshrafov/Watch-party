@@ -1,5 +1,6 @@
-const CACHE_NAME = 'onecouch-mobile-v4';
+const CACHE_NAME = 'onecouch-mobile-v5';
 const STATIC_ASSETS = [
+  '/assets/icon-vector.svg',
   '/assets/icon-192.png?v=2',
   '/assets/icon-512.png?v=2',
   '/manifest.json'

@@ -9,10 +9,10 @@
   <meta name="apple-mobile-web-app-title" content="OneCouch">
   <meta name="mobile-web-app-capable" content="yes">
   <title>OneCouch 🛋️🍿 — Two screens. One couch.</title>
-  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="icon" type="image/svg+xml" href="assets/icon-vector.svg">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
   <link rel="manifest" href="/manifest.json">
-  <link rel="stylesheet" href="style.css?v=10.0">
+  <link rel="stylesheet" href="style.css?v=11.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Cinzel:wght@600;700&family=Fira+Code:wght@500;700&display=swap" rel="stylesheet">
@@ -24,15 +24,40 @@
   <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body class="theme-netflix">
-  <!-- 🌟 MOBİL TƏTBİQ ÜÇÜN 4K ANİMASİYALI AÇILIŞ EKRANI (HD SPLASH SCREEN) -->
+  <!-- 🌟 MOBİL TƏTBİQ ÜÇÜN KRISTAL DƏQİQLİKLİ VEKTOR AÇILIŞ EKRANI (VECTOR HD SPLASH) -->
   <div id="mobile-splash-screen" class="mobile-splash-screen">
-    <div class="splash-glow-orb"></div>
     <div class="splash-brand-box">
       <div class="splash-icon-ring">
-        <img src="assets/icon-512.png" alt="OneCouch HD" class="splash-hd-logo">
+        <svg viewBox="0 0 256 256" class="splash-hd-logo" aria-label="OneCouch Vector Logo">
+          <defs>
+            <linearGradient id="spBg" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#161824"/>
+              <stop offset="100%" stop-color="#07080d"/>
+            </linearGradient>
+            <linearGradient id="spCrim" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ff2a44"/>
+              <stop offset="55%" stop-color="#e50914"/>
+              <stop offset="100%" stop-color="#f59e0b"/>
+            </linearGradient>
+            <linearGradient id="spCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#38bdf8"/>
+              <stop offset="100%" stop-color="#6366f1"/>
+            </linearGradient>
+          </defs>
+          <rect x="6" y="6" width="244" height="244" rx="54" fill="url(#spBg)" stroke="url(#spCrim)" stroke-width="5"/>
+          <rect x="42" y="48" width="108" height="72" rx="12" fill="#0d111d" stroke="url(#spCyan)" stroke-width="6"/>
+          <polygon points="86,72 86,96 106,84" fill="#38bdf8"/>
+          <rect x="106" y="66" width="108" height="72" rx="12" fill="#140d18" stroke="url(#spCrim)" stroke-width="6"/>
+          <polygon points="150,90 150,114 170,102" fill="#ff2a44"/>
+          <path d="M64,132 C64,118 76,110 92,110 L164,110 C180,110 192,118 192,132 L192,158 L64,158 Z" fill="url(#spCrim)"/>
+          <path d="M52,138 C43,138 38,144 38,153 C38,160 43,165 48,167 L48,182 C48,189 54,194 62,194 L194,194 C202,194 208,189 208,182 L208,167 C213,165 218,160 218,153 C218,144 213,138 204,138 C196,138 191,143 191,151 L191,164 L65,164 L65,151 C65,143 60,138 52,138 Z" fill="#181b28" stroke="#fbbf24" stroke-width="5" stroke-linejoin="round"/>
+          <line x1="128" y1="114" x2="128" y2="162" stroke="#090a10" stroke-width="4" stroke-linecap="round"/>
+          <path d="M72,220 L98,220 L106,208 L116,230 L128,200 L140,230 L150,208 L158,220 L184,220" fill="none" stroke="#fbbf24" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
+      <div class="splash-badge-tag">IMAX PRIVATE LOUNGE</div>
       <h1 class="splash-title">OneCouch</h1>
-      <p class="splash-subtitle">Two screens. One couch.</p>
+      <p class="splash-subtitle">TWO SCREENS • ONE COUCH</p>
       <div class="splash-loader-bar"><span></span></div>
     </div>
   </div>
@@ -50,15 +75,11 @@
        ======================================================== -->
   <div id="lobby-screen" class="screen active">
 
-    <!-- 📱 YALNIZ TELEFON / APK ÜÇÜN XÜSUSİ TƏK SƏHİFƏLİK "OPEN PAGE" DİZAYNI -->
+    <!-- 📱 YALNIZ TELEFON / APK ÜÇÜN XÜSUSİ TƏK SƏHİFƏLİK KİNOTEATR LOUNGE DİZAYNI -->
     <section id="mobile-open-page" class="mobile-open-page" aria-label="Mobil Ana Səhifə">
-      <div class="mob-aurora-bg">
-        <span class="aurora-blob blob-violet"></span>
-        <span class="aurora-blob blob-cyan"></span>
-        <span class="aurora-blob blob-coral"></span>
-      </div>
+      <div class="mob-cinema-ambient"></div>
 
-      <!-- 1. Mobil Üst App Bar: Sol Üst ☰ Menyu + Loqo + Hesab/APK -->
+      <!-- 1. Mobil Üst App Bar: Sol Üst Menyu + Kristal Vektor Loqo + Gündüz/Gecə & Tətbiq -->
       <header class="mob-app-topbar">
         <button type="button" id="btn-mob-open-drawer" class="mob-ham-btn" aria-label="Menyunu aç">
           <span></span>
@@ -67,96 +88,157 @@
         </button>
 
         <div class="mob-brand-pill">
-          <img src="assets/icon-192.png" alt="OneCouch" class="mob-brand-icon">
+          <img src="assets/icon-vector.svg" alt="OneCouch" class="mob-brand-icon">
           <div class="mob-brand-text">
-            <strong>OneCouch</strong>
-            <span><i class="mob-live-dot"></i> Canlı Səs & Kino</span>
+            <strong>One<span>Couch</span></strong>
+            <span><i class="mob-live-dot"></i> VIP CINEMA LOUNGE</span>
           </div>
         </div>
 
-        <button type="button" id="btn-mob-top-action" class="mob-top-action-btn">
-          <span id="mob-top-action-icon">📲</span>
-          <span id="mob-top-action-label">Yüklə</span>
-        </button>
+        <div class="mob-topbar-right">
+          <button type="button" id="btn-mob-quick-mode" class="mob-mode-icon-btn" title="Gündüz / Gecə Rejimi" aria-label="Görünüş rejimini dəyiş">
+            <span id="mob-quick-mode-icon">☀️</span>
+          </button>
+          <button type="button" id="btn-mob-top-action" class="mob-top-action-btn">
+            <span id="mob-top-action-icon">📲</span>
+            <span id="mob-top-action-label">App</span>
+          </button>
+        </div>
       </header>
 
-      <!-- 2. Mobil Qarşılama & İstifadəçi Obrazı Kartı -->
-      <div class="mob-hero-welcome">
-        <span class="mob-tag-chip">✨ YENİ NƏSİL SƏSLİ KİNO OTAĞI</span>
-        <h2 class="mob-welcome-title">Dostlarınla Danış &amp; Birgə İzlə</h2>
+      <!-- 2. KULT KİNO VİTRİNİ (İnteraktiv Sağa-Sola Çevrilən Obraz & Film Lentası) -->
+      <div class="mob-cinema-showcase">
+        <div class="mob-showcase-header">
+          <div class="mob-showcase-title-group">
+            <span class="mob-NowShowing-dot"></span>
+            <span class="mob-showcase-eyebrow">KULT KİNO OBRAZLARI</span>
+          </div>
+          <button type="button" id="btn-mob-open-char-gallery" class="mob-showcase-more-btn">
+            <span>Tam Ekran Seç</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <div class="mob-char-strip" id="mob-char-strip">
+          <button type="button" class="mob-strip-card active" data-mob-char="heisenberg">
+            <img src="assets/characters/heisenberg.png" alt="Heisenberg" loading="eager">
+            <div class="msc-overlay">
+              <span class="msc-tag">CRIME • DRAMA</span>
+              <strong>Heisenberg</strong>
+              <small>Breaking Bad</small>
+            </div>
+          </button>
+          <button type="button" class="mob-strip-card" data-mob-char="godfather">
+            <img src="assets/characters/godfather.png" alt="The Godfather" loading="eager">
+            <div class="msc-overlay">
+              <span class="msc-tag">MAFIA • CULT</span>
+              <strong>Don Corleone</strong>
+              <small>The Godfather</small>
+            </div>
+          </button>
+          <button type="button" class="mob-strip-card" data-mob-char="batman">
+            <img src="assets/characters/batman.png" alt="The Dark Knight" loading="eager">
+            <div class="msc-overlay">
+              <span class="msc-tag">DC • NOIR</span>
+              <strong>Dark Knight</strong>
+              <small>Gotham City</small>
+            </div>
+          </button>
+          <button type="button" class="mob-strip-card" data-mob-char="cyberpunk">
+            <img src="assets/characters/cyberpunk.png" alt="Cyber Warrior" loading="lazy">
+            <div class="msc-overlay">
+              <span class="msc-tag">SCI-FI • 2049</span>
+              <strong>Cyber Runner</strong>
+              <small>Blade Runner</small>
+            </div>
+          </button>
+          <button type="button" class="mob-strip-card" data-mob-char="detective">
+            <img src="assets/characters/detective.png" alt="Noir Detective" loading="lazy">
+            <div class="msc-overlay">
+              <span class="msc-tag">MYSTERY</span>
+              <strong>Noir Detective</strong>
+              <small>Sin City</small>
+            </div>
+          </button>
+        </div>
       </div>
 
+      <!-- 3. VIP KİNO BİLETİ — İSTİFADƏÇİ PROFİLİ VƏ LƏQƏBİ -->
       <div class="mob-identity-card">
         <button type="button" id="mob-avatar-picker-btn" class="mob-avatar-circle" title="Obrazını dəyiş">
           <span id="mob-avatar-display">🍿</span>
           <span class="mob-avatar-edit-tag">🎭</span>
         </button>
         <div class="mob-identity-input-col">
-          <label for="mob-username-input">Sənin Adın / Ləqəbin</label>
-          <input type="text" id="mob-username-input" placeholder="Adını yaz (məs: Əli)..." maxlength="20" autocomplete="off">
+          <div class="mob-id-label-row">
+            <label for="mob-username-input">KİNO BİLETİ • LƏQƏBİNİZ</label>
+            <span class="mob-id-status-pill" id="mob-selected-char-pill">Heisenberg</span>
+          </div>
+          <input type="text" id="mob-username-input" placeholder="Adınızı və ya ləqəbinizi yazın..." maxlength="20" autocomplete="off">
         </div>
       </div>
 
-      <!-- 3. Tək Səhifədə İnteraktiv Keçid: Otağa Qoşul / Yeni Otaq Aç -->
+      <!-- 4. KİNO ZALI İDARƏETMƏ KONSOLU (Qoşul / Yeni Zal Aç) -->
       <div class="mob-main-card">
         <div class="mob-seg-tabs" role="tablist">
           <button type="button" class="mob-seg-btn active" data-mob-pane="join" id="mob-tab-join">
-            <span>🚀 Otağa Qoşul</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+            <span>Otağa Qoşul</span>
           </button>
           <button type="button" class="mob-seg-btn" data-mob-pane="create" id="mob-tab-create">
-            <span>➕ Yeni Otaq Aç</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z"/></svg>
+            <span>Yeni Zal Yarat</span>
           </button>
         </div>
 
         <!-- PANE A: OTAĞA QOŞUL (DEFAULT) -->
         <div class="mob-seg-pane active" id="mob-pane-join">
-          <p class="mob-pane-desc">Dostunun göndərdiyi otaq kodunu və ya linki daxil edib dərhal səsli otağa qoşul:</p>
           <div class="mob-code-input-row">
-            <input type="text" id="mob-room-input" placeholder="Otaq kodu və ya link (məs: a1b2c3)..." autocomplete="off">
+            <input type="text" id="mob-room-input" placeholder="Otaq kodu və ya dəvət linki (məs: kino-101)..." autocomplete="off">
             <button type="button" id="btn-mob-paste" class="mob-paste-btn" title="Kopyalanmış kodu yapışdır">📋 Yapışdır</button>
           </div>
-          <button type="button" id="btn-mob-join-room" class="mob-cta-btn mob-cta-cyan">
-            <span>🎙️ Otağa Daxil Ol &amp; Qoşul</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <button type="button" id="btn-mob-join-room" class="mob-cta-btn mob-cta-crimson">
+            <span>🎙️ Seansa Daxil Ol &amp; Canlı Qoşul</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
         </div>
 
         <!-- PANE B: YENİ OTAQ YARAT -->
         <div class="mob-seg-pane" id="mob-pane-create">
           <div class="mob-create-perks">
-            <div class="mob-perk-pill"><span>🎙️</span><span>Kəsintisiz Səs</span></div>
-            <div class="mob-perk-pill"><span>🎬</span><span>Sinxron Video</span></div>
-            <div class="mob-perk-pill"><span>🔒</span><span>Özəl Otaq</span></div>
+            <div class="mob-perk-pill"><strong>1080p HD</strong><span>Sinxron Yayım</span></div>
+            <div class="mob-perk-pill"><strong>Kristal Səs</strong><span>Auto-Ducking</span></div>
+            <div class="mob-perk-pill"><strong>VIP Zal</strong><span>Tam İdarəetmə</span></div>
           </div>
           <div id="mob-host-auth-status" class="mob-host-auth-status">
             <span>🔒 Otaq yaratmaq üçün 1 toxunuşla Google girişi:</span>
           </div>
-          <button type="button" id="btn-mob-create-room" class="mob-cta-btn mob-cta-violet">
-            <span id="mob-create-btn-text">✨ Yeni Kino Otağı Başlat</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          <button type="button" id="btn-mob-create-room" class="mob-cta-btn mob-cta-gold">
+            <span id="mob-create-btn-text">👑 Özəl Kino Zalını Başlat</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
           </button>
         </div>
       </div>
 
-      <!-- 4. Alt Sürətli Keçid Dok-u (Menyu & Əyləncə) -->
-      <div class="mob-quick-dock">
+      <!-- 5. Alt Naviqasiya Dok-u (Peşəkar Streaming App Barı) -->
+      <nav class="mob-quick-dock" aria-label="Sürətli Naviqasiya">
         <button type="button" class="mob-dock-tile" id="mob-dock-menu">
-          <span class="mdt-icon">☰</span>
-          <span class="mdt-label">Bütün Menyu</span>
+          <svg class="mdt-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/></svg>
+          <span class="mdt-label">Menyu</span>
         </button>
         <button type="button" class="mob-dock-tile" id="mob-dock-chars">
-          <span class="mdt-icon">🎭</span>
-          <span class="mdt-label">Obraz Seç</span>
+          <svg class="mdt-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          <span class="mdt-label">Obrazlar</span>
         </button>
         <button type="button" class="mob-dock-tile" id="mob-dock-wheel">
-          <span class="mdt-icon">🎡</span>
-          <span class="mdt-label">Çarxıfələk</span>
+          <svg class="mdt-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="3" x2="12" y2="10"/><line x1="18.36" y1="5.64" x2="13.41" y2="10.59"/><line x1="21" y1="12" x2="14" y2="12"/></svg>
+          <span class="mdt-label">Ruletka</span>
         </button>
         <button type="button" class="mob-dock-tile" id="mob-dock-history">
-          <span class="mdt-icon">📜</span>
+          <svg class="mdt-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
           <span class="mdt-label">Arxiv</span>
         </button>
-      </div>
+      </nav>
     </section>
 
     <!-- 1.1 YUXARI HİSSƏ: SOL YUXARI KÜNC ☰ MENYU + LOQO VƏ SAĞ TƏRƏF NAVİQASİYA TABI -->
@@ -1659,9 +1741,10 @@
        ======================================================== -->
   <div id="left-drawer-backdrop" class="left-drawer-backdrop hidden"></div>
   <aside id="left-side-drawer" class="left-side-drawer" aria-label="Yan Menyu">
+    <div class="drawer-swipe-edge-indicator" title="Sola sürüşdürərək bağla"></div>
     <div class="drawer-header">
       <div class="drawer-brand-group">
-        <img src="assets/icon-192.png" alt="OneCouch" class="drawer-logo-img">
+        <img src="assets/icon-vector.svg" alt="OneCouch" class="drawer-logo-img">
         <div class="drawer-brand-titles">
           <strong>OneCouch</strong>
           <span>Two screens. One couch.</span>
@@ -1782,7 +1865,7 @@
           <span>◀ Geri</span>
         </button>
         <div class="install-modal-brand">
-          <img src="assets/icon-192.png" alt="OneCouch App" class="install-modal-icon">
+          <img src="assets/icon-vector.svg" alt="OneCouch App" class="install-modal-icon">
           <div>
             <h2>📲 Mobil Tətbiq</h2>
             <span class="install-modal-sub">Android (.APK) &amp; iPhone (iOS)</span>
@@ -1866,6 +1949,6 @@
   <audio id="remote-voice-audio" autoplay playsinline></audio>
 
   <!-- Əsas Tətbiq Skripti -->
-  <script src="app.js?v=10.0"></script>
+  <script src="app.js?v=11.0"></script>
 </body>
 </html>

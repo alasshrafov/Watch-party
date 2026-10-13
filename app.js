@@ -1722,6 +1722,13 @@ function applyLobbyMode(mode) {
       if (label) label.textContent = 'Dark';
     }
   }
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  if (themeMeta) {
+    themeMeta.setAttribute('content', currentMode === 'light' ? '#f8fafc' : '#08090e');
+  }
+  if (typeof window.syncMobileUI === 'function') {
+    window.syncMobileUI();
+  }
 }
 
 function setupLobbyMode() {
@@ -4032,6 +4039,8 @@ function showWinnerAnnouncement(winner, spinner) {
 function setupAmbientAnimations() {
   const canvas = document.getElementById('ambient-canvas');
   if (!canvas) return;
+  // Mobil cihazlarda 60fps Canvas ShadowBlur dövrəsini dayandır ki, sıfır donma və 100% axıcılıq olsun
+  if (window.innerWidth <= 768) return;
   const ctx = canvas.getContext('2d');
 
   function resize() {
@@ -4234,12 +4243,31 @@ function renderHistory(list) {
 
 window.openModal = function(modalId) {
   const el = document.getElementById(modalId);
-  if (el) el.classList.remove('hidden');
+  if (!el) return;
+  const wasHidden = el.classList.contains('hidden');
+  el.classList.remove('hidden');
+  const card = el.querySelector('.modal-card');
+  if (card) {
+    card.style.transform = '';
+    card.style.transition = '';
+  }
+  if (wasHidden && window.history && window.history.pushState) {
+    try {
+      window.history.pushState({ uiLayer: modalId }, '');
+    } catch (e) {}
+  }
 };
 
 window.closeModal = function(modalId) {
   const el = document.getElementById(modalId);
-  if (el) el.classList.add('hidden');
+  if (el) {
+    const card = el.querySelector('.modal-card');
+    if (card) {
+      card.style.transform = '';
+      card.style.transition = '';
+    }
+    el.classList.add('hidden');
+  }
   if (modalId === 'modal-characters' && typeof window.stopCharacterAudio === 'function') {
     window.stopCharacterAudio();
   }
@@ -5069,7 +5097,7 @@ function setupMobileAppAndDrawer() {
     btnCloseInstallModal.addEventListener('click', () => closeModal('modal-app-install'));
   }
 
-  // 3. Sol Üst Menyu (Slide-Out Drawer) İdarəetməsi
+  // 3. Sol Üst Menyu (Slide-Out Drawer) İdarəetməsi + Barmaqla Sürüşdürmə (Swipe-to-Close & Edge Swipe-to-Open)
   const drawer = document.getElementById('left-side-drawer');
   const backdrop = document.getElementById('left-drawer-backdrop');
   const btnOpenLobby = document.getElementById('btn-open-left-drawer');
@@ -5081,14 +5109,26 @@ function setupMobileAppAndDrawer() {
   function openLeftDrawer() {
     syncDrawerUIWithMain();
     if (drawer) {
+      drawer.style.transition = '';
+      drawer.style.transform = '';
       drawer.classList.remove('hidden');
+      const wasOpen = drawer.classList.contains('open');
       drawer.classList.add('open');
+      if (!wasOpen && window.history && window.history.pushState) {
+        try {
+          window.history.pushState({ uiLayer: 'left-drawer' }, '');
+        } catch (e) {}
+      }
     }
     if (backdrop) backdrop.classList.remove('hidden');
   }
 
   function closeLeftDrawer() {
-    if (drawer) drawer.classList.remove('open');
+    if (drawer) {
+      drawer.style.transition = '';
+      drawer.style.transform = '';
+      drawer.classList.remove('open');
+    }
     if (backdrop) backdrop.classList.add('hidden');
   }
 
@@ -5099,6 +5139,178 @@ function setupMobileAppAndDrawer() {
   if (btnCloseDrawer) btnCloseDrawer.addEventListener('click', closeLeftDrawer);
   if (backdrop) backdrop.addEventListener('click', closeLeftDrawer);
 
+  // 3.1 Sol Menyunu Barmaqla Sola Sürüşdürərək Bağlama (1:1 Real-Time Touch Drag)
+  if (drawer) {
+    let dStartX = 0;
+    let dStartY = 0;
+    let dCurrentX = 0;
+    let dDragging = false;
+
+    const onDrawerTouchStart = (e) => {
+      if (!drawer.classList.contains('open') || !e.touches || e.touches.length !== 1) return;
+      dStartX = e.touches[0].clientX;
+      dStartY = e.touches[0].clientY;
+      dCurrentX = dStartX;
+      dDragging = false;
+    };
+
+    const onDrawerTouchMove = (e) => {
+      if (!drawer.classList.contains('open') || !e.touches || e.touches.length !== 1) return;
+      const x = e.touches[0].clientX;
+      const y = e.touches[0].clientY;
+      const dx = x - dStartX;
+      const dy = y - dStartY;
+
+      if (!dDragging) {
+        // Sola sürüşdürmə üfüqi istiqamətdədirsə aktivləşdir
+        if (dx < -10 && Math.abs(dx) > Math.abs(dy) * 1.15) {
+          dDragging = true;
+          drawer.style.transition = 'none';
+        } else {
+          return;
+        }
+      }
+
+      if (dDragging) {
+        dCurrentX = x;
+        const clampedDx = Math.min(0, dx);
+        drawer.style.transform = `translate3d(${clampedDx}px, 0, 0)`;
+      }
+    };
+
+    const onDrawerTouchEnd = () => {
+      if (!dDragging) return;
+      dDragging = false;
+      drawer.style.transition = '';
+      const totalDx = dCurrentX - dStartX;
+      if (totalDx < -50) {
+        closeLeftDrawer();
+      } else {
+        drawer.style.transform = '';
+      }
+    };
+
+    drawer.addEventListener('touchstart', onDrawerTouchStart, { passive: true });
+    drawer.addEventListener('touchmove', onDrawerTouchMove, { passive: true });
+    drawer.addEventListener('touchend', onDrawerTouchEnd, { passive: true });
+    if (backdrop) {
+      backdrop.addEventListener('touchstart', onDrawerTouchStart, { passive: true });
+      backdrop.addEventListener('touchmove', onDrawerTouchMove, { passive: true });
+      backdrop.addEventListener('touchend', onDrawerTouchEnd, { passive: true });
+    }
+  }
+
+  // 3.2 Ekranın Sol Kənarından Sağa Sürüşdürərək Menyunu Açma (Edge Swipe-to-Open)
+  let edgeStartX = 0;
+  let edgeStartY = 0;
+  let edgeEligible = false;
+  document.addEventListener('touchstart', (e) => {
+    if (!e.touches || e.touches.length !== 1) return;
+    const x = e.touches[0].clientX;
+    const y = e.touches[0].clientY;
+    const anyModalOpen = !!document.querySelector('.modal-backdrop:not(.hidden)');
+    const isDrawerOpen = drawer && drawer.classList.contains('open');
+    edgeEligible = (!anyModalOpen && !isDrawerOpen && x <= 26);
+    if (edgeEligible) {
+      edgeStartX = x;
+      edgeStartY = y;
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchend', (e) => {
+    if (!edgeEligible || !e.changedTouches || e.changedTouches.length === 0) return;
+    edgeEligible = false;
+    const dx = e.changedTouches[0].clientX - edgeStartX;
+    const dy = e.changedTouches[0].clientY - edgeStartY;
+    if (dx > 58 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+      openLeftDrawer();
+    }
+  }, { passive: true });
+
+  // 3.3 Bütün Modal Pəncərələrdə Sürüşdürərək Bağlama (Aşağı və ya Sol Kənardan Sağa Swipe) + Kənara Toxunuş
+  document.querySelectorAll('.modal-backdrop').forEach(modalEl => {
+    // Kənara (backdrop-a) toxunduqda bağla
+    modalEl.addEventListener('click', (e) => {
+      if (e.target === modalEl && modalEl.id) {
+        closeModal(modalEl.id);
+      }
+    });
+
+    const card = modalEl.querySelector('.modal-card');
+    if (!card) return;
+
+    let mStartX = 0;
+    let mStartY = 0;
+    let mCurrentY = 0;
+    let mDraggingDown = false;
+
+    card.addEventListener('touchstart', (e) => {
+      if (!e.touches || e.touches.length !== 1) return;
+      mStartX = e.touches[0].clientX;
+      mStartY = e.touches[0].clientY;
+      mCurrentY = mStartY;
+      mDraggingDown = false;
+    }, { passive: true });
+
+    card.addEventListener('touchmove', (e) => {
+      if (!e.touches || e.touches.length !== 1) return;
+      const x = e.touches[0].clientX;
+      const y = e.touches[0].clientY;
+      const dx = x - mStartX;
+      const dy = y - mStartY;
+
+      if (!mDraggingDown) {
+        if (dy > 16 && dy > Math.abs(dx) * 1.35) {
+          mDraggingDown = true;
+          card.style.transition = 'none';
+        } else {
+          return;
+        }
+      }
+
+      if (mDraggingDown) {
+        mCurrentY = y;
+        const clampedDy = Math.max(0, dy * 0.75);
+        card.style.transform = `translate3d(0, ${clampedDy}px, 0)`;
+      }
+    }, { passive: true });
+
+    card.addEventListener('touchend', (e) => {
+      if (mDraggingDown) {
+        mDraggingDown = false;
+        card.style.transition = 'transform 0.22s ease';
+        const totalDy = mCurrentY - mStartY;
+        if (totalDy > 68 && modalEl.id) {
+          closeModal(modalEl.id);
+        } else {
+          card.style.transform = '';
+        }
+        return;
+      }
+
+      // Sol kənardan sağa sürüşdürmə ilə də modalı bağla (iOS / Android Back Gesture)
+      if (e.changedTouches && e.changedTouches.length > 0) {
+        const dx = e.changedTouches[0].clientX - mStartX;
+        const dy = e.changedTouches[0].clientY - mStartY;
+        if (mStartX <= 42 && dx > 65 && Math.abs(dx) > Math.abs(dy) * 1.4 && modalEl.id) {
+          closeModal(modalEl.id);
+        }
+      }
+    }, { passive: true });
+  });
+
+  // 3.4 Telefonun Fiziki / Sistem "Geri" (Back) Düyməsi ilə Açıq Modalı və ya Menyunu Bağlama
+  window.addEventListener('popstate', () => {
+    const openModalEl = document.querySelector('.modal-backdrop:not(.hidden)');
+    if (openModalEl && openModalEl.id) {
+      closeModal(openModalEl.id);
+      return;
+    }
+    if (drawer && drawer.classList.contains('open')) {
+      closeLeftDrawer();
+    }
+  });
+
   // 4. Mobil Tək Səhifəlik "Open Page" İdarəetməsi (#mobile-open-page)
   const mobUsernameInput = document.getElementById('mob-username-input');
   const mobRoomInput = document.getElementById('mob-room-input');
@@ -5107,9 +5319,69 @@ function setupMobileAppAndDrawer() {
   const mobCreateBtn = document.getElementById('btn-mob-create-room');
   const mobAvatarPickerBtn = document.getElementById('mob-avatar-picker-btn');
   const mobTopActionBtn = document.getElementById('btn-mob-top-action');
+  const mobQuickModeBtn = document.getElementById('btn-mob-quick-mode');
+  const mobOpenCharGalleryBtn = document.getElementById('btn-mob-open-char-gallery');
   const mobDockChars = document.getElementById('mob-dock-chars');
   const mobDockWheel = document.getElementById('mob-dock-wheel');
   const mobDockHistory = document.getElementById('mob-dock-history');
+
+  // 4.1 Mobil Üst Bar Sürətli Gündüz / Gecə (Light / Dark) Düyməsi
+  if (mobQuickModeBtn) {
+    mobQuickModeBtn.addEventListener('click', () => {
+      const mainModeBtn = document.getElementById('btn-mode-toggle');
+      if (mainModeBtn) {
+        mainModeBtn.click();
+      } else {
+        const cur = document.documentElement.getAttribute('data-mode') || 'dark';
+        applyLobbyMode(cur === 'light' ? 'dark' : 'light');
+      }
+      syncDrawerUIWithMain();
+    });
+  }
+
+  // 4.2 Mobil Kult Kino Vitrini (İnteraktiv Obraz Lentası)
+  const mobCharMeta = {
+    heisenberg: { name: 'Heisenberg', nick: 'Heisenberg', img: 'assets/characters/heisenberg.png', theme: 'theme-breaking-bad' },
+    godfather: { name: 'Don Corleone', nick: 'Don_Corleone', img: 'assets/characters/godfather.png', theme: 'theme-netflix' },
+    batman: { name: 'Dark Knight', nick: 'Dark_Knight', img: 'assets/characters/batman.png', theme: 'theme-batman' },
+    cyberpunk: { name: 'Cyber Runner', nick: 'Cyber_Warrior', img: 'assets/characters/cyberpunk.png', theme: 'theme-matrix' },
+    detective: { name: 'Noir Detective', nick: 'Noir_Detective', img: 'assets/characters/detective.png', theme: 'theme-interstellar' }
+  };
+
+  document.querySelectorAll('.mob-strip-card').forEach(stripBtn => {
+    stripBtn.addEventListener('click', () => {
+      const charKey = stripBtn.getAttribute('data-mob-char');
+      const info = mobCharMeta[charKey];
+      if (!info) return;
+
+      document.querySelectorAll('.mob-strip-card').forEach(b => b.classList.toggle('active', b === stripBtn));
+      const avatarHtml = `<img src="${info.img}" alt="${info.name}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+      selectedAvatarChoice = avatarHtml;
+
+      const mobAvatarDisplay = document.getElementById('mob-avatar-display');
+      const mainAvatarPreview = document.getElementById('input-avatar-preview');
+      if (mobAvatarDisplay) mobAvatarDisplay.innerHTML = avatarHtml;
+      if (mainAvatarPreview) mainAvatarPreview.innerHTML = avatarHtml;
+
+      const charPill = document.getElementById('mob-selected-char-pill');
+      if (charPill) charPill.textContent = info.name;
+
+      // Əgər istifadəçi adı boşdursa və ya əvvəlki obraz adıdırsa, avtomatik yenilə
+      const knownDefaultNicks = Object.values(mobCharMeta).map(m => m.nick);
+      if (mobUsernameInput) {
+        const curVal = mobUsernameInput.value.trim();
+        if (!curVal || knownDefaultNicks.includes(curVal)) {
+          mobUsernameInput.value = info.nick;
+          if (usernameInput) usernameInput.value = info.nick;
+        }
+      }
+
+      if (typeof applyTheme === 'function') {
+        applyTheme(info.theme, false);
+      }
+      showNotice(`🎭 ${info.name} obrazı seçildi!`);
+    });
+  });
 
   // Ad və Otaq kodu sahələrini əsas inputlarla iki-tərəfli sinxronlaşdır
   if (mobUsernameInput && usernameInput) {
@@ -5151,7 +5423,7 @@ function setupMobileAppAndDrawer() {
     });
   }
 
-  // Mobil Tab Keçidi: 🚀 Otağa Qoşul / ➕ Yeni Otaq Aç
+  // Mobil Tab Keçidi: Otağa Qoşul / Yeni Zal Yarat
   document.querySelectorAll('.mob-seg-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const targetPane = btn.getAttribute('data-mob-pane');
@@ -5209,6 +5481,7 @@ function setupMobileAppAndDrawer() {
     else openModal('modal-characters');
   };
   if (mobAvatarPickerBtn) mobAvatarPickerBtn.addEventListener('click', openCharsHandler);
+  if (mobOpenCharGalleryBtn) mobOpenCharGalleryBtn.addEventListener('click', openCharsHandler);
   if (mobDockChars) mobDockChars.addEventListener('click', openCharsHandler);
   if (mobDockWheel) {
     mobDockWheel.addEventListener('click', () => {
@@ -5274,8 +5547,7 @@ function setupMobileAppAndDrawer() {
   if (linkHow) {
     linkHow.addEventListener('click', () => {
       closeLeftDrawer();
-      const howModal = document.getElementById('modal-how-it-works');
-      if (howModal) howModal.classList.remove('hidden');
+      openModal('modal-how-it-works');
     });
   }
   if (btnCloseHowModal) {
@@ -5340,11 +5612,13 @@ function setupMobileAppAndDrawer() {
     const drawerUserCard = document.getElementById('drawer-user-card');
     const isLogged = !!(currentUser && currentUser.isGoogle);
 
-    // Mobil Open Page üzərindəki Avatar, Ad, Google Status və Üst Düyməni yenilə
+    // Mobil Open Page üzərindəki Avatar yalnız dəyişibsə yenilə (DOM donmasının qarşısını alır)
     const mobAvatarDisplay = document.getElementById('mob-avatar-display');
     const mainAvatarPreview = document.getElementById('input-avatar-preview');
-    if (mobAvatarDisplay && mainAvatarPreview) {
-      mobAvatarDisplay.innerHTML = mainAvatarPreview.innerHTML;
+    if (mobAvatarDisplay && mainAvatarPreview && mainAvatarPreview.innerHTML) {
+      if (mobAvatarDisplay.innerHTML !== mainAvatarPreview.innerHTML) {
+        mobAvatarDisplay.innerHTML = mainAvatarPreview.innerHTML;
+      }
     }
     if (mobUsernameInput && usernameInput && usernameInput.value && !mobUsernameInput.value) {
       mobUsernameInput.value = usernameInput.value;
@@ -5352,13 +5626,12 @@ function setupMobileAppAndDrawer() {
     const mobHostAuthStatus = document.getElementById('mob-host-auth-status');
     const mobCreateBtnText = document.getElementById('mob-create-btn-text');
     if (mobHostAuthStatus && mobCreateBtnText) {
-      if (isLogged) {
-        mobHostAuthStatus.innerHTML = `<span style="color:#34d399;">🟢 Google Hesabı Aktivdir (${escapeHtml(currentUser.username)})</span>`;
-        mobCreateBtnText.textContent = '✨ Yeni Kino Otağı Başlat';
-      } else {
-        mobHostAuthStatus.innerHTML = `<span>🔒 Otaq yaratmaq üçün 1 toxunuşla Google girişi:</span>`;
-        mobCreateBtnText.textContent = 'G Google ilə Daxil Ol & Otaq Aç';
-      }
+      const nextStatusHtml = isLogged
+        ? `<span class="mob-auth-active-text">🟢 Google Hesabı Aktivdir (${escapeHtml(currentUser.username)})</span>`
+        : `<span>🔒 Otaq yaratmaq üçün 1 toxunuşla Google girişi:</span>`;
+      const nextBtnText = isLogged ? '👑 Özəl Kino Zalını Başlat' : 'G Google ilə Daxil Ol & Zal Aç';
+      if (mobHostAuthStatus.innerHTML !== nextStatusHtml) mobHostAuthStatus.innerHTML = nextStatusHtml;
+      if (mobCreateBtnText.textContent !== nextBtnText) mobCreateBtnText.textContent = nextBtnText;
     }
     const mobTopIcon = document.getElementById('mob-top-action-icon');
     const mobTopLabel = document.getElementById('mob-top-action-label');
@@ -5394,6 +5667,10 @@ function setupMobileAppAndDrawer() {
       dModeIcon.textContent = isLight ? '🌙' : '☀️';
       dModeText.textContent = isLight ? 'Dark Rejim' : 'Light Rejim';
     }
+    const mobQuickModeIcon = document.getElementById('mob-quick-mode-icon');
+    if (mobQuickModeIcon) {
+      mobQuickModeIcon.textContent = isLight ? '🌙' : '☀️';
+    }
     if (typeof currentLang !== 'undefined') {
       document.querySelectorAll('.drawer-lang-btn').forEach(b => {
         b.classList.toggle('active', b.getAttribute('data-lang') === currentLang);
@@ -5401,7 +5678,7 @@ function setupMobileAppAndDrawer() {
     }
   }
 
-  // İlk açılışda və hər 1 saniyədə mobil UI-ı sinxron saxla
+  window.syncMobileUI = syncDrawerUIWithMain;
   syncDrawerUIWithMain();
 
   // 8. Mobil Ekran Yuxu Kilidi (Wake Lock) & Mobil Səs Qoruyucusu (Audio Watchdog)
@@ -5420,28 +5697,26 @@ function setupMobileAppAndDrawer() {
 
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
-      if (currentRoomId || isVoiceActive) {
+      if (currentRoom || isVoiceActive) {
         requestMobileWakeLock();
       }
-      unlockAllRemoteAudios();
+      if (typeof unlockAllRemoteAudios === 'function') {
+        unlockAllRemoteAudios();
+      }
     }
   });
 
-  // Hər 1.5 saniyədə bir mobil səs mühərriklərini və mobil profil görünüşünü yoxla
+  // Yalnız otaqda olduqda səs mühərriklərini yoxla (Artıq DOM yenilənməsi etmir, donma yaratmır)
   setInterval(() => {
-    syncDrawerUIWithMain();
-    if (currentRoomId) {
+    if (currentRoom) {
       if (!mobileWakeLock && document.visibilityState === 'visible') {
         requestMobileWakeLock();
       }
-      if (audioPlaybackContext && audioPlaybackContext.state === 'suspended') {
-        audioPlaybackContext.resume().catch(() => {});
-      }
-      if (isVoiceActive && voiceCaptureContext && voiceCaptureContext.state === 'suspended') {
-        voiceCaptureContext.resume().catch(() => {});
+      if (typeof vadAudioContext !== 'undefined' && vadAudioContext && vadAudioContext.state === 'suspended') {
+        vadAudioContext.resume().catch(() => {});
       }
     }
-  }, 1500);
+  }, 4000);
 }
 
 // Başlanğıcda Mobil Tətbiq və Menyunu işə sal

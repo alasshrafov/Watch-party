@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141622"/>
+      <stop offset="55%" stop-color="#0a0b12"/>
+      <stop offset="100%" stop-color="#05060a"/>
+    </linearGradient>
+    <linearGradient id="crimsonGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff2a44"/>
+      <stop offset="55%" stop-color="#e50914"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="screenCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+    <linearGradient id="goldAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#ef4444"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Luxury App Squircle Base -->
+  <rect x="6" y="6" width="244" height="244" rx="56" fill="url(#bgGrad)" stroke="url(#crimsonGold)" stroke-width="4"/>
+  <rect x="14" y="14" width="228" height="228" rx="48" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1.5"/>
+
+  <!-- Screen 1 (Left Cinema Frame) -->
+  <rect x="44" y="48" width="108" height="72" rx="12" fill="#0d111d" stroke="url(#screenCyan)" stroke-width="5.5"/>
+  <polygon points="88,72 88,96 108,84" fill="#38bdf8"/>
+
+  <!-- Screen 2 (Right Overlapping Cinema Frame) -->
+  <rect x="104" y="66" width="108" height="72" rx="12" fill="#120d18" stroke="url(#crimsonGold)" stroke-width="5.5"/>
+  <polygon points="148,90 148,114 168,102" fill="#ff2a44"/>
+
+  <!-- Iconic Luxury Cinema Couch -->
+  <path d="M64,132 C64,118 76,110 92,110 L164,110 C180,110 192,118 192,132 L192,158 L64,158 Z" fill="url(#crimsonGold)"/>
+  <!-- Couch Armrests & Base -->
+  <path d="M52,138 C43,138 38,144 38,153 C38,160 43,165 48,167 L48,182 C48,189 54,194 62,194 L194,194 C202,194 208,189 208,182 L208,167 C213,165 218,160 218,153 C218,144 213,138 204,138 C196,138 191,143 191,151 L191,164 L65,164 L65,151 C65,143 60,138 52,138 Z" fill="#181b28" stroke="url(#goldAccent)" stroke-width="4.5" stroke-linejoin="round"/>
+  <!-- Couch Cushions Divider -->
+  <line x1="128" y1="114" x2="128" y2="162" stroke="#0a0b12" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- Couch Legs -->
+  <line x1="70" y1="194" x2="62" y2="208" stroke="#fbbf24" stroke-width="5" stroke-linecap="round"/>
+  <line x1="186" y1="194" x2="194" y2="208" stroke="#fbbf24" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Acoustic Voice Wave Pulse Below Couch -->
+  <path d="M72,222 L98,222 L106,210 L116,232 L128,202 L140,232 L150,210 L158,222 L184,222" fill="none" stroke="url(#goldAccent)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
