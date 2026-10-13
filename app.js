@@ -1091,13 +1091,14 @@ function setupMiniMovieFigures() {
     });
   });
 
-  // Mobil & Sensorlu Ekranlar üçün 1:1 İnteraktiv Barmaq İzləyən Sağa-Sola Sürüşdürmə (Smooth Elastic Swipe)
+  // Mobil & Sensorlu Ekranlar üçün 1:1 İnteraktiv Barmaq İzləyən Sağa-Sola Sürüşdürmə (RAF 60fps qorunur)
   function attachHorizontalSwipe(el, onSwipeLeft, onSwipeRight, getDragNode) {
     if (!el) return;
     let touchStartX = 0;
     let touchStartY = 0;
     let currentDx = 0;
     let isHorizontalDrag = false;
+    let swipeRaf = null;
 
     el.addEventListener('touchstart', (e) => {
       if (!e.touches || e.touches.length !== 1) return;
@@ -1121,20 +1122,30 @@ function setupMiniMovieFigures() {
       }
 
       currentDx = dx;
-      const dragNode = typeof getDragNode === 'function' ? getDragNode() : el;
-      if (dragNode) {
-        dragNode.style.transition = 'none';
-        const dampedX = dx * 0.44;
-        const scale = Math.max(0.95, 1 - Math.abs(dx) * 0.00025);
-        dragNode.style.transform = `translate3d(${dampedX}px, 0, 0) scale(${scale})`;
-        dragNode.style.opacity = `${Math.max(0.72, 1 - Math.abs(dx) * 0.0012)}`;
+      if (!swipeRaf) {
+        swipeRaf = requestAnimationFrame(() => {
+          swipeRaf = null;
+          if (!isHorizontalDrag) return;
+          const dragNode = typeof getDragNode === 'function' ? getDragNode() : el;
+          if (dragNode) {
+            dragNode.style.transition = 'none';
+            const dampedX = currentDx * 0.44;
+            const scale = Math.max(0.95, 1 - Math.abs(currentDx) * 0.00025);
+            dragNode.style.transform = `translate3d(${dampedX}px, 0, 0) scale(${scale})`;
+            dragNode.style.opacity = `${Math.max(0.72, 1 - Math.abs(currentDx) * 0.0012)}`;
+          }
+        });
       }
     }, { passive: true });
 
     el.addEventListener('touchend', (e) => {
+      if (swipeRaf) {
+        cancelAnimationFrame(swipeRaf);
+        swipeRaf = null;
+      }
       const dragNode = typeof getDragNode === 'function' ? getDragNode() : el;
       if (dragNode) {
-        dragNode.style.transition = 'transform 0.34s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.34s ease';
+        dragNode.style.transition = 'transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.32s ease';
         dragNode.style.transform = '';
         dragNode.style.opacity = '';
       }
@@ -1802,8 +1813,9 @@ function setupLobbyMode() {
 }
 
 function applyTheme(themeName, syncWithRoom = true) {
+  if (document.body.className === themeName) return;
   document.body.className = themeName;
-  localStorage.setItem('watchparty-theme', themeName);
+  try { localStorage.setItem('watchparty-theme', themeName); } catch (e) {}
 
   // Hər iki dropdown-u sinxronlaşdır
   const themeSelect = document.getElementById('theme-select');
@@ -3925,6 +3937,8 @@ function setupModalsAndFeatures() {
 function drawWheel() {
   const canvas = document.getElementById('wheel-canvas');
   if (!canvas) return;
+  const rouletteModal = document.getElementById('modal-roulette');
+  if (rouletteModal && rouletteModal.classList.contains('hidden')) return;
   const ctx = canvas.getContext('2d');
   const width = canvas.width;
   const height = canvas.height;
@@ -5160,7 +5174,6 @@ function setupMobileAppAndDrawer() {
   const btnCloseDrawer = document.getElementById('btn-close-left-drawer');
 
   function openLeftDrawer() {
-    syncDrawerUIWithMain();
     if (drawer) {
       drawer.style.transition = '';
       drawer.style.transform = '';
@@ -5174,6 +5187,9 @@ function setupMobileAppAndDrawer() {
       }
     }
     if (backdrop) backdrop.classList.remove('hidden');
+    requestAnimationFrame(() => {
+      syncDrawerUIWithMain();
+    });
   }
 
   function closeLeftDrawer() {
@@ -5550,9 +5566,9 @@ function setupMobileAppAndDrawer() {
       }
     }
 
-    if (typeof applyTheme === 'function') {
-      applyTheme(info.theme, false);
-    }
+    try {
+      localStorage.setItem('watchparty-theme', info.theme);
+    } catch (e) {}
 
     if (opts.playVoice) {
       playMobCharVoice(charKey);
@@ -5586,7 +5602,7 @@ function setupMobileAppAndDrawer() {
     });
   }
 
-  // Ana ekran Hero Stage üzərində 1:1 barmaq-izləməli üfüqi sürüşdürmə (swipe)
+  // Ana ekran Hero Stage üzərində 1:1 barmaq-izləməli üfüqi sürüşdürmə (RAF 60fps qorunur)
   const mobHeroStageEl = document.getElementById('mob-hero-stage');
   if (mobHeroStageEl) {
     let hStartX = 0;
@@ -5594,6 +5610,7 @@ function setupMobileAppAndDrawer() {
     let hDeltaX = 0;
     let hDragging = false;
     let hLocked = null;
+    let hRaf = null;
 
     mobHeroStageEl.addEventListener('touchstart', (e) => {
       if (e.target.closest('button')) return;
@@ -5614,19 +5631,28 @@ function setupMobileAppAndDrawer() {
       }
       if (!hLocked) return;
       hDeltaX = dx;
-      const heroImg = document.getElementById('mob-hero-backdrop-img');
-      if (heroImg) {
-        heroImg.style.transition = 'none';
-        heroImg.style.transform = `translate3d(${(dx * 0.28).toFixed(1)}px, 0, 0) scale(1.04)`;
+      if (!hRaf) {
+        hRaf = requestAnimationFrame(() => {
+          hRaf = null;
+          const heroImg = document.getElementById('mob-hero-backdrop-img');
+          if (heroImg && hDragging) {
+            heroImg.style.transition = 'none';
+            heroImg.style.transform = `translate3d(${(hDeltaX * 0.28).toFixed(1)}px, 0, 0) scale(1.04)`;
+          }
+        });
       }
     }, { passive: true });
 
     mobHeroStageEl.addEventListener('touchend', () => {
       if (!hDragging) return;
       hDragging = false;
+      if (hRaf) {
+        cancelAnimationFrame(hRaf);
+        hRaf = null;
+      }
       const heroImg = document.getElementById('mob-hero-backdrop-img');
       if (heroImg) {
-        heroImg.style.transition = 'transform 0.42s cubic-bezier(0.16, 1, 0.3, 1)';
+        heroImg.style.transition = 'transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)';
         heroImg.style.transform = '';
       }
       if (hLocked && Math.abs(hDeltaX) > 36) {

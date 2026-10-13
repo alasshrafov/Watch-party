@@ -1,9 +1,9 @@
-const CACHE_NAME = 'onecouch-mobile-v13';
+const CACHE_NAME = 'onecouch-mobile-v14';
 const STATIC_ASSETS = [
-  '/assets/icon-vector.svg?v=12',
-  '/assets/icon-192.png?v=12',
-  '/assets/icon-512.png?v=12',
-  '/manifest.json'
+  '/assets/icon-vector.svg?v=14',
+  '/assets/icon-192-hd.png?v=14',
+  '/assets/icon-512-hd.png?v=14',
+  '/manifest.json?v=14'
 ];
 
 self.addEventListener('install', (event) => {
@@ -29,7 +29,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Network-first strategy: həmişə ən son dizayn və skripti gətirir
+// Network-first strategy: həmişə ən son dizayn və skripti dərhal gətirir
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);

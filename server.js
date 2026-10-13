@@ -17,10 +17,24 @@ const io = new Server(server, {
 
 app.use(cors());
 app.use(express.json());
-// Şəkillər və səslər üçün 7 günlük sürətli brauzer keşi (0ms yüklənmə)
-app.use('/assets', express.static(path.join(__dirname, 'assets'), { maxAge: '7d' }));
-// Əsas qovluq birinci gəlir (GitHub-a birbaşa atılan fayllar dərhal aktiv olsun)
-app.use(express.static(__dirname));
+// Statik faylların dərhal və kəsintisiz yenilənməsi üçün ETag və dinamik keş
+app.use('/assets', express.static(path.join(__dirname, 'assets'), {
+  maxAge: '1h',
+  etag: true,
+  setHeaders: (res, path) => {
+    if (path.endsWith('.png') || path.endsWith('.svg') || path.endsWith('.json')) {
+      res.setHeader('Cache-Control', 'public, max-age=60, must-revalidate');
+    }
+  }
+}));
+app.use(express.static(__dirname, {
+  etag: true,
+  setHeaders: (res, path) => {
+    if (path.endsWith('.html') || path.endsWith('manifest.json') || path.endsWith('sw.js')) {
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+    }
+  }
+}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ==========================================

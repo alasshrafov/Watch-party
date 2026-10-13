@@ -9,19 +9,19 @@
   <meta name="apple-mobile-web-app-title" content="OneCouch">
   <meta name="mobile-web-app-capable" content="yes">
   <title>OneCouch 🛋️🍿 — Two screens. One couch.</title>
-  <link rel="icon" type="image/svg+xml" href="assets/icon-vector.svg">
-  <link rel="apple-touch-icon" href="assets/icon-192.png">
-  <link rel="manifest" href="/manifest.json">
-  <link rel="stylesheet" href="style.css?v=13.0">
+  <link rel="icon" type="image/svg+xml" href="assets/icon-vector.svg?v=14">
+  <link rel="apple-touch-icon" href="assets/icon-192-hd.png?v=14">
+  <link rel="manifest" href="/manifest.json?v=14">
+  <link rel="stylesheet" href="style.css?v=14.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;600&family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
   <!-- Google Identity Services (Google ilə 1 Kliklə Giriş) -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <!-- Socket.io Client -->
-  <script src="/socket.io/socket.io.js"></script>
-  <!-- YouTube Iframe API -->
-  <script src="https://www.youtube.com/iframe_api"></script>
+  <!-- Socket.io Client (Girişi bloklamır) -->
+  <script src="/socket.io/socket.io.js" defer></script>
+  <!-- YouTube Iframe API (Asinxron) -->
+  <script src="https://www.youtube.com/iframe_api" async></script>
 </head>
 <body class="theme-netflix">
   <!-- İkinci təkrarlanan splash ekran ləğv edildi ki, girişdə iki fərqli loqo çıxmasın -->
@@ -2011,6 +2011,6 @@
   <audio id="remote-voice-audio" autoplay playsinline></audio>
 
   <!-- Əsas Tətbiq Skripti -->
-  <script src="app.js?v=13.0"></script>
+  <script src="app.js?v=14.0" defer></script>
 </body>
 </html>
