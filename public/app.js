@@ -1041,9 +1041,14 @@ function setupMiniMovieFigures() {
     currentGalleryIndex = ((newIndex % total) + total) % total;
 
     galleryCards.forEach((card, idx) => {
+      card.style.transition = '';
+      card.style.transform = '';
+      card.style.opacity = '';
       card.classList.remove('active-slide', 'slide-from-right', 'slide-from-left');
       if (idx === currentGalleryIndex) {
-        card.classList.add('active-slide', dir === 'prev' ? 'slide-from-left' : 'slide-from-right');
+        card.classList.add('active-slide');
+        void card.offsetWidth;
+        card.classList.add(dir === 'prev' ? 'slide-from-left' : 'slide-from-right');
       }
     });
 
@@ -1086,25 +1091,62 @@ function setupMiniMovieFigures() {
     });
   });
 
-  // Mobil & Sensorlu Ekranlar üçün Sağa-Sola Barmaqla Sürüşdürmə (Touch Swipe)
-  function attachHorizontalSwipe(el, onSwipeLeft, onSwipeRight) {
+  // Mobil & Sensorlu Ekranlar üçün 1:1 İnteraktiv Barmaq İzləyən Sağa-Sola Sürüşdürmə (Smooth Elastic Swipe)
+  function attachHorizontalSwipe(el, onSwipeLeft, onSwipeRight, getDragNode) {
     if (!el) return;
     let touchStartX = 0;
     let touchStartY = 0;
+    let currentDx = 0;
+    let isHorizontalDrag = false;
+
     el.addEventListener('touchstart', (e) => {
-      if (!e.touches || !e.touches.length) return;
+      if (!e.touches || e.touches.length !== 1) return;
       touchStartX = e.touches[0].clientX;
       touchStartY = e.touches[0].clientY;
+      currentDx = 0;
+      isHorizontalDrag = false;
+    }, { passive: true });
+
+    el.addEventListener('touchmove', (e) => {
+      if (!e.touches || e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - touchStartX;
+      const dy = e.touches[0].clientY - touchStartY;
+
+      if (!isHorizontalDrag) {
+        if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.15) {
+          isHorizontalDrag = true;
+        } else {
+          return;
+        }
+      }
+
+      currentDx = dx;
+      const dragNode = typeof getDragNode === 'function' ? getDragNode() : el;
+      if (dragNode) {
+        dragNode.style.transition = 'none';
+        const dampedX = dx * 0.44;
+        const scale = Math.max(0.95, 1 - Math.abs(dx) * 0.00025);
+        dragNode.style.transform = `translate3d(${dampedX}px, 0, 0) scale(${scale})`;
+        dragNode.style.opacity = `${Math.max(0.72, 1 - Math.abs(dx) * 0.0012)}`;
+      }
     }, { passive: true });
 
     el.addEventListener('touchend', (e) => {
+      const dragNode = typeof getDragNode === 'function' ? getDragNode() : el;
+      if (dragNode) {
+        dragNode.style.transition = 'transform 0.34s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.34s ease';
+        dragNode.style.transform = '';
+        dragNode.style.opacity = '';
+      }
       if (!e.changedTouches || !e.changedTouches.length) return;
       const dx = e.changedTouches[0].clientX - touchStartX;
       const dy = e.changedTouches[0].clientY - touchStartY;
-      if (Math.abs(dx) > 36 && Math.abs(dx) > Math.abs(dy)) {
+      if (Math.abs(dx) > 34 && Math.abs(dx) > Math.abs(dy)) {
         if (dx < 0) onSwipeLeft(); // Sola çəkdi -> Növbəti
         else onSwipeRight();       // Sağa çəkdi -> Əvvəlki
       }
+      isHorizontalDrag = false;
+      currentDx = 0;
     }, { passive: true });
   }
 
@@ -1112,7 +1154,8 @@ function setupMiniMovieFigures() {
   attachHorizontalSwipe(
     carouselStage,
     () => setGallerySlide(currentGalleryIndex + 1, 'next'),
-    () => setGallerySlide(currentGalleryIndex - 1, 'prev')
+    () => setGallerySlide(currentGalleryIndex - 1, 'prev'),
+    () => document.querySelector('.char-gallery-card.active-slide')
   );
 
   const showcaseLayout = document.getElementById('showcase-main-layout');
@@ -1120,12 +1163,13 @@ function setupMiniMovieFigures() {
     showcaseLayout,
     () => {
       currentShowcaseIndex = (currentShowcaseIndex + 1) % charKeysList.length;
-      openCharacterShowcase(charKeysList[currentShowcaseIndex], true);
+      openCharacterShowcase(charKeysList[currentShowcaseIndex], true, 'next');
     },
     () => {
       currentShowcaseIndex = (currentShowcaseIndex - 1 + charKeysList.length) % charKeysList.length;
-      openCharacterShowcase(charKeysList[currentShowcaseIndex], true);
-    }
+      openCharacterShowcase(charKeysList[currentShowcaseIndex], true, 'prev');
+    },
+    () => showcaseLayout
   );
 
   // Klaviatura Ox Düymələri (Sol / Sağ) ilə Xarakter Dəyişmə
@@ -1139,14 +1183,14 @@ function setupMiniMovieFigures() {
         setGallerySlide(currentGalleryIndex - 1, 'prev');
       } else if (showcaseView && !showcaseView.classList.contains('hidden')) {
         currentShowcaseIndex = (currentShowcaseIndex - 1 + charKeysList.length) % charKeysList.length;
-        openCharacterShowcase(charKeysList[currentShowcaseIndex], true);
+        openCharacterShowcase(charKeysList[currentShowcaseIndex], true, 'prev');
       }
     } else if (e.key === 'ArrowRight') {
       if (galleryView && !galleryView.classList.contains('hidden')) {
         setGallerySlide(currentGalleryIndex + 1, 'next');
       } else if (showcaseView && !showcaseView.classList.contains('hidden')) {
         currentShowcaseIndex = (currentShowcaseIndex + 1) % charKeysList.length;
-        openCharacterShowcase(charKeysList[currentShowcaseIndex], true);
+        openCharacterShowcase(charKeysList[currentShowcaseIndex], true, 'next');
       }
     }
   });
@@ -1162,7 +1206,7 @@ function setupMiniMovieFigures() {
     setGallerySlide(currentGalleryIndex, 'next');
   }
 
-  function openCharacterShowcase(charKey, autoPlaySound = true) {
+  function openCharacterShowcase(charKey, autoPlaySound = true, dir = 'next') {
     const data = CULT_CHARACTERS[charKey] || CULT_CHARACTERS.godfather;
     activeShowcaseChar = charKey;
     currentShowcaseIndex = charKeysList.indexOf(charKey);
@@ -1175,6 +1219,15 @@ function setupMiniMovieFigures() {
     if (galleryView) galleryView.classList.add('hidden');
     if (quizView) quizView.classList.add('hidden');
     if (showcaseView) showcaseView.classList.remove('hidden');
+
+    if (showcaseLayout) {
+      showcaseLayout.style.transition = '';
+      showcaseLayout.style.transform = '';
+      showcaseLayout.style.opacity = '';
+      showcaseLayout.classList.remove('slide-from-right', 'slide-from-left');
+      void showcaseLayout.offsetWidth;
+      showcaseLayout.classList.add(dir === 'prev' ? 'slide-from-left' : 'slide-from-right');
+    }
 
     // Məlumatları doldur
     const imgEl = document.getElementById('showcase-char-img');
@@ -1217,11 +1270,6 @@ function setupMiniMovieFigures() {
     if (autoPlaySound) {
       playCharacterAudio(charKey);
     }
-
-    if (typeof spawnFloatingEmoji === 'function') {
-      spawnFloatingEmoji(data.emoji);
-      spawnFloatingEmoji('✨');
-    }
   }
 
   // Voice replay / pause button
@@ -1246,7 +1294,7 @@ function setupMiniMovieFigures() {
   if (btnShowcasePrev) {
     btnShowcasePrev.addEventListener('click', () => {
       currentShowcaseIndex = (currentShowcaseIndex - 1 + charKeysList.length) % charKeysList.length;
-      openCharacterShowcase(charKeysList[currentShowcaseIndex], true);
+      openCharacterShowcase(charKeysList[currentShowcaseIndex], true, 'prev');
     });
   }
 
@@ -1254,7 +1302,7 @@ function setupMiniMovieFigures() {
   if (btnShowcaseNext) {
     btnShowcaseNext.addEventListener('click', () => {
       currentShowcaseIndex = (currentShowcaseIndex + 1) % charKeysList.length;
-      openCharacterShowcase(charKeysList[currentShowcaseIndex], true);
+      openCharacterShowcase(charKeysList[currentShowcaseIndex], true, 'next');
     });
   }
 
@@ -1264,13 +1312,17 @@ function setupMiniMovieFigures() {
     btnShowcaseCreate.addEventListener('click', () => {
       const data = CULT_CHARACTERS[activeShowcaseChar] || CULT_CHARACTERS.godfather;
       const cleanNick = data.name.split('•')[0].trim();
-      
-      // Avatar & Ləqəb təyin et (Həm Desktop, həm Mobil Open Page üçün)
-      if (typeof selectedAvatarChoice !== 'undefined') selectedAvatarChoice = data.emoji;
-      const avatarPreview = document.getElementById('input-avatar-preview');
-      if (avatarPreview) avatarPreview.textContent = data.emoji;
-      const mobAvatarDisp = document.getElementById('mob-avatar-display');
-      if (mobAvatarDisp) mobAvatarDisp.textContent = data.emoji;
+      const avatarHtml = `<img src="${data.img}" alt="${cleanNick}">`;
+
+      if (typeof window.selectMobileCharacterGlobal === 'function') {
+        window.selectMobileCharacterGlobal(activeShowcaseChar, { playVoice: false });
+      } else {
+        if (typeof selectedAvatarChoice !== 'undefined') selectedAvatarChoice = avatarHtml;
+        const avatarPreview = document.getElementById('input-avatar-preview');
+        if (avatarPreview) avatarPreview.innerHTML = avatarHtml;
+        const mobAvatarDisp = document.getElementById('mob-avatar-display');
+        if (mobAvatarDisp) mobAvatarDisp.innerHTML = avatarHtml;
+      }
       if (usernameInput) usernameInput.value = cleanNick;
       const mobUserInp = document.getElementById('mob-username-input');
       if (mobUserInp) mobUserInp.value = cleanNick;
@@ -1279,7 +1331,7 @@ function setupMiniMovieFigures() {
       localStorage.setItem('watchparty-theme', data.theme);
 
       closeModal('modal-characters');
-      showNotice(`👑 ${data.name} mövzusunda otaq başladılır...`);
+      showNotice(`${data.name} mövzusunda otaq başladılır...`);
 
       const mobCreateTab = document.getElementById('mob-tab-create');
       if (window.innerWidth <= 768 && mobCreateTab) {
@@ -1310,23 +1362,24 @@ function setupMiniMovieFigures() {
     btnShowcaseJoin.addEventListener('click', () => {
       const data = CULT_CHARACTERS[activeShowcaseChar] || CULT_CHARACTERS.godfather;
       const cleanNick = data.name.split('•')[0].trim();
-      
-      if (typeof selectedAvatarChoice !== 'undefined') selectedAvatarChoice = data.emoji;
-      const avatarPreview = document.getElementById('input-avatar-preview');
-      if (avatarPreview) {
-        avatarPreview.textContent = data.emoji;
-        avatarPreview.style.transform = 'scale(1.4)';
-        setTimeout(() => { avatarPreview.style.transform = ''; }, 350);
+      const avatarHtml = `<img src="${data.img}" alt="${cleanNick}">`;
+
+      if (typeof window.selectMobileCharacterGlobal === 'function') {
+        window.selectMobileCharacterGlobal(activeShowcaseChar, { playVoice: false });
+      } else {
+        if (typeof selectedAvatarChoice !== 'undefined') selectedAvatarChoice = avatarHtml;
+        const avatarPreview = document.getElementById('input-avatar-preview');
+        if (avatarPreview) avatarPreview.innerHTML = avatarHtml;
+        const mobAvatarDisp = document.getElementById('mob-avatar-display');
+        if (mobAvatarDisp) mobAvatarDisp.innerHTML = avatarHtml;
       }
-      const mobAvatarDisp = document.getElementById('mob-avatar-display');
-      if (mobAvatarDisp) mobAvatarDisp.textContent = data.emoji;
       if (usernameInput) usernameInput.value = cleanNick;
       const mobUserInp = document.getElementById('mob-username-input');
       if (mobUserInp) mobUserInp.value = cleanNick;
       localStorage.setItem('watchparty-theme', data.theme);
 
       closeModal('modal-characters');
-      showNotice(`🎟️ ${data.name} ləqəbi qəbul olundu. Otaq kodunu daxil edin!`);
+      showNotice(`${data.name} ləqəbi seçildi`);
 
       if (window.innerWidth <= 768) {
         const mobJoinTab = document.getElementById('mob-tab-join');
@@ -5423,9 +5476,15 @@ function setupMobileAppAndDrawer() {
     } catch (e) {}
   }
 
+  const mobCharOrder = ['heisenberg', 'godfather', 'batman', 'cyberpunk', 'detective'];
+
   function selectMobileCharacter(charKey, opts = {}) {
     const info = mobCharMeta[charKey];
     if (!info) return;
+    const prevKey = currentMobCharKey;
+    const prevIdx = mobCharOrder.indexOf(prevKey);
+    const nextIdx = mobCharOrder.indexOf(charKey);
+    const dir = opts.dir || (nextIdx >= prevIdx ? 'next' : 'prev');
     currentMobCharKey = charKey;
 
     // 1. Ana ekrandakı medalyonları və menyudakı hərəkətli başları aktivləşdir
@@ -5436,7 +5495,8 @@ function setupMobileAppAndDrawer() {
       b.classList.toggle('active', b.getAttribute('data-drawer-char') === charKey);
     });
 
-    // 2. Ana ekrandakı Böyük Kino Afişasını yenilə
+    // 2. Ana ekrandakı Böyük Kino Afişasını axıcı (smooth) keçidlə yenilə
+    const heroStage = document.getElementById('mob-hero-stage');
     const heroImg = document.getElementById('mob-hero-backdrop-img');
     const heroTag = document.getElementById('mob-hero-film-tag');
     const heroTitle = document.getElementById('mob-hero-char-title');
@@ -5446,11 +5506,26 @@ function setupMobileAppAndDrawer() {
     if (heroTitle) heroTitle.textContent = info.fullTitle;
     if (heroQuote) heroQuote.textContent = info.quote;
 
-    // 3. Menyudakı canlı sitat sətirini yenilə
+    if (heroStage && prevKey !== charKey) {
+      heroStage.style.transition = '';
+      heroStage.style.transform = '';
+      heroStage.style.opacity = '';
+      heroStage.classList.remove('hero-glide-next', 'hero-glide-prev');
+      void heroStage.offsetWidth;
+      heroStage.classList.add(dir === 'prev' ? 'hero-glide-prev' : 'hero-glide-next');
+    }
+
+    // 3. Menyudakı canlı sitat sətirini axıcı effektlə yenilə
+    const drawerLiveBar = document.getElementById('drawer-char-live-bar');
     const drawerLiveName = document.getElementById('drawer-char-live-name');
     const drawerLiveQuote = document.getElementById('drawer-char-live-quote');
     if (drawerLiveName) drawerLiveName.textContent = `${info.fullTitle} • ${info.name.toUpperCase()}`;
     if (drawerLiveQuote) drawerLiveQuote.textContent = info.quote;
+    if (drawerLiveBar && prevKey !== charKey) {
+      drawerLiveBar.classList.remove('drawer-quote-glide');
+      void drawerLiveBar.offsetWidth;
+      drawerLiveBar.classList.add('drawer-quote-glide');
+    }
 
     // 4. İstifadəçi avatarını HD portret şəkli ilə yenilə
     const avatarHtml = `<img src="${info.img}" alt="${info.name}">`;
@@ -5482,6 +5557,85 @@ function setupMobileAppAndDrawer() {
     if (opts.playVoice) {
       playMobCharVoice(charKey);
     }
+  }
+
+  window.selectMobileCharacterGlobal = selectMobileCharacter;
+
+  function stepMobileHeroCharacter(delta) {
+    const idx = mobCharOrder.indexOf(currentMobCharKey);
+    const nextIdx = (idx + delta + mobCharOrder.length) % mobCharOrder.length;
+    const nextKey = mobCharOrder[nextIdx];
+    selectMobileCharacter(nextKey, {
+      playVoice: false,
+      dir: delta >= 0 ? 'next' : 'prev'
+    });
+  }
+
+  const btnMobHeroPrev = document.getElementById('btn-mob-hero-prev');
+  const btnMobHeroNext = document.getElementById('btn-mob-hero-next');
+  if (btnMobHeroPrev) {
+    btnMobHeroPrev.addEventListener('click', (e) => {
+      e.stopPropagation();
+      stepMobileHeroCharacter(-1);
+    });
+  }
+  if (btnMobHeroNext) {
+    btnMobHeroNext.addEventListener('click', (e) => {
+      e.stopPropagation();
+      stepMobileHeroCharacter(1);
+    });
+  }
+
+  // Ana ekran Hero Stage üzərində 1:1 barmaq-izləməli üfüqi sürüşdürmə (swipe)
+  const mobHeroStageEl = document.getElementById('mob-hero-stage');
+  if (mobHeroStageEl) {
+    let hStartX = 0;
+    let hStartY = 0;
+    let hDeltaX = 0;
+    let hDragging = false;
+    let hLocked = null;
+
+    mobHeroStageEl.addEventListener('touchstart', (e) => {
+      if (e.target.closest('button')) return;
+      if (!e.touches || !e.touches[0]) return;
+      hStartX = e.touches[0].clientX;
+      hStartY = e.touches[0].clientY;
+      hDeltaX = 0;
+      hDragging = true;
+      hLocked = null;
+    }, { passive: true });
+
+    mobHeroStageEl.addEventListener('touchmove', (e) => {
+      if (!hDragging || !e.touches || !e.touches[0]) return;
+      const dx = e.touches[0].clientX - hStartX;
+      const dy = e.touches[0].clientY - hStartY;
+      if (hLocked === null && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
+        hLocked = Math.abs(dx) >= Math.abs(dy);
+      }
+      if (!hLocked) return;
+      hDeltaX = dx;
+      const heroImg = document.getElementById('mob-hero-backdrop-img');
+      if (heroImg) {
+        heroImg.style.transition = 'none';
+        heroImg.style.transform = `translate3d(${(dx * 0.28).toFixed(1)}px, 0, 0) scale(1.04)`;
+      }
+    }, { passive: true });
+
+    mobHeroStageEl.addEventListener('touchend', () => {
+      if (!hDragging) return;
+      hDragging = false;
+      const heroImg = document.getElementById('mob-hero-backdrop-img');
+      if (heroImg) {
+        heroImg.style.transition = 'transform 0.42s cubic-bezier(0.16, 1, 0.3, 1)';
+        heroImg.style.transform = '';
+      }
+      if (hLocked && Math.abs(hDeltaX) > 36) {
+        if (hDeltaX < 0) stepMobileHeroCharacter(1);
+        else stepMobileHeroCharacter(-1);
+      }
+      hDeltaX = 0;
+      hLocked = null;
+    }, { passive: true });
   }
 
   document.querySelectorAll('.mob-strip-card').forEach(stripBtn => {

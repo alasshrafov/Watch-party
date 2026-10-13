@@ -12,7 +12,7 @@
   <link rel="icon" type="image/svg+xml" href="assets/icon-vector.svg">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
   <link rel="manifest" href="/manifest.json">
-  <link rel="stylesheet" href="style.css?v=12.0">
+  <link rel="stylesheet" href="style.css?v=13.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;600&family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -78,6 +78,14 @@
           <img src="assets/characters/heisenberg.jpg" alt="Heisenberg" class="mob-hero-backdrop-img" id="mob-hero-backdrop-img">
           <div class="mob-hero-vignette"></div>
 
+          <!-- Hamar Sağa-Sola Keçid Oxları -->
+          <button type="button" class="mob-hero-nav-arrow prev" id="btn-mob-hero-prev" aria-label="Əvvəlki obraz">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button type="button" class="mob-hero-nav-arrow next" id="btn-mob-hero-next" aria-label="Növbəti obraz">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+
           <div class="mob-hero-top-row">
             <span class="mob-hero-film-tag" id="mob-hero-film-tag">BREAKING BAD • CRIME DRAMA</span>
             <button type="button" id="btn-mob-open-char-gallery" class="mob-showcase-more-btn">
@@ -86,7 +94,7 @@
             </button>
           </div>
 
-          <div class="mob-hero-bottom-row">
+          <div class="mob-hero-bottom-row" id="mob-hero-bottom-row">
             <div class="mob-hero-info">
               <h2 class="mob-hero-char-title" id="mob-hero-char-title">WALTER WHITE</h2>
               <p class="mob-hero-char-quote" id="mob-hero-char-quote">"I am not in danger, Skyler. I am the danger."</p>
@@ -1317,7 +1325,7 @@
         <!-- Mərkəzdə Tək Xarakter Səhnəsi (Sağa / Sola Çevirmə) -->
         <div class="char-carousel-stage" id="char-carousel-stage">
           <button type="button" class="char-carousel-arrow prev" id="btn-char-gallery-prev" aria-label="Əvvəlki Xarakter" title="Əvvəlki Xarakter">
-            <span>◀</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
           </button>
 
           <div class="characters-gallery-grid" id="characters-gallery-grid">
@@ -1333,7 +1341,7 @@
                 <span class="char-card-source">Breaking Bad • Albuquerque</span>
                 <p class="char-card-quote">"I am the one who knocks."</p>
                 <button type="button" class="btn-select-character">
-                  <span>🧪 Heisenberg Ol &amp; Kəşf Et</span>
+                  <span>Heisenberg Ol &amp; Kəşf Et</span>
                 </button>
               </div>
             </div>
@@ -1350,7 +1358,7 @@
                 <span class="char-card-source">The Dark Knight • Gotham</span>
                 <p class="char-card-quote">"It's not who I am underneath, but what I do that defines me."</p>
                 <button type="button" class="btn-select-character">
-                  <span>🦇 Batman Ol &amp; Kəşf Et</span>
+                  <span>Batman Ol &amp; Kəşf Et</span>
                 </button>
               </div>
             </div>
@@ -1367,7 +1375,7 @@
                 <span class="char-card-source">The Godfather • Siciliya</span>
                 <p class="char-card-quote">"I'm gonna make him an offer he can't refuse."</p>
                 <button type="button" class="btn-select-character">
-                  <span>🌹 Don Corleone Ol &amp; Kəşf Et</span>
+                  <span>Don Corleone Ol &amp; Kəşf Et</span>
                 </button>
               </div>
             </div>
@@ -1384,7 +1392,7 @@
                 <span class="char-card-source">The Matrix • Gələcək</span>
                 <p class="char-card-quote">"There is no spoon. Free your mind."</p>
                 <button type="button" class="btn-select-character">
-                  <span>⚡ Neo Ol &amp; Kəşf Et</span>
+                  <span>Neo Ol &amp; Kəşf Et</span>
                 </button>
               </div>
             </div>
@@ -1401,25 +1409,25 @@
                 <span class="char-card-source">True Detective • Qaranlıq</span>
                 <p class="char-card-quote">"Time is a flat circle."</p>
                 <button type="button" class="btn-select-character">
-                  <span>🕶️ Rust Cohle Ol &amp; Kəşf Et</span>
+                  <span>Rust Cohle Ol &amp; Kəşf Et</span>
                 </button>
               </div>
             </div>
           </div>
 
           <button type="button" class="char-carousel-arrow next" id="btn-char-gallery-next" aria-label="Növbəti Xarakter" title="Növbəti Xarakter">
-            <span>▶</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
           </button>
         </div>
 
         <!-- Karusel İndikatorları və Sayğac -->
         <div class="char-carousel-StatusBar">
           <div class="char-carousel-dots" id="char-carousel-dots">
-            <button type="button" class="char-dot active" data-index="0" title="Heisenberg">🧪</button>
-            <button type="button" class="char-dot" data-index="1" title="Batman">🦇</button>
-            <button type="button" class="char-dot" data-index="2" title="Don Corleone">🌹</button>
-            <button type="button" class="char-dot" data-index="3" title="Neo">⚡</button>
-            <button type="button" class="char-dot" data-index="4" title="Rust Cohle">🕶️</button>
+            <button type="button" class="char-dot active" data-index="0" title="Heisenberg">1</button>
+            <button type="button" class="char-dot" data-index="1" title="Batman">2</button>
+            <button type="button" class="char-dot" data-index="2" title="Don Corleone">3</button>
+            <button type="button" class="char-dot" data-index="3" title="Neo">4</button>
+            <button type="button" class="char-dot" data-index="4" title="Rust Cohle">5</button>
           </div>
           <span class="char-carousel-counter" id="char-gallery-counter">1 / 5 • Sağa-sola sürüşdür</span>
         </div>
@@ -1427,10 +1435,10 @@
         <!-- Alt Tez Keçid Zolağı -->
         <div class="modal-char-footer">
           <button type="button" class="btn-char-random" id="btn-char-pick-random">
-            <span>🎲 Təsadüfi Seç</span>
+            <span>Təsadüfi Seç</span>
           </button>
           <button type="button" class="btn-char-skip-join" id="btn-char-skip-join">
-            <span>🔑 Kodla Otağa Qoşul</span>
+            <span>Kodla Otağa Qoşul</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
         </div>
@@ -1440,12 +1448,17 @@
       <div id="char-modal-showcase-view" class="char-modal-view hidden">
         <div class="showcase-top-bar">
           <button type="button" class="btn-showcase-back" id="btn-showcase-back">
-            <span>◀ Geri (Xarakterlər)</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            <span>Geri</span>
           </button>
           <div class="showcase-nav-arrows">
-            <button type="button" class="btn-showcase-nav" id="btn-showcase-prev" title="Əvvəlki Xarakter">◀</button>
+            <button type="button" class="btn-showcase-nav" id="btn-showcase-prev" title="Əvvəlki Xarakter">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
             <span class="showcase-counter" id="showcase-counter">3 / 5</span>
-            <button type="button" class="btn-showcase-nav" id="btn-showcase-next" title="Növbəti Xarakter">▶</button>
+            <button type="button" class="btn-showcase-nav" id="btn-showcase-next" title="Növbəti Xarakter">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
           </div>
           <button class="modal-close" onclick="closeModal('modal-characters')">✕</button>
         </div>
@@ -1998,6 +2011,6 @@
   <audio id="remote-voice-audio" autoplay playsinline></audio>
 
   <!-- Əsas Tətbiq Skripti -->
-  <script src="app.js?v=12.0"></script>
+  <script src="app.js?v=13.0"></script>
 </body>
 </html>
